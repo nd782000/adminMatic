@@ -28,8 +28,38 @@ public protocol ResponseCollectionSerializable {
  }
  */
 
+/*
+extension Alamofire.SessionManager{
+    @discardableResult
+    open func requestWithoutCashe(
+        _ url: URLConvertible,
+        method: HTTPMethod = .get,
+        parameters: Parameters? = nil,
+        encoding: ParameterEncoding = URLEncoding.default,
+        headers: HTTPHeaders? = nil)
+        -> DataRequest
+    {
+        do {
+            var urlRequest = try URLRequest(url: url, method: method, headers: headers)
+            urlRequest.cachePolicy = .reloadIgnoringCacheData
+            let encodedURLRequest = try encoding.encode(urlRequest, with: parameters)
+            return request(encodedURLRequest)
+        } catch {
+            print(error)
+            return request(URLRequest(url: URL(string: "http://example.com/wrong_request")!))
+        }
+    }
+}
+*/
+
+
+
 
 struct API {
+    
+    
+        
+    
     
     
     enum Method {
@@ -59,7 +89,7 @@ struct API {
     
     enum Router: URLRequestConvertible {
         
-        static let baseURLString = "http://atlanticlawnandgarden.com/cp/app"
+        static let baseURLString = "https://atlanticlawnandgarden.com/cp/app"
         
         case fields([String: AnyObject])
         
@@ -118,7 +148,17 @@ struct API {
             }
         }
         
+        
+        
+        
+        
         var path: String {
+            
+            //cache buster
+            let now = Date()
+            let timeInterval = now.timeIntervalSince1970
+            let timeStamp = Int(timeInterval)
+            
             switch self {
             case .fields:
                 //print("field /functions/get/fields.php")
@@ -165,7 +205,7 @@ struct API {
             case .vendor:
                 return ("/functions/get/vendor.php")
             case .images:
-                return ("/functions/get/images.php")
+                return ("/functions/get/images.php?cb=\(timeStamp)")
             }
         }
         
@@ -175,6 +215,7 @@ struct API {
             let url = Foundation.URL(string: Router.baseURLString)!
             var urlRequest = URLRequest(url: url.appendingPathComponent(path))
             urlRequest.httpMethod = method.rawValue
+            urlRequest.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content")
             urlRequest.setValue("keep-alive", forHTTPHeaderField: "Connection")
             

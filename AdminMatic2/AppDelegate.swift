@@ -75,8 +75,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
         
+        
+        
+        let manager = NetworkReachabilityManager(host: "www.apple.com")
+        
+        manager?.listener = { status in
+            print("Network Status Changed: \(status)")
+        }
+        
+        manager?.startListening()
+        
+        
+        
         //Get all Fields
         ////print("get fields")
+        //let testEmp = Employee(_ID: "1", _name: "Tyrone Tester", _lname: "Tester", _fname: "Tyrone", _username: "tester", _pic: "", _phone: "", _depID: "", _payRate: "", _appScore: "1000000")
+        //self.loggedInEmployee = testEmp
+            
         self.layoutVars = LayoutVars()
         
         //cache buster
@@ -160,9 +175,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.scheduleViewController.delegate = self
         self.navigationController?.navigationBar.barTintColor = UIColor.white
         
-        
+        /*
         self.imageCollectionViewController = ImageCollectionViewController()
         self.imageCollectionViewController.delegate = self
+        */
         
         self.underConstructionViewController = UnderConstructionViewController()
         self.underConstructionViewController.delegate = self
@@ -257,6 +273,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         case 6:
             //print("Show  Images")
             if(loggedInEmployee != nil){
+                
+                if(self.imageCollectionViewController == nil){
+                    self.imageCollectionViewController = ImageCollectionViewController()
+                    self.imageCollectionViewController.delegate = self
+                }
+                
+
+                
                 navigationController = UINavigationController(rootViewController: self.imageCollectionViewController)
                 window?.rootViewController = navigationController
                 window?.makeKeyAndVisible()
@@ -452,7 +476,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.messageView?.translatesAutoresizingMaskIntoConstraints = false
         self.messageView?.alpha = 0.0
         
-        let imgUrl = URL(string: "http://atlanticlawnandgarden.com/uploads/general/thumbs/"+(self.loggedInEmployee?.pic)!)
+        let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(self.loggedInEmployee?.pic)!)
         
         
         

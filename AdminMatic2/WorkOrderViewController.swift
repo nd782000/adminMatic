@@ -40,7 +40,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     var statusArray = ["Un-Done","In Progress","Done","Cancel","Waiting"]
     
     
-    //var statusIcon: UIView! = UIView()
     var statusValue: String!
     var statusValueToUpdate: String!
     var customerBtn: Button!
@@ -113,9 +112,11 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     var incomeView:UIView!
     var costView:UIView!
     
-    //var totalRaw:Float = 0.0
-    //var totalCostRaw:Float = 0.0
-
+   
+    
+    
+    
+    
     init(_workOrderID:String,_customerName:String){
         super.init(nibName:nil,bundle:nil)
         self.workOrderID = _workOrderID
@@ -143,14 +144,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         self.deadLineValue = ""
         self.fieldNotes = []
         
-        
-            
-       // if let unwrappedNewWoStatus:String = _newWoStatus {
-             //print("new status = \(_newWoStatus)")
-            
-        
-            
-        //}
         
        
 
@@ -184,7 +177,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             let alertController = UIAlertController(title: "Set Work Order to \(statusName)", message: "", preferredStyle: UIAlertControllerStyle.alert)
             let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
                 (result : UIAlertAction) -> Void in
-                //print("Cancel")
                 
                 self.getWorkOrder()
                 
@@ -192,35 +184,35 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             
             let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
                 (result : UIAlertAction) -> Void in
-                //print("OK")
-                // self.popView()
                 
-                //update status the refresh wo
-                
-                
+                /*
                 //cache buster
                 let now = Date()
                 let timeInterval = now.timeIntervalSince1970
                 let timeStamp = Int(timeInterval)
-                //, "cb":timeStamp as AnyObject
+                */
+                var parameters:[String:String]
+                parameters = [
+                    "woID":self.workOrderID,
+                    "status":_newWoStatus,
+                    "empID":(self.appDelegate.loggedInEmployee?.ID)!
+                ]
                 
-                Alamofire.request(API.Router.updateWoStatus(["woID":self.workOrderID as AnyObject, "status": _newWoStatus as AnyObject, "empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
+                print("parameters = \(parameters)")
+                
+                
+                
+                self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/workOrderStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                     response in
-                    //print(response.request ?? "")  // original URL request
+                    print(response.request ?? "")  // original URL request
                     //print(response.response ?? "") // URL response
                     //print(response.data ?? "")     // server data
-                    //print(response.result)   // result of response serialization
+                    print(response.result)   // result of response serialization
                     
                     
                     
                      self.getWorkOrder()
                     
-                   /*
-                    
-                    if(self.scheduleDelegate != nil){
-                        self.scheduleDelegate.reDrawSchedule(_index: self.scheduleIndex, _status: _newWoStatus)
-                        }
- */
                     
                     }
  
@@ -274,7 +266,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
-        //, "cb":timeStamp as AnyObject
         
       
         
@@ -318,20 +309,9 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             self.deadLineValue = "Deadline: \(self.json["deadline"].stringValue)"
         }
         
-        //print("200")
-        /*
-        if(self.json["recID"].intValue > 0){
-            //show recurring dates btn
-        }
-        */
-        
-        
-        
-        
+    
         //print("date raw = \(self.json["dateRaw"].stringValue)")
         scheduleKeyWordValue = self.json["date"].stringValue
-        
-         //print("300")
         
         chargeValue = ""
         
@@ -390,7 +370,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             
         }
         
-         //print("500")
         self.salesRepValue = self.json["salesRep"].string
         
         self.priceValue = self.json["totalPrice"].string
@@ -404,10 +383,8 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         self.profitValue = self.json["profitAmount"].string
         self.percentValue = self.json["profit"].string
         
-        //self.totalRaw = self.json["totalPriceRaw"].floatValue
-        //self.totalCostRaw = self.json["totalCostRaw"].floatValue
+       
         
-         //print("600")
         
         var json: JSON = ["columns" : ["created_at" : "DESC", "id" : "DESC"]]
         
@@ -621,11 +598,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         }
         
         
-        //self.statusBtn.layer.cornerRadius = 20.0
-        //
-        //self.view.addSubview(statusBtn)
-        
-        //print("1")
         
         //statusIcon = UIImageView()
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
@@ -637,7 +609,13 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         //employee picker
         self.statusPicker = Picker()
+        print("statusValue : \(statusValue)")
+        print("set picker position : \(Int(self.statusValue)! - 1)")
+        
         self.statusPicker.delegate = self
+        
+        self.statusPicker.selectRow(Int(self.statusValue)! - 1, inComponent: 0, animated: false)
+        
         self.statusTxtField = PaddedTextField(placeholder: "")
         self.statusTxtField.textAlignment = NSTextAlignment.center
         self.statusTxtField.translatesAutoresizingMaskIntoConstraints = false
@@ -663,15 +641,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         statusTxtField.inputAccessoryView = toolBar
 
-        
-        
-        
-        
-        //print("2")
-
-        
-        
-        
         
         self.customerBtn = Button(titleText: "\(self.customerName!) \(self.locationValue!)")
         self.customerBtn.contentHorizontalAlignment = .left
@@ -797,7 +766,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         self.fieldNotesView.addSubview(fieldNotesTxt)
         
         
-        //print("3")
 
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(WorkOrderViewController.showFieldNotesList))
@@ -893,19 +861,11 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         
         //Profit Info
-        
-        
-        //print("4")
-
-        // profit bar vars
         let profitBarWidth = Float(layoutVars.fullWidth - 20)
         
         
-        //var totalRaw = (self.priceRawValue! as String).floatValue
-        //var totalCostRaw = (self.costRawValue! as String).floatValue
-        
-        var totalRaw = Float(self.priceRawValue!)
-        var totalCostRaw = Float(self.costRawValue!)
+        let totalRaw = Float(self.priceRawValue!)
+        let totalCostRaw = Float(self.costRawValue!)
         
         
         var scaleFactor = Float(0.00)
@@ -936,7 +896,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         /////////  Auto Layout   //////////////////////////////////////
         
-        //print("5")
 
         
         let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30, "nameWidth": layoutVars.fullWidth - 150] as [String:Any]
@@ -1096,7 +1055,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     func enterEditMode(){
         editMode = true
         removeViews()
-        //layoutEditViews()
         
     }
     
@@ -1114,31 +1072,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     }
     
     
-    //layout for edit mode
-    /*
-    func layoutEditViews(){
-        self.tapBtn = UIButton()
-        self.tapBtn.frame = CGRect(x: 0, y: 0, width: 500.0, height: 1000.0)
-
-        self.tapBtn.backgroundColor = UIColor.clear
-        self.tapBtn.addTarget(self, action: #selector(WorkOrderViewController.DismissKeyboard), for: UIControlEvents.touchUpInside)
-    
-        let toolbar = UIToolbar(frame: CGRect(x:0, y:0, width:320.0, height:44.0))
-        var items = [UIBarButtonItem]()
-        
-        let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(WorkOrderViewController.endEditingNow) )
-        items.append(doneButton)
-        toolbar.barStyle = UIBarStyle.black
-        toolbar.setItems(items, animated: true)
-        
-        
-        self.itemsTableView  =   TableView()
-        itemsTableView.delegate  =  self
-        itemsTableView.dataSource  =  self
-        itemsTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        
-    }
- */
+   
     
     func removeViews(){
         
@@ -1163,18 +1097,10 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     // returns the # of rows in each component..
     func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
-       // return self.statusArray.count
-        //print("numberOfRowsInComponent")
-        return self.statusArray.count
+       // shows first 3 status options, not cancel or waiting
+        return self.statusArray.count - 2
     }
     
-    /*
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        //return self.statusArray[row]
-         //print("titleForRow")
-        return self.statusArray[row]
-    }
-    */
     
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
         return 60
@@ -1182,9 +1108,9 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         
-        var myView = UIView(frame: CGRect(x:0, y:0, width:pickerView.bounds.width - 30, height:60))
+        let myView = UIView(frame: CGRect(x:0, y:0, width:pickerView.bounds.width - 30, height:60))
         
-        var myImageView = UIImageView(frame: CGRect(x:0, y:0, width:50, height:50))
+        let myImageView = UIImageView(frame: CGRect(x:0, y:0, width:50, height:50))
         
         var rowString = String()
         rowString = statusArray[row]
@@ -1222,22 +1148,12 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
     {
-        // typeTxtField.text = "\(self.type[row])"
-        //self.statusTxtField.text = "\(self.statusArray[row])"
-        
-        
-        //print("didSelectRow")
         
         self.statusValueToUpdate = "\(row + 1)"
-        
-        
-        
-
-        
     }
     
     func cancelPicker(){
-         self.statusValueToUpdate = self.statusValue
+         //self.statusValueToUpdate = self.statusValue
         self.statusTxtField.resignFirstResponder()
     }
     
@@ -1249,20 +1165,40 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
-        //, "cb":timeStamp as AnyObject
         
         //print("status = \(self.statusValueToUpdate)")
         
-        Alamofire.request(API.Router.updateWoStatus(["woID":self.workOrderID as AnyObject, "status": self.statusValueToUpdate as AnyObject, "empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
+        
+        
+        
+        var parameters:[String:String]
+        parameters = [
+            "woID":self.workOrderID,
+            "status":self.statusValueToUpdate,
+            "empID":(self.appDelegate.loggedInEmployee?.ID)!
+        ]
+        
+        /*
+        parameters = [
+            "woID":self.workOrderID,
+            "status":"\(self.statusPicker.selectedRow(inComponent: 0))",
+            "empID":(self.appDelegate.loggedInEmployee?.ID)!
+        ]
+ */
+        
+        print("parameters = \(parameters)")
+        
+        
+        
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/workOrderStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
             response in
-            //print(response.request ?? "")  // original URL request
+            print(response.request ?? "")  // original URL request
             //print(response.response ?? "") // URL response
             //print(response.data ?? "")     // server data
-            //print(response.result)   // result of response serialization
+            print(response.result)   // result of response serialization
             
             
              self.statusValue = self.statusValueToUpdate
-            //self.getWorkOrder()
             
             self.setStatus(status: self.statusValue)
           
@@ -1270,7 +1206,10 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         if(self.scheduleDelegate != nil){
                 self.scheduleDelegate.reDrawSchedule(_index: self.scheduleIndex, _status: self.statusValue, _price: self.priceValue!, _cost: self.costValue!, _priceRaw: self.priceRawValue!, _costRaw: self.costRawValue!)
                 }
-        }
+            }.responseString() {
+                response in
+                print(response)  // original URL request
+            }
         
         
         
@@ -1377,27 +1316,22 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         switch (status) {
         case "1":
-            //statusIcon.backgroundColor = UIColor.gray//out of service
             let statusImg = UIImage(named:"unDoneStatus.png")
             statusIcon.image = statusImg
             break;
         case "2":
-            //statusIcon.backgroundColor = UIColor.orange//needs repair
             let statusImg = UIImage(named:"inProgressStatus.png")
             statusIcon.image = statusImg
             break;
         case "3":
-            //statusIcon.backgroundColor = UIColor(hex: 0x005100, op: 1.0)
             let statusImg = UIImage(named:"doneStatus.png")
             statusIcon.image = statusImg
             break;
         case "4":
-            //statusIcon.backgroundColor = UIColor.red//winterized
             let statusImg = UIImage(named:"cancelStatus.png")
             statusIcon.image = statusImg
             break;
         case "5":
-            //statusIcon.backgroundColor = UIColor.red//winterized
             let statusImg = UIImage(named:"waitingStatus.png")
             statusIcon.image = statusImg
             break;
@@ -1409,25 +1343,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         }
 
         
-        /*
-    switch (status) {
-        case "1":
-            statusBtn.backgroundColor = UIColor.gray//un started
-            break;
-        case "2":
-            statusBtn.backgroundColor = UIColor.orange//in progress
-            break;
-        case "3":
-            statusBtn.backgroundColor = UIColor.green//finished
-            break;
-        case "4":
-            statusBtn.backgroundColor = UIColor.red//cancelled
-            break;
-        default:
-            statusBtn.backgroundColor = UIColor.blue//online
-            break;
-        }
- */
     }
     
     

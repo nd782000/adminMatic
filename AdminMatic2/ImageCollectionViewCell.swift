@@ -21,6 +21,8 @@ class ImageCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        print("imageCell init")
+        
         contentView.layer.borderWidth = 2.0
         contentView.layer.borderColor = UIColor.darkGray.cgColor
         

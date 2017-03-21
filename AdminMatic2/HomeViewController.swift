@@ -71,16 +71,25 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             //image
             self.employeeImage = UIImageView()
             
-            let imgUrl = URL(string: "http://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!)
             
-            
-            
-            DispatchQueue.global().async {
-                let data = try? Data(contentsOf: imgUrl!) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
-                DispatchQueue.main.async {
-                    self.employeeImage.image = UIImage(data: data!)
+            if(appDelegate.loggedInEmployee?.lname == "Tester"){
+                               
+                self.employeeImage.image = UIImage(named:"cMurphy.png")
+                
+            }else{
+                let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!)
+                
+                
+                DispatchQueue.global().async {
+                    let data = try? Data(contentsOf: imgUrl!) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
+                    DispatchQueue.main.async {
+                        self.employeeImage.image = UIImage(data: data!)
+                    }
                 }
+
             }
+            
+            
             
             
            

@@ -12,12 +12,8 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-protocol ImageDrawingDelegate{
-    func updateImage( _image:UIImage)
-}
 
-
-class FieldNoteViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate, UITextViewDelegate, UIActionSheetDelegate, ImageDrawingDelegate{
+class FieldNoteViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate, UITextViewDelegate, UIActionSheetDelegate{
     
     
     
@@ -36,7 +32,7 @@ class FieldNoteViewController: UIViewController, UIImagePickerControllerDelegate
     
     var backButton: UIButton!
     var defaultImage : UIImage = UIImage(named:"cameraIcon.png")!
-    var baseUrl = "http://atlanticlawnandgarden.com/uploads/general/"
+    var baseUrl = "https://atlanticlawnandgarden.com/uploads/general/"
     var imageView:UIImageView!
     var progressView:UIProgressView!
     var progressValue:Float!
@@ -358,11 +354,13 @@ class FieldNoteViewController: UIViewController, UIImagePickerControllerDelegate
     func draw(){
         
         //print("Draw")
-        
+        /*
         let imageDrawingViewController = ImageDrawingViewController(_image:self.imageView.image!)
         imageDrawingViewController.delegate = self
         navigationController?.pushViewController(imageDrawingViewController, animated: false )
         imageEdit = true;
+ */
+        
         
     }
     
@@ -440,7 +438,7 @@ class FieldNoteViewController: UIViewController, UIImagePickerControllerDelegate
         
         //print("parameters = \(parameters)")
         
-        let URL = try! URLRequest(url: "http://www.atlanticlawnandgarden.com/cp/app/functions/new/fieldNote.php", method: .post, headers: nil)
+        let URL = try! URLRequest(url: "https://www.atlanticlawnandgarden.com/cp/app/functions/new/fieldNote.php", method: .post, headers: nil)
         
         Alamofire.upload(multipartFormData: { (multipartFormData) in
             //print("alamofire upload")

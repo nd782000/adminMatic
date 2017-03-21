@@ -10,6 +10,7 @@ import UIKit
 import Foundation
 import CoreLocation
 import MapKit
+import Alamofire
 
 
 
@@ -35,6 +36,7 @@ extension UIColor {
 
 
 extension String {
+    //test git  
     
     var isAlphanumeric: Bool {
         return !isEmpty && range(of: "[^a-zA-Z0-9-_ ]", options: .regularExpression) == nil
@@ -81,6 +83,26 @@ class LayoutVars: UIViewController {
     var inputHeight = 50
     
     var defaultImage : UIImage = UIImage(named:"cameraIcon.png")!
+    
+    
+    let manager: Alamofire.SessionManager = {
+        let serverTrustPolicies: [String: ServerTrustPolicy] = [
+            "www.atlanticlawnandgarden.com": .disableEvaluation
+        ]
+        
+        let configuration = URLSessionConfiguration.default
+        configuration.httpAdditionalHeaders = Alamofire.SessionManager.defaultHTTPHeaders
+        configuration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        
+        return Alamofire.SessionManager(
+            configuration: configuration,
+            serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies)
+        )
+    }()
+    
+
+    
+    
 }
 
 
@@ -513,24 +535,56 @@ func cleanPhoneNumber(_ _number:String!)->String{
 func callPhoneNumber(_ _number:String){
     print("Call \(_number)")
     
-    let alertController = UIAlertController(title: "CALL \(_number)", message: "Confirm Phone Call", preferredStyle: UIAlertControllerStyle.alert) //Replace
-    let DestructiveAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
-        (result : UIAlertAction) -> Void in
-        print("Cancel")
+    let alertController: UIAlertController
+    
+     if (cleanPhoneNumber(_number) != "No Number Saved"){
+    
+        alertController = UIAlertController(title: "CALL \(_number)", message: "Confirm Phone Call", preferredStyle: UIAlertControllerStyle.alert) //Replace
+        let DestructiveAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            (result : UIAlertAction) -> Void in
+            print("Cancel")
+        }
+        
+        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            (result : UIAlertAction) -> Void in
+            print("OK")
+           UIApplication.shared.open(URL(string: "tel://\(_number)")!, options: [:], completionHandler: nil)
+        }
+        
+        alertController.addAction(DestructiveAction)
+        alertController.addAction(okAction)
+     }else{
+        alertController = UIAlertController(title: "No Saved Number", message: "", preferredStyle: UIAlertControllerStyle.alert) //Replace
+        
+        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            (result : UIAlertAction) -> Void in
+            print("OK")
+           
+        }
+        
+        alertController.addAction(okAction)
     }
+      
+    getTopViewController().present(alertController, animated: true, completion: nil)
     
-    let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
-        (result : UIAlertAction) -> Void in
-        print("OK")
-       UIApplication.shared.open(URL(string: "tel://\(_number)")!, options: [:], completionHandler: nil)
-    }
     
-    alertController.addAction(DestructiveAction)
-    alertController.addAction(okAction)
-    
-    UIApplication.shared.delegate?.window!?.rootViewController?.present(alertController, animated: true, completion: nil)
-
 }
+
+func getTopViewController() -> UIViewController{
+    
+    if var topController = UIApplication.shared.keyWindow?.rootViewController {
+        while let presentedViewController = topController.presentedViewController {
+            topController = presentedViewController
+        }
+        return topController
+    }else{
+        return (UIApplication.shared.delegate?.window!?.rootViewController!)!
+    }
+    
+    
+}
+
+
 
 
 
@@ -616,6 +670,27 @@ func verifyUrl (_ urlString: String?) -> Bool {
 }
 
 
+func getChargeName(_charge:String) -> String {
+    var chargeTypeName:String
+    switch (_charge) {
+    case "1":
+        chargeTypeName = "NC"
+        break;
+    case "2":
+        chargeTypeName = "FL"
+        break;
+    case "3":
+        chargeTypeName = "T&M"
+        break;
+    default:
+        chargeTypeName = "Null"//online
+        break;
+    }
+    return chargeTypeName
+    
+}
+
+
 
 
 
@@ -674,6 +749,8 @@ class SDevIndicator : UIView {
         UIApplication.shared.isNetworkActivityIndicatorVisible = false
 
     }
+    
+    
     
     
     

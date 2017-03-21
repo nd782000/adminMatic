@@ -185,9 +185,7 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
         
         // println("self.customersArray!.count = \(self.customersArray.count)")
         
-        // cell.customer = self.customersArray[indexPath.row]
-        // cell.nameLbl.text = cell.customer.sysName
-        //cell.addressLbl.text = cell.customer.address
+        
         
         
         return cell

@@ -84,7 +84,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         //print("setImageUrl http://atlanticlawnandgarden.com/uploads/general/thumbs/\(cell.employee.pic!)")
         
-        cell.setImageUrl(_url: "http://atlanticlawnandgarden.com/uploads/general/thumbs/"+cell.employee.pic!)
+        cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+cell.employee.pic!)
         return cell;
     }
     
@@ -114,10 +114,14 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         let call = UITableViewRowAction(style: .normal, title: "Phone") { action, index in
             //print("call button tapped")
             
+            //callPhoneNumber(currentCell.employee.phone)
+            
+            
             if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
                 
                 UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: [:], completionHandler: nil)
             }
+ 
             
             
         }

@@ -16,7 +16,6 @@ import SwiftyJSON
 
 
 class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScrollViewDelegate, TimeEntryDelegate  {
-    //let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
     
@@ -85,30 +84,8 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     
     var keyBoardShown:Bool = false
-    //var useKeyboard:Bool = true
-    //var datePicker:UIDatePicker!
-    // var timePicker:UIDatePicker!
-    
-    //var datePickerView: UIDatePicker!
     
     
-    
-    /*
-    init(_employeeID:String,_employeeName:String,_employeeLName:String,_employeeFName:String,_employeeUsername:String,_employeePic:String,_employeePhone:String){
-        super.init(nibName:nil,bundle:nil)
-        //print("init _employeeID = \(_employeeID) _employeePhone = \(_employeePhone)")
-        self.employeeID = _employeeID
-        self.employeeName = _employeeName
-        self.employeeLName = _employeeLName
-        self.employeeFName = _employeeFName
-        self.employeeUsername = _employeeUsername
-        self.employeePic = _employeePic
-        self.employeePhone = _employeePhone
-        
-        
-        
-    }
- */
     
     
     
@@ -160,8 +137,9 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         
         self.layoutViews()
          self.getCurrentShift()
-
-        getEmployeeData(_id:self.employee.ID!)
+        if(self.employee.ID != "1"){
+                getEmployeeData(_id:self.employee.ID!)
+            }
     }
     
     func getEmployeeData(_id:String){
@@ -208,25 +186,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     func layoutViews(){
         
-        //let id = jsonDataHolder.jsonData["employees"][0]["ID"].string
         
-        
-        ////print("employee id: \(id)")
-        
-        
-        // self.signInBtn = Button()
-        // self.signOutBtn = Button()
-        
-        
-        //self.scrollView = UIScrollView()
-        // self.scrollView.delegate = self
-        // self.scrollView.backgroundColor = UIColor.purpleColor()
-        //self.view.addSubview(self.scrollView)
-        
-        // self.scrollView.frame = self.view.bounds
-        
-           
-        //self.view.backgroundColor = layoutVars.backgroundColor
         
         //////////   containers for different sections
         self.employeeView = UIView()
@@ -250,7 +210,6 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         self.signInOutView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.signInOutView)
         
-        //print("1")
         //auto layout group
         let viewsDictionary = [
             "view1":self.employeeView,
@@ -269,7 +228,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view3(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        //self.view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-64-[view1(100)][view2(180)][view3(fullHeight)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[view1(100)][view2(180)][view3(fullHeight)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
@@ -283,17 +242,25 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         //image
         self.employeeImage = UIImageView()
         
-        let imgUrl = URL(string: "http://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.employee.pic!)
-        
-       
+       // if(self.employee.ID == "1"){
+           // self.employeeImage.image = UIImage(named: "cMurphy.png")
+       // }else{
+            let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.employee.pic!)
             
+            
+        if(self.employeeImage.image == nil){
             DispatchQueue.global().async {
                 let data = try? Data(contentsOf: imgUrl!) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
                 DispatchQueue.main.async {
                     self.employeeImage.image = UIImage(data: data!)
                 }
             }
-       
+        }
+        
+
+       // }
+        
+        
         
         
         self.employeeImage.layer.cornerRadius = 5.0
@@ -323,7 +290,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         
         
         self.employeePhoneBtn.setTitle(self.phoneNumberClean, for: UIControlState.normal)
-        self.employeePhoneBtn.addTarget(self, action: #selector(EmployeeViewController.callPhoneNumber), for: UIControlEvents.touchUpInside)
+        self.employeePhoneBtn.addTarget(self, action: #selector(EmployeeViewController.handlePhone), for: UIControlEvents.touchUpInside)
         
         let phoneIcon:UIImageView = UIImageView()
         phoneIcon.backgroundColor = UIColor.clear
@@ -1182,7 +1149,11 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     
     
-    func callPhoneNumber(){
+    func handlePhone(){
+        
+        callPhoneNumber(self.phoneNumberClean)
+        
+        /*
         
         if (self.phoneNumberClean != "No Number Saved"){
             
@@ -1196,13 +1167,17 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
             let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
                 (result : UIAlertAction) -> Void in
                 //print("OK")
+                
+                print("self.phoneNumberClean = \(self.phoneNumberClean)")
+                
+                
                 UIApplication.shared.open(NSURL(string: "tel://\(self.phoneNumberClean)")! as URL, options: [:], completionHandler: nil)
             }
             
             alertController.addAction(DestructiveAction)
             alertController.addAction(okAction)
             self.present(alertController, animated: true, completion: nil)
-
+            
             
             /*
             
@@ -1220,6 +1195,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
             self.present(alert, animated: true, completion: nil)
  */
         }
+ */
         
     }
     

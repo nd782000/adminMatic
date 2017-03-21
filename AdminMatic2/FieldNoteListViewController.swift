@@ -188,7 +188,7 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
             //check if url is good, image may have been deleted
             //if(verifyUrl("http://atlanticlawnandgarden.com/uploads/general/thumbs/\(self.fieldNotes[indexPath.row].thumb!)")){
             //print("url verified http://atlanticlawnandgarden.com/uploads/general/thumbs/\(self.fieldNotes[indexPath.row].thumb!)")
-            cell.setImageUrl(_url: "http://atlanticlawnandgarden.com/uploads/general/thumbs/\(self.fieldNotes[indexPath.row].thumb!)")
+            cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/\(self.fieldNotes[indexPath.row].thumb!)")
             //}else{
             // cell.setBlankImage()
             // }
@@ -242,7 +242,7 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
                 //print(response.result)   // result of response serialization
                 
                 
-                let str = NSString(data: response.data!, encoding: String.Encoding.utf8.rawValue)
+                //let str = NSString(data: response.data!, encoding: String.Encoding.utf8.rawValue)
                 //print("string = \(str)")
                 ////print(error)
                 

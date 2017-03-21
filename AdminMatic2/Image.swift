@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class Image {
     
@@ -20,15 +21,22 @@ class Image {
     
     
     var customer: String!
+    var woID: String!
+    
     var dateAdded: String!
     var createdBy: String!
     var type: String!
     
     var tags: String!
     
+    var image: UIImage?
+    
+    var uploadProgress:Float = 0.0
+    var uploadStatus:String = "Uploading..."
     
     
-    required init( _id: String?, _thumbPath:String?, _rawPath:String?, _name:String?, _width:String?, _height:String?, _description:String?, _customer:String?, _dateAdded:String?, _createdBy:String?, _type:String?, _tags:String?) {
+    
+    required init( _id: String?, _thumbPath:String?, _rawPath:String?, _name:String?, _width:String?, _height:String?, _description:String?, _customer:String?, _woID:String?, _dateAdded:String?, _createdBy:String?, _type:String?, _tags:String?) {
         //print(json)
         if _id != nil {
             self.ID = _id
@@ -74,6 +82,11 @@ class Image {
             self.customer = _customer
         }else{
             self.customer = ""
+        }
+        if _woID != nil {
+            self.woID = _woID
+        }else{
+            self.woID = ""
         }
         if _dateAdded != nil {
             self.dateAdded = _dateAdded

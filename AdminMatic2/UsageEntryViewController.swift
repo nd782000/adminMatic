@@ -352,7 +352,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             cell.startTxtField.isUserInteractionEnabled = !usage.locked!
             cell.stopTxtField.isUserInteractionEnabled = !usage.locked!
             cell.breakTxtField.isUserInteractionEnabled = !usage.locked!
-            cell.setImageUrl(_url: "http://atlanticlawnandgarden.com/uploads/general/thumbs/"+usage.empPic!)
+            cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+usage.empPic!)
         }else{
             cell.displayMaterialMode()
             cell.vendorList = self.woItem.vendors
@@ -877,6 +877,8 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         if(usageToLogJSON.count > 0){
             indicator = SDevIndicator.generate(self.view)!
             
+            
+            /*
             //cache buster
             let now = Date()
             let timeInterval = now.timeIntervalSince1970
@@ -887,9 +889,24 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             Alamofire.request(API.Router.updateUsage([
                 "usageToLog": "\(usageToLogJSON)" as AnyObject
                 , "cb":timeStamp as AnyObject]))
+ 
+ */
+                
+                
+            var parameters:[String:String]
+            parameters = [
+                "usageToLog": "\(usageToLogJSON)"
+                
+            ]
+            
+            print("parameters = \(parameters)")
+            
+            
+            
+            layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/usage.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
                 .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
                 .responseString { response in
-                    print("response = \(response)")
+                    print("usage response = \(response)")
                 }
                 .responseJSON { response in
                     switch response.result {

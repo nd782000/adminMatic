@@ -10,18 +10,13 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-//import CoreLocation
-//import MapKit
 
 
-//class CustomerViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
 
 class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, ScheduleDelegate{
     
-    //let locationManager = CLLocationManager()
     var layoutVars:LayoutVars = LayoutVars()
     
-    //main variables passed to this VC
     
     var customerID:String
     var customerName:String
@@ -60,7 +55,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var customerHistoryArray:[WorkOrder] = []
     
     var customerCommunication: JSON!
-   // var customerCommunicationArray:[Customer] = []
     
     var noResultsLabel:Label = Label();
     
@@ -75,7 +69,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.customerName = _customerName
 
         super.init(nibName:nil,bundle:nil)
-        print("init customerID = \(self.customerID)")
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -120,13 +113,13 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         Alamofire.request(API.Router.customer(["ID":self.customerID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
             response in
-           // print(response.request ?? "")  // original URL request
-            //print(response.response ?? "") // URL response
-            //print(response.data ?? "")     // server data
-            //print(response.result)   // result of response serialization
+           // //print(response.request ?? "")  // original URL request
+            ////print(response.response ?? "") // URL response
+            ////print(response.data ?? "")     // server data
+            ////print(response.result)   // result of response serialization
             
             if let json = response.result.value {
-                print("JSON: \(json)")
+                //print("JSON: \(json)")
                 self.customerJSON = JSON(json)
                 self.parseCustomerJSON()
                 
@@ -141,31 +134,31 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     func parseCustomerJSON(){
         
         
-        print("parse customerJSON: \(self.customerJSON)")
+        //print("parse customerJSON: \(self.customerJSON)")
         
         //loop through contacts and put them in appropriate places
         let contactCount:Int = self.customerJSON["customer"]["contacts"].count
-        print("contactCount: \(contactCount)")
+        //print("contactCount: \(contactCount)")
         for i in 0 ..< contactCount {
-            print("contactID: " + self.customerJSON["customer"]["contacts"][i]["ID"].string!)
+            //print("contactID: " + self.customerJSON["customer"]["contacts"][i]["ID"].string!)
             switch  self.customerJSON["customer"]["contacts"][i]["type"].string! {
             //phone
             case "1":
-                print("case = phone")
-                 print("phone = \(self.customerJSON["customer"]["contacts"][i]["value"].string!)")
-                print("phone = \(self.customerJSON["customer"]["contacts"][i]["value"].string!)")
+                //print("case = phone")
+                 //print("phone = \(self.customerJSON["customer"]["contacts"][i]["value"].string!)")
+                //print("phone = \(self.customerJSON["customer"]["contacts"][i]["value"].string!)")
                 //if(self.customerJSON["customer"]["contacts"][i]["main"].string == "1"){
                     self.phone = self.customerJSON["customer"]["contacts"][i]["value"].string!
                     if self.customerJSON["customer"]["contacts"][i]["name"] != JSON.null
                     {
                         self.phoneName = " (" + self.customerJSON["customer"]["contacts"][i]["name"].string! + ")"
-                        print("self.phoneName = \(self.phoneName)")
+                        //print("self.phoneName = \(self.phoneName)")
                     }
                 //}
                 break
             //email
             case "2":
-                print("case = email")
+                //print("case = email")
                 //if(self.customerJSON["customer"]["contacts"][i]["main"].string == "1"){
                     self.email = self.customerJSON["customer"]["contacts"][i]["value"].string!
                     if self.customerJSON["customer"]["contacts"][i]["name"] != JSON.null
@@ -178,11 +171,11 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             //job site address
             case "4":
                 //check if address is same as one displayed in customer list
-                print("case = address")
-                print(self.customerJSON["customer"]["contacts"][i]["main"].stringValue)
-                print(self.customerJSON["customer"]["contacts"][i]["ID"].stringValue)
-                //print(self.customer.contactID)
-                print(self.customerJSON["customer"]["contacts"][i])
+                //print("case = address")
+                //print(self.customerJSON["customer"]["contacts"][i]["main"].stringValue)
+                //print(self.customerJSON["customer"]["contacts"][i]["ID"].stringValue)
+                ////print(self.customer.contactID)
+                //print(self.customerJSON["customer"]["contacts"][i])
                 
                 
                 //let street1:String = self.jobSiteAddress = self.customerJSON["customer"]["contacts"][i]["street1"].stringValue
@@ -191,7 +184,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                  self.jobSiteAddress = self.customerJSON["customer"]["contacts"][i]["fullAddress"].stringValue
                 self.lat = self.customerJSON["customer"]["contacts"][i]["lat"].stringValue as NSString
                 self.lng = self.customerJSON["customer"]["contacts"][i]["lng"].stringValue as NSString
-                print(" lat \(self.lat)")
+                //print(" lat \(self.lat)")
                 
                 
                 /*
@@ -204,7 +197,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     
                     self.lat = self.customerJSON["customer"]["contacts"][i]["lat"].stringValue as NSString
                     self.lng = self.customerJSON["customer"]["contacts"][i]["lng"].stringValue as NSString
-                    print("set lat \(self.lat)")
+                    //print("set lat \(self.lat)")
                 }
  */
                 break
@@ -239,13 +232,13 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         Alamofire.request(API.Router.workOrderList(["empID":"" as AnyObject,"custID":_id as AnyObject,"active":"1" as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
             
             response in
-            print(response.request ?? "")  // original URL request
-            print(response.response ?? "") // URL response
-            print(response.data ?? "")     // server data
-            print(response.result)   // result of response serialization
+            //print(response.request ?? "")  // original URL request
+            //print(response.response ?? "") // URL response
+            //print(response.data ?? "")     // server data
+            //print(response.result)   // result of response serialization
             
             if let json = response.result.value {
-                print("JSON: \(json)")
+                //print("JSON: \(json)")
                 //self.vendors = JSON(json)
                 // self.parseJSON()
                 self.customerSchedule = JSON(json)
@@ -260,7 +253,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
          self.customerSchedule = JSON(json!)
          self.parseCustomerScheduleJSON()
          } else {
-         print("JSON ERROR: \(json)")
+         //print("JSON ERROR: \(json)")
          }
          }
          */
@@ -272,13 +265,13 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     func parseCustomerScheduleJSON(){
         
         
-        print("parse customerSchedule: \(self.customerSchedule)")
+        //print("parse customerSchedule: \(self.customerSchedule)")
         
         //loop through contacts and put them in appropriate places
         let workOrderCount:Int = self.customerSchedule["workOrder"].count
-        print("workOrderCount: \(workOrderCount)")
+        //print("workOrderCount: \(workOrderCount)")
         for i in 0 ..< workOrderCount {
-            print("ID: " + self.customerSchedule["workOrder"][i]["ID"].stringValue)
+            //print("ID: " + self.customerSchedule["workOrder"][i]["ID"].stringValue)
             let workOrder = WorkOrder(_ID: self.customerSchedule["workOrder"][i]["ID"].stringValue, _statusID: self.customerSchedule["workOrder"][i]["statusID"].stringValue, _date: self.customerSchedule["workOrder"][i]["date"].stringValue, _firstItem: self.customerSchedule["workOrder"][i]["firstItem"].stringValue, _statusName: self.customerSchedule["workOrder"][i]["statusName"].stringValue, _customer: self.customerSchedule["workOrder"][i]["customer"].stringValue, _type: self.customerSchedule["workOrder"][i]["type"].stringValue, _progress: self.customerSchedule["workOrder"][i]["progress"].stringValue, _totalPrice: self.customerSchedule["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.customerSchedule["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.customerSchedule["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.customerSchedule["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.customerSchedule["workOrder"][i]["charge"].stringValue)
             self.customerScheduleArray.append(workOrder)
         }
@@ -308,13 +301,13 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //Alamofire.request(API.Router.workOrderList("", _id, "0")).responseJSON() {
             
             response in
-            print(response.request ?? "")  // original URL request
-            print(response.response ?? "") // URL response
-            print(response.data ?? "")     // server data
-            print(response.result)   // result of response serialization
+            //print(response.request ?? "")  // original URL request
+            //print(response.response ?? "") // URL response
+            //print(response.data ?? "")     // server data
+            //print(response.result)   // result of response serialization
             
             if let json = response.result.value {
-                print("JSON: \(json)")
+                //print("JSON: \(json)")
                 //self.vendors = JSON(json)
                 // self.parseJSON()
                 self.customerHistory = JSON(json)
@@ -334,13 +327,13 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     func parseCustomerHistoryJSON(){
         
         // self.customerHistoryArray.
-        print("parse customerHistory: \(self.customerHistory)")
+        //print("parse customerHistory: \(self.customerHistory)")
         
         //loop through contacts and put them in appropriate places
         let workOrderCount:Int = self.customerHistory["workOrder"].count
-        print("workOrderCount: \(workOrderCount)")
+        //print("workOrderCount: \(workOrderCount)")
         for i in 0 ..< workOrderCount {
-            print("ID: " + self.customerHistory["workOrder"][i]["ID"].stringValue)
+            //print("ID: " + self.customerHistory["workOrder"][i]["ID"].stringValue)
             let workOrder = WorkOrder(_ID: self.customerHistory["workOrder"][i]["ID"].stringValue, _statusID: self.customerHistory["workOrder"][i]["statusID"].stringValue, _date: self.customerHistory["workOrder"][i]["date"].stringValue, _firstItem: self.customerHistory["workOrder"][i]["firstItem"].stringValue, _statusName: self.customerHistory["workOrder"][i]["statusName"].stringValue, _customer: self.customerHistory["workOrder"][i]["customer"].stringValue, _type: self.customerHistory["workOrder"][i]["type"].stringValue, _progress: self.customerHistory["workOrder"][i]["progress"].stringValue, _totalPrice: self.customerHistory["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.customerHistory["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.customerHistory["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.customerHistory["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.customerSchedule["workOrder"][i]["charge"].stringValue)
             self.customerHistoryArray.append(workOrder)
         }
@@ -370,7 +363,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func layoutViews(){
-        print("customer view layoutViews")
+        //print("customer view layoutViews")
         //////////   containers for different sections
         self.customerView = UIView()
         self.customerView.layer.borderColor = layoutVars.borderColor
@@ -391,7 +384,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         
-        print("1")
+        //print("1")
         //auto layout group
         let viewsDictionary = [
             "view1":self.customerView,
@@ -412,7 +405,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         ///////////   customer contact section   /////////////
         
-        print("customer view layoutViews 2")
+        //print("customer view layoutViews 2")
         //name
         self.customerLbl = GreyLabel()
         self.customerLbl.text = self.customerName
@@ -427,9 +420,9 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.customerPhoneBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
         self.customerPhoneBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 35.0, 0.0, 0.0)
         
-        print("phone = \(self.phone)")
-        print("phoneName = \(self.phoneName)")
-        print("phone clean = \(self.phoneNumberClean)")
+        //print("phone = \(self.phone)")
+        //print("phoneName = \(self.phoneName)")
+        //print("phone clean = \(self.phoneNumberClean)")
         self.customerPhoneBtn.setTitle(self.phone + self.phoneName, for: UIControlState.normal)
         //self.customerPhoneBtn.setTitle(self.phoneNumberClean! + self.phoneName, for: UIControlState.normal)
         if self.phone != "No Phone Found" {
@@ -446,7 +439,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         self.customerView.addSubview(self.customerPhoneBtn)
-        print("customer view layoutViews 3")
+        //print("customer view layoutViews 3")
         
         
         
@@ -487,7 +480,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             self.customerAddressBtn.addTarget(self, action: #selector(CustomerViewController.mapHandler), for: UIControlEvents.touchUpInside)
         }
         
-        print("customer view layoutViews 4")
+        //print("customer view layoutViews 4")
         
         let addressIcon:UIImageView = UIImageView()
         addressIcon.backgroundColor = UIColor.clear
@@ -592,7 +585,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func phoneHandler(){
-        print("phone handler")
+        //print("phone handler")
         
         callPhoneNumber(self.phoneNumberClean)
     }
@@ -603,7 +596,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     func mapHandler() {
-        print("map handler")
+        //print("map handler")
         openMapForPlace(self.customerName, _lat: self.lat!, _lng: self.lng!)
         
          //openMapForPlace(currentCell.contact.name, _lat: currentCell.contact.lat!, _lng: currentCell.contact.lng!)
@@ -699,12 +692,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         switch self.tableViewMode{
         case "SCHEDULE":
             count = self.customerScheduleArray.count
-            print("schedule count = \(count)", terminator: "")
+            //print("schedule count = \(count)", terminator: "")
             
             break
         case "HISTORY":
             count = self.customerHistoryArray.count
-            print("history count = \(count)", terminator: "")
+            //print("history count = \(count)", terminator: "")
             
             break
         case "COMMUNICATION":
@@ -730,7 +723,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         switch self.tableViewMode{
         case "SCHEDULE":
             
-            print("Schedule customer")
+            //print("Schedule customer")
             // cell.resetCell("CUSTOMER")
             cell.workOrder = self.customerScheduleArray[indexPath.row]
             cell.layoutViews(_scheduleMode: "CUSTOMER")
@@ -740,9 +733,11 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             cell.setStatus(status: cell.workOrder.statusId)
             //cell.woIDLbl.text = "#\(cell.workOrder.ID!)"
             
-            print("cell.workOrder.date \(cell.workOrder.date)")
-            print("cell.workOrder.firstItem \(cell.workOrder.firstItem)")
+            //print("cell.workOrder.date \(cell.workOrder.date)")
+            //print("cell.workOrder.firstItem \(cell.workOrder.firstItem)")
             
+            
+            /*
             var chargeTypeName:String
             switch (cell.workOrder.charge) {
             case "1":
@@ -759,15 +754,18 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 break;
             }
             cell.chargeLbl.text = chargeTypeName
+ */
+            
+            cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
             
            // let formatter = NumberFormatter()
            // formatter.numberStyle = .currency
             // formatter.locale = NSLocale.currentLocale() // This is the default
             //formatter.string(from: cell.workOrder.totalPrice as NSNumber) // "$123.44"
             
-            print("cell.workOrder.totalPrice! = \(cell.workOrder.totalPrice!)")
+            //print("cell.workOrder.totalPrice! = \(cell.workOrder.totalPrice!)")
             cell.priceLbl.text = cell.workOrder.totalPrice!
-             print("cell.workOrder.totalPrice! = \(cell.workOrder.totalPrice!)")
+             //print("cell.workOrder.totalPrice! = \(cell.workOrder.totalPrice!)")
             
             //cell.setProfitBar(_price:self.customerScheduleArray[indexPath.row].totalPrice!, _cost:self.customerScheduleArray[indexPath.row].totalCost!)
             cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
@@ -781,18 +779,22 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         case "HISTORY":
             // cell.resetCell("CUSTOMER")
             
-            print("a")
+            //print("a")
             cell.workOrder = self.customerHistoryArray[indexPath.row]
             
-            print("self.customerHistoryArray[indexPath.row] = \(self.customerHistoryArray[indexPath.row])")
-            print("cell.workOrder.price = \(cell.workOrder.totalPrice)")
+            //print("self.customerHistoryArray[indexPath.row] = \(self.customerHistoryArray[indexPath.row])")
+            //print("cell.workOrder.price = \(cell.workOrder.totalPrice)")
             
             cell.layoutViews(_scheduleMode: "CUSTOMER")
             cell.dateLbl.text = cell.workOrder.date
             cell.firstItemLbl.text = "\(cell.workOrder.firstItem!) #\(cell.workOrder.ID!)"
             cell.setStatus(status: cell.workOrder.statusId)
            // cell.woIDLbl.text = "#\(cell.workOrder.ID!)"
-            print("b")
+            ////print("b")
+            
+            cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
+            
+            /*
             var chargeTypeName:String
             switch (cell.workOrder.charge) {
             case "1":
@@ -809,8 +811,9 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 break;
             }
             cell.chargeLbl.text = chargeTypeName
+ */
             
-            print("c")
+           // //print("c")
             //let formatter = NumberFormatter()
             //formatter.numberStyle = .currency
             // formatter.locale = NSLocale.currentLocale() // This is the default
@@ -821,18 +824,18 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             cell.priceLbl.text = cell.workOrder.totalPrice!
             
-            print("d")
+            //print("d")
             
-            print("cell.workOrder.totalPrice! = \(cell.workOrder.totalPrice!)")
+            //print("cell.workOrder.totalPrice! = \(cell.workOrder.totalPrice!)")
             cell.priceLbl.text = cell.workOrder.totalPrice!
-            print("cell.workOrder.totalPrice! = \(cell.workOrder.totalPrice!)")
+            //print("cell.workOrder.totalPrice! = \(cell.workOrder.totalPrice!)")
             
             //cell.setProfitBar(_price:self.customerHistoryArray[indexPath.row].totalPrice!, _cost:self.customerHistoryArray[indexPath.row].totalCost!)
             
             
            cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
             
-            print("e")
+            //print("e")
             break
         case "COMMUNICATION":
             // cell.workOrder = self.customerScheduleArray[indexPath.row]
@@ -854,7 +857,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("You selected cell #\(indexPath.row)!")
+        //print("You selected cell #\(indexPath.row)!")
         
         let indexPath = tableView.indexPathForSelectedRow;
         
@@ -879,11 +882,11 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     //for redrawing tables after status change
     func reDrawSchedule(_index:Int, _status:String, _price: String, _cost: String, _priceRaw: String, _costRaw: String){
-        print("reDraw Schedule")
-        print("_status =  \(_status)")
-        print("_price =  \(_price)")
-        print("_cost =  \(_cost)")
-        print("_index =  \(_index)")
+        //print("reDraw Schedule")
+        //print("_status =  \(_status)")
+        //print("_price =  \(_price)")
+        //print("_cost =  \(_cost)")
+        //print("_index =  \(_index)")
         
         
             if(self.tableViewMode == "SCHEDULE"){

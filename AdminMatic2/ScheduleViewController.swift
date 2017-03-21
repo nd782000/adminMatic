@@ -465,7 +465,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     regex = nil
                 }
                 if let regexError = error {
-                    //print("Oh no! \(regexError)")
+                    print("Oh no! \(regexError)")
                 } else {
                     
                     for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
@@ -476,6 +476,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 cell.customerLbl.attributedText = highlightedText
                 //cell.woIDLbl.text = "#\(cell.workOrder.ID!)"
                 
+                /*
                 var chargeTypeName:String
                 switch (cell.workOrder.charge) {
                 case "1":
@@ -491,7 +492,10 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     chargeTypeName = "Null"//online
                     break;
                 }
-                cell.chargeLbl.text = chargeTypeName
+ */
+                
+                
+                cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
                 cell.priceLbl.text = cell.workOrder.totalPrice!
                 
                 
@@ -511,6 +515,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 cell.customerLbl.text = cell.workOrder.title
                 cell.setStatus(status: cell.workOrder.statusId)
                 
+                /*
                 var chargeTypeName:String
                 switch (cell.workOrder.charge) {
                 case "1":
@@ -527,6 +532,9 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     break;
                 }
                 cell.chargeLbl.text = chargeTypeName
+ */
+                cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
+                
                 cell.priceLbl.text = cell.workOrder.totalPrice!
                 
                  cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
@@ -568,7 +576,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 }
                 cell.customerLbl.attributedText = highlightedText
               
-                
+                /*
                 var chargeTypeName:String
                 switch (cell.workOrder.charge) {
                 case "1":
@@ -585,6 +593,9 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     break;
                 }
                 cell.chargeLbl.text = chargeTypeName
+ */
+                cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
+                
                 cell.priceLbl.text = cell.workOrder.totalPrice!
                 
                 
@@ -603,6 +614,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 cell.customerLbl.text = cell.workOrder.title
                 cell.setStatus(status: cell.workOrder.statusId)
                 
+                /*
                 var chargeTypeName:String
                 switch (cell.workOrder.charge) {
                 case "1":
@@ -619,6 +631,10 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     break;
                 }
                 cell.chargeLbl.text = chargeTypeName
+ */
+                
+                cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
+                
                 cell.priceLbl.text = cell.workOrder.totalPrice!
                 
                 cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)

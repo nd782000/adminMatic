@@ -54,6 +54,8 @@ class ImageDrawingViewController: UIViewController {
     var clearBtn:Button!
     var doneBtn:Button!
     
+    var indexPath:IndexPath!
+    
     
     let colors: [(CGFloat, CGFloat, CGFloat)] = [
         (1.0,0.0,0.0),
@@ -69,9 +71,10 @@ class ImageDrawingViewController: UIViewController {
         (0.0,0.0,0.0)
     ]
     
-    init(_image:UIImage){
+    init(_indexPath:IndexPath, _image:UIImage){
         super.init(nibName:nil,bundle:nil)
         self.image = _image
+        self.indexPath = _indexPath
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -391,24 +394,12 @@ class ImageDrawingViewController: UIViewController {
          self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[large(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
          self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[clear(colorBtnSize)]|", options: [], metrics: sizeVals, views: viewsDictionary))
          self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[done(colorBtnSize)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-         
-         
-        
-        
-        
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
-   
-    
-    
-    
-    
     
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -431,12 +422,7 @@ class ImageDrawingViewController: UIViewController {
    
     func drawLine(fromPoint: CGPoint, toPoint: CGPoint) {
         
-        
-        
         UIGraphicsBeginImageContextWithOptions(imageView.bounds.size, false, 0)
-        
-        
-       
         
         imageView.image?.draw(in: imageView.bounds)
         
@@ -459,9 +445,6 @@ class ImageDrawingViewController: UIViewController {
         
         self.imageView.contentMode = .scaleAspectFill
        
- 
- 
- 
         //print("image width = \(self.imageView.frame.size.width)")
  
         //print("image height = \(self.imageView.frame.size.height)")
@@ -480,14 +463,6 @@ class ImageDrawingViewController: UIViewController {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
     func share() {
         //print("share")
         if self.presentedViewController == nil {
@@ -501,15 +476,7 @@ class ImageDrawingViewController: UIViewController {
         }
     }
     
-  
-    
-    
-    
-    
-    
-    
-    
- 
+
     
     func colorChange(sender:AnyObject){
         var index = sender.tag ?? 0
@@ -552,15 +519,11 @@ class ImageDrawingViewController: UIViewController {
         goBack()
     }
    
-    
-    
-    
-    
-  
+
  
     func goBack(){
         //print("Go Back")
-        delegate.updateImage(_image: self.imageView.image!)
+        delegate.updateImage(_indexPath:self.indexPath, _image: self.imageView.image!)
         _ = navigationController?.popViewController(animated: true)
         
     }

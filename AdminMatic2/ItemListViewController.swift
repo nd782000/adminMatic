@@ -330,15 +330,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             cell.item = self.itemsArray[sections[indexPath.section].index + indexPath.row]
             cell.nameLbl.text = self.itemsArray[sections[indexPath.section].index + indexPath.row].name
-            //cell.addressLbl.text = self.itemsArray[sections[indexPath.section].index + indexPath.row].address
-            
-            /*
-             cell.item = self.itemsArray[indexPath.row]
-             cell.nameLbl.text = cell.item.sysName //+ " (" + cell.item.contactID + ")"
-             cell.addressLbl.text = cell.item.address
-             */
-            
-            
+                       
         }
         
         cell.typeLbl.text = "\(cell.item.type!) Type"

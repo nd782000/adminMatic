@@ -7,62 +7,37 @@
 //
 
 import Foundation
-
 import UIKit
 import Alamofire
 import SwiftyJSON
 import Nuke
-
-/*
-protocol ImageViewDelegate{
-    func getPrevNextImage(_next:Bool)-> Image
-    func refreshImages(_image:Image)
-    }
- */
+import DKImagePickerController
 
 protocol ImageViewDelegate{
     func getPrevNextImage(_next:Bool)
-    func refreshImages(_image:Image, _scoreAdjust:Int)
+    func refreshImages(_images:[Image], _scoreAdjust:Int)
 }
 
-
-
-class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating, ImageViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDelegate  {
-    
+class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating, ImageViewDelegate, UINavigationControllerDelegate  {
+        
+    var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
     var totalImages:Int!
     var images: JSON!
     var imageArray:[Image] = []
     var imagesSearchResults:[Image] = []
     var imagesSearchResults2:[Image] = []
-
     var shouldShowSearchResults:Bool = false
     var searchTerm:String = "" // used to retain search when leaving this view and having to deactivate search to enable device rotation - a real pain
     var searchController:UISearchController!
-    var imageCollectionView: UICollectionView?
-    var layoutVars:LayoutVars = LayoutVars()
-    
-    var addImageBtn:Button = Button(titleText: "Add Image")
-    
-    var currentImageIndex:Int!
-    
-    let picker = UIImagePickerController()
-    var imagePicked:Bool = false
-    
     let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-    
+    var imageCollectionView: UICollectionView?
+    var addImageBtn:Button = Button(titleText: "Add Image")
+    var currentImageIndex:Int!
     var imageDetailViewController:ImageDetailViewController!
-    
     var portraitMode:Bool = true
-    
-    
     var refresher:UIRefreshControl!
     
-   
-    
-    
-    
-  
     init(){
         super.init(nibName:nil,bundle:nil)
         //  //println("init equipId = \(equipId) equipName = \(equipName)")
@@ -81,36 +56,23 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
-        //NotificationCenter.default.addObserver(self, selector: #selector(self.rotated), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
-        
         getImages()
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        ////print("viewWillAppear")
+       print("viewWillAppear")
        // //print("imagesSearchResults.count = \(imagesSearchResults.count)")
-        
-        ////print("searchTerm = \(searchTerm)")
-        
         currentImageIndex = 0
-        
         if(searchTerm != ""){
-            
-            
             searchController.isActive = true
-            //searchController.delegate = self
-            
             self.searchController.searchBar.text = searchTerm
-            //print("there are search results")
-            
         }
     }
     
     func getImages() {
         //remove any added views (needed for table refresh
         
-        //print("get images")
+        print("get images")
         for view in self.view.subviews{
             view.removeFromSuperview()
         }
@@ -121,16 +83,15 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
-        //, "cb":timeStamp as AnyObject
 
         Alamofire.request(API.Router.images(["cb":timeStamp as AnyObject])).responseJSON(){ response in
-            //print(response.request ?? "")  // original URL request
+            print(response.request ?? "")  // original URL request
             //print(response.response ?? "") // URL response
             //print(response.data ?? "")     // server data
             //print(response.result)   // result of response serialization
             
             if let json = response.result.value {
-                //print("JSON: \(json)")
+                print("JSON: \(json)")
                 self.images = JSON(json)
                 self.parseJSON()
                 
@@ -144,7 +105,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     func parseJSON(){
         let jsonCount = self.images["images"].count
         self.totalImages = jsonCount
-        //print("JSONcount: \(jsonCount)")
+        print("JSONcount: \(jsonCount)")
         
         let thumbBase:String = self.images["thumbBase"].stringValue
         let rawBase:String = self.images["rawBase"].stringValue
@@ -156,7 +117,8 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             let rawPath:String = "\(rawBase)\(self.images["images"][i]["fileName"].stringValue)"
                 
             //create a item object
-            let image = Image(_id: self.images["images"][i]["ID"].stringValue,_thumbPath: thumbPath,_rawPath: rawPath,_name: self.images["images"][i]["name"].stringValue,_width: self.images["images"][i]["width"].stringValue,_height: self.images["images"][i]["height"].stringValue,_description: self.images["images"][i]["description"].stringValue,_customer: self.images["images"][i]["customer"].stringValue,_dateAdded: self.images["images"][i]["dateAdded"].stringValue,_createdBy: self.images["images"][i]["createdByName"].stringValue,_type: self.images["images"][i]["type"].stringValue,_tags: self.images["images"][i]["tags"].stringValue)
+            print("create an image object \(i)")
+            let image = Image(_id: self.images["images"][i]["ID"].stringValue,_thumbPath: thumbPath,_rawPath: rawPath,_name: self.images["images"][i]["name"].stringValue,_width: self.images["images"][i]["width"].stringValue,_height: self.images["images"][i]["height"].stringValue,_description: self.images["images"][i]["description"].stringValue,_customer: self.images["images"][i]["customer"].stringValue,_woID:"0",_dateAdded: self.images["images"][i]["dateAdded"].stringValue,_createdBy: self.images["images"][i]["createdByName"].stringValue,_type: self.images["images"][i]["type"].stringValue,_tags: self.images["images"][i]["tags"].stringValue)
             
             self.imageArray.append(image)
             
@@ -170,6 +132,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     
     func layoutViews(){
         
+        print("layoutViews collection")
         // Close Indicator
         indicator.dismissIndicator()
         
@@ -187,7 +150,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         navigationItem.titleView = searchController.searchBar
         
         
-        imageCollectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height - 50), collectionViewLayout: layout)
+        imageCollectionView = UICollectionView(frame: CGRect(x: 0, y: layoutVars.navAndStatusBarHeight, width: self.view.frame.width, height: self.view.frame.height - (layoutVars.navAndStatusBarHeight + 50)), collectionViewLayout: layout)
         imageCollectionView?.dataSource = self
         imageCollectionView?.delegate = self
         imageCollectionView?.register(ImageCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
@@ -197,8 +160,9 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         let refresher = UIRefreshControl()
         self.imageCollectionView!.alwaysBounceVertical = true
-        //refresher.tintColor = UIColor.redColor()
-        refresher.addTarget(self, action: #selector(ImageCollectionViewController.loadData), for: .valueChanged)
+        
+       
+       refresher.addTarget(self, action: #selector(ImageCollectionViewController.loadData), for: .valueChanged)
         imageCollectionView!.addSubview(refresher)
         
         
@@ -242,11 +206,6 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     
 
     
-    
-    
-    
-    
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
          if(shouldShowSearchResults == false){
             return self.imageArray.count
@@ -279,7 +238,6 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             
             
             Nuke.loadImage(with: imgURL, into: cell.imageView){ [weak view] in
-               // cell.imageView.han
                 //print("nuke loadImage")
                 cell.imageView?.handle(response: $0, isFromMemoryCache: $1)
                 cell.activityView.stopAnimating()
@@ -315,7 +273,12 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         let currentCell = imageCollectionView?.cellForItem(at: indexPath) as! ImageCollectionViewCell
         
         //print("name = \(currentCell.image.name)")
-         imageDetailViewController = ImageDetailViewController(_image: currentCell.image)
+        
+        
+        
+        
+        
+         imageDetailViewController = ImageDetailViewController(_image: currentCell.image,_saveURLString:"https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php")
         imageDetailViewController.imageFullViewController.delegate = self
         imageCollectionView?.deselectItem(at: indexPath, animated: true)
         navigationController?.pushViewController(imageDetailViewController, animated: false )
@@ -324,7 +287,6 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         searchTerm = self.searchController.searchBar.text!
         imagesSearchResults2 = imagesSearchResults
         
-        //searchController.delegate = nil
         searchController.isActive = false
         
         currentImageIndex = indexPath.row
@@ -390,218 +352,88 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     func presentSearchController(searchController: UISearchController){
         
     }
-    
-    
+
     //refresh functions
     
     func loadData()
     {
-        //print("loadData")
+        print("loadData")
         getImages()
         stopRefresher()         //Call this to stop refresher
     }
     
     func stopRefresher()
-    {   //print("stopRefresher")
-        refresher.endRefreshing()
+    {   print("stopRefresher")
     }
 
-    
-    
-    
     
     
     
     func addImage(){
-        //print("Add Image")
+        print("Add Image")
         searchController.isActive = false
-         self.showActionSheet()
-    }
-    
-    
-    func showActionSheet() {
-        //print("showActionSheet")
         
-        
-       // if self.presentedViewController == nil {
-            
-            
-            let actionSheet = UIAlertController(title: "Upload an Image", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-            actionSheet.view.backgroundColor = UIColor.white
-            actionSheet.view.layer.cornerRadius = 5;
-            
-            actionSheet.addAction(UIAlertAction(title: "Camera", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
-                //print("show cam 1")
-                self.camera()
-            }))
-            
-            actionSheet.addAction(UIAlertAction(title: "Library", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
-                self.library()
-            }))
-            
-            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
-            }))
-            
-            self.present(actionSheet, animated: true, completion: nil)
-        
-        /*
-        }else{
-            self.dismiss(animated: true, completion: {
-                let actionSheet = UIAlertController(title: "Add Picture to Field Note", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-                actionSheet.view.backgroundColor = UIColor.white
-                actionSheet.view.layer.cornerRadius = 5;
-                
-                actionSheet.addAction(UIAlertAction(title: "Take New Picture", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
-                    //print("show cam 1")
-                    self.camera()
-                }))
-                
-                actionSheet.addAction(UIAlertAction(title: "From Camera Roll", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
-                    self.library()
-                }))
-                
-                actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
-                }))
-                
-                self.present(actionSheet, animated: true, completion: nil)
-            })
-            
-        }*/
-        
-    }
-    
-    func camera()
-    {
-        //print("Camera")
-        
-        self.picker.sourceType = UIImagePickerControllerSourceType.camera
-        self.picker.cameraCaptureMode = .photo
-        self.picker.allowsEditing = true
-        self.picker.delegate = self
-        
-        
-        _ = [self .present(self.picker, animated: true , completion: nil)]
-        
-    }
-    
-    func library()
-    {
-        //print("photoLibrary")
-        self.picker.delegate = self;
-        self.picker.sourceType = UIImagePickerControllerSourceType.photoLibrary
-        
-        _ = [self .present(self.picker, animated: true , completion: nil)]
-        
-        
-    }
-    
-    
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        //print("didFinishPickingMediaWithInfo")
-        if (info[UIImagePickerControllerOriginalImage] as? UIImage) != nil {
-            //print("image not nil")
-            
-            let imageUploadViewController:ImageUploadViewController = ImageUploadViewController(_image: (info[UIImagePickerControllerOriginalImage] as? UIImage)!)
-            
-            //self.imageView.image = info[UIImagePickerControllerOriginalImage] as? UIImage
-            self.imagePicked = true
-            
-            imageUploadViewController.delegate = self
-            
-             navigationController?.pushViewController(imageUploadViewController, animated: false )
-            
-            
-            /*
-            self.imageView.image = info[UIImagePickerControllerOriginalImage] as? UIImage
-            self.imagePicked = true
-            self.imageEdit = true
-            UIView.animate(withDuration: 0.75, animations: {() -> Void in
-                self.drawButton.alpha = 1
-                self.drawButton.isEnabled = true
-            })
- */
-        } else{
-            //print("Something went wrong")
-        }
-        
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    
-    
-    
-    
-    
-    
-    //cancel
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        dismiss(animated: true, completion: nil)
-        if(searchTerm != ""){
-            
-            
-            searchController.isActive = true
-            //searchController.delegate = self
-            
-            self.searchController.searchBar.text = searchTerm
-            //print("there are search results")
-            
-        }
-        
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /*
-    func getPrevNextImage(_next:Bool) -> Image{
-        //print("getPrevNextImage currentImageIndex = \(currentImageIndex)")
-        if(shouldShowSearchResults == false){
-            if(_next == true){
-                if(currentImageIndex + 1) > (self.imageArray.count - 1){
-                    currentImageIndex = 0
-                    return self.imageArray[currentImageIndex]
-                }
-                currentImageIndex = currentImageIndex + 1
-                return self.imageArray[currentImageIndex]
+        let multiPicker = DKImagePickerController()
+        var selectedAssets = [DKAsset]()
+        var selectedImages:[Image] = [Image]()
 
-            }else{
-                if(currentImageIndex - 1) < 0{
-                    currentImageIndex = self.imageArray.count - 1
-                    return self.imageArray[currentImageIndex]
-                }
-                currentImageIndex = currentImageIndex - 1
-                return self.imageArray[currentImageIndex]
-            }
-        }else{
-            if(_next == true){
-                if(currentImageIndex + 1) > (self.imagesSearchResults2.count - 1){
-                    currentImageIndex = 0
-                    return self.imagesSearchResults2[currentImageIndex]
-                }
-                currentImageIndex = currentImageIndex + 1
-                return self.imagesSearchResults2[currentImageIndex]
+       
+        multiPicker.showsCancelButton = true
+        multiPicker.assetType = .allPhotos
+        self.present(multiPicker, animated: true) {}
+        
+        
+        
+        multiPicker.didSelectAssets = { (assets: [DKAsset]) in
+            print("didSelectAssets")
+            print(assets)
+            
+            for i in 0..<assets.count
+            {
+                print("looping images")
+                selectedAssets.append(assets[i])
+                //print(self.selectedAssets)
                 
-            }else{
-                if(currentImageIndex - 1) < 0{
-                    currentImageIndex = self.imagesSearchResults2.count - 1
-                    return self.imagesSearchResults2[currentImageIndex]
-                }
-                currentImageIndex = currentImageIndex - 1
-                return self.imagesSearchResults2[currentImageIndex]
-            }        }
+                assets[i].fetchOriginalImage(true, completeBlock: { image, info in
+               
+                    
+                    print("making image")
+                    let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _customer: "0", _woID: "0", _dateAdded: "", _createdBy: self.appDelegate.loggedInEmployee?.ID, _type: "", _tags: "")
+                    imageToAdd.image = image
+                    
+                    
+                   selectedImages.append(imageToAdd)
+                
+                })
+            }
+            
+            //cache buster
+            let now = Date()
+            let timeInterval = now.timeIntervalSince1970
+            let timeStamp = Int(timeInterval)
+
+            print("making prep view")
+            print("selectedimages count = \(selectedImages.count)")
+            
+            let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Gallery", _ID: "0", _images: selectedImages, _saveURLString: "https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
+            
+            
+            print("url = https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
+            
+            print("self.selectedImages.count = \(selectedImages.count)")
+            
+            imageUploadPrepViewController.loadLinkList(_linkType: "customers", _loadScript: API.Router.customerList(["cb":timeStamp as AnyObject]))
+            
+            
+            imageUploadPrepViewController.delegate = self
+            
+            self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+            
+
+        }
+        
         
     }
- */
-    
     
     
     func getPrevNextImage(_next:Bool){
@@ -610,7 +442,6 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             if(_next == true){
                 if(currentImageIndex + 1) > (self.imageArray.count - 1){
                     currentImageIndex = 0
-                   // return self.imageArray[currentImageIndex]
                     imageDetailViewController.image = self.imageArray[currentImageIndex]
                     imageDetailViewController.layoutViews()
                     imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
@@ -619,7 +450,6 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                     
                 }else{
                     currentImageIndex = currentImageIndex + 1
-                    //return self.imageArray[currentImageIndex]
                     imageDetailViewController.image = self.imageArray[currentImageIndex]
                     imageDetailViewController.layoutViews()
                     imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
@@ -629,14 +459,12 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             }else{
                 if(currentImageIndex - 1) < 0{
                     currentImageIndex = self.imageArray.count - 1
-                    //return self.imageArray[currentImageIndex]
                     imageDetailViewController.image = self.imageArray[currentImageIndex]
                     imageDetailViewController.layoutViews()
                     imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
                     imageDetailViewController.imageFullViewController.layoutViews()
                 }else{
                     currentImageIndex = currentImageIndex - 1
-                    //return self.imageArray[currentImageIndex]
                     imageDetailViewController.image = self.imageArray[currentImageIndex]
                     imageDetailViewController.layoutViews()
                     imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
@@ -647,14 +475,12 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             if(_next == true){
                 if(currentImageIndex + 1) > (self.imagesSearchResults2.count - 1){
                     currentImageIndex = 0
-                   // return self.imagesSearchResults2[currentImageIndex]
                     imageDetailViewController.image = self.imagesSearchResults2[currentImageIndex]
                     imageDetailViewController.layoutViews()
                     imageDetailViewController.imageFullViewController.image = self.imagesSearchResults2[currentImageIndex]
                     imageDetailViewController.imageFullViewController.layoutViews()
                 }else{
                     currentImageIndex = currentImageIndex + 1
-                    //return self.imagesSearchResults2[currentImageIndex]
                     imageDetailViewController.image = self.imagesSearchResults2[currentImageIndex]
                     imageDetailViewController.layoutViews()
                     imageDetailViewController.imageFullViewController.image = self.imagesSearchResults2[currentImageIndex]
@@ -664,14 +490,12 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             }else{
                 if(currentImageIndex - 1) < 0{
                     currentImageIndex = self.imagesSearchResults2.count - 1
-                    //return self.imagesSearchResults2[currentImageIndex]
                     imageDetailViewController.image = self.imagesSearchResults2[currentImageIndex]
                     imageDetailViewController.layoutViews()
                     imageDetailViewController.imageFullViewController.image = self.imagesSearchResults2[currentImageIndex]
                     imageDetailViewController.imageFullViewController.layoutViews()
                 }else{
                     currentImageIndex = currentImageIndex - 1
-                    //return self.imagesSearchResults2[currentImageIndex]
                     imageDetailViewController.image = self.imagesSearchResults2[currentImageIndex]
                     imageDetailViewController.layoutViews()
                     imageDetailViewController.imageFullViewController.image = self.imagesSearchResults2[currentImageIndex]
@@ -688,24 +512,21 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         }
         
 
-        
-        
     }
 
     
     
     
-    func refreshImages(_image:Image, _scoreAdjust:Int){
-        //print("refreshImages")
-        imageArray.insert(_image, at: 0)
+    func refreshImages(_images:[Image], _scoreAdjust:Int){
+        print("refreshImages")
+        
+        for insertImage in _images{
+            
+            imageArray.insert(insertImage, at: 0)
+        }
+
+        
         shouldShowSearchResults = false
-        //imageCollectionView?.reloadData()
-        
-       
-        
-        //layout.sectionInset = UIEdgeInsets(top: layoutVars.navAndStatusBarHeight, left: 0, bottom: 50, right: 0)
-        
-        //imageCollectionView?.frame = CGRect(x: 0, y: layoutVars.navAndStatusBarHeight, width: self.view.frame.width, height: self.view.frame.height - layoutVars.navAndStatusBarHeight - 50)
         
         imageCollectionView?.reloadData()
         
@@ -715,21 +536,14 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         
         
-         //layoutViews()
+         print("scoreAdjust")
         
-        //getImages()
-        
-        //[self.myCollectionVC.collectionView setContentInset:UIEdgeInsetsMake(topMargin, 0, 0, 0)]
-        
-       // imageCollectionView?.setNeedsUpdateConstraints()
-        
-        
-        //self.hideProgressScreen()
+        print("scoreAdjust = \(_scoreAdjust)")
         
         //add appPoints
         var points:Int = _scoreAdjust
         
-        //print("points = \(points)")
+        print("points = \(points)")
         
         if(points > 0){
             self.appDelegate.showMessage(_message: "earned \(points) App Points!")
@@ -743,32 +557,6 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
     }
     
-    /*
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        
-        // Your Processing
-        //print("viewWillTransition")
-        imageCollectionView?.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:self.view.frame.height)
-        imageCollectionView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height - 50)
-        //imageView.frame = CGRect(x:0, y:0, width:scrollView.frame.width, height:scrollView.frame.height)
-    }
-    */
-    /*
-    func rotated() {
-        /*
-        if UIDeviceOrientationIsLandscape(UIDevice.current.orientation) {
-            //print("Landscape")
-        }
-        
-        if UIDeviceOrientationIsPortrait(UIDevice.current.orientation) {
-            //print("Portrait")
-        }
-          imageCollectionView?.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:self.view.frame.height)
-        imageCollectionView?.reloadData()
- */
-        
-    }
-*/
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -813,12 +601,6 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     func canRotate() -> Void {}
     
     
-    
-    /*
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        imageCollectionView?.reloadData()
-    }
- */
+   
     
 }

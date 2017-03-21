@@ -75,7 +75,7 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
                         if let id = customer["ID"] as? String {
                             self.ids.append(id)
                         }
-                        if let name = customer["sysName"] as? String {
+                        if let name = customer["name"] as? String {
                             self.names.append(name)
                         }
                         

@@ -18,6 +18,7 @@ import Nuke
 
 
 class ImageDetailViewController: UIViewController{
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var delegate:ImageViewDelegate!
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
@@ -36,6 +37,14 @@ class ImageDetailViewController: UIViewController{
     var descriptionLbl:UITextView!
     var tagsLbl:Label!
     
+   
+    var saveURLString:String!
+    
+    var ID:String //elementID to possibly edit
+    
+   // var editButton:Button = Button()
+    
+    
     var viewsDictionary:[String:Any] = [:]
     var viewsDictionary2:[String:Any] = [:]
     
@@ -43,10 +52,14 @@ class ImageDetailViewController: UIViewController{
     
     var imageFullViewController:ImageFullViewController!
     
-    init(_image:Image){
-        super.init(nibName:nil,bundle:nil)
+    init(_image:Image, _saveURLString:String, _ID:String = "0"){
+        
         self.image = _image
+        self.ID = _ID
+        
         self.imageFullViewController = ImageFullViewController(_image: _image)
+        
+        super.init(nibName:nil,bundle:nil)
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -79,6 +92,11 @@ class ImageDetailViewController: UIViewController{
         if(self.backgroundImageView != nil){
             self.backgroundImageView.subviews.forEach({ $0.removeFromSuperview() })
         }
+        
+        
+        
+        
+        
         
         title = self.image.name
         
@@ -130,6 +148,20 @@ class ImageDetailViewController: UIViewController{
         self.createdByLbl = Label(text: "by: \(self.image.createdBy!)")
         self.createdByLbl.textColor = UIColor.white
         //self.textView.addSubview(self.createdByLbl)
+        
+        //if(image.createdBy == appDelegate.loggedInEmployee?.ID){
+            //self.editButton = Button(titleText: "Edit")
+            //self.customerBtn.contentHorizontalAlignment = .left
+           
+            
+            //self.editButton.addTarget(self, action: #selector(ImageDetailViewController.edit), for: UIControlEvents.touchUpInside)
+            
+            
+            //self.view.addSubview(editButton)
+       // }
+
+        
+        
         
         
         let dateFormatter = DateFormatter()
@@ -234,6 +266,44 @@ class ImageDetailViewController: UIViewController{
         }
     }
     
+    /*
+    func edit(){
+        print("edit")
+       /*
+        let imageUploadViewController:ImageUploadViewController = ImageUploadViewController(_imageType: "Gallery", _ID: "", _image: self.imageView.image!, _saveURLString: self.saveURLString)
+        
+        //cache buster
+        let now = Date()
+        let timeInterval = now.timeIntervalSince1970
+        let timeStamp = Int(timeInterval)
+        
+        
+            
+            
+        imageUploadViewController.loadLinkList(_linkType: "customers", _loadScript: API.Router.customerList(["cb":timeStamp as AnyObject]))
+        //self.loadLinkList(_linkType: "customers", _loadScript: API.Router.customerList(["cb":timeStamp as AnyObject]))
+        
+        
+        
+        
+        
+        
+        
+       // self.imagePicked = true
+        
+        //imageUploadViewController.delegate = self
+        
+        navigationController?.pushViewController(imageUploadViewController, animated: false )
+*/
+        
+        
+        
+        
+        
+    }
+ */
+    
+    
     
     func canRotate() -> Void {}
     
@@ -279,6 +349,8 @@ class ImageDetailViewController: UIViewController{
         self.textView.addSubview(self.createdByLbl)
         self.textView.addSubview(self.dateAddedLbl)
         
+        
+        
     
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[backgroundImageView]|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[imageView]|", options: [], metrics: nil, views: viewsDictionary))
@@ -292,8 +364,15 @@ class ImageDetailViewController: UIViewController{
             print("landscape")
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(40)]|", options: [], metrics: nil, views: viewsDictionary))
             
+           // if(image.createdBy == appDelegate.loggedInEmployee?.ID){
+                //self.textView.addSubview(editButton)
+                self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[createdByLbl]-[dateAddedLbl(150)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
+                // self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[editBtn]-|", options: [], metrics: nil, views: viewsDictionary2))
+           // }else{
+               // self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[createdByLbl]-[dateAddedLbl(150)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
+            //}
             
-            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[createdByLbl]-[dateAddedLbl(150)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
+            
             
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[createdByLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
             
@@ -307,10 +386,24 @@ class ImageDetailViewController: UIViewController{
 
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(150)]|", options: [], metrics: nil, views: viewsDictionary))
             
-            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[createdByLbl]-[dateAddedLbl(150)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
+            
+            //if(image.createdBy == appDelegate.loggedInEmployee?.ID){
+               // self.textView.addSubview(editButton)
+                self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[createdByLbl]-[dateAddedLbl(150)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
+                //self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[editBtn(25)]", options: [], metrics: nil, views: viewsDictionary2))
+                
+           // }else{
+                //self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[createdByLbl]-[dateAddedLbl(150)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
+                
+           // }
+            
+
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[createdByLbl(25)][descriptionLbl]-[tagsLbl(25)]-|", options: [], metrics: nil, views: viewsDictionary2))
+            
+            
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[descriptionLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tagsLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
-            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[createdByLbl(25)][descriptionLbl]-[tagsLbl(25)]-|", options: [], metrics: nil, views: viewsDictionary2))
+            
             
         }
         

@@ -580,7 +580,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             // //print("image")
             
             ////print("url verified http://atlanticlawnandgarden.com/uploads/general/thumbs/\(self.fieldNotes[indexPath.row].thumb!)")
-            cell.setImageUrl(_url: "http://atlanticlawnandgarden.com/uploads/general/thumbs/\(self.woItem.tasks[indexPath.row].thumb!)")
+            cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/\(self.woItem.tasks[indexPath.row].thumb!)")
             //}else{
             // cell.setBlankImage()
             // }
@@ -639,21 +639,49 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
           
             //_ = Alamofire.request(API.Router.changeField(["id":ID as AnyObject, "val": "1" as AnyObject, "field":"status" as AnyObject, "tableName":"projects" as AnyObject, "table":"tasks" as AnyObject,"string":"false" as AnyObject]))
             
+            /*
             //cache buster
             let now = Date()
             let timeInterval = now.timeIntervalSince1970
             let timeStamp = Int(timeInterval)
             //, "cb":timeStamp as AnyObject
+            */
+            var parameters:[String:String]
+            parameters = [
+                "taskID":ID!,
+                "status":"1",
+                "empID":(self.appDelegate.loggedInEmployee?.ID)!,
+                "woItemID":self.woItem.ID,
+                "woID":self.woID
+                
+            ]
             
+            print("parameters = \(parameters)")
+            
+            
+            
+            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/taskStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+                response in
+                print(response.request ?? "")  // original URL request
+                //print(response.response ?? "") // URL response
+                //print(response.data ?? "")     // server data
+                print(response.result)   // result of response serialization
+                
+
+                
+                
+                
+            /*
             Alamofire.request(API.Router.updateTaskStatus(["taskID":ID as AnyObject, "status": "1" as AnyObject, "empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "woItemID":self.woItem.ID as AnyObject,"woID":self.woID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
                 response in
-                //print(response.request ?? "")  // original URL request
+                print(response.request ?? "")  // original URL request
                 //print(response.response ?? "") // URL response
                 //print(response.data ?? "")     // server data
                 //print(response.result)   // result of response serialization
+                */
                 
                 if let json = response.result.value {
-                    //print("JSON: \(json)")
+                    print("JSON: \(json)")
                     //self.self.employeeJSON = JSON(json)
                     //self.self.parseEmployeeJSON()
                     newItemStatus = JSON(json)["newItemStatus"].stringValue
@@ -683,6 +711,33 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             //Alamofire.request(API.Router.ChangeField(ID, "2", "status", "projects","tasks", "false")).response { (_, _, data, error) in
              //_ = Alamofire.request(API.Router.changeField(["id":ID as AnyObject, "val": "2" as AnyObject, "field":"status" as AnyObject, "tableName":"projects" as AnyObject, "table":"tasks" as AnyObject,"string":"false" as AnyObject]))
             
+            
+            
+            var parameters:[String:String]
+            parameters = [
+                "taskID":ID!,
+                "status":"2",
+                "empID":(self.appDelegate.loggedInEmployee?.ID)!,
+                "woItemID":self.woItem.ID,
+                "woID":self.woID
+                
+            ]
+            
+            print("parameters = \(parameters)")
+            
+            
+            
+            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/taskStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+                response in
+                print(response.request ?? "")  // original URL request
+                //print(response.response ?? "") // URL response
+                //print(response.data ?? "")     // server data
+                print(response.result)   // result of response serialization
+                
+
+                
+                
+                /*
             //cache buster
             let now = Date()
             let timeInterval = now.timeIntervalSince1970
@@ -691,13 +746,14 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             
             Alamofire.request(API.Router.updateTaskStatus(["taskID":ID as AnyObject, "status": "2" as AnyObject, "empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "woItemID":self.woItem.ID as AnyObject,"woID":self.woID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
                 response in
-                //print(response.request ?? "")  // original URL request
+                print(response.request ?? "")  // original URL request
                 //print(response.response ?? "") // URL response
                 //print(response.data ?? "")     // server data
                 //print(response.result)   // result of response serialization
+                */
                 
                 if let json = response.result.value {
-                    //print("JSON: \(json)")
+                    print("JSON: \(json)")
                     //self.self.employeeJSON = JSON(json)
                     //self.self.parseEmployeeJSON()
                     
@@ -725,6 +781,30 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             //Alamofire.request(API.Router.ChangeField(ID, "3", "status", "projects","tasks", "false")).response { (_, _, data, error) in
             // _ = Alamofire.request(API.Router.changeField(["id":ID as AnyObject, "val": "3" as AnyObject, "field":"status" as AnyObject, "tableName":"projects" as AnyObject, "table":"tasks" as AnyObject,"string":"false" as AnyObject]))
             
+            
+            var parameters:[String:String]
+            parameters = [
+                "taskID":ID!,
+                "status":"3",
+                "empID":(self.appDelegate.loggedInEmployee?.ID)!,
+                "woItemID":self.woItem.ID,
+                "woID":self.woID
+                
+            ]
+            
+            print("parameters = \(parameters)")
+            
+            
+            
+            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/taskStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+                response in
+                print(response.request ?? "")  // original URL request
+                //print(response.response ?? "") // URL response
+                //print(response.data ?? "")     // server data
+                print(response.result)   // result of response serialization
+                
+
+                /*
             //cache buster
             let now = Date()
             let timeInterval = now.timeIntervalSince1970
@@ -733,13 +813,14 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             
             Alamofire.request(API.Router.updateTaskStatus(["taskID":ID as AnyObject, "status": "3" as AnyObject, "empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "woItemID":self.woItem.ID as AnyObject,"woID":self.woID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
                 response in
-                //print(response.request ?? "")  // original URL request
+                print(response.request ?? "")  // original URL request
                 //print(response.response ?? "") // URL response
                 //print(response.data ?? "")     // server data
                 //print(response.result)   // result of response serialization
+                */
                 
                 if let json = response.result.value {
-                    //print("JSON: \(json)")
+                    print("JSON: \(json)")
                     //self.self.employeeJSON = JSON(json)
                     //self.self.parseEmployeeJSON()
                     
@@ -765,6 +846,30 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             //Alamofire.request(API.Router.ChangeField(ID, "4", "status", "projects","tasks", "false")).response { (_, _, data, error) in
              //_ = Alamofire.request(API.Router.changeField(["id":ID as AnyObject, "val": "4" as AnyObject, "field":"status" as AnyObject, "tableName":"projects" as AnyObject, "table":"tasks" as AnyObject,"string":"false" as AnyObject]))
             
+            
+            var parameters:[String:String]
+            parameters = [
+                "taskID":ID!,
+                "status":"4",
+                "empID":(self.appDelegate.loggedInEmployee?.ID)!,
+                "woItemID":self.woItem.ID,
+                "woID":self.woID
+                
+            ]
+            
+            print("parameters = \(parameters)")
+            
+            
+            
+            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/taskStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+                response in
+                print(response.request ?? "")  // original URL request
+                //print(response.response ?? "") // URL response
+                //print(response.data ?? "")     // server data
+                print(response.result)   // result of response serialization
+                
+
+            /*
             //cache buster
             let now = Date()
             let timeInterval = now.timeIntervalSince1970
@@ -773,13 +878,15 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             
             Alamofire.request(API.Router.updateTaskStatus(["taskID":ID as AnyObject, "status": "4" as AnyObject, "empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "woItemID":self.woItem.ID as AnyObject,"woID":self.woID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
                 response in
-                //print(response.request ?? "")  // original URL request
+                print(response.request ?? "")  // original URL request
                 //print(response.response ?? "") // URL response
                 //print(response.data ?? "")     // server data
                 //print(response.result)   // result of response serialization
+                */
+                
                 
                 if let json = response.result.value {
-                    //print("JSON: \(json)")
+                    print("JSON: \(json)")
                     //self.self.employeeJSON = JSON(json)
                     //self.self.parseEmployeeJSON()
                     

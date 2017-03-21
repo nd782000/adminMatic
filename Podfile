@@ -7,6 +7,7 @@ target ‘AdminMatic2’ do
     pod 'SwiftyJSON', :git => 'https://github.com/acegreen/SwiftyJSON.git', :branch => 'swift3'
     pod 'ObjectMapper', '~> 2.2'
     pod 'Nuke', '~> 4.0'
+    pod 'DKImagePickerController'
     
 end
 

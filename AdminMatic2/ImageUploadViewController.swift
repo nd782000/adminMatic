@@ -7,32 +7,32 @@
 //
 
 
+
+
+//this class is the user interface to be subclassed for gallery, field note, task and equipment image upload and edits
+
 import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-//import Nuke
 
 
 
 
 class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate{
-    //var delegate:ImageViewDelegate!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var layoutVars:LayoutVars = LayoutVars()
     var delegate:ImageViewDelegate!
     var indicator: SDevIndicator!
     var backButton:UIButton!
-    var selectedImage:UIImage!
+    
     var backgroundImageView:UIImageView!
     
     var blurEffect:UIBlurEffect!
     var blurredEffectView:UIVisualEffectView!
     
-    //var scrollView:UIScrollView!
     
     var imageView:UIImageView!
-    //var activityView:UIActivityIndicatorView!
     
     
     
@@ -42,23 +42,16 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
     var nameView:UIView!
     var nameTxt:UITextField!
     var namePlaceHolder:String = "Name..."
-    //var searchController:UISearchController!
     
     var descriptionTxtView: UITextView!
     var descriptionPlaceHolder:String = "Description..."
 
     
     var searchBar:UISearchBar!
-    var customerTableView:TableView = TableView()
-    var customersSearchResults:[String] = []
-    
-
-    
-    //footer view
-   // var descriptionView:UIView!
+    var resultsTableView:TableView = TableView()
+    var searchResults:[String] = []
     
     var submitBtn:Button = Button(titleText: "Submit")
-    
     
     var loadingView:UIView!
     
@@ -70,33 +63,51 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
     
     
     
-    
+    //linking result arrays
     var ids = [String]()
     var names = [String]()
     
-    var selectedCustID:String = "0"
     
     
     
     
-   
+   //data items
+    var imageType:String //example: task, fieldnote, custImage, equipmentImage
+    var ID:String // taskID or fieldNoteID
+    //var image:UIImage? // could be nil
+    var images:[UIImage] = [UIImage]()
+    var imageID:String // defaults to "0"
+    var imageName:String //defaults to ""
+    var imageDescription: String //defaults to ""
+    var custID: String //defaults to "0"
+    var woID: String //defaults to "0"
+    var linkType:String //equipment link
+    var linkID:String  // defaults to ""
+    var saveURLString: String //php file to save/update
+    var imageIndex: Int //defaults to "0"
     
     
-    
-    
-    
-
-    
-    
-    init(_image:UIImage){
+    init(_imageType:String,_ID:String,_images:[UIImage], _saveURLString:String, _imageID:String = "0", _imageName:String = "", _imageDescription:String = "", _custID:String = "0", _woID:String = "0", _linkType:String = "", _linkID:String = "", _imageIndex:Int = 0){
+       
+        self.imageType = _imageType
+        self.ID = _ID
+        self.images = _images
+        self.imageID = _imageID
+        self.imageName = _imageName
+        self.imageDescription = _imageDescription
+        self.custID = _custID
+        self.woID = _woID
+        self.linkType = _linkType
+        self.saveURLString = _saveURLString
+        self.linkID = _linkID
+        self.imageIndex = _imageIndex
+        
         super.init(nibName:nil,bundle:nil)
-        self.selectedImage = _image
-        
-        
-        //registerForKeyboardNotifications()
-        
         
     }
+    
+    
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -122,16 +133,38 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
         
         
         
-        // Show Indicator
-        indicator = SDevIndicator.generate(self.view)!
+    //to be added at and after init
         
+     // saveURL   "http://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php"
+    /*
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
-        //, "cb":timeStamp as AnyObject
         
-        Alamofire.request(API.Router.customerList(["cb":timeStamp as AnyObject])).responseJSON() {
+        self.loadLinkList(_linkType: "customers", _loadScript: API.Router.customerList(["cb":timeStamp as AnyObject]))
+        */
+    }
+    
+    
+    
+    
+    func loadLinkList(_linkType:String, _loadScript:API.Router){
+        print("load link list")
+        
+        
+        // Show Indicator
+        indicator = SDevIndicator.generate(self.view)!
+        
+        
+        
+        
+        
+        
+       // Alamofire.request(API.Router.customerList(["cb":timeStamp as AnyObject])).responseJSON() {
+        
+          Alamofire.request(_loadScript).responseJSON() {
+            
             response in
             //print(response.request ?? "")  // original URL request
             //print(response.response ?? "") // URL response
@@ -140,16 +173,15 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
             do {
                 if let data = response.data,
                     let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                    let customers = json["customers"] as? [[String: Any]] {
-                    for customer in customers {
-                        if let id = customer["ID"] as? String {
+                    let results = json[_linkType] as? [[String: Any]] {
+                    for result in results {
+                        if let id = result["ID"] as? String {
                             self.ids.append(id)
                         }
-                        if let name = customer["sysName"] as? String {
+                        if let name = result["name"] as? String {
                             self.names.append(name)
                         }
-                        
-                                            }
+                    }
                 }
             } catch {
                 print("Error deserializing JSON: \(error)")
@@ -162,15 +194,16 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
         
     }
     
+    
+    
+    
+    
+    
     func layoutViews(){
         
         indicator.dismissIndicator()
-        title = "Image Upload"
-        /*
-        self.scrollView = UIScrollView()
-        self.scrollView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.scrollView)
-        */
+        title = "\(self.imageType) Upload"
+        
 
         
         self.backgroundImageView = UIImageView()
@@ -180,7 +213,11 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
         self.backgroundImageView.alpha = 0.5
         self.backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
         self.backgroundImageView.isUserInteractionEnabled = false
-        self.backgroundImageView.image = selectedImage
+        //if(self.image != nil){
+        if(self.images.count > 0){
+            self.backgroundImageView.image = images[0]
+        }
+        
         self.view.addSubview(self.backgroundImageView)
         
         self.blurEffect = UIBlurEffect(style: .dark)
@@ -194,25 +231,32 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
         self.imageView.contentMode = UIViewContentMode.scaleAspectFit
         self.imageView.translatesAutoresizingMaskIntoConstraints = false
         self.imageView.isUserInteractionEnabled = true
-        self.imageView.image = selectedImage
+        
+        if(self.images.count > 0){
+        //if(self.image != nil){
+            self.imageView.image = images[0]
+        }
+        
         self.view.addSubview(self.imageView)
         
        
         
         self.nameView = UIView()
         self.nameView.translatesAutoresizingMaskIntoConstraints = false
-       // self.nameView.backgroundColor = UIColor(hex: 0x005100, op: 0.6)
         self.view.addSubview(self.nameView)
         
         print("nameTxt")
         
-        //nameTxt = UITextField(frame: CGRect(20, 100, 300, 40))
         nameTxt = UITextField()
-        nameTxt.placeholder = "Name..."
+        
+        if(self.imageName == ""){
+            nameTxt.placeholder = "Name..."
+        }else{
+            nameTxt.text = self.imageName
+        }
+        
        
-        //nameTxt.font = UIFont.systemFont(ofSize: 15)
         nameTxt.font = layoutVars.smallFont
-        //nameTxt.borderStyle = UITextBorderStyle.roundedRect
         nameTxt.layer.cornerRadius = 4
         nameTxt.clipsToBounds = true
         nameTxt.autocorrectionType = UITextAutocorrectionType.no
@@ -230,8 +274,15 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
         
         
         self.descriptionTxtView = UITextView()
-        self.descriptionTxtView.text = descriptionPlaceHolder
-        self.descriptionTxtView.textColor = UIColor.lightGray
+        
+        if(self.imageDescription == ""){
+            self.descriptionTxtView.text = descriptionPlaceHolder
+            self.descriptionTxtView.textColor = UIColor.lightGray
+
+        }else{
+            self.descriptionTxtView.text = self.imageDescription
+        }
+        
         
         
         self.descriptionTxtView.translatesAutoresizingMaskIntoConstraints = false
@@ -243,58 +294,6 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
         self.descriptionTxtView.backgroundColor = layoutVars.backgroundLight
         self.descriptionTxtView.showsHorizontalScrollIndicator = false;
         self.nameView.addSubview(self.descriptionTxtView)
-        
-        
-        
-        
-        
-        
-        searchBar = UISearchBar()
-        searchBar.placeholder = "Customer..."
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        
-        //searchBar.layer.borderWidth = 1
-        
-        searchBar.layer.cornerRadius = 4
-        searchBar.clipsToBounds = true
-        searchBar.backgroundColor = UIColor.white
-        searchBar.barTintColor = UIColor.clear
-        
-        searchBar.searchBarStyle = UISearchBarStyle.minimal
-        
-        searchBar.delegate = self
-        
-        self.nameView.addSubview(searchBar)
-        
-        
-        self.customerTableView.delegate  =  self
-        self.customerTableView.dataSource = self
-        self.customerTableView.register(CustomerTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.customerTableView.alpha = 0.0
-        self.nameView.addSubview(self.customerTableView)
-        
-        
-        
-        
-        
-        
-       /*
-        print("descriptionTxtView")
-        
-        
-        self.descriptionView = UIView()
-        self.descriptionView.translatesAutoresizingMaskIntoConstraints = false
-        self.descriptionView.backgroundColor = UIColor(hex: 0x005100, op: 0.6)
-        self.view.addSubview(self.descriptionView)
-
-        */
-        
-       
-        
-        
-        
-       
-        
         
         
         self.submitBtn.addTarget(self, action: #selector(ImageUploadViewController.saveData), for: UIControlEvents.touchUpInside)
@@ -324,21 +323,8 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
         self.backgroundImageView.addSubview(self.blurredEffectView)
         
         
-        print("self.blurredEffectView.frame.size.width = \(self.blurredEffectView.frame.size.width)")
         
-        /*
-        //auto layout group
-        let scrollDictionary = [
-            "scrollView":self.scrollView] as [String:Any]
-        
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[scrollView]|", options: [], metrics: nil, views: scrollDictionary))
-        
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[scrollView]|", options: [], metrics: nil, views: scrollDictionary))
-        */
-        
-          let sizeVals = ["width": layoutVars.fullWidth - 30,"height": 40, "navBarHeight":layoutVars.navAndStatusBarHeight] as [String : Any]
+        let sizeVals = ["width": layoutVars.fullWidth - 30,"height": 40, "navBarHeight":layoutVars.navAndStatusBarHeight] as [String : Any]
         
         //auto layout group
         let viewsDictionary = [
@@ -350,48 +336,73 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[imageView]|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[nameView]|", options: [], metrics: nil, views: viewsDictionary))
          self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
-       // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[submitBtn]|", options: [], metrics: nil, views: viewsDictionary))
         
         
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[backgroundImageView]|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[imageView]|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[nameView]-[submitBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
-       // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[submitBtn(40)]-|", options: [], metrics: nil, views: viewsDictionary))
         
         
         
         //auto layout group
         let viewsDictionary2 = [
-            "nameTxt":self.nameTxt, "descriptionTxt":self.descriptionTxtView,"searchBar":searchBar, "searchTable":self.customerTableView] as [String:Any]
+            "nameTxt":self.nameTxt, "descriptionTxt":self.descriptionTxtView] as [String:Any]
         
         self.nameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[nameTxt]-|", options: [], metrics: nil, views: viewsDictionary2))
         self.nameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[descriptionTxt]-|", options: [], metrics: nil, views: viewsDictionary2))
-        self.nameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchBar]-|", options: [], metrics: nil, views: viewsDictionary2))
-         self.nameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchTable]-|", options: [], metrics: nil, views: viewsDictionary2))
-        
-        self.nameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameTxt(30)]-[descriptionTxt(60)]-10-[searchBar(30)][searchTable]-|", options: [], metrics: nil, views: viewsDictionary2))
         
         
-        
-        /*
-        
-        //auto layout group
-        let viewsDictionary3 = [
-            "descriptionTxtView":self.descriptionTxtView, "submitBtn":self.submitBtn] as [String:Any]
-        
-        self.descriptionView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[descriptionTxtView]-|", options: [], metrics: nil, views: viewsDictionary3))
-        self.descriptionView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary3))
-        
-        self.descriptionView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[descriptionTxtView(100)][submitBtn(30)]-|", options: [], metrics: nil, views: viewsDictionary3))
-        */
+        self.nameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameTxt(30)]-[descriptionTxt(60)]", options: [], metrics: nil, views: viewsDictionary2))
         
         
         
         
-      
         
         
+        if(self.ids.count > 0){
+            print("adding search bar")
+            searchBar = UISearchBar()
+            searchBar.placeholder = "Customer..."
+            searchBar.translatesAutoresizingMaskIntoConstraints = false
+            
+            
+            searchBar.layer.cornerRadius = 4
+            searchBar.clipsToBounds = true
+            searchBar.backgroundColor = UIColor.white
+            searchBar.barTintColor = UIColor.clear
+            
+            searchBar.searchBarStyle = UISearchBarStyle.minimal
+            
+            searchBar.delegate = self
+            
+            self.nameView.addSubview(searchBar)
+            
+            
+            self.resultsTableView.delegate  =  self
+            self.resultsTableView.dataSource = self
+            
+            //might want to change to custom linkCell class
+            self.resultsTableView.register(CustomerTableViewCell.self, forCellReuseIdentifier: "cell")
+            
+            
+            self.resultsTableView.alpha = 0.0
+            self.nameView.addSubview(self.resultsTableView)
+            
+            
+            let viewsDictionary3 = ["searchBar":searchBar, "searchTable":self.resultsTableView] as [String:Any]
+            
+            
+            self.nameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchBar]-|", options: [], metrics: nil, views: viewsDictionary3))
+            
+            self.nameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchTable]-|", options: [], metrics: nil, views: viewsDictionary3))
+            
+            
+             self.nameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-110-[searchBar(30)][searchTable]-|", options: [], metrics: nil, views: viewsDictionary3))
+            
+        }
+
+    
         let progressDictionary = [
             "bar":self.progressView,
             "label":self.progressLbl
@@ -421,12 +432,7 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
     func saveData(){
         print("Save Data")
         
-        
-        
-        
-        
         var createdBy:String = ""
-        
         
         if(appDelegate.loggedInEmployee?.ID == ""){
             createdBy = "0"
@@ -443,12 +449,7 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
             nameString = self.nameTxt.text!
             
             if(nameString.isAlphanumeric == false && !nameString.isEmpty){
-                
-                
-                
-                
                 let alertController = UIAlertController(title: "Bad Name", message: "Names may only contain alphanumeric characters", preferredStyle: UIAlertControllerStyle.alert)
-                
                 let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
                     (result : UIAlertAction) -> Void in
                     print("OK")
@@ -456,14 +457,6 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
                 alertController.addAction(okAction)
                 self.present(alertController, animated: true, completion: nil)
                 return
-                
-                
-                
-                
-                
-                
-                
-                
             }
         }
         
@@ -474,57 +467,36 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
         }else{
             descriptionString = self.descriptionTxtView.text!
             
-            /*
-            if(descriptionString.isAlphanumeric == false && !descriptionString.isEmpty){
-                
-                
-                let alertController = UIAlertController(title: "Bad Description", message: "Descriptions may only contain alphanumeric characters", preferredStyle: UIAlertControllerStyle.alert)
-                
-                let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
-                    (result : UIAlertAction) -> Void in
-                    print("OK")
-                }
-                alertController.addAction(okAction)
-                self.present(alertController, animated: true, completion: nil)
- 
-                
-                return
-                
-                
-                
-            }
-*/
-            
-            
         }
         
         showProgressScreen()
         
         var parameters:[String:String]
         parameters = [
+            "ID":ID,
+            "status":"0",
             "createdBy":createdBy,
-            "customer": selectedCustID,
-            "name": nameString,
-            "desc"      : descriptionString,
-            "width"      : "\(self.imageView.image!.fixedOrientation().size.width)",
-            "height"      : "\(self.imageView.image!.fixedOrientation().size.height)"
+            "name":nameString,
+            "desc":descriptionString,
+            "custID":custID,
+            "woID":woID
         ]
-        
-        
+
         print("parameters = \(parameters)")
         
-        let URL = try! URLRequest(url: "http://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php", method: .post, headers: nil)
+        let URL = try! URLRequest(url: self.saveURLString, method: .post, headers: nil)
         
         Alamofire.upload(multipartFormData: { (multipartFormData) in
             print("alamofire upload")
-            
-           
-            
-                multipartFormData.append(UIImageJPEGRepresentation(self.imageView.image!.fixedOrientation(), 0.85)!, withName: "pic", fileName: "swift_file.jpeg", mimeType: "image/jpg")
-            
             for (key, value) in parameters {
                 multipartFormData.append(value.data(using: String.Encoding.utf8)!, withName: key)
             }
+            for (image) in self.images {
+                if  let imageData = UIImageJPEGRepresentation(image, 0.85) {
+                    multipartFormData.append(imageData, withName: "pic", fileName: "swift_file.jpeg", mimeType: "image/jpeg")
+                }
+            }
+            print("multipartFormData = \(multipartFormData)")
         }, with: URL, encodingCompletion: { (result) in
             
             print("result = \(result)")
@@ -541,11 +513,6 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
                         if  (Progress.fractionCompleted == 1.0) {
                             print("upload finished")
                            
-                            
-                            
-                            
-                            
-                            
                         }
                     }
                     
@@ -557,8 +524,6 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
                     print(response.data ?? "")     // server data
                     print(response.result)   // result of response serialization
                     
-                    
-                    
                     if let result = response.result.value {
                         let json = result as! NSDictionary
                         print("return image json = \(json)")
@@ -569,33 +534,22 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
                         let thumbPath = "\(thumbBase)\(JSON(json)["images"][0]["fileName"].stringValue)"
                         let rawPath = "\(rawBase)\(JSON(json)["images"][0]["fileName"].stringValue)"
                         
+                        print("name = \(JSON(json)["images"][0]["name"].stringValue)")
+                        print("thumbPath = \(thumbPath)")
                         
-                         let image = Image(_id: JSON(json)["images"][0]["ID"].stringValue, _thumbPath: thumbPath, _rawPath: rawPath, _name: JSON(json)["images"][0]["name"].stringValue, _width: JSON(json)["images"][0]["width"].stringValue, _height: JSON(json)["images"][0]["height"].stringValue, _description: JSON(json)["images"][0]["description"].stringValue, _customer: JSON(json)["images"][0]["customer"].stringValue, _dateAdded: JSON(json)["images"][0]["dateAdded"].stringValue, _createdBy: JSON(json)["images"][0]["createdBy"].stringValue, _type: JSON(json)["images"][0]["type"].stringValue, _tags: JSON(json)["images"][0]["tags"].stringValue)
+                         let image = Image(_id: JSON(json)["images"][0]["ID"].stringValue, _thumbPath: thumbPath, _rawPath: rawPath, _name: JSON(json)["images"][0]["name"].stringValue, _width: JSON(json)["images"][0]["width"].stringValue, _height: JSON(json)["images"][0]["height"].stringValue, _description: JSON(json)["images"][0]["description"].stringValue, _customer: JSON(json)["images"][0]["customer"].stringValue, _woID: JSON(json)["images"][0]["woID"].stringValue, _dateAdded: JSON(json)["images"][0]["dateAdded"].stringValue, _createdBy: JSON(json)["images"][0]["createdBy"].stringValue, _type: JSON(json)["images"][0]["type"].stringValue, _tags: JSON(json)["images"][0]["tags"].stringValue)
                         
-                        
-                         self.hideProgressScreen()
-                        
-                        self.delegate.refreshImages(_image: image, _scoreAdjust: JSON(json)["scoreAdjust"].intValue)
-                        
-                        
-                        
-                        
-                                               
-                        
-                        
-                        
+                        self.hideProgressScreen()
+                    
+                        //may need index of image in list so we can update list
+                       // self.delegate.refreshImages(_imageIndex:self.imageIndex,_image: image, _scoreAdjust: JSON(json)["scoreAdjust"].intValue)
+                    
                     }
-                    
-                    
-                    
-                    
                 }
                 
                 upload.responseString { response in
                     debugPrint("RESPONSE: \(response)")
                 }
-                
-                
                 
             case .failure(let encodingError):
                 print(encodingError)
@@ -800,10 +754,10 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
         
          if (searchText.characters.count == 0) {
          print("search empty")
-         selectedCustID = "0"
-         self.customerTableView.alpha = 0.0
+         linkID = "0"
+         self.resultsTableView.alpha = 0.0
          }else{
-         self.customerTableView.alpha = 1.0
+         self.resultsTableView.alpha = 1.0
         }
         
 
@@ -826,17 +780,17 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
  */
     
     func filterSearchResults(){
-        customersSearchResults = []
+        searchResults = []
        
-            self.customersSearchResults = self.names.filter({( aCustomer: String ) -> Bool in
+            self.searchResults = self.names.filter({( aCustomer: String ) -> Bool in
                 return (aCustomer.lowercased().range(of: searchBar.text!.lowercased()) != nil)            })
-                   self.customerTableView.reloadData()
+                   self.resultsTableView.reloadData()
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         //print("searchBarTextDidBeginEditing")
         //shouldShowSearchResults = true
-        self.customerTableView.reloadData()
+        self.resultsTableView.reloadData()
         /*
         
         self.customerTableView.alpha = 1.0
@@ -879,7 +833,7 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         //if !shouldShowSearchResults {
             //shouldShowSearchResults = true
-            self.customerTableView.reloadData()
+            self.resultsTableView.reloadData()
        // }
         searchBar.resignFirstResponder()
     }
@@ -950,7 +904,7 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //print("numberOfRowsInSection")
         //if shouldShowSearchResults{
-            return self.customersSearchResults.count
+            return self.searchResults.count
        // } else {
            // return sections[section].length
         //}
@@ -962,15 +916,15 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = customerTableView.dequeueReusableCell(withIdentifier: "cell") as! CustomerTableViewCell
+        let cell = resultsTableView.dequeueReusableCell(withIdentifier: "cell") as! CustomerTableViewCell
         
         //let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as UITableViewCell?
         
         
-        customerTableView.rowHeight = 50.0
+        resultsTableView.rowHeight = 50.0
        
-                cell.nameLbl.text = self.customersSearchResults[indexPath.row]
-                cell.name = self.customersSearchResults[indexPath.row]
+                cell.nameLbl.text = self.searchResults[indexPath.row]
+                cell.name = self.searchResults[indexPath.row]
                 if let i = self.names.index(of: cell.nameLbl.text!) {
                     //print("\(cell.nameLbl.text!) is at index \(i)")
                    
@@ -991,14 +945,18 @@ class ImageUploadViewController: UIViewController, UITextFieldDelegate, UITextVi
         let currentCell = tableView.cellForRow(at: indexPath!) as! CustomerTableViewCell
         
         
-        selectedCustID = currentCell.id
+        linkID = currentCell.id
         
-        print("selectedCustID = \(selectedCustID)")
+        if(imageType == "Gallery"){
+            custID = currentCell.id
+        }
+        
+        print("selectedCustID = \(linkID)")
         
         
         
         tableView.deselectRow(at: indexPath!, animated: true)
-         self.customerTableView.alpha = 0.0
+         self.resultsTableView.alpha = 0.0
         searchBar.text = currentCell.name
         searchBar.resignFirstResponder()
     }
