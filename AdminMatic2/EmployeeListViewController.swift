@@ -11,12 +11,15 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
+//import Nuke
 
 
 class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource{
     
     var layoutVars:LayoutVars = LayoutVars()
     var employeeTableView: TableView!
+    var groupMessageBtn:Button = Button(titleText: "Group Text Message")
+
     var employeeViewController:EmployeeViewController!
     
     override func viewDidLoad() {
@@ -43,18 +46,31 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         self.employeeTableView.register(EmployeeTableViewCell.self, forCellReuseIdentifier: "cell")
         self.view.addSubview(self.employeeTableView)
         
+        self.groupMessageBtn.addTarget(self, action: #selector(EmployeeListViewController.groupMessage), for: UIControlEvents.touchUpInside)
+        
+       // self.groupMessageBtn.frame = CGRect(x:0, y: self.view.frame.height - 50, width: self.view.frame.width - 100, height: 50)
+       // self.groupMessageBtn.translatesAutoresizingMaskIntoConstraints = true
+       // self.groupMessageBtn.layer.borderColor = UIColor.white.cgColor
+        //self.groupMessageBtn.layer.borderWidth = 1.0
+        self.view.addSubview(self.groupMessageBtn)
+        
+        
+        
+        
         //auto layout group
         let viewsDictionary = [
             
-            "view2":self.employeeTableView
+            "empTable":self.employeeTableView,
+            "groupMessageBtn":self.groupMessageBtn
         ] as [String : Any]
         
         let sizeVals = ["width": layoutVars.fullWidth,"height": self.view.frame.size.height ,"navBarHeight":self.layoutVars.navAndStatusBarHeight] as [String : Any]
         
         //////////////   auto layout position constraints   /////////////////////////////
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[view2(height)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[empTable(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[groupMessageBtn(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[empTable][groupMessageBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
     }
     
@@ -74,10 +90,10 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         let cell:EmployeeTableViewCell = employeeTableView.dequeueReusableCell(withIdentifier: "cell") as! EmployeeTableViewCell
         
-        cell.imageView?.image = nil
+        //cell.imageView?.image = nil
         
         cell.employee = appDelegate.employeeArray[indexPath.row]
-        
+        cell.activityView.startAnimating()
         
         //print("setImageUrl http://atlanticlawnandgarden.com/uploads/general/thumbs/\(cell.employee.pic!)")
         cell.nameLbl.text = cell.employee.name
@@ -85,6 +101,11 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         //print("setImageUrl http://atlanticlawnandgarden.com/uploads/general/thumbs/\(cell.employee.pic!)")
         
         cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+cell.employee.pic!)
+        
+        
+        
+        
+        
         return cell;
     }
     
@@ -138,6 +159,19 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         // you need to implement this method too or you can't swipe to display the actions
+    }
+    
+    func groupMessage(){
+        print("group message")
+        
+        let groupMessageViewController = GroupMessageViewController()
+        
+        
+        //tableView.deselectRow(at: indexPath!, animated: true)
+        
+        navigationController?.pushViewController(groupMessageViewController, animated: false )
+        
+        
     }
     
 

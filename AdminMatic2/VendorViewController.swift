@@ -329,14 +329,20 @@ for i in 0 ..< contactCount {
         
         self.vendorView.addSubview(self.vendorAddressBtn)
         
+        print("vendor view layoutViews 5")
         
+         mapView = MKMapView()
+        mapView.translatesAutoresizingMaskIntoConstraints = false
         
-        mapView = MKMapView()
+        if(self.vendor.lat != ""){
+            
+        
+       
         mapView.setCenter(CLLocationCoordinate2D(latitude: Double(self.vendor.lat)!,longitude:
             Double(self.vendor.lng)!), animated: true)
         
        
-        mapView.translatesAutoresizingMaskIntoConstraints = false
+        
         let location = CLLocationCoordinate2D(
             latitude: Double(self.vendor.lat)!,
             longitude: Double(self.vendor.lng)!
@@ -353,6 +359,8 @@ for i in 0 ..< contactCount {
         //annotation.subtitle = "Honduras"
         
         mapView.addAnnotation(annotation)
+        
+        }
         
         
         self.vendorView.addSubview(mapView)
@@ -374,7 +382,7 @@ for i in 0 ..< contactCount {
         
         
         
-        
+        print("vendor view layoutViews 6")
         
         //auto layout group
         let vendorsViewsDictionary = [

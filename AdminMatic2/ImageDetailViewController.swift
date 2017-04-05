@@ -143,24 +143,9 @@ class ImageDetailViewController: UIViewController{
         self.textView = UIView()
         self.textView.translatesAutoresizingMaskIntoConstraints = false
         self.textView.backgroundColor = UIColor(hex: 0x005100, op: 0.6)
-        //self.view.addSubview(self.textView)
        
         self.createdByLbl = Label(text: "by: \(self.image.createdBy!)")
         self.createdByLbl.textColor = UIColor.white
-        //self.textView.addSubview(self.createdByLbl)
-        
-        //if(image.createdBy == appDelegate.loggedInEmployee?.ID){
-            //self.editButton = Button(titleText: "Edit")
-            //self.customerBtn.contentHorizontalAlignment = .left
-           
-            
-            //self.editButton.addTarget(self, action: #selector(ImageDetailViewController.edit), for: UIControlEvents.touchUpInside)
-            
-            
-            //self.view.addSubview(editButton)
-       // }
-
-        
         
         
         
@@ -192,7 +177,7 @@ class ImageDetailViewController: UIViewController{
         
         self.descriptionLbl.translatesAutoresizingMaskIntoConstraints = false
         
-        self.tagsLbl = Label(text: self.image.tags!)
+        self.tagsLbl = Label(text: self.image.tags)
         self.tagsLbl.textColor = UIColor.white
 
         activityView.startAnimating()

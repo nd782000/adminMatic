@@ -10,35 +10,29 @@
 
 import Foundation
 import UIKit
+import Nuke
 
 
 class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelegate, UITextViewDelegate {
     
+    var layoutVars:LayoutVars = LayoutVars()
+
     //data object
     var imageData:Image!
     var delegate:ImageUploadPrepDelegate!
     var indexPath:IndexPath!
     
     var selectedImageView:UIImageView = UIImageView()
-   // var activityView:UIActivityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
-
-    
-    //var nameTxt:UITextField = UITextField()
-    //var namePlaceHolder:String = "Name..."
+   var activityView:UIActivityIndicatorView!
     
     var descriptionTxt: UITextView = UITextView()
     var descriptionPlaceHolder:String = "Caption..."
     
+    var editLbl:Label!
     
     
+    var addImagesLbl:Label = Label()
     
-    var layoutVars:LayoutVars = LayoutVars()
-    
-    
-    
-   
-    
-   
     
     
     override init(frame: CGRect) {
@@ -56,31 +50,49 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
     func layoutViews(){
         print("cell layout")
         
-    
-        //contentView.layer.borderWidth = 2.0
-        //contentView.layer.borderColor = UIColor.red.cgColor
-        
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+
         
         self.selectedImageView.layer.cornerRadius = 5.0
-        //self.selectedImageView.layer.borderWidth = 1
-        //self.selectedImageView.layer.borderColor = layoutVars.borderColor
         self.selectedImageView.contentMode = .scaleAspectFill
         self.selectedImageView.clipsToBounds = true
         self.selectedImageView.translatesAutoresizingMaskIntoConstraints = false
         self.contentView.addSubview(self.selectedImageView)
         
-        self.selectedImageView.image = self.imageData.image
+        
+        activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        activityView.center = CGPoint(x: self.contentView.frame.size.width / 2, y: self.contentView.frame.size.height / 2)
+        contentView.addSubview(activityView)
         
         
-        //activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
-       // activityView.center = CGPoint(x: self.contentView.frame.size.width / 2, y: self.contentView.frame.size.height / 2)
-       // contentView.addSubview(activityView)
+        
+        
+        print("self.imageData.ID = \(self.imageData.ID)")
+        if(self.imageData.ID == "0"){
+            self.selectedImageView.image = self.imageData.image
+            self.activityView.stopAnimating()
+        }else{
+            
+            
+            let imgURL:URL = URL(string: self.imageData.rawPath)!
+            
+            //print("imgURL = \(imgURL)")
+            
+            
+            
+            Nuke.loadImage(with: imgURL, into: self.selectedImageView){ [weak contentView] in
+                //print("nuke loadImage")
+                self.selectedImageView.handle(response: $0, isFromMemoryCache: $1)
+                self.activityView.stopAnimating()
+                
+            }
 
+            
+            
+        }
+        
         
        
-        
-      
-        //self.groupDescriptionTxt = UITextView()
         self.descriptionTxt.text = descriptionPlaceHolder
         self.descriptionTxt.textColor = UIColor.lightGray
         
@@ -98,10 +110,50 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
         
         
         
+        self.editLbl = Label(text: "Tap to Edit")
+        //self.editBtn.backgroundColor = UIColor.clear
+        self.editLbl.backgroundColor = UIColor.clear
+        self.editLbl.textColor = UIColor.white
+        self.editLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.editLbl.textAlignment = .left
         
         
-         print("cell layout 2")
+        let editIcon:UIImageView = UIImageView()
+        editIcon.backgroundColor = UIColor.clear
+        editIcon.contentMode = .scaleAspectFill
+        editIcon.translatesAutoresizingMaskIntoConstraints = false
+        //editIcon.frame = CGRect(x: -36, y: -6, width: 32, height: 32)
+        let editImg = UIImage(named:"drawIcon.png")
+        editIcon.image = editImg
+        self.selectedImageView.addSubview(editIcon)
         
+        let editIcon2:UIImageView = UIImageView()
+        editIcon2.backgroundColor = UIColor.clear
+        editIcon2.contentMode = .scaleAspectFill
+        editIcon2.translatesAutoresizingMaskIntoConstraints = false
+        //editIcon.frame = CGRect(x: -36, y: -6, width: 32, height: 32)
+        let editImg2 = UIImage(named:"cropIcon.png")
+        editIcon2.image = editImg2
+        self.selectedImageView.addSubview(editIcon2)
+        
+        
+        self.selectedImageView.addSubview(self.editLbl)
+        
+        
+        if(self.imageData.ID != "0"){
+            editIcon.isHidden = true
+            editIcon2.isHidden = true
+            self.editLbl.isHidden = true
+            
+            self.descriptionTxt.isEditable = false
+            self.descriptionTxt.text = self.imageData.description
+            self.descriptionTxt.textColor = UIColor.black
+        }
+
+        
+
+        print("cell layout constraints")
+
         let viewsDictionary = ["pic":self.selectedImageView,"desc":descriptionTxt] as [String : Any]
         
         
@@ -110,15 +162,59 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
       
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[desc]-10-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[pic(160)][desc]-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[pic(190)][desc]-|", options: [], metrics: nil, views: viewsDictionary))
         
-         print("cell layout 3")
+        
+        
+        let viewsDictionary2 = ["editIcon":editIcon,"editIcon2":editIcon2, "editLbl":self.editLbl] as [String : Any]
+        
+        
+        
+        selectedImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[editIcon(20)]-[editIcon2(20)]-[editLbl(100)]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
+        
+        
+        selectedImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[editIcon(20)]-|", options: [], metrics: nil, views: viewsDictionary2))
+         selectedImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[editIcon2(20)]-|", options: [], metrics: nil, views: viewsDictionary2))
+        selectedImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[editLbl(40)]-|", options: [], metrics: nil, views: viewsDictionary2))
+        
+        print("cell layout finish constraints")
+        
+        
     }
+    
+    
+    func layoutViewsAdd(){
+        print("cell layout Add")
+         self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        self.selectedImageView.image = nil
+        
+        self.addImagesLbl.text = "Add Images"
+        self.addImagesLbl.backgroundColor = UIColor(hex: 0x005100, op: 1.0)
+        self.addImagesLbl.layer.cornerRadius = 4.0
+        self.addImagesLbl.clipsToBounds = true
+        self.addImagesLbl.textAlignment = .center
+        contentView.addSubview(self.addImagesLbl)
+        
+        /*if(self.imageData.ID != "0"){
+            self.addImagesLbl.isHidden = true
+        }
+        */
+        
+        let viewsDictionary = ["addBtn":self.addImagesLbl] as [String : Any]
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[addBtn]-10-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[addBtn(40)]", options: [], metrics: nil, views: viewsDictionary))
+        
+        }
+
+    
+    
+    
     
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if(text == "\n") {
-            //nameTxt.resignFirstResponder()
             
             delegate.updateDescription(_index:indexPath.row, _description:descriptionTxt.text)
             
@@ -131,11 +227,7 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
     
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        
-        //var indexPath: IndexPath? {
-          //  return (superview as? UITableView)?.indexPath(for: self)
-        //}
-        
+        print("textViewDidBeginEditing")
         self.delegate.scrollToCell(_indexPath: self.indexPath)
         if self.descriptionTxt.textColor == UIColor.lightGray {
             self.descriptionTxt.text = nil
@@ -161,6 +253,20 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
         return false
     }
     
-
     
+    func setText(){
+        
+        if(imageData.description != "No description provided."){
+            self.descriptionTxt.text = imageData.description
+            self.descriptionTxt.textColor = UIColor.black
+        }
+        
+        if self.descriptionTxt.text.isEmpty {
+            self.descriptionTxt.text = descriptionPlaceHolder
+            self.descriptionTxt.textColor = UIColor.lightGray
+        }
+        
+        
+        
+    }
 }

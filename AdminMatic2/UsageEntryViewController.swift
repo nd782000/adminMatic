@@ -877,21 +877,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         if(usageToLogJSON.count > 0){
             indicator = SDevIndicator.generate(self.view)!
             
-            
-            /*
-            //cache buster
-            let now = Date()
-            let timeInterval = now.timeIntervalSince1970
-            let timeStamp = Int(timeInterval)
-            //, "cb":timeStamp as AnyObject
-            
-            
-            Alamofire.request(API.Router.updateUsage([
-                "usageToLog": "\(usageToLogJSON)" as AnyObject
-                , "cb":timeStamp as AnyObject]))
- 
- */
-                
+              
                 
             var parameters:[String:String]
             parameters = [

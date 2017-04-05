@@ -113,11 +113,16 @@ class FieldNoteViewController: UIViewController, UIImagePickerControllerDelegate
         self.imageView.contentMode = .scaleAspectFill
         self.imageView.isUserInteractionEnabled = true
     
+        
+        /*
         if(self.fieldNote.pic == "0"){
             setBlankImage()
         }else{
             setImageUrl(_url: self.fieldNote.pic)
         }
+ 
+ */
+        
         
         self.imageView.clipsToBounds = true
         
@@ -146,12 +151,16 @@ class FieldNoteViewController: UIViewController, UIImagePickerControllerDelegate
         self.drawButton = Button(titleText: "Doodler")
         self.drawButton.addTarget(self, action: #selector(FieldNoteViewController.draw), for: UIControlEvents.touchUpInside)
         
+        
+        /*
         if(self.fieldNote.pic == "0"){
             self.drawButton.isEnabled = false
             self.drawButton.alpha = 0.0
         }
         
         self.view.addSubview(self.drawButton)
+ */
+        
         
         
         self.submitNoteButton = Button(titleText: "Submit Note")
@@ -508,10 +517,10 @@ class FieldNoteViewController: UIViewController, UIImagePickerControllerDelegate
                             
                             
                             
-                            let fieldNote = FieldNote(_ID: fieldNotesJSON[n]["ID"].stringValue, _note: fieldNotesJSON[n]["note"].stringValue, _customerID: fieldNotesJSON[n]["customerID"].stringValue, _workOrderID: fieldNotesJSON[n]["workOrderID"].stringValue, _createdBy: fieldNotesJSON[n]["createdBy"].stringValue, _status: fieldNotesJSON[n]["status"].stringValue, _pic: picUrl, _thumb: thumbUrl)
+                          //  let fieldNote = FieldNote(_ID: fieldNotesJSON[n]["ID"].stringValue, _note: fieldNotesJSON[n]["note"].stringValue, _customerID: fieldNotesJSON[n]["customerID"].stringValue, _workOrderID: fieldNotesJSON[n]["workOrderID"].stringValue, _createdBy: fieldNotesJSON[n]["createdBy"].stringValue, _status: fieldNotesJSON[n]["status"].stringValue, _pic: picUrl, _thumb: thumbUrl)
                             
                             
-                            self.fieldNotes.append(fieldNote)
+                           // self.fieldNotes.append(fieldNote)
                             
                         }
                         
@@ -533,7 +542,7 @@ class FieldNoteViewController: UIViewController, UIImagePickerControllerDelegate
                     }
                     
                     if((self.delegate) != nil){
-                        self.delegate.updateTable(_fieldNotes: self.fieldNotes)
+                       // self.delegate.updateTable(_fieldNotes: self.fieldNotes)
                     }
                     
                     

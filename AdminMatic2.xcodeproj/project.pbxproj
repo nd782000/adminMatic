@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		010937B61E801B91007865FB /* ImageUploadProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010937B51E801B91007865FB /* ImageUploadProgressViewController.swift */; };
 		010937BE1E802313007865FB /* ImageUploadProgressTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010937BD1E802313007865FB /* ImageUploadProgressTableViewCell.swift */; };
+		010937C01E81EE24007865FB /* ImageCroppingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010937BF1E81EE24007865FB /* ImageCroppingViewController.swift */; };
+		0109382B1E835394007865FB /* CustomImageCropperOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0109382A1E835394007865FB /* CustomImageCropperOverlayView.swift */; };
 		0116A7FB1E1DD4B7002C5051 /* ScheduleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0116A7FA1E1DD4B7002C5051 /* ScheduleTableViewCell.swift */; };
 		0125B6D41E26AE2500BAC949 /* NetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0125B6D31E26AE2500BAC949 /* NetData.swift */; };
 		0125B6D91E26B10E00BAC949 /* ImageDrawingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0125B6D81E26B10E00BAC949 /* ImageDrawingViewController.swift */; };
@@ -40,6 +42,11 @@
 		015231BB1E1D69FF009949BD /* LogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015231BA1E1D69FF009949BD /* LogInView.swift */; };
 		015B9AF01E27D4C50020FB58 /* TaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015B9AEF1E27D4C50020FB58 /* TaskTableViewCell.swift */; };
 		015B9AF71E27DDFD0020FB58 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015B9AF61E27DDFD0020FB58 /* Date.swift */; };
+		0160A1B21E873F3D00C2AB4A /* ImageSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0160A1B11E873F3D00C2AB4A /* ImageSettingsViewController.swift */; };
+		0160A1B41E89BD2D00C2AB4A /* BugsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0160A1B31E89BD2C00C2AB4A /* BugsListViewController.swift */; };
+		0160A1B61E89EA8400C2AB4A /* Bug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0160A1B51E89EA8400C2AB4A /* Bug.swift */; };
+		0160A1B81E89F98200C2AB4A /* BugTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0160A1B71E89F98200C2AB4A /* BugTableViewCell.swift */; };
+		0160A1BA1E8A08B900C2AB4A /* BugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0160A1B91E8A08B800C2AB4A /* BugViewController.swift */; };
 		016634171E33F496002F7763 /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016634161E33F496002F7763 /* ContactTableViewCell.swift */; };
 		0166341C1E33F510002F7763 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0166341B1E33F510002F7763 /* Contact.swift */; };
 		0166341E1E340F48002F7763 /* ItemListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0166341D1E340F48002F7763 /* ItemListViewController.swift */; };
@@ -54,6 +61,7 @@
 		01A1F2F41E0704FF00DCCB39 /* AdminMatic2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A1F2F31E0704FF00DCCB39 /* AdminMatic2Tests.swift */; };
 		01A1F2FF1E0704FF00DCCB39 /* AdminMatic2UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A1F2FE1E0704FF00DCCB39 /* AdminMatic2UITests.swift */; };
 		01A1F33D1E0708CA00DCCB39 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 01A1F33C1E0708CA00DCCB39 /* Podfile */; };
+		01A81E5A1E92FC090089B55F /* GroupMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A81E591E92FC090089B55F /* GroupMessageViewController.swift */; };
 		01D9AD971E6DD14900BD35AE /* UnderConstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */; };
 		01DC79371E2803BB0022566C /* UsageEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DC79361E2803BB0022566C /* UsageEntryViewController.swift */; };
 		01DC793E1E2805200022566C /* UsageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DC793D1E2805200022566C /* UsageTableViewCell.swift */; };
@@ -67,7 +75,6 @@
 		01DDE0731E071FEC002C0F8B /* EmployeeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DDE0721E071FEC002C0F8B /* EmployeeTableViewCell.swift */; };
 		01E01C1A1E7DB54D00385B86 /* ImageUploadPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E01C191E7DB54C00385B86 /* ImageUploadPrepViewController.swift */; };
 		01E01C2F1E7E05F400385B86 /* ImageUploadPrepCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E01C2E1E7E05F400385B86 /* ImageUploadPrepCollectionViewCell.swift */; };
-		01E01C391E7F0FB000385B86 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E01C381E7F0FB000385B86 /* File.swift */; };
 		01EC4E6C1E1DDA90009CE261 /* WorkOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EC4E6B1E1DDA90009CE261 /* WorkOrder.swift */; };
 		01EC4E731E1DDBBD009CE261 /* ScheduleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EC4E721E1DDBBD009CE261 /* ScheduleViewController.swift */; };
 		01EC4E751E1EF8BC009CE261 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EC4E741E1EF8BC009CE261 /* HomeViewController.swift */; };
@@ -77,6 +84,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		010938331E835396007865FB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 89BE067CC1619910965A41302F50C625;
+			remoteInfo = AKImageCropperView;
+		};
 		014CC8E11E539C9B00D48A26 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
@@ -138,6 +152,8 @@
 /* Begin PBXFileReference section */
 		010937B51E801B91007865FB /* ImageUploadProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageUploadProgressViewController.swift; sourceTree = "<group>"; };
 		010937BD1E802313007865FB /* ImageUploadProgressTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageUploadProgressTableViewCell.swift; sourceTree = "<group>"; };
+		010937BF1E81EE24007865FB /* ImageCroppingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCroppingViewController.swift; sourceTree = "<group>"; };
+		0109382A1E835394007865FB /* CustomImageCropperOverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomImageCropperOverlayView.swift; sourceTree = "<group>"; };
 		0116A7FA1E1DD4B7002C5051 /* ScheduleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleTableViewCell.swift; sourceTree = "<group>"; };
 		0125B6D31E26AE2500BAC949 /* NetData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetData.swift; sourceTree = "<group>"; };
 		0125B6D81E26B10E00BAC949 /* ImageDrawingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageDrawingViewController.swift; sourceTree = "<group>"; };
@@ -169,6 +185,11 @@
 		015231BA1E1D69FF009949BD /* LogInView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogInView.swift; sourceTree = "<group>"; };
 		015B9AEF1E27D4C50020FB58 /* TaskTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTableViewCell.swift; sourceTree = "<group>"; };
 		015B9AF61E27DDFD0020FB58 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
+		0160A1B11E873F3D00C2AB4A /* ImageSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSettingsViewController.swift; sourceTree = "<group>"; };
+		0160A1B31E89BD2C00C2AB4A /* BugsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BugsListViewController.swift; sourceTree = "<group>"; };
+		0160A1B51E89EA8400C2AB4A /* Bug.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bug.swift; sourceTree = "<group>"; };
+		0160A1B71E89F98200C2AB4A /* BugTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BugTableViewCell.swift; sourceTree = "<group>"; };
+		0160A1B91E8A08B800C2AB4A /* BugViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BugViewController.swift; sourceTree = "<group>"; };
 		016634161E33F496002F7763 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
 		0166341B1E33F510002F7763 /* Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		0166341D1E340F48002F7763 /* ItemListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemListViewController.swift; sourceTree = "<group>"; };
@@ -190,6 +211,7 @@
 		01A1F3001E0704FF00DCCB39 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		01A1F33C1E0708CA00DCCB39 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		01A81E591E92FC090089B55F /* GroupMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMessageViewController.swift; sourceTree = "<group>"; };
 		01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnderConstructionViewController.swift; sourceTree = "<group>"; };
 		01DC79361E2803BB0022566C /* UsageEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsageEntryViewController.swift; sourceTree = "<group>"; };
 		01DC793D1E2805200022566C /* UsageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsageTableViewCell.swift; sourceTree = "<group>"; };
@@ -203,7 +225,6 @@
 		01DDE0721E071FEC002C0F8B /* EmployeeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmployeeTableViewCell.swift; sourceTree = "<group>"; };
 		01E01C191E7DB54C00385B86 /* ImageUploadPrepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageUploadPrepViewController.swift; sourceTree = "<group>"; };
 		01E01C2E1E7E05F400385B86 /* ImageUploadPrepCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageUploadPrepCollectionViewCell.swift; sourceTree = "<group>"; };
-		01E01C381E7F0FB000385B86 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		01EC4E6B1E1DDA90009CE261 /* WorkOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkOrder.swift; sourceTree = "<group>"; };
 		01EC4E721E1DDBBD009CE261 /* ScheduleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleViewController.swift; sourceTree = "<group>"; };
 		01EC4E741E1EF8BC009CE261 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
@@ -299,6 +320,7 @@
 		01A1F3191E07084C00DCCB39 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				010938341E835396007865FB /* AKImageCropperView.framework */,
 				01A1F31F1E07084C00DCCB39 /* Alamofire.framework */,
 				01E01C371E7E05F600385B86 /* DKImagePickerController.framework */,
 				01D9AD8C1E554E8200BD35AE /* Nuke.framework */,
@@ -313,11 +335,13 @@
 			isa = PBXGroup;
 			children = (
 				01EC4E741E1EF8BC009CE261 /* HomeViewController.swift */,
-				01E01C381E7F0FB000385B86 /* File.swift */,
 				014B02941E21577D002A41DE /* CustomerListViewController.swift */,
+				0160A1B31E89BD2C00C2AB4A /* BugsListViewController.swift */,
+				0160A1B91E8A08B800C2AB4A /* BugViewController.swift */,
 				014B029F1E2160BF002A41DE /* CustomerViewController.swift */,
 				01DC79481E292CF30022566C /* CustomerContactViewController.swift */,
 				015231AB1E1A982F009949BD /* EmployeeListViewController.swift */,
+				01A81E591E92FC090089B55F /* GroupMessageViewController.swift */,
 				015231AD1E1A9EFF009949BD /* EmployeeViewController.swift */,
 				01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */,
 				01DC79361E2803BB0022566C /* UsageEntryViewController.swift */,
@@ -334,10 +358,13 @@
 				016634271E3415FE002F7763 /* VendorListViewController.swift */,
 				016634291E341616002F7763 /* VendorViewController.swift */,
 				014CC8E31E539EB100D48A26 /* ImageCollectionViewController.swift */,
+				0160A1B11E873F3D00C2AB4A /* ImageSettingsViewController.swift */,
 				014CC8E71E53E8E900D48A26 /* ImageDetailViewController.swift */,
 				014CC8E91E53F4E000D48A26 /* ImageFullViewController.swift */,
 				01E01C191E7DB54C00385B86 /* ImageUploadPrepViewController.swift */,
 				0125B6D81E26B10E00BAC949 /* ImageDrawingViewController.swift */,
+				010937BF1E81EE24007865FB /* ImageCroppingViewController.swift */,
+				0109382A1E835394007865FB /* CustomImageCropperOverlayView.swift */,
 				010937B51E801B91007865FB /* ImageUploadProgressViewController.swift */,
 			);
 			name = Views;
@@ -370,6 +397,7 @@
 				0166341B1E33F510002F7763 /* Contact.swift */,
 				016634211E340F6D002F7763 /* Item.swift */,
 				014CC8DB1E539C9A00D48A26 /* Image.swift */,
+				0160A1B51E89EA8400C2AB4A /* Bug.swift */,
 			);
 			name = "Data Classes";
 			sourceTree = "<group>";
@@ -381,6 +409,7 @@
 				0116A7FA1E1DD4B7002C5051 /* ScheduleTableViewCell.swift */,
 				01EE1B2D1E20105A00E5E061 /* HomeCollectionViewCell.swift */,
 				014B029D1E215DB5002A41DE /* CustomerTableViewCell.swift */,
+				0160A1B71E89F98200C2AB4A /* BugTableViewCell.swift */,
 				014B02B11E2690AC002A41DE /* WoItemTableViewCell.swift */,
 				014B02B71E26A8E6002A41DE /* FieldNoteTableViewCell.swift */,
 				015B9AEF1E27D4C50020FB58 /* TaskTableViewCell.swift */,
@@ -533,6 +562,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		010938341E835396007865FB /* AKImageCropperView.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AKImageCropperView.framework;
+			remoteRef = 010938331E835396007865FB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		014CC8E21E539C9B00D48A26 /* ObjectMapper.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -660,17 +696,21 @@
 			files = (
 				014B02B21E2690AC002A41DE /* WoItemTableViewCell.swift in Sources */,
 				014B02951E21577D002A41DE /* CustomerListViewController.swift in Sources */,
+				0160A1B61E89EA8400C2AB4A /* Bug.swift in Sources */,
 				014CC8E61E53A00F00D48A26 /* ImageCollectionViewCell.swift in Sources */,
 				015231BB1E1D69FF009949BD /* LogInView.swift in Sources */,
+				0160A1B41E89BD2D00C2AB4A /* BugsListViewController.swift in Sources */,
 				014B02A81E2168DF002A41DE /* WoItem.swift in Sources */,
 				014B02B41E269403002A41DE /* FieldNoteViewController.swift in Sources */,
 				0116A7FB1E1DD4B7002C5051 /* ScheduleTableViewCell.swift in Sources */,
 				0166341C1E33F510002F7763 /* Contact.swift in Sources */,
 				01EC4E6C1E1DDA90009CE261 /* WorkOrder.swift in Sources */,
+				0160A1B21E873F3D00C2AB4A /* ImageSettingsViewController.swift in Sources */,
 				010937BE1E802313007865FB /* ImageUploadProgressTableViewCell.swift in Sources */,
 				01DC793E1E2805200022566C /* UsageTableViewCell.swift in Sources */,
 				010937B61E801B91007865FB /* ImageUploadProgressViewController.swift in Sources */,
 				01EC4E731E1DDBBD009CE261 /* ScheduleViewController.swift in Sources */,
+				01A81E5A1E92FC090089B55F /* GroupMessageViewController.swift in Sources */,
 				016634221E340F6D002F7763 /* Item.swift in Sources */,
 				014B029E1E215DB5002A41DE /* CustomerTableViewCell.swift in Sources */,
 				0125B6D91E26B10E00BAC949 /* ImageDrawingViewController.swift in Sources */,
@@ -694,6 +734,7 @@
 				016634261E3415DF002F7763 /* VendorTableViewCell.swift in Sources */,
 				01E01C1A1E7DB54D00385B86 /* ImageUploadPrepViewController.swift in Sources */,
 				014B02A41E2168C6002A41DE /* Employee.swift in Sources */,
+				0109382B1E835394007865FB /* CustomImageCropperOverlayView.swift in Sources */,
 				01DDE0651E071689002C0F8B /* API.swift in Sources */,
 				01DDE0671E0719F7002C0F8B /* LayoutVars.swift in Sources */,
 				01EE1B301E201E0C00E5E061 /* TimeEntryView.swift in Sources */,
@@ -702,6 +743,8 @@
 				014B029C1E21585A002A41DE /* Customer.swift in Sources */,
 				01DDE0731E071FEC002C0F8B /* EmployeeTableViewCell.swift in Sources */,
 				01DC79371E2803BB0022566C /* UsageEntryViewController.swift in Sources */,
+				010937C01E81EE24007865FB /* ImageCroppingViewController.swift in Sources */,
+				0160A1BA1E8A08B900C2AB4A /* BugViewController.swift in Sources */,
 				014B02A01E2160BF002A41DE /* CustomerViewController.swift in Sources */,
 				016634201E340F5A002F7763 /* ItemViewController.swift in Sources */,
 				01DC79401E2805590022566C /* UsageEntryTableViewCell.swift in Sources */,
@@ -710,12 +753,12 @@
 				01DDE0691E071BAC002C0F8B /* ViewControllerWithMenu.swift in Sources */,
 				0166341E1E340F48002F7763 /* ItemListViewController.swift in Sources */,
 				016634241E340F91002F7763 /* ItemTableViewCell.swift in Sources */,
+				0160A1B81E89F98200C2AB4A /* BugTableViewCell.swift in Sources */,
 				016634171E33F496002F7763 /* ContactTableViewCell.swift in Sources */,
 				014B02B61E269449002A41DE /* FieldNoteListViewController.swift in Sources */,
 				015231AE1E1A9EFF009949BD /* EmployeeViewController.swift in Sources */,
 				01A1F2DF1E0704FF00DCCB39 /* AppDelegate.swift in Sources */,
 				014CC8E41E539EB100D48A26 /* ImageCollectionViewController.swift in Sources */,
-				01E01C391E7F0FB000385B86 /* File.swift in Sources */,
 				014B02B81E26A8E6002A41DE /* FieldNoteTableViewCell.swift in Sources */,
 				014CC8DC1E539C9A00D48A26 /* Image.swift in Sources */,
 			);

@@ -18,6 +18,7 @@ import UIKit
 import CoreData
 import Alamofire
 import SwiftyJSON
+import Nuke
 
 protocol MenuDelegate{
     func menuChange(_ menuItem:Int)
@@ -30,12 +31,21 @@ protocol TimeEntryDelegate{
     
 }
 
+
+struct defaultsKeys {
+    static let loggedInId = ""
+    static let loggedInName = ""
+    static let loggedInPic = ""
+}
+
+
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     
     var window: UIWindow?
     
-    var layoutVars:LayoutVars!
+    var layoutVars:LayoutVars = LayoutVars()
     
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
@@ -46,6 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var employeeViewController:EmployeeViewController!
     var scheduleViewController:ScheduleViewController!
     var imageCollectionViewController:ImageCollectionViewController!
+    var bugsListViewController:BugsListViewController!
     
     
     var underConstructionViewController:UnderConstructionViewController!
@@ -58,12 +69,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var employeeArray:[Employee] = []
     
     var loggedInEmployee:Employee?
+    var loggedInEmployeeJSON: JSON!
+
     
     
     var messageView:UIView?
     var messageImageView:UIImageView = UIImageView()
     var messageLabel:InfoLabel?
    
+    
+    var defaults:UserDefaults!
     
     
     /*
@@ -74,6 +89,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
+        
+        defaults = UserDefaults.standard
+        
+        
+        
+        if(defaults.string(forKey: loggedInKeys.loggedInId) != nil){
+            print("stored login data detected")
+            if(Int(defaults.string(forKey: loggedInKeys.loggedInId)!)! > 0){
+                getLoggedInEmployeeData(_id: defaults.string(forKey: loggedInKeys.loggedInId)!)
+
+            }
+        }
+        
+        
         
         
         
@@ -92,7 +121,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         //let testEmp = Employee(_ID: "1", _name: "Tyrone Tester", _lname: "Tester", _fname: "Tyrone", _username: "tester", _pic: "", _phone: "", _depID: "", _payRate: "", _appScore: "1000000")
         //self.loggedInEmployee = testEmp
             
-        self.layoutVars = LayoutVars()
+       // self.layoutVars = LayoutVars()
         
         //cache buster
         let now = Date()
@@ -116,7 +145,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         }
                 
         
+        
         //Get employee list
+        
+        
+        /*
         Alamofire.request(API.Router.employeeList(["cb":timeStamp as AnyObject])).responseJSON() {
             response in
             
@@ -148,10 +181,59 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 
                 
             }
-            ////print("getEmployeeList JSON = \(self.employeesJson)")
+            print("getEmployeeList JSON = \(self.employees)")
             
             
         }
+        */
+        
+       // indicator = SDevIndicator.generate(self.view)!
+        
+        var parameters:[String:String]
+        parameters = ["cb":"\(timeStamp)"]
+        
+        print("parameters = \(parameters)")
+        
+        
+        
+        self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/employees.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("employee response = \(response)")
+            }
+            .responseJSON() {
+                response in
+            if let json = response.result.value {
+                self.employees = JSON(json)
+                //self.employeeListViewController.layoutViews()
+                
+                
+                
+                
+                let jsonCount = self.employees["employees"].count
+                //self.totalItems = jsonCount
+                print("JSONcount: \(jsonCount)")
+                for i in 0 ..< jsonCount {
+                    
+                    
+                    let employee = Employee(_ID: self.employees["employees"][i]["ID"].stringValue, _name: self.employees["employees"][i]["name"].stringValue, _lname: self.employees["employees"][i]["lname"].stringValue, _fname: self.employees["employees"][i]["fname"].stringValue, _username: self.employees["employees"][i]["username"].stringValue, _pic: self.employees["employees"][i]["pic"].stringValue, _phone: self.employees["employees"][i]["phone"].stringValue, _depID: self.employees["employees"][i]["depID"].stringValue, _payRate: self.employees["employees"][i]["payRate"].stringValue, _appScore: self.employees["employees"][i]["appScore"].stringValue)
+                    
+                    
+                    
+                    
+                    self.employeeArray.append(employee)
+                    
+                }
+                
+                
+                
+                
+                
+                
+            }
+        }
+        
+        print("getEmployeeList JSON = \(self.employees)")
         
         
         self.homeViewController = HomeViewController()
@@ -180,6 +262,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.imageCollectionViewController.delegate = self
         */
         
+        self.bugsListViewController = BugsListViewController()
+        self.bugsListViewController.delegate = self
+        
         self.underConstructionViewController = UnderConstructionViewController()
         self.underConstructionViewController.delegate = self
         
@@ -207,6 +292,61 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         return true
     }
+    
+    
+    
+    
+    func getLoggedInEmployeeData(_id:String){
+        
+        print("getLoggedInEmployeeData id = \(_id)")
+        // indicator = SDevIndicator.generate(self.view)!
+        
+        
+        //cache buster
+        let now = Date()
+        let timeInterval = now.timeIntervalSince1970
+        let timeStamp = Int(timeInterval)
+        //, "cb":timeStamp as AnyObject
+        
+        Alamofire.request(API.Router.employee(["empID":_id as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
+            response in
+            //print(response.request ?? "")  // original URL request
+            //print(response.response ?? "") // URL response
+            //print(response.data ?? "")     // server data
+            print(response.result)   // result of response serialization
+            
+            if let json = response.result.value {
+                print("JSON: \(json)")
+                self.loggedInEmployeeJSON = JSON(json)
+                self.parseLoggedInEmployeeJSON()
+                
+            }
+            
+            
+            
+        }
+        
+        
+        
+        
+        
+    }
+    
+    func parseLoggedInEmployeeJSON(){
+        
+        print("parseEmployeeJSON")
+        
+        let logInEmployee = Employee(_ID: self.loggedInEmployeeJSON["employees"][0]["ID"].stringValue, _name: self.loggedInEmployeeJSON["employees"][0]["name"].stringValue, _lname: self.loggedInEmployeeJSON["employees"][0]["lname"].stringValue, _fname: self.loggedInEmployeeJSON["employees"][0]["fname"].stringValue, _username: self.loggedInEmployeeJSON["employees"][0]["username"].stringValue, _pic: self.loggedInEmployeeJSON["employees"][0]["pic"].stringValue, _phone: self.loggedInEmployeeJSON["employees"][0]["phone"].stringValue, _depID: self.loggedInEmployeeJSON["employees"][0]["depID"].stringValue, _payRate: self.loggedInEmployeeJSON["employees"][0]["payRate"].stringValue, _appScore: self.loggedInEmployeeJSON["employees"][0]["appScore"].stringValue)
+        self.loggedInEmployee = logInEmployee
+        
+        
+        self.homeViewController.layoutViews()
+        
+    }
+    
+    
+    
+    
     
     
     func menuChange(_ menuItem:Int){
@@ -298,6 +438,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 requireLogIn(_destination: "equipment")
             }
 
+            
+            break;
+        case 8:
+            //print("Show  Equipment List")
+            if(loggedInEmployee != nil){
+                navigationController = UINavigationController(rootViewController: self.bugsListViewController)
+                window?.rootViewController = navigationController
+                window?.makeKeyAndVisible()
+            }else{
+                requireLogIn(_destination: "bugs")
+            }
+            
             
             break;
             
@@ -480,13 +632,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         
         
+       // let imgURL:URL = URL(string: imgUrl)!
+        Nuke.loadImage(with: imgUrl!, into: self.messageImageView){ [weak messageView] in
+            //print("nuke loadImage")
+            self.messageImageView.handle(response: $0, isFromMemoryCache: $1)
+            //self.activityView.stopAnimating()
+        }
+
+        /*
         DispatchQueue.global().async {
             let data = try? Data(contentsOf: imgUrl!) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
             DispatchQueue.main.async {
                 self.messageImageView.image = UIImage(data: data!)
             }
         }
-        
+        */
         
         
         messageImageView.contentMode = .scaleAspectFill
@@ -548,7 +708,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         
        
-        
+        /*
         
         UIView.animate(withDuration: 1.0, delay: 0.5, animations: {
             self.messageView?.alpha = 1.0
@@ -573,6 +733,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             
             
         })
+ */
         
         
         
@@ -594,6 +755,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     }
     
     */
+    
+    
+    
+        
+    
+    
     
     
     

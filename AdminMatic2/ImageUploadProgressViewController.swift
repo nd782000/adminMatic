@@ -12,6 +12,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
+import Nuke
 
 
 protocol ImageUploadProgressDelegate {
@@ -30,16 +31,13 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
     
     //data vars
     var groupImages:Bool!
-    var selectedID:String?
-    var woID:String = ""
     var imageType:String! //example: task, fieldnote, custImage, equipmentImage
     var groupDescription:String!
-    var ID:String! // taskID or fieldNoteID
     var images:[Image] = [Image]()
     var imageBatchOffset:Int = 1
     var imagesBatch:[Image] = [Image]() //temp image array for uploading
     var i = 1//index of image being uploaded
-    var saveURLString: String! //php file to save/update
+    var saveURLString: String = "https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php" //php file to save/update
     var uploadedImages:[Image] = [Image]() //upload successes that will go back to collectionView
     var scoreAdjust:Int = 0
     var uploadPrepDelegate:ImageUploadPrepDelegate!
@@ -52,18 +50,9 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
     var imageTableView:TableView = TableView()
     
     
-    init(_groupImages: Bool, _ID:String, _imageType: String, _description:String, _selectedID:String, _woID:String, _images: [Image], _saveURLString: String){
-        
-        print("ImageUploadProgress init")
-        self.groupImages = _groupImages
-        self.ID = _ID
+    init(_imageType: String, _images: [Image]){
         self.imageType = _imageType
-        self.groupDescription = _description
-        self.selectedID = _selectedID
-        self.woID = _woID
         self.images = _images
-        self.saveURLString = _saveURLString
-        
         super.init(nibName:nil,bundle:nil)
     }
     
@@ -86,9 +75,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
         navigationItem.leftBarButtonItem  = backButtonItem
         
         
-        //navigationItem.leftBarButtonItem  = nil
         navigationItem.rightBarButtonItem  = nil
-       // self.navigationItem.setHidesBackButton(true, animated:false)
         
         view.backgroundColor = layoutVars.backgroundColor
         self.layoutViews()
@@ -100,14 +87,16 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
         self.employeeView.backgroundColor = layoutVars.backgroundColor
         self.employeeView.translatesAutoresizingMaskIntoConstraints = false
         
+               
+        
         let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!)
         
-        DispatchQueue.global().async {
-            let data = try? Data(contentsOf: imgUrl!) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
-            DispatchQueue.main.async {
-                self.employeeImageView.image = UIImage(data: data!)
-            }
+        Nuke.loadImage(with: imgUrl!, into: self.employeeImageView){ [weak view] in
+            //print("nuke loadImage")
+            self.employeeImageView.handle(response: $0, isFromMemoryCache: $1)
         }
+        
+        
         
         employeeImageView.contentMode = .scaleAspectFill
         employeeImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -203,6 +192,8 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
         return cell
     }
     
+    
+    
     func returnImage(_indexPath:IndexPath,_image:Image?, _scoreAdjust:Int){
         print("return image i = \(i)")
         if(_image != nil){
@@ -221,6 +212,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
         
         if(i > self.images.count){
             self.uploadPrepDelegate.uploadComplete(_images: self.uploadedImages, _scoreAdjust: self.scoreAdjust)
+            
             let viewControllers: [UIViewController] = self.navigationController!.viewControllers as [UIViewController]
             self.navigationController!.popToViewController(viewControllers[viewControllers.count - 3], animated: false)
             i = 1

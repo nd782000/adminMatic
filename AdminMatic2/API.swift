@@ -135,11 +135,15 @@ struct API {
         
         case images([String: AnyObject])
         
+        case bugs([String: AnyObject])
+        
+        //case newAlbum([String: AnyObject])
+        
         
         var method: HTTPMethod {
             
             switch self {
-            case .fields, .employeeList, .logIn, .currentShiftByEmployee, .workOrderList:
+            case .fields, .employeeList, .logIn, .currentShiftByEmployee, .workOrderList, .bugs:
                 return .get
             case .updateUsage, .updateTaskStatus, .updateWoStatus, .images:
                 return .post
@@ -206,6 +210,10 @@ struct API {
                 return ("/functions/get/vendor.php")
             case .images:
                 return ("/functions/get/images.php?cb=\(timeStamp)")
+            case .bugs:
+                return ("/functions/get/bugs.php?cb=\(timeStamp)")
+           // case .newAlbum:
+              //  return ("/functions/new/album.php")
             }
         }
         
@@ -269,6 +277,11 @@ struct API {
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
             case .images(let parameters):
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
+            case .bugs(let parameters):
+                return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
+            //case .newAlbum(let parameters):
+               // return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
+                
             }
             ////print("urlRequest = \(urlRequest)")
             return urlRequest

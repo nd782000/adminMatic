@@ -12,7 +12,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource{
+class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, FieldNoteDelegate{
     
     var layoutVars:LayoutVars = LayoutVars()
     
@@ -56,20 +56,22 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     var usageView:UIView!
     var usageBtn:UIButton!
     
-    
-    // var phoneNumberClean:String!
-    //var itemEmailBtn:UIButton!
-    //var itemAddressBtn:UIButton!
-    // var allContactsBtn:UIButton!
+   
     
     //details view
     var detailsView:UIView!
     
     var itemDetailsTableView:TableView = TableView()
-    // var tableViewMode:String = "SCHEDULE"
     
     
     var newWoStatus:String!
+    
+    var editsMade:Bool = false
+    var tasksJson:JSON?
+    
+    var customerID:String = ""
+    
+    //var tasks: [Task] = []//data array
     
     
     
@@ -300,20 +302,8 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
         //Estimated Info
-        
-        
-        
-        
+    
         
         self.estLabel = Label()
         self.estLabel.text = "Est: "
@@ -328,8 +318,6 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         self.actualLabel.text = "Act: "
         self.estimatedView.addSubview(self.actualLabel)
         
-        
-        //let actualValue = Float(self.woItem.usageQty)!
         
         self.actualValueLabel = Label()
         self.actualValueLabel.text = self.woItem.usageQty
@@ -358,7 +346,6 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         ]  as [String:AnyObject]
         
         self.estimatedView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[estLabel][estValueLabel]-[actualLabel][actualValueLabel]-[remainLabel][remainValueLabel]-10-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: sizeVals, views: estimatedViewsDictionary))
-        //self.estimatedView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[remainLabel][remainValueLabel]-10-|", options: NSLayoutFormatOptions.AlignAllCenterY, metrics: sizeVals, views: estimatedViewsDictionary))
         self.estimatedView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[estLabel(20)]", options: [], metrics: sizeVals, views: estimatedViewsDictionary))
         self.estimatedView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[remainLabel(20)]", options: [], metrics: sizeVals, views: estimatedViewsDictionary))
         
@@ -368,8 +355,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         // profit bar vars
         let profitBarWidth = Float(100.00)
         
-        //let income = 1450.50
-        //let cost = 980.00
+      
         
         let income = Float(self.woItem.total!)
         let cost = Float(self.woItem.totalCost!)
@@ -500,7 +486,6 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         self.itemDetailsTableView.delegate  =  self
         self.itemDetailsTableView.dataSource = self
-        //self.itemDetailsTableView.rowHeight = 50.0
         
         self.itemDetailsTableView.rowHeight = UITableViewAutomaticDimension
         self.itemDetailsTableView.estimatedRowHeight = 100.0
@@ -552,8 +537,13 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         
         var count:Int!
+        print("self.woItem.chargeID = \(self.woItem.chargeID)")
+        if(self.woItem.chargeID != "2"){
+            count = self.woItem.tasks.count + 1
+        }else{
+            count = self.woItem.tasks.count
+        }
         
-        count = self.woItem.tasks.count
         //////////print("schedule count = \(count)", terminator: "")
         
         
@@ -567,29 +557,25 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         let cell = itemDetailsTableView.dequeueReusableCell(withIdentifier: "cell") as! TaskTableViewCell
         cell.prepareForReuse()
         
-        // cell.resetCell("CUSTOMER")
-        cell.task = self.woItem.tasks[indexPath.row]
-        //cell.taskNumberLbl.text = self.woItem.tasks[indexPath.row].sort
-        cell.taskLbl.text = self.woItem.tasks[indexPath.row].task
         
-        cell.setStatus(status: self.woItem.tasks[indexPath.row].status)
-        
-        
-        
-        if(self.woItem.tasks[indexPath.row].pic != "0"){
-            // //print("image")
-            
-            ////print("url verified http://atlanticlawnandgarden.com/uploads/general/thumbs/\(self.fieldNotes[indexPath.row].thumb!)")
-            cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/\(self.woItem.tasks[indexPath.row].thumb!)")
-            //}else{
-            // cell.setBlankImage()
-            // }
-            
+        if(indexPath.row == self.woItem.tasks.count){
+            //cell add btn mode
+            cell.layoutAddBtn()
         }else{
-            ////print("no image")
             
-            cell.setBlankImage()
+            cell.task = self.woItem.tasks[indexPath.row]
+            cell.layoutViews()
+            
+            cell.taskLbl.text = self.woItem.tasks[indexPath.row].task
+            cell.setStatus(status: self.woItem.tasks[indexPath.row].status)
+            if(self.woItem.tasks[indexPath.row].images.count > 0){
+                cell.setImageUrl(_url: "\(self.woItem.tasks[indexPath.row].images[0].thumbPath!)")
+            }else{
+                cell.setBlankImage()
+            }
+            
         }
+        
         
         
         
@@ -604,9 +590,15 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //////print("You selected cell #\(indexPath.row)!")
         
-        let indexPath = tableView.indexPathForSelectedRow;
+        //let indexPath = tableView.indexPathForSelectedRow;
+        if(indexPath.row == self.woItem.tasks.count){
+            self.addTask()
+        }else{
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
         
-        tableView.deselectRow(at: indexPath!, animated: true)
+        
+        
         
     }
     
@@ -636,17 +628,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             
             
             
-          
-            //_ = Alamofire.request(API.Router.changeField(["id":ID as AnyObject, "val": "1" as AnyObject, "field":"status" as AnyObject, "tableName":"projects" as AnyObject, "table":"tasks" as AnyObject,"string":"false" as AnyObject]))
-            
-            /*
-            //cache buster
-            let now = Date()
-            let timeInterval = now.timeIntervalSince1970
-            let timeStamp = Int(timeInterval)
-            //, "cb":timeStamp as AnyObject
-            */
-            var parameters:[String:String]
+        var parameters:[String:String]
             parameters = [
                 "taskID":ID!,
                 "status":"1",
@@ -670,15 +652,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
 
                 
                 
-                
-            /*
-            Alamofire.request(API.Router.updateTaskStatus(["taskID":ID as AnyObject, "status": "1" as AnyObject, "empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "woItemID":self.woItem.ID as AnyObject,"woID":self.woID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
-                response in
-                print(response.request ?? "")  // original URL request
-                //print(response.response ?? "") // URL response
-                //print(response.data ?? "")     // server data
-                //print(response.result)   // result of response serialization
-                */
+            
                 
                 if let json = response.result.value {
                     print("JSON: \(json)")
@@ -708,10 +682,6 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             self.woItem.tasks[indexPath.row].status = "2"
             tableView.reloadData()
             
-            //Alamofire.request(API.Router.ChangeField(ID, "2", "status", "projects","tasks", "false")).response { (_, _, data, error) in
-             //_ = Alamofire.request(API.Router.changeField(["id":ID as AnyObject, "val": "2" as AnyObject, "field":"status" as AnyObject, "tableName":"projects" as AnyObject, "table":"tasks" as AnyObject,"string":"false" as AnyObject]))
-            
-            
             
             var parameters:[String:String]
             parameters = [
@@ -736,21 +706,6 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
                 
 
                 
-                
-                /*
-            //cache buster
-            let now = Date()
-            let timeInterval = now.timeIntervalSince1970
-            let timeStamp = Int(timeInterval)
-            //, "cb":timeStamp as AnyObject
-            
-            Alamofire.request(API.Router.updateTaskStatus(["taskID":ID as AnyObject, "status": "2" as AnyObject, "empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "woItemID":self.woItem.ID as AnyObject,"woID":self.woID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
-                response in
-                print(response.request ?? "")  // original URL request
-                //print(response.response ?? "") // URL response
-                //print(response.data ?? "")     // server data
-                //print(response.result)   // result of response serialization
-                */
                 
                 if let json = response.result.value {
                     print("JSON: \(json)")
@@ -778,9 +733,6 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             //print("done button tapped")
             self.woItem.tasks[indexPath.row].status = "3"
             tableView.reloadData()
-            //Alamofire.request(API.Router.ChangeField(ID, "3", "status", "projects","tasks", "false")).response { (_, _, data, error) in
-            // _ = Alamofire.request(API.Router.changeField(["id":ID as AnyObject, "val": "3" as AnyObject, "field":"status" as AnyObject, "tableName":"projects" as AnyObject, "table":"tasks" as AnyObject,"string":"false" as AnyObject]))
-            
             
             var parameters:[String:String]
             parameters = [
@@ -804,20 +756,6 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
                 print(response.result)   // result of response serialization
                 
 
-                /*
-            //cache buster
-            let now = Date()
-            let timeInterval = now.timeIntervalSince1970
-            let timeStamp = Int(timeInterval)
-            //, "cb":timeStamp as AnyObject
-            
-            Alamofire.request(API.Router.updateTaskStatus(["taskID":ID as AnyObject, "status": "3" as AnyObject, "empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "woItemID":self.woItem.ID as AnyObject,"woID":self.woID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
-                response in
-                print(response.request ?? "")  // original URL request
-                //print(response.response ?? "") // URL response
-                //print(response.data ?? "")     // server data
-                //print(response.result)   // result of response serialization
-                */
                 
                 if let json = response.result.value {
                     print("JSON: \(json)")
@@ -843,9 +781,6 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             //print("cancel button tapped")
             self.woItem.tasks[indexPath.row].status = "4"
             tableView.reloadData()
-            //Alamofire.request(API.Router.ChangeField(ID, "4", "status", "projects","tasks", "false")).response { (_, _, data, error) in
-             //_ = Alamofire.request(API.Router.changeField(["id":ID as AnyObject, "val": "4" as AnyObject, "field":"status" as AnyObject, "tableName":"projects" as AnyObject, "table":"tasks" as AnyObject,"string":"false" as AnyObject]))
-            
             
             var parameters:[String:String]
             parameters = [
@@ -869,20 +804,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
                 print(response.result)   // result of response serialization
                 
 
-            /*
-            //cache buster
-            let now = Date()
-            let timeInterval = now.timeIntervalSince1970
-            let timeStamp = Int(timeInterval)
-            //, "cb":timeStamp as AnyObject
             
-            Alamofire.request(API.Router.updateTaskStatus(["taskID":ID as AnyObject, "status": "4" as AnyObject, "empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "woItemID":self.woItem.ID as AnyObject,"woID":self.woID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
-                response in
-                print(response.request ?? "")  // original URL request
-                //print(response.response ?? "") // URL response
-                //print(response.data ?? "")     // server data
-                //print(response.result)   // result of response serialization
-                */
                 
                 
                 if let json = response.result.value {
@@ -912,6 +834,139 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         return [cancel, done, progress, none]
     }
     
+    
+    func addTask(){
+        print("add task")
+        
+        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _ID: "0")
+        imageUploadPrepViewController.selectedID = self.woItem.ID
+        imageUploadPrepViewController.customerID = self.customerID
+       // imageUploadPrepViewController.itemID = self.woItem.
+        imageUploadPrepViewController.layoutViews()
+        
+        imageUploadPrepViewController.woID = self.woID
+        imageUploadPrepViewController.groupImages = true
+        imageUploadPrepViewController.fieldNoteDelegate = self
+        
+        
+        self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+
+        
+        
+        
+    }
+    
+    
+    func updateTable(){
+        print("updateTable")
+        self.editsMade = true
+        getTasks()
+    }
+    
+    func getTasks(){
+        print("get tasks")
+        
+        //cache buster
+        let now = Date()
+        let timeInterval = now.timeIntervalSince1970
+        let timeStamp = Int(timeInterval)
+        //, "cb":timeStamp as AnyObject
+        
+        let parameters = ["woItemID": self.woItem as AnyObject, "cb":timeStamp as AnyObject]
+        
+        print("parameters = \(parameters)")
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/tasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("get tasks response = \(response)")
+            }
+            
+            .responseJSON(){
+                response in
+                
+                print(response.request ?? "")  // original URL request
+                print(response.response ?? "") // URL response
+                print(response.data ?? "")     // server data
+                print(response.result)   // result of response serialization
+                
+                if let json = response.result.value {
+                    print("Tasks Json = \(json)")
+                    self.tasksJson = JSON(json)
+                    
+                    let ts = self.tasksJson?["tasks"]
+                    
+                    self.woItem.tasks = []
+                    
+                    
+                    //FieldNotes
+                    print("Task Count = \(ts?.count)")
+                    
+                    for n in 0 ..< Int((ts?.count)!) {
+                        
+                        
+                        var taskImages:[Image]  = []
+                        
+                        
+                        let imageCount = Int((ts?[n]["images"].count)!)
+                        print("imageCount: \(imageCount)")
+                        
+                        
+                        
+                        
+                        for i in 0 ..< imageCount {
+                            
+                            let fileName:String = (ts?[n]["images"][i]["fileName"].stringValue)!
+                            
+                            let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
+                            let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
+                            
+                            //create a item object
+                            print("create an image object \(i)")
+                            
+                            print("rawPath = \(rawPath)")
+                            
+                            let image = Image(_id: ts?[n]["images"][i]["ID"].stringValue,_thumbPath: thumbPath,_rawPath: rawPath,_name: ts?[n]["images"][i]["name"].stringValue,_width: ts?[n]["images"][i]["width"].stringValue,_height: ts?[n]["images"][i]["height"].stringValue,_description: ts?[n]["images"][i]["description"].stringValue,_dateAdded: ts?[n]["images"][i]["dateAdded"].stringValue,_createdBy: ts?[n]["images"][i]["createdByName"].stringValue,_type: ts?[n]["images"][i]["type"].stringValue)
+                            
+                            image.customer = (ts?[n]["images"][i]["customer"].stringValue)!
+                            image.tags = (ts?[n]["images"][i]["tags"].stringValue)!
+                            
+                            taskImages.append(image)
+                            
+                        }
+                        let task = Task(_ID: ts?[n]["ID"].stringValue, _sort: ts?[n]["sort"].stringValue, _status: ts?[n]["status"].stringValue, _task: ts?[n]["task"].stringValue, _images: taskImages)
+                        
+                        
+                        self.woItem.tasks.append(task)
+                        
+                    }
+                    
+                    // let scoreJSON =  JSON(json)["scoreAdjust"]
+                    
+                    /*
+                     //add appPoints
+                     var points:Int = JSON(json)["scoreAdjust"].intValue
+                     //print("points = \(points)")
+                     if(points > 0){
+                     self.appDelegate.showMessage(_message: "earned \(points) App Points!")
+                     }else if(points < 0){
+                     points = points * -1
+                     self.appDelegate.showMessage(_message: "lost \(points) App Points!")
+                     
+                     }
+                     */
+                    
+                    //}
+                    
+                    self.itemDetailsTableView.reloadData()
+                    
+                    
+                }
+                
+                
+        }
+        
+    }
+
    
     
     

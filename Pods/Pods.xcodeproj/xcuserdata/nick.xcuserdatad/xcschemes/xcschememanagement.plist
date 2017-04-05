@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>AKImageCropperView.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Alamofire.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -47,17 +52,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>AB49188D47E3EB222ED264F8A7153D12</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>B43918AB915242B851ABEFB5D70BE0AD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B8C1F498ABB08CDFD03B69D8E85909E5</key>
+		<key>D18B6B35E81A0290479283F04087F8AA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DF6E68BEBBBA5624D1C671965CB4E143</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DFC2424715BC76FA3F2713C2F71BCC82</key>
 		<dict>
 			<key>primary</key>
 			<true/>

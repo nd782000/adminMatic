@@ -15,14 +15,15 @@ class Task {
     var sort: String!
     var status: String!
     var task: String!
-    var pic: String!
-    var thumb: String!
+    
+    var images: [Image] = []
+
     
     
     
     
     
-    required init(_ID:String?, _sort: String?, _status:String?, _task:String?, _pic:String?, _thumb:String?) {
+    required init(_ID:String?, _sort: String?, _status:String?, _task:String?, _images:[Image]?) {
         //print(json)
         if _ID != nil {
             self.ID = _ID
@@ -44,16 +45,13 @@ class Task {
         }else{
             self.task = ""
         }
-        if _pic != nil {
-            self.pic = _pic
+        
+        if(_images != nil){
+            self.images = _images!
         }else{
-            self.pic = "0"
+            self.images = []
         }
-        if _thumb != nil {
-            self.thumb = _thumb
-        }else{
-            self.thumb = "0"
-        }
+
         
     }
     

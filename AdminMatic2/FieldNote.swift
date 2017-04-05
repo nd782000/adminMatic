@@ -16,15 +16,14 @@ class FieldNote {
     var note: String!
     var customerID: String!
     var workOrderID: String!
-    // var workOrderItemID: String!
     var createdBy: String!
     var status: String!
-    var pic: String!
-    var thumb: String!
+    
+    var images: [Image] = []
     
     
     
-    init(_ID:String?,_note:String?,_customerID:String?, _workOrderID:String?, _createdBy:String?, _status:String?, _pic:String?, _thumb:String?) {
+    init(_ID:String?,_note:String?,_customerID:String?, _workOrderID:String?, _createdBy:String?, _status:String?, _images:[Image]?) {
         //print(json)
         //print("_start = \(_start!.dateString)")
         //print("_start short = \(_start!.dateShort)")
@@ -53,11 +52,6 @@ class FieldNote {
             self.workOrderID = ""
         }
         
-        /*if _workOrderItemID != nil {
-         self.workOrderItemID = _workOrderItemID
-         }else{
-         self.workOrderItemID = ""
-         }*/
         
         if _createdBy != nil {
             self.createdBy = _createdBy
@@ -69,15 +63,11 @@ class FieldNote {
         }else{
             self.status = ""
         }
-        if _pic != nil {
-            self.pic = _pic
+        
+        if(_images != nil){
+            self.images = _images!
         }else{
-            self.pic = "0"
-        }
-        if _thumb != nil {
-            self.thumb = _thumb
-        }else{
-            self.thumb = "0"
+            self.images = []
         }
         
     }

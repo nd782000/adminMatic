@@ -8,6 +8,8 @@ target ‘AdminMatic2’ do
     pod 'ObjectMapper', '~> 2.2'
     pod 'Nuke', '~> 4.0'
     pod 'DKImagePickerController'
+    pod 'AKImageCropperView', :git => 'https://github.com/artemkrachulov/AKImageCropperView.git'
+    
     
 end
 

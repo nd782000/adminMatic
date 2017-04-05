@@ -51,7 +51,7 @@ class ScheduleTableViewCell: UITableViewCell {
         priceLbl.font = layoutVars.textFieldFont
         
               
-        statusIcon = UIImageView()
+        //statusIcon = UIImageView()
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill

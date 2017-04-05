@@ -11,6 +11,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
+import Nuke
 
 
 
@@ -29,6 +30,8 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     //employee info
     var employeeView:UIView!
     var employeeImage:UIImageView!
+    var activityView:UIActivityIndicatorView!
+
     var employeeLbl:GreyLabel!
     var employeePhoneBtn:UIButton!
     var phoneNumberClean:String!
@@ -91,8 +94,11 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     init(_employee:Employee){
         super.init(nibName:nil,bundle:nil)
-        ////print("init _employeeID = \(_employeeID) _employeePhone = \(_employeePhone)")
+        print("init _employeeID = \(_employee.ID)")
         self.employee = _employee
+        
+        
+       
         
         
         
@@ -116,7 +122,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     override func viewWillAppear(_ animated: Bool) {
         // Do any additional setup after loading the view.
         
-        //print("view will appear")
+        print("view will appear")
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
 
@@ -144,6 +150,10 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     func getEmployeeData(_id:String){
         
+        
+       // indicator = SDevIndicator.generate(self.view)!
+        
+        
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
@@ -158,7 +168,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
             //print(response.result)   // result of response serialization
             
             if let json = response.result.value {
-                //print("JSON: \(json)")
+                print("JSON: \(json)")
                 self.employeeJSON = JSON(json)
                 self.parseEmployeeJSON()
                 
@@ -176,7 +186,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     func parseEmployeeJSON(){
         
-        
+        print("parseEmployeeJSON")
         
         self.employee = Employee(_ID: self.employeeJSON["employees"][0]["ID"].stringValue, _name: self.employeeJSON["employees"][0]["name"].stringValue, _lname: self.employeeJSON["employees"][0]["lname"].stringValue, _fname: self.employeeJSON["employees"][0]["fname"].stringValue, _username: self.employeeJSON["employees"][0]["username"].stringValue, _pic: self.employeeJSON["employees"][0]["pic"].stringValue, _phone: self.employeeJSON["employees"][0]["phone"].stringValue, _depID: self.employeeJSON["employees"][0]["depID"].stringValue, _payRate: self.employeeJSON["employees"][0]["payRate"].stringValue, _appScore: self.employeeJSON["employees"][0]["appScore"].stringValue)
         
@@ -186,7 +196,8 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     func layoutViews(){
         
-        
+        print("layoutViews")
+       // indicator.dismissIndicator()
         
         //////////   containers for different sections
         self.employeeView = UIView()
@@ -234,7 +245,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         
         
         
-        //print("step2")
+        print("step2")
         
         
         
@@ -245,6 +256,32 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
        // if(self.employee.ID == "1"){
            // self.employeeImage.image = UIImage(named: "cMurphy.png")
        // }else{
+        
+        
+        activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        activityView.center = CGPoint(x: self.employeeImage.frame.size.width / 2, y: self.employeeImage.frame.size.height / 2)
+        employeeImage.addSubview(activityView)
+        activityView.startAnimating()
+        
+        
+        
+        let imgURL:URL = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.employee.pic!)!
+        
+        print("imgURL = \(imgURL)")
+        
+        
+        
+        Nuke.loadImage(with: imgURL, into: self.employeeImage!){ [weak view] in
+            print("nuke loadImage")
+            self.employeeImage?.handle(response: $0, isFromMemoryCache: $1)
+            self.activityView.stopAnimating()
+            
+        }
+        
+
+        
+        
+        /*
             let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.employee.pic!)
             
             
@@ -256,7 +293,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
                 }
             }
         }
-        
+        */
 
        // }
         
@@ -429,9 +466,11 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         
         ////print("appDelegate.loggedInUser = " + appDelegate.loggedInUser)
         
-        if(appDelegate.loggedInEmployee?.ID == self.employee.ID){
+        //if(appDelegate.loggedInEmployee?.ID == self.employee.ID){
             //logged in
+        if(appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) == self.employee.ID){
             
+           // appDelegate.defaults = defaults
             
             self.logInOutBtn.setTitle("Log Out (\(self.employee.fname!))", for: UIControlState.normal)
             self.logInOutBtn.addTarget(self, action: #selector(self.logOut), for: UIControlEvents.touchUpInside)
@@ -581,6 +620,24 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
                         
                         
                         
+                        
+                        print("set values for appDelegate id = \(self.employee.ID)")
+                        //print("set values for appDelegate name = \(self.employee.name)")
+                        //print("set values for appDelegate pic = \(self.employee.pic)")
+                        
+                        self.appDelegate.defaults = UserDefaults.standard
+                        self.appDelegate.defaults.setValue(self.employee.ID, forKey: loggedInKeys.loggedInId)
+                       // self.appDelegate.defaults.setValue(self.employee.name, forKey: loggedInKeys.loggedInName)
+                       // self.appDelegate.defaults.setValue(self.employee.pic, forKey: loggedInKeys.loggedInPic)
+                        self.appDelegate.defaults.synchronize()
+                        //self.appDelegate.defaults = defaults
+                        
+                        
+                        
+                        
+                        
+                        
+                        
                     }else{
                         //print("Login Fail")
                         // self.logInView.userTxt.error()
@@ -671,8 +728,14 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         self.logInView.passTxt.text = ""
         
         
+        self.appDelegate.defaults = UserDefaults.standard
+        self.appDelegate.defaults.setValue("0", forKey: loggedInKeys.loggedInId)
+        //self.appDelegate.defaults.setValue("", forKey: loggedInKeys.loggedInName)
+       // self.appDelegate.defaults.setValue("", forKey: loggedInKeys.loggedInPic)
+        self.appDelegate.defaults.synchronize()
         
-        
+        //self.appDelegate.defaults = defaults
+
     }
     
  

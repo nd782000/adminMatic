@@ -9,14 +9,16 @@
 
 import Foundation
 import UIKit
+import Nuke
 
 class FieldNoteTableViewCell: UITableViewCell {
     
     var fieldNote:FieldNote!
     var noteLbl: UILabel! = UILabel()
+    var imageQtyLbl: UILabel! = UILabel()
     
     var picImageView:UIImageView = UIImageView()
-    
+    var activityView:UIActivityIndicatorView!
     
     var layoutVars:LayoutVars = LayoutVars()
     
@@ -40,36 +42,49 @@ class FieldNoteTableViewCell: UITableViewCell {
         noteLbl.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(noteLbl)
         
+        imageQtyLbl.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(imageQtyLbl)
+        
+        
+        
+        activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        activityView.center = CGPoint(x: self.picImageView.frame.size.width, y: self.picImageView.frame.size.height)
+        picImageView.addSubview(activityView)
+        
+
+        
         
         self.separatorInset = UIEdgeInsets.zero
         self.layoutMargins = UIEdgeInsets.zero
         self.preservesSuperviewLayoutMargins = false
-        let viewsDictionary = ["pic":self.picImageView,"note":noteLbl] as [String : Any]
+        let viewsDictionary = ["pic":self.picImageView,"note":noteLbl, "imageQty":imageQtyLbl] as [String : Any]
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[pic(50)]", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[note]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[note(20)]-[imageQty(20)]", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[note]-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[imageQty]-|", options: [], metrics: nil, views: viewsDictionary))
     }
     
-    func setImageUrl(_url:String?){
+    
+    func setImageUrl(_url:String){
         
-        if(_url == nil){
-            setBlankImage()
-        }else{
-            let url = URL(string: _url!)
-            
-            DispatchQueue.global().async {
-                let data = try? Data(contentsOf: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
-                DispatchQueue.main.async {
-                    self.picImageView.image = UIImage(data: data!)
-                }
-            }
+        let imgURL:URL = URL(string: _url)!
+        
+        print("set imgURL = \(imgURL)")
+        
+        
+        
+        Nuke.loadImage(with: imgURL, into: self.picImageView){ [weak contentView] in
+            //print("nuke loadImage")
+            self.picImageView.handle(response: $0, isFromMemoryCache: $1)
+            self.activityView.stopAnimating()
             
         }
-        
     }
     
     func setBlankImage(){
         self.picImageView.image = layoutVars.defaultImage
+        self.activityView.stopAnimating()
         
     }
     

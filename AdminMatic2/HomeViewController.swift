@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 
+import Nuke
+
 
 import UIKit
 class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource  {
@@ -28,7 +30,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         //  //println("init equipId = \(equipId) equipName = \(equipName)")
         
         title = "Home"
-        homeBtnData = [("customersIcon","Customers"),("employeesIcon","Employees"),("vendorsIcon","Vendors"),("itemsIcon","Items"),("scheduleIcon","Schedule"),("performanceIcon","Performance"),("imagesIcon","Images"),("equipmentIcon","Equipment")]
+        homeBtnData = [("customersIcon","Customers"),("employeesIcon","Employees"),("vendorsIcon","Vendors"),("itemsIcon","Items"),("scheduleIcon","Schedule"),("performanceIcon","Performance"),("imagesIcon","Images"),("equipmentIcon","Equipment"),("bugIcon","Bugs")]
         self.view.backgroundColor = layoutVars.backgroundColor
     }
     
@@ -50,6 +52,15 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     
     override func viewWillAppear(_ animated: Bool) {
         //print("view will appear")
+     
+        
+        layoutViews()
+        
+        
+    }
+    
+    
+    func layoutViews(){
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         
@@ -72,27 +83,32 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             self.employeeImage = UIImageView()
             
             
-            if(appDelegate.loggedInEmployee?.lname == "Tester"){
-                               
-                self.employeeImage.image = UIImage(named:"cMurphy.png")
-                
-            }else{
-                let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!)
-                
-                
-                DispatchQueue.global().async {
-                    let data = try? Data(contentsOf: imgUrl!) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
-                    DispatchQueue.main.async {
-                        self.employeeImage.image = UIImage(data: data!)
-                    }
-                }
+            
+            
+            
+            let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!)
+            
+            
 
+            
+            print("imgURL = \(imgUrl)")
+            
+            
+            
+            Nuke.loadImage(with: imgUrl!, into: self.employeeImage!){ [weak view] in
+                print("nuke loadImage")
+                self.employeeImage?.handle(response: $0, isFromMemoryCache: $1)
+                //self.activityView.stopAnimating()
+                
             }
             
             
             
             
-           
+            
+            
+            
+            
             employeeImage.contentMode = .scaleAspectFill
             employeeImage.frame = CGRect(x: 5, y: 5, width: 30, height: 30)
             self.loggedInBtn?.addSubview(self.employeeImage)
@@ -123,10 +139,10 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         
         
         
-       // homeCollectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
+        // homeCollectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
         
         
-       
+        
         
         
         homeCollectionView?.dataSource = self
@@ -138,12 +154,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         
         homeCollectionView?.backgroundColor = UIColor.white
         self.view.addSubview(homeCollectionView!)
-        
-        
-        
-        
     }
-    
     
     func showLoggedInUser(){
         //print("showLoggedInUser")
@@ -165,7 +176,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 8
+        return self.homeBtnData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -215,6 +226,10 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         case 7:
             //equipment
             appDelegate.menuChange(7)
+            break
+        case 8:
+            //equipment
+            appDelegate.menuChange(8)
             break
         default:
             break

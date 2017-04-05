@@ -20,14 +20,20 @@ class Image {
     var description: String!
     
     
-    var customer: String!
-    var woID: String!
+    
+    var customer: String = "0"
+    var woID: String = "0"
+    
+    var albumID: String = "0"
+    var fieldNoteID: String = "0"
+    var taskID: String = "0"
+    
     
     var dateAdded: String!
     var createdBy: String!
     var type: String!
     
-    var tags: String!
+    var tags: String = ""
     
     var image: UIImage?
     
@@ -36,7 +42,7 @@ class Image {
     
     
     
-    required init( _id: String?, _thumbPath:String?, _rawPath:String?, _name:String?, _width:String?, _height:String?, _description:String?, _customer:String?, _woID:String?, _dateAdded:String?, _createdBy:String?, _type:String?, _tags:String?) {
+    required init( _id: String?, _thumbPath:String?, _rawPath:String?, _name:String?, _width:String?, _height:String?, _description:String?, _dateAdded:String?, _createdBy:String?, _type:String?) {
         //print(json)
         if _id != nil {
             self.ID = _id
@@ -78,16 +84,6 @@ class Image {
         }else{
             self.description = "No description provided."
         }
-        if _customer != nil {
-            self.customer = _customer
-        }else{
-            self.customer = ""
-        }
-        if _woID != nil {
-            self.woID = _woID
-        }else{
-            self.woID = ""
-        }
         if _dateAdded != nil {
             self.dateAdded = _dateAdded
         }else{
@@ -104,11 +100,7 @@ class Image {
             self.type = ""
         }
         
-        if _tags != nil {
-            self.tags = _tags
-        }else{
-            self.tags = ""
-        }
+       
 
 
         

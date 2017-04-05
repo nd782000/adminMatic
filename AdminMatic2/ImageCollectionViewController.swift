@@ -16,11 +16,12 @@ import DKImagePickerController
 protocol ImageViewDelegate{
     func getPrevNextImage(_next:Bool)
     func refreshImages(_images:[Image], _scoreAdjust:Int)
+    func updateSettings(_portfolio:String, _fieldNote:String)
 }
 
 class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating, ImageViewDelegate, UINavigationControllerDelegate  {
         
-    var layoutVars:LayoutVars = LayoutVars()
+    var layoutVars:LayoutVars!
     var indicator: SDevIndicator!
     var totalImages:Int!
     var images: JSON!
@@ -32,11 +33,21 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     var searchController:UISearchController!
     let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
     var imageCollectionView: UICollectionView?
-    var addImageBtn:Button = Button(titleText: "Add Image")
+    var addImageBtn:Button = Button(titleText: "Add Images")
+    var imageSettingsBtn:Button = Button(titleText: "")
+    
     var currentImageIndex:Int!
     var imageDetailViewController:ImageDetailViewController!
     var portraitMode:Bool = true
     var refresher:UIRefreshControl!
+    
+    //setting vars
+    var portfolio:String = "1"
+    var fieldNote:String = "0"
+    
+   // var imageLoadLbl:Label!
+    
+    var i:Int = 0 //number of times thia vc is displayed
     
     init(){
         super.init(nibName:nil,bundle:nil)
@@ -45,6 +56,8 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
        self.view.backgroundColor = layoutVars.backgroundColor
         
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        
+        
         
         
     }
@@ -56,8 +69,17 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        getImages()
+        
+       layoutVars = LayoutVars()
+        
+        
+        
+        
+       getImages()
     }
+    
+    
+    
     
     override func viewWillAppear(_ animated: Bool) {
        print("viewWillAppear")
@@ -67,6 +89,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             searchController.isActive = true
             self.searchController.searchBar.text = searchTerm
         }
+        
     }
     
     func getImages() {
@@ -76,29 +99,39 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         for view in self.view.subviews{
             view.removeFromSuperview()
         }
+        
+        imageArray = []
         // Show Indicator
         indicator = SDevIndicator.generate(self.view)!
+        
         
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
-
-        Alamofire.request(API.Router.images(["cb":timeStamp as AnyObject])).responseJSON(){ response in
-            print(response.request ?? "")  // original URL request
-            //print(response.response ?? "") // URL response
-            //print(response.data ?? "")     // server data
-            //print(response.result)   // result of response serialization
-            
-            if let json = response.result.value {
-                print("JSON: \(json)")
-                self.images = JSON(json)
-                self.parseJSON()
-                
+        
+        let parameters = ["portfolio": self.portfolio as AnyObject, "fieldnotes": self.fieldNote as AnyObject, "cb":timeStamp as AnyObject]
+        
+        print("parameters = \(parameters)")
+        
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/images.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("images response = \(response)")
             }
+            
+            .responseJSON(){
+                response in
+                
+                if let json = response.result.value {
+                    print("JSON: \(json)")
+                    self.images = JSON(json)
+                    self.parseJSON()
+                    
+                }
+                
+                self.indicator.dismissIndicator()
         }
-        
-        
     }
     
     
@@ -112,20 +145,21 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         for i in 0 ..< jsonCount {
             
-            
             let thumbPath:String = "\(thumbBase)\(self.images["images"][i]["fileName"].stringValue)"
             let rawPath:String = "\(rawBase)\(self.images["images"][i]["fileName"].stringValue)"
                 
             //create a item object
             print("create an image object \(i)")
-            let image = Image(_id: self.images["images"][i]["ID"].stringValue,_thumbPath: thumbPath,_rawPath: rawPath,_name: self.images["images"][i]["name"].stringValue,_width: self.images["images"][i]["width"].stringValue,_height: self.images["images"][i]["height"].stringValue,_description: self.images["images"][i]["description"].stringValue,_customer: self.images["images"][i]["customer"].stringValue,_woID:"0",_dateAdded: self.images["images"][i]["dateAdded"].stringValue,_createdBy: self.images["images"][i]["createdByName"].stringValue,_type: self.images["images"][i]["type"].stringValue,_tags: self.images["images"][i]["tags"].stringValue)
             
+            let image = Image(_id: self.images["images"][i]["ID"].stringValue,_thumbPath: thumbPath,_rawPath: rawPath,_name: self.images["images"][i]["name"].stringValue,_width: self.images["images"][i]["width"].stringValue,_height: self.images["images"][i]["height"].stringValue,_description: self.images["images"][i]["description"].stringValue,_dateAdded: self.images["images"][i]["dateAdded"].stringValue,_createdBy: self.images["images"][i]["createdByName"].stringValue,_type: self.images["images"][i]["type"].stringValue)
+            
+            image.customer = self.images["images"][i]["customer"].stringValue
+            image.tags = self.images["images"][i]["tags"].stringValue
+        
             self.imageArray.append(image)
             
         }
-        
         self.layoutViews()
-        
     }
     
     
@@ -149,8 +183,12 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         searchController.hidesNavigationBarDuringPresentation = false
         navigationItem.titleView = searchController.searchBar
         
-        
         imageCollectionView = UICollectionView(frame: CGRect(x: 0, y: layoutVars.navAndStatusBarHeight, width: self.view.frame.width, height: self.view.frame.height - (layoutVars.navAndStatusBarHeight + 50)), collectionViewLayout: layout)
+        
+        
+        imageCollectionView?.contentInset = UIEdgeInsets(top: layoutVars.navAndStatusBarHeight, left: 0.0, bottom: 0.0, right: 0.0)
+        
+        
         imageCollectionView?.dataSource = self
         imageCollectionView?.delegate = self
         imageCollectionView?.register(ImageCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
@@ -170,10 +208,31 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         self.addImageBtn.addTarget(self, action: #selector(ImageCollectionViewController.addImage), for: UIControlEvents.touchUpInside)
         
-        self.addImageBtn.frame = CGRect(x:0, y: self.view.frame.height - 50, width: self.view.frame.width, height: 50)
+        self.addImageBtn.frame = CGRect(x:0, y: self.view.frame.height - 50, width: self.view.frame.width - 100, height: 50)
         self.addImageBtn.translatesAutoresizingMaskIntoConstraints = true
+        self.addImageBtn.layer.borderColor = UIColor.white.cgColor
+        self.addImageBtn.layer.borderWidth = 1.0
         self.view.addSubview(self.addImageBtn)
         
+        self.imageSettingsBtn.addTarget(self, action: #selector(ImageCollectionViewController.imageSettings), for: UIControlEvents.touchUpInside)
+        
+        self.imageSettingsBtn.frame = CGRect(x:self.view.frame.width - 50, y: self.view.frame.height - 50, width: 50, height: 50)
+        self.imageSettingsBtn.translatesAutoresizingMaskIntoConstraints = true
+        self.imageSettingsBtn.layer.borderColor = UIColor.white.cgColor
+        self.imageSettingsBtn.layer.borderWidth = 1.0
+        self.view.addSubview(self.imageSettingsBtn)
+        
+        self.imageSettingsBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
+        
+
+        
+        let settingsIcon:UIImageView = UIImageView()
+        settingsIcon.backgroundColor = UIColor.clear
+        settingsIcon.contentMode = .scaleAspectFill
+        settingsIcon.frame = CGRect(x: 11, y: 11, width: 28, height: 28)
+        let settingsImg = UIImage(named:"settingsIcon.png")
+        settingsIcon.image = settingsImg
+        self.imageSettingsBtn.addSubview(settingsIcon)
         
     }
     
@@ -274,11 +333,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         //print("name = \(currentCell.image.name)")
         
-        
-        
-        
-        
-         imageDetailViewController = ImageDetailViewController(_image: currentCell.image,_saveURLString:"https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php")
+        imageDetailViewController = ImageDetailViewController(_image: currentCell.image,_saveURLString:"https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php")
         imageDetailViewController.imageFullViewController.delegate = self
         imageCollectionView?.deselectItem(at: indexPath, animated: true)
         navigationController?.pushViewController(imageDetailViewController, animated: false )
@@ -307,7 +362,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         //print("filterSearchResults")
         
         self.imagesSearchResults = self.imageArray.filter({( aImage: Image) -> Bool in
-            return ("\(aImage.name!)\(aImage.tags!)".lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)            })
+            return ("\(aImage.name!)\(aImage.tags)".lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)            })
         self.imageCollectionView?.reloadData()
     }
     
@@ -398,7 +453,10 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                
                     
                     print("making image")
-                    let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _customer: "0", _woID: "0", _dateAdded: "", _createdBy: self.appDelegate.loggedInEmployee?.ID, _type: "", _tags: "")
+                    //let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _customer: "0", _woID: "0", _dateAdded: "", _createdBy: self.appDelegate.loggedInEmployee?.ID, _type: "", _tags: "")
+                    
+                     let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
+                    
                     imageToAdd.image = image
                     
                     
@@ -431,6 +489,18 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             
 
         }
+        
+        
+    }
+    
+    
+    func imageSettings(){
+        print("image settings")
+        
+        let imageSettingsViewController = ImageSettingsViewController(_portfolio: self.portfolio, _fieldNote: self.fieldNote)
+        imageSettingsViewController.imageDelegate = self
+        navigationController?.pushViewController(imageSettingsViewController, animated: false )
+        
         
         
     }
@@ -557,6 +627,15 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
     }
     
+    func updateSettings(_portfolio:String, _fieldNote:String){
+        print("update settings")
+        print("_portfolio = \(_portfolio) _fieldNote = \(_fieldNote)")
+        self.portfolio = _portfolio
+        self.fieldNote = _fieldNote
+        
+        getImages()
+    }
+    
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -593,12 +672,26 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     override func viewWillDisappear(_ animated : Bool) {
         super.viewWillDisappear(animated)
         
+        print("view will disappear")
+        
+         self.imageCollectionView?.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
+        searchController.isActive = false
+        
         if (self.isMovingFromParentViewController) {
             UIDevice.current.setValue(Int(UIInterfaceOrientation.portrait.rawValue), forKey: "orientation")
         }
     }
     
     func canRotate() -> Void {}
+    
+   
+
+    
+    
+   
+    
+    
+    
     
     
    

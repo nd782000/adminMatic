@@ -17,6 +17,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var imageData:Image!
+    //var albumID:String = "0"
     var uploadDelegate:ImageUploadProgressDelegate!
     let saveURLString:String = "https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php"
     var progressLbl: UILabel! = UILabel()
@@ -95,10 +96,10 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
         
         var createdBy:String = ""
         
-        if(appDelegate.loggedInEmployee?.ID == ""){
+        if(self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) == "0"){
             createdBy = "0"
         }else{
-            createdBy = (appDelegate.loggedInEmployee?.ID)!
+            createdBy = (self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId))!
         }
         
                 var parameters:[String:String]
@@ -108,8 +109,10 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                     "tags":"",
                     "customer":imageData.customer,
                     "createdBy":createdBy,
-                    "fieldNote":"0",
-                    "task":"0"
+                    "fieldNote":imageData.fieldNoteID,
+                    "task":imageData.taskID,
+                    "woID":imageData.woID,
+                    "albumID":imageData.albumID
                 ]
                 print("parameters = \(parameters)")
                 
@@ -132,7 +135,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                     case .success(let upload, _, _):
                         
                         upload.uploadProgress(closure: { (Progress) in
-                           // print("Upload Progress: \(Progress.fractionCompleted)")
+                            print("Upload Progress: \(Progress.fractionCompleted)")
                             
                             DispatchQueue.main.async() {
                                 self.progressView.progress = Float(Progress.fractionCompleted)
@@ -163,7 +166,16 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                                 let thumbPath = "\(thumbBase)\(JSON(json)["images"][0]["fileName"].stringValue)"
                                 let rawPath = "\(rawBase)\(JSON(json)["images"][0]["fileName"].stringValue)"
                                 
-                                let image = Image(_id: JSON(json)["images"][0]["ID"].stringValue, _thumbPath: thumbPath, _rawPath: rawPath, _name: JSON(json)["images"][0]["name"].stringValue, _width: JSON(json)["images"][0]["width"].stringValue, _height: JSON(json)["images"][0]["height"].stringValue, _description: JSON(json)["images"][0]["description"].stringValue, _customer: JSON(json)["images"][0]["customer"].stringValue, _woID: JSON(json)["images"][0]["woID"].stringValue, _dateAdded: JSON(json)["images"][0]["dateAdded"].stringValue, _createdBy: JSON(json)["images"][0]["createdBy"].stringValue, _type: JSON(json)["images"][0]["type"].stringValue, _tags: JSON(json)["images"][0]["tags"].stringValue)
+                                //let image = Image(_id: JSON(json)["images"][0]["ID"].stringValue, _thumbPath: thumbPath, _rawPath: rawPath, _name: JSON(json)["images"][0]["name"].stringValue, _width: JSON(json)["images"][0]["width"].stringValue, _height: JSON(json)["images"][0]["height"].stringValue, _description: JSON(json)["images"][0]["description"].stringValue, _customer: JSON(json)["images"][0]["customer"].stringValue, _woID: JSON(json)["images"][0]["woID"].stringValue, _dateAdded: JSON(json)["images"][0]["dateAdded"].stringValue, _createdBy: JSON(json)["images"][0]["createdBy"].stringValue, _type: JSON(json)["images"][0]["type"].stringValue, _tags: JSON(json)["images"][0]["tags"].stringValue)
+                                
+                                
+                                let image = Image(_id: JSON(json)["images"][0]["ID"].stringValue, _thumbPath: thumbPath, _rawPath: rawPath, _name: JSON(json)["images"][0]["name"].stringValue, _width: JSON(json)["images"][0]["width"].stringValue, _height: JSON(json)["images"][0]["height"].stringValue, _description: JSON(json)["images"][0]["description"].stringValue, _dateAdded: JSON(json)["images"][0]["dateAdded"].stringValue, _createdBy: JSON(json)["images"][0]["createdBy"].stringValue, _type: JSON(json)["images"][0]["type"].stringValue)
+                                
+                                image.customer = JSON(json)["images"][0]["customer"].stringValue
+                                image.woID = JSON(json)["images"][0]["woID"].stringValue
+                                image.tags = JSON(json)["images"][0]["tags"].stringValue
+                                
+                                
                                 
                                 self.scoreAdjust = JSON(json)["scoreAdjust"].intValue
                                 

@@ -16,6 +16,8 @@ class TaskTableViewCell: UITableViewCell {
     var taskLbl: Label! = Label()
     
     var statusIcon: UIImageView!
+    
+    var addTasksLbl:Label = Label()
 
     var layoutVars:LayoutVars = LayoutVars()
     
@@ -26,12 +28,17 @@ class TaskTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        
+    }
+    
+    func layoutViews(){
         self.selectionStyle = .none
         
         self.thumbView.clipsToBounds = true
         self.thumbView.translatesAutoresizingMaskIntoConstraints = false
         self.contentView.addSubview(self.thumbView)
-       
+        
         
         taskLbl.translatesAutoresizingMaskIntoConstraints = false
         taskLbl.numberOfLines = 0;
@@ -61,6 +68,26 @@ class TaskTableViewCell: UITableViewCell {
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[status(40)]", options: [], metrics: nil, views: viewsDictionary))
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[thumbs(50)]-5-[task]-[status(40)]-15-|", options: [], metrics: sizeVals, views: viewsDictionary))
+    }
+    
+    
+    func layoutAddBtn(){
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+       // self.selectedImageView.image = nil
+        
+        self.addTasksLbl.text = "Add Tasks"
+        self.addTasksLbl.backgroundColor = UIColor(hex: 0x005100, op: 1.0)
+        self.addTasksLbl.layer.cornerRadius = 4.0
+        self.addTasksLbl.clipsToBounds = true
+        self.addTasksLbl.textAlignment = .center
+        contentView.addSubview(self.addTasksLbl)
+        
+        
+        let viewsDictionary = ["addBtn":self.addTasksLbl] as [String : Any]
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[addBtn]-10-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[addBtn(40)]", options: [], metrics: nil, views: viewsDictionary))
         
     }
     
