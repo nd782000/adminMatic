@@ -15,7 +15,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextFieldDelegate, U
     var layoutVars:LayoutVars = LayoutVars()
     /////////////////////////////////
     //number of texts to send at once
-    let textBatchQty:Int = 10
+    let textBatchQty:Int = 7
     /////////////////////////////////
     var messageTxt: PaddedTextField = PaddedTextField()
     var messagePlaceHolder:String!

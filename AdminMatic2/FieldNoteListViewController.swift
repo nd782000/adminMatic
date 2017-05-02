@@ -13,7 +13,7 @@ import Alamofire
 import SwiftyJSON
 
 protocol FieldNoteDelegate{
-    func updateTable()
+    func updateTable(_points:Int)
     
 }
 
@@ -128,8 +128,10 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
         
     }
     
-    func updateTable(){
+    func updateTable(_points:Int){
         print("updateTable")
+        self.appDelegate.showMessage(_message: "earned \(_points) App Points!")
+        
         self.editsMade = true
         getFieldNotes()
     }
@@ -325,39 +327,17 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //print("You selected cell #\(indexPath.row)!")
-        
         tableView.deselectRow(at: indexPath as IndexPath, animated: true)
-        
-        
-        
-        
         let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Field Note", _ID: self.fieldNotes[indexPath.row].ID)
-        
-       
         imageUploadPrepViewController.images = self.fieldNotes[indexPath.row].images
         imageUploadPrepViewController.layoutViews()
-        
         imageUploadPrepViewController.groupDescriptionTxt.text = self.fieldNotes[indexPath.row].note
         imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
-
-         imageUploadPrepViewController.selectedID = self.fieldNotes[indexPath.row].customerID
+        imageUploadPrepViewController.selectedID = self.fieldNotes[indexPath.row].customerID
         imageUploadPrepViewController.woID = self.fieldNotes[indexPath.row].workOrderID
         imageUploadPrepViewController.groupImages = true
         imageUploadPrepViewController.fieldNoteDelegate = self
-        
-        
         self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
-
-        
-        
-        /*
-        
-        let fieldNote:FieldNote = FieldNote(_ID: self.fieldNotes[indexPath.row].ID, _note: self.fieldNotes[indexPath.row].note, _customerID: self.fieldNotes[indexPath.row].customerID, _workOrderID: self.fieldNotes[indexPath.row].workOrderID, _createdBy: self.fieldNotes[indexPath.row].createdBy, _status: self.fieldNotes[indexPath.row].status, _images:self.fieldNotes[indexPath.row].images)
-        
-        let fieldNoteViewController = FieldNoteViewController(_fieldNote: fieldNote)
-        navigationController?.pushViewController(fieldNoteViewController, animated: false )
- */
-        
     }
     
     

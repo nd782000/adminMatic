@@ -21,6 +21,7 @@ class ScheduleTableViewCell: UITableViewCell {
     var statusIcon: UIImageView!
     
     
+    
     var profitBarView:UIView!
     var incomeView:UIView!
     var costView:UIView!

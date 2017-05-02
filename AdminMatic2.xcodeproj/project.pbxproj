@@ -27,7 +27,6 @@
 		014B02AE1E216950002A41DE /* Vendor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02AD1E216950002A41DE /* Vendor.swift */; };
 		014B02B01E2169BF002A41DE /* WoItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02AF1E2169BF002A41DE /* WoItemViewController.swift */; };
 		014B02B21E2690AC002A41DE /* WoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02B11E2690AC002A41DE /* WoItemTableViewCell.swift */; };
-		014B02B41E269403002A41DE /* FieldNoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02B31E269403002A41DE /* FieldNoteViewController.swift */; };
 		014B02B61E269449002A41DE /* FieldNoteListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02B51E269449002A41DE /* FieldNoteListViewController.swift */; };
 		014B02B81E26A8E6002A41DE /* FieldNoteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02B71E26A8E6002A41DE /* FieldNoteTableViewCell.swift */; };
 		014CC8DC1E539C9A00D48A26 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014CC8DB1E539C9A00D48A26 /* Image.swift */; };
@@ -56,6 +55,9 @@
 		016634261E3415DF002F7763 /* VendorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016634251E3415DF002F7763 /* VendorTableViewCell.swift */; };
 		016634281E3415FE002F7763 /* VendorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016634271E3415FE002F7763 /* VendorListViewController.swift */; };
 		0166342A1E341616002F7763 /* VendorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016634291E341616002F7763 /* VendorViewController.swift */; };
+		016DD5901E9AF8EC00359405 /* PerformanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */; };
+		019B24591EB6D1BB008D4475 /* NewWoItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019B24581EB6D1BB008D4475 /* NewWoItemViewController.swift */; };
+		019B24621EB82EC5008D4475 /* NewWoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019B24611EB82EC5008D4475 /* NewWoItemTableViewCell.swift */; };
 		01A1F2DF1E0704FF00DCCB39 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A1F2DE1E0704FF00DCCB39 /* AppDelegate.swift */; };
 		01A1F2E61E0704FF00DCCB39 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01A1F2E51E0704FF00DCCB39 /* Assets.xcassets */; };
 		01A1F2F41E0704FF00DCCB39 /* AdminMatic2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A1F2F31E0704FF00DCCB39 /* AdminMatic2Tests.swift */; };
@@ -170,7 +172,6 @@
 		014B02AD1E216950002A41DE /* Vendor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vendor.swift; sourceTree = "<group>"; };
 		014B02AF1E2169BF002A41DE /* WoItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WoItemViewController.swift; sourceTree = "<group>"; };
 		014B02B11E2690AC002A41DE /* WoItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WoItemTableViewCell.swift; sourceTree = "<group>"; };
-		014B02B31E269403002A41DE /* FieldNoteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldNoteViewController.swift; sourceTree = "<group>"; };
 		014B02B51E269449002A41DE /* FieldNoteListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldNoteListViewController.swift; sourceTree = "<group>"; };
 		014B02B71E26A8E6002A41DE /* FieldNoteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldNoteTableViewCell.swift; sourceTree = "<group>"; };
 		014CC8DB1E539C9A00D48A26 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
@@ -199,6 +200,9 @@
 		016634251E3415DF002F7763 /* VendorTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VendorTableViewCell.swift; sourceTree = "<group>"; };
 		016634271E3415FE002F7763 /* VendorListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VendorListViewController.swift; sourceTree = "<group>"; };
 		016634291E341616002F7763 /* VendorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VendorViewController.swift; sourceTree = "<group>"; };
+		016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceViewController.swift; sourceTree = "<group>"; };
+		019B24581EB6D1BB008D4475 /* NewWoItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewWoItemViewController.swift; sourceTree = "<group>"; };
+		019B24611EB82EC5008D4475 /* NewWoItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewWoItemTableViewCell.swift; sourceTree = "<group>"; };
 		01A1F2DB1E0704FF00DCCB39 /* AdminMatic2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AdminMatic2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		01A1F2DE1E0704FF00DCCB39 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		01A1F2E51E0704FF00DCCB39 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -346,13 +350,14 @@
 				01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */,
 				01DC79361E2803BB0022566C /* UsageEntryViewController.swift */,
 				01DC79411E281C8B0022566C /* UsageListViewController.swift */,
+				016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */,
 				01EE1B2F1E201E0C00E5E061 /* TimeEntryView.swift */,
 				015231BA1E1D69FF009949BD /* LogInView.swift */,
 				01EC4E721E1DDBBD009CE261 /* ScheduleViewController.swift */,
 				014B02A11E21685A002A41DE /* WorkOrderViewController.swift */,
 				014B02AF1E2169BF002A41DE /* WoItemViewController.swift */,
+				019B24581EB6D1BB008D4475 /* NewWoItemViewController.swift */,
 				014B02B51E269449002A41DE /* FieldNoteListViewController.swift */,
-				014B02B31E269403002A41DE /* FieldNoteViewController.swift */,
 				0166341D1E340F48002F7763 /* ItemListViewController.swift */,
 				0166341F1E340F5A002F7763 /* ItemViewController.swift */,
 				016634271E3415FE002F7763 /* VendorListViewController.swift */,
@@ -410,6 +415,7 @@
 				01EE1B2D1E20105A00E5E061 /* HomeCollectionViewCell.swift */,
 				014B029D1E215DB5002A41DE /* CustomerTableViewCell.swift */,
 				0160A1B71E89F98200C2AB4A /* BugTableViewCell.swift */,
+				019B24611EB82EC5008D4475 /* NewWoItemTableViewCell.swift */,
 				014B02B11E2690AC002A41DE /* WoItemTableViewCell.swift */,
 				014B02B71E26A8E6002A41DE /* FieldNoteTableViewCell.swift */,
 				015B9AEF1E27D4C50020FB58 /* TaskTableViewCell.swift */,
@@ -694,6 +700,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				019B24621EB82EC5008D4475 /* NewWoItemTableViewCell.swift in Sources */,
 				014B02B21E2690AC002A41DE /* WoItemTableViewCell.swift in Sources */,
 				014B02951E21577D002A41DE /* CustomerListViewController.swift in Sources */,
 				0160A1B61E89EA8400C2AB4A /* Bug.swift in Sources */,
@@ -701,7 +708,6 @@
 				015231BB1E1D69FF009949BD /* LogInView.swift in Sources */,
 				0160A1B41E89BD2D00C2AB4A /* BugsListViewController.swift in Sources */,
 				014B02A81E2168DF002A41DE /* WoItem.swift in Sources */,
-				014B02B41E269403002A41DE /* FieldNoteViewController.swift in Sources */,
 				0116A7FB1E1DD4B7002C5051 /* ScheduleTableViewCell.swift in Sources */,
 				0166341C1E33F510002F7763 /* Contact.swift in Sources */,
 				01EC4E6C1E1DDA90009CE261 /* WorkOrder.swift in Sources */,
@@ -721,6 +727,7 @@
 				014B02AE1E216950002A41DE /* Vendor.swift in Sources */,
 				0166342A1E341616002F7763 /* VendorViewController.swift in Sources */,
 				014CC8E81E53E8E900D48A26 /* ImageDetailViewController.swift in Sources */,
+				019B24591EB6D1BB008D4475 /* NewWoItemViewController.swift in Sources */,
 				01E01C2F1E7E05F400385B86 /* ImageUploadPrepCollectionViewCell.swift in Sources */,
 				01EC4E751E1EF8BC009CE261 /* HomeViewController.swift in Sources */,
 				016634281E3415FE002F7763 /* VendorListViewController.swift in Sources */,
@@ -741,6 +748,7 @@
 				014B02AA1E216939002A41DE /* Task.swift in Sources */,
 				01DC79491E292CF30022566C /* CustomerContactViewController.swift in Sources */,
 				014B029C1E21585A002A41DE /* Customer.swift in Sources */,
+				016DD5901E9AF8EC00359405 /* PerformanceViewController.swift in Sources */,
 				01DDE0731E071FEC002C0F8B /* EmployeeTableViewCell.swift in Sources */,
 				01DC79371E2803BB0022566C /* UsageEntryViewController.swift in Sources */,
 				010937C01E81EE24007865FB /* ImageCroppingViewController.swift in Sources */,

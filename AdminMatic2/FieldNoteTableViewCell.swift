@@ -48,8 +48,14 @@ class FieldNoteTableViewCell: UITableViewCell {
         
         
         activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-        activityView.center = CGPoint(x: self.picImageView.frame.size.width, y: self.picImageView.frame.size.height)
+        //activityView.center = CGPoint(x: self.picImageView.frame.size.width, y: self.picImageView.frame.size.height)
+        
+        activityView.translatesAutoresizingMaskIntoConstraints = false
+
         picImageView.addSubview(activityView)
+        
+        
+        
         
 
         
@@ -63,6 +69,11 @@ class FieldNoteTableViewCell: UITableViewCell {
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[note(20)]-[imageQty(20)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[note]-|", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[imageQty]-|", options: [], metrics: nil, views: viewsDictionary))
+        
+        let viewsDictionary2 = ["activityView":activityView] as [String : Any]
+        
+        picImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activityView]-|", options: [], metrics: nil, views: viewsDictionary2))
+        picImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activityView]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
     }
     
     

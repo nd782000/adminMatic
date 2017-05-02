@@ -8,12 +8,15 @@
 
 import Foundation
 import UIKit
+import Nuke
 
 class TaskTableViewCell: UITableViewCell {
     
     var task:Task!
     var thumbView:UIImageView = UIImageView()
-    var taskLbl: Label! = Label()
+    var activityView:UIActivityIndicatorView!
+    var taskLbl: UILabel! = UILabel()
+    var imageQtyLbl: Label! = Label()
     
     var statusIcon: UIImageView!
     
@@ -33,17 +36,29 @@ class TaskTableViewCell: UITableViewCell {
     }
     
     func layoutViews(){
+        
+         self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
         self.selectionStyle = .none
         
         self.thumbView.clipsToBounds = true
         self.thumbView.translatesAutoresizingMaskIntoConstraints = false
         self.contentView.addSubview(self.thumbView)
-        
+        self.setBlankImage()
         
         taskLbl.translatesAutoresizingMaskIntoConstraints = false
         taskLbl.numberOfLines = 0;
         
         contentView.addSubview(taskLbl)
+        
+        imageQtyLbl.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(imageQtyLbl)
+        
+        activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        activityView.center = CGPoint(x: self.thumbView.frame.size.width, y: self.thumbView.frame.size.height)
+        thumbView.addSubview(activityView)
+        
+        
         
         statusIcon = UIImageView()
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
@@ -56,18 +71,21 @@ class TaskTableViewCell: UITableViewCell {
         self.preservesSuperviewLayoutMargins = false
         
         
-        let viewsDictionary = ["thumbs":self.thumbView,"task":taskLbl,"status":statusIcon] as [String:AnyObject]
+        let viewsDictionary = ["thumbs":self.thumbView,"task":taskLbl,"status":statusIcon, "imageQty":imageQtyLbl] as [String:AnyObject]
         
         let sizeVals = ["fullWidth": layoutVars.fullWidth - 90] as [String:Any]
         
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[thumbs(50)]", options: [], metrics: nil, views: viewsDictionary))
         
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[task(>=50)]-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[task(>=20)]-[imageQty(20)]-|", options: [], metrics: nil, views: viewsDictionary))
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[status(40)]", options: [], metrics: nil, views: viewsDictionary))
         
+       // contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[note(20)]-[imageQty(20)]", options: [], metrics: nil, views: viewsDictionary))
+        
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[thumbs(50)]-5-[task]-[status(40)]-15-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[thumbs(50)]-5-[imageQty]-[status(40)]-15-|", options: [], metrics: sizeVals, views: viewsDictionary))
     }
     
     
@@ -76,7 +94,8 @@ class TaskTableViewCell: UITableViewCell {
         
        // self.selectedImageView.image = nil
         
-        self.addTasksLbl.text = "Add Tasks"
+        self.addTasksLbl.text = "Add Task"
+        self.addTasksLbl.textColor = UIColor.white
         self.addTasksLbl.backgroundColor = UIColor(hex: 0x005100, op: 1.0)
         self.addTasksLbl.layer.cornerRadius = 4.0
         self.addTasksLbl.clipsToBounds = true
@@ -98,6 +117,7 @@ class TaskTableViewCell: UITableViewCell {
     
     func setImageUrl(_url:String?){
         print("set Task ImageUrl")
+        
         print("url = \(_url)")
         
         if(_url == nil){
@@ -106,12 +126,21 @@ class TaskTableViewCell: UITableViewCell {
             
             let url = URL(string: _url!)
             
-            DispatchQueue.global().async {
+            Nuke.loadImage(with: url!, into: self.thumbView){ [weak contentView] in
+                //print("nuke loadImage")
+                self.thumbView.handle(response: $0, isFromMemoryCache: $1)
+                self.activityView.stopAnimating()
+                
+            }
+            
+           /* DispatchQueue.global().async {
                 let data = try? Data(contentsOf: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
                 DispatchQueue.main.async {
                     self.thumbView.image = UIImage(data: data!)
                 }
             }
+ */
+            
         }
     }
     

@@ -36,6 +36,9 @@ class Usage:Mappable{
     var locked: Bool?
     var addedBy: String?
     var del: String?
+    
+    var custName:String?
+    var woStatus:String?
    
     
     //init with stop

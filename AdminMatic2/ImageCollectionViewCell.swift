@@ -32,7 +32,7 @@ class ImageCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
-        
+        print("imageCell init 1")
         textLabel = UILabel()
         textLabel.font = UIFont(name: "Helvetica Neue", size: 14)!
         textLabel.layer.backgroundColor = UIColor(hex: 0x005100, op: 0.5).cgColor
@@ -42,6 +42,7 @@ class ImageCollectionViewCell: UICollectionViewCell {
         textLabel.textAlignment = .left
         contentView.addSubview(textLabel)
         
+        print("imageCell init 2")
         activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
         activityView.center = CGPoint(x: self.contentView.frame.size.width / 2, y: self.contentView.frame.size.height / 2)
         contentView.addSubview(activityView)
@@ -56,6 +57,8 @@ class ImageCollectionViewCell: UICollectionViewCell {
         contentView.addConstraints(viewsConstraint_H2)
         contentView.addConstraints(viewsConstraint_V)
         contentView.addConstraints(viewsConstraint_V2)
+        
+        print("imageCell init 3")
     
     }
     

@@ -126,37 +126,8 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         for n in 0 ..< usageCount {
             let startDate = dateFormatter.date(from: self.usageJSON["usage"][n]["start"].string!)!
             
-            //let stopDate:Date?
             
             let usage:Usage!
-            /*
-            let stopDate = dateFormatter.date(from: self.usageJSON["usage"][n]["stop"].string!)!
-            
-            let usage = Usage(_ID: self.usageJSON["usage"][n]["ID"].stringValue,
-                              _empID: self.usageJSON["usage"][n]["empID"].stringValue,
-                              _depID: self.usageJSON["usage"][n]["depID"].stringValue,
-                              _woID: self.usageJSON["usage"][n]["woID"].stringValue,
-                              _start: startDate,
-                              _stop: stopDate,
-                              _lunch: self.usageJSON["usage"][n]["lunch"].stringValue,
-                              _qty: self.usageJSON["usage"][n]["qty"].stringValue,
-                              _empName: self.usageJSON["usage"][n]["empName"].stringValue,
-                              _type: self.usageJSON["usage"][n]["type"].stringValue,
-                              _itemID: self.usageJSON["usage"][n]["woItemID"].stringValue,
-                              _unitPrice: self.usageJSON["usage"][n]["unitPrice"].stringValue,
-                              _totalPrice: self.usageJSON["usage"][n]["totalPrice"].stringValue,
-                              _vendor: self.usageJSON["usage"][n]["vendor"].stringValue,
-                              _unitCost: self.usageJSON["usage"][n]["unitCost"].stringValue,
-                              _totalCost: self.usageJSON["usage"][n]["totalCost"].stringValue,
-                              _chargeType: self.usageJSON["usage"][n]["chargeID"].stringValue,
-                              _override: self.usageJSON["usage"][n]["override"].stringValue,
-                              _empPic: self.usageJSON["usage"][n]["empPic"].stringValue,
-                              _locked: true,
-                              _addedBy: self.usageJSON["usage"][n]["addedBy"].stringValue,
-                              _del: ""
-            )
-            
-            */
             
             
             if(self.usageJSON["usage"][n]["stop"].string != "0000-00-00 00:00:00"){
@@ -186,7 +157,6 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                                   _del: ""
                 )
                 
-                
             }else{
                 
                 usage = Usage(_ID: self.usageJSON["usage"][n]["ID"].stringValue,
@@ -215,12 +185,6 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                 
             }
 
-            
-            
-            
-            
-            
-            
             self.usages.append(usage)
         }
         self.total = self.usageJSON["total"].stringValue
@@ -264,6 +228,9 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell:UsageTableViewCell = usageListTableView.dequeueReusableCell(withIdentifier: "cell") as! UsageTableViewCell
+        
+         cell.layoutPortrait()
+        
         cell.usageNameLbl.text = usages[indexPath.row].empName
         
         

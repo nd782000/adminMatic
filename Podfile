@@ -11,6 +11,7 @@ target ‘AdminMatic2’ do
     pod 'AKImageCropperView', :git => 'https://github.com/artemkrachulov/AKImageCropperView.git'
     
     
+    
 end
 
 

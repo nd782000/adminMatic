@@ -474,25 +474,6 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     
                 }
                 cell.customerLbl.attributedText = highlightedText
-                //cell.woIDLbl.text = "#\(cell.workOrder.ID!)"
-                
-                /*
-                var chargeTypeName:String
-                switch (cell.workOrder.charge) {
-                case "1":
-                    chargeTypeName = "NC"
-                    break;
-                case "2":
-                    chargeTypeName = "FL"
-                    break;
-                case "3":
-                    chargeTypeName = "T&M"
-                    break;
-                default:
-                    chargeTypeName = "Null"//online
-                    break;
-                }
- */
                 
                 
                 cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
@@ -515,24 +496,6 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 cell.customerLbl.text = cell.workOrder.title
                 cell.setStatus(status: cell.workOrder.statusId)
                 
-                /*
-                var chargeTypeName:String
-                switch (cell.workOrder.charge) {
-                case "1":
-                    chargeTypeName = "NC"
-                    break;
-                case "2":
-                    chargeTypeName = "FL"
-                    break;
-                case "3":
-                    chargeTypeName = "T&M"
-                    break;
-                default:
-                    chargeTypeName = "Null"//online
-                    break;
-                }
-                cell.chargeLbl.text = chargeTypeName
- */
                 cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
                 
                 cell.priceLbl.text = cell.workOrder.totalPrice!
@@ -576,24 +539,6 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 }
                 cell.customerLbl.attributedText = highlightedText
               
-                /*
-                var chargeTypeName:String
-                switch (cell.workOrder.charge) {
-                case "1":
-                    chargeTypeName = "NC"
-                    break;
-                case "2":
-                    chargeTypeName = "FL"
-                    break;
-                case "3":
-                    chargeTypeName = "T&M"
-                    break;
-                default:
-                    chargeTypeName = "Null"//online
-                    break;
-                }
-                cell.chargeLbl.text = chargeTypeName
- */
                 cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
                 
                 cell.priceLbl.text = cell.workOrder.totalPrice!
@@ -614,24 +559,6 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 cell.customerLbl.text = cell.workOrder.title
                 cell.setStatus(status: cell.workOrder.statusId)
                 
-                /*
-                var chargeTypeName:String
-                switch (cell.workOrder.charge) {
-                case "1":
-                    chargeTypeName = "NC"
-                    break;
-                case "2":
-                    chargeTypeName = "FL"
-                    break;
-                case "3":
-                    chargeTypeName = "T&M"
-                    break;
-                default:
-                    chargeTypeName = "Null"//online
-                    break;
-                }
-                cell.chargeLbl.text = chargeTypeName
- */
                 
                 cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
                 

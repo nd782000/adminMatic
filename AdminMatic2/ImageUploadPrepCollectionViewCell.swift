@@ -162,7 +162,7 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
       
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[desc]-10-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[pic(190)][desc]-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[pic(250)][desc]-|", options: [], metrics: nil, views: viewsDictionary))
         
         
         
@@ -194,6 +194,7 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
         self.addImagesLbl.layer.cornerRadius = 4.0
         self.addImagesLbl.clipsToBounds = true
         self.addImagesLbl.textAlignment = .center
+        self.addImagesLbl.textColor = UIColor.white
         contentView.addSubview(self.addImagesLbl)
         
         /*if(self.imageData.ID != "0"){

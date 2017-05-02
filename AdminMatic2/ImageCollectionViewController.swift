@@ -34,6 +34,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
     var imageCollectionView: UICollectionView?
     var addImageBtn:Button = Button(titleText: "Add Images")
+    
     var imageSettingsBtn:Button = Button(titleText: "")
     
     var currentImageIndex:Int!
@@ -283,12 +284,12 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
          //print("name = \(self.imageArray)")
         
         if(shouldShowSearchResults == false){
-            //print("name = \(self.imageArray[indexPath.row].name!)")
+            print("name = \(self.imageArray[indexPath.row].name!)")
             cell.textLabel.text = " \(self.imageArray[indexPath.row].name!)"
             cell.image = self.imageArray[indexPath.row]
             cell.activityView.startAnimating()
             
-            
+            print("thumb = \(self.imageArray[indexPath.row].thumbPath!)")
             
             let imgURL:URL = URL(string: self.imageArray[indexPath.row].thumbPath!)!
             

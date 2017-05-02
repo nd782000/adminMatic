@@ -26,12 +26,26 @@ class WoItemTableViewCell: UITableViewCell {
     var estLbl: UILabel! = UILabel()
     var actLbl: UILabel! = UILabel()
     
+    var addItemLbl:Label = Label()
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+       
+    }
+    func layoutViews(){
+        
+        print("layoutViews")
+        
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
         
         self.selectionStyle = .none
         
@@ -60,6 +74,36 @@ class WoItemTableViewCell: UITableViewCell {
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[status(30)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[status(30)]-15-[name]-5-[est(50)]-10-[act(50)]-5-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        
+        
+        
+        
+        
+    }
+    
+    func layoutAddBtn(){
+        
+        print("layoutAddBtn")
+        
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        // self.selectedImageView.image = nil
+        
+        self.addItemLbl.text = "Add Item"
+        self.addItemLbl.textColor = UIColor(hex: 0x005100, op: 1.0)
+        //self.addItemLbl.backgroundColor = UIColor(hex: 0x005100, op: 1.0)
+        self.addItemLbl.backgroundColor = UIColor.clear
+
+        self.addItemLbl.layer.cornerRadius = 4.0
+        self.addItemLbl.clipsToBounds = true
+        self.addItemLbl.textAlignment = .center
+        contentView.addSubview(self.addItemLbl)
+        
+        
+        let viewsDictionary = ["addBtn":self.addItemLbl] as [String : Any]
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[addBtn]-10-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[addBtn(40)]", options: [], metrics: nil, views: viewsDictionary))
         
     }
     

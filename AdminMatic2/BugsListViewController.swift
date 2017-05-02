@@ -270,7 +270,8 @@ class BugsListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func goBack(){
-        _ = navigationController?.popViewController(animated: false)
+        displayHomeView()
+       // _ = navigationController?.popViewController(animated: false)
         
     }
     

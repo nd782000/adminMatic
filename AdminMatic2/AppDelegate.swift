@@ -19,6 +19,9 @@ import CoreData
 import Alamofire
 import SwiftyJSON
 import Nuke
+import AVFoundation
+
+
 
 protocol MenuDelegate{
     func menuChange(_ menuItem:Int)
@@ -46,6 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
+    var appVersion:String = "1.1"
     
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
@@ -56,6 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var employeeViewController:EmployeeViewController!
     var scheduleViewController:ScheduleViewController!
     var imageCollectionViewController:ImageCollectionViewController!
+    var performanceViewController:PerformanceViewController!
     var bugsListViewController:BugsListViewController!
     
     
@@ -76,6 +81,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var messageView:UIView?
     var messageImageView:UIImageView = UIImageView()
     var messageLabel:InfoLabel?
+    var messageCloseBtn:Button?
    
     
     var defaults:UserDefaults!
@@ -91,6 +97,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         window = UIWindow(frame: UIScreen.main.bounds)
         
         defaults = UserDefaults.standard
+        
+        self.messageView = UIView()
         
         
         
@@ -148,46 +156,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         //Get employee list
         
-        
-        /*
-        Alamofire.request(API.Router.employeeList(["cb":timeStamp as AnyObject])).responseJSON() {
-            response in
-            
-            if let json = response.result.value {
-                self.employees = JSON(json)
-                //self.employeeListViewController.layoutViews()
-                
-                
-                
-                
-                let jsonCount = self.employees["employees"].count
-                //self.totalItems = jsonCount
-                //print("JSONcount: \(jsonCount)")
-                for i in 0 ..< jsonCount {
-                    
-                    
-                    let employee = Employee(_ID: self.employees["employees"][i]["ID"].stringValue, _name: self.employees["employees"][i]["name"].stringValue, _lname: self.employees["employees"][i]["lname"].stringValue, _fname: self.employees["employees"][i]["fname"].stringValue, _username: self.employees["employees"][i]["username"].stringValue, _pic: self.employees["employees"][i]["pic"].stringValue, _phone: self.employees["employees"][i]["phone"].stringValue, _depID: self.employees["employees"][i]["depID"].stringValue, _payRate: self.employees["employees"][i]["payRate"].stringValue, _appScore: self.employees["employees"][i]["appScore"].stringValue)
-                    
-                    
-                   
-                    
-                    self.employeeArray.append(employee)
-                    
-                }
-               
-                
-                
-                
-                
-                
-            }
-            print("getEmployeeList JSON = \(self.employees)")
-            
-            
-        }
-        */
-        
-       // indicator = SDevIndicator.generate(self.view)!
         
         var parameters:[String:String]
         parameters = ["cb":"\(timeStamp)"]
@@ -403,7 +371,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         case 5:
             //print("Show  Performance")
             if(loggedInEmployee != nil){
-                navigationController = UINavigationController(rootViewController: self.underConstructionViewController)
+                self.performanceViewController = PerformanceViewController(_empID: (self.loggedInEmployee?.ID)!)
+                navigationController = UINavigationController(rootViewController: self.performanceViewController)
                 window?.rootViewController = navigationController
                 window?.makeKeyAndVisible()
             }else{
@@ -623,8 +592,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         //print("show message : \(_message)")
         //frame: CGRect(x: 0, y: 0, width: layoutVars.fullWidth, height: 50)
         
-        self.messageView = UIView()
+        self.messageView?.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        
+        
+
+        
+        
+        self.messageView?.isHidden = false
+        
         self.messageView?.backgroundColor = layoutVars.backgroundColor
+        self.messageView?.layer.borderColor = layoutVars.borderColor
+        self.messageView?.layer.borderWidth = 1.0
         self.messageView?.translatesAutoresizingMaskIntoConstraints = false
         self.messageView?.alpha = 0.0
         
@@ -660,6 +639,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.messageView?.addSubview(self.messageLabel!)
         
         
+        self.messageCloseBtn = Button(titleText: "")
+        self.messageCloseBtn?.contentHorizontalAlignment = .left
+        let closeIcon:UIImageView = UIImageView()
+        closeIcon.backgroundColor = UIColor.clear
+        closeIcon.contentMode = .scaleAspectFill
+        closeIcon.frame = CGRect(x: 5, y: 5, width: 20, height: 20)
+        let closeImg = UIImage(named:"closeIcon.png")
+        closeIcon.image = closeImg
+        self.messageCloseBtn?.addSubview(closeIcon)
+        self.messageCloseBtn?.contentEdgeInsets = UIEdgeInsets(top: 0, left: 35, bottom: 0, right: 10)
+        self.messageCloseBtn?.addTarget(self, action: #selector(self.closeMessage), for: UIControlEvents.touchUpInside)
+        
+        
+        self.messageView?.addSubview(messageCloseBtn!)
+
+        
+        
+        
+        
+        
         
         if var topController = UIApplication.shared.keyWindow?.rootViewController {
             while let presentedViewController = topController.presentedViewController {
@@ -686,13 +685,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             
             let messageViewsDictionary2 = [
                 "messageImage":self.messageImageView,
-                "messageLabel":self.messageLabel!
+                "messageLabel":self.messageLabel!,
+                "messageClose":self.messageCloseBtn!
                 ] as [String:Any]
             
-            self.messageView?.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[messageImage(40)]-[messageLabel]-|", options: [], metrics: nil, views: messageViewsDictionary2))
+            self.messageView?.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[messageImage(40)]-[messageLabel]-[messageClose(30)]-|", options: [], metrics: nil, views: messageViewsDictionary2))
             
             self.messageView?.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[messageImage(40)]", options: [], metrics: nil, views: messageViewsDictionary2))
              self.messageView?.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[messageLabel(30)]", options: [], metrics: nil, views: messageViewsDictionary2))
+             self.messageView?.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[messageClose(30)]", options: [], metrics: nil, views: messageViewsDictionary2))
             
             
             
@@ -708,18 +709,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         
        
-        /*
-        
+        self.messageView?.layer.removeAllAnimations()
         UIView.animate(withDuration: 1.0, delay: 0.5, animations: {
             self.messageView?.alpha = 1.0
         }, completion: {
             (value: Bool) in
+            // create a sound ID, in this case its the tweet sound.
+            let systemSoundID: SystemSoundID = 1023
+            
+            // to play sound
+            AudioServicesPlaySystemSound (systemSoundID)
             
             
             UIView.animate(withDuration: 1.0, delay:2.0, animations: {
                 self.messageView?.alpha = 0.0
             }, completion: {
                 (value: Bool) in
+                //let systemSoundID: SystemSoundID = 1054
+                
+                // to play sound
+               // AudioServicesPlaySystemSound (systemSoundID)
+                
+
                 
                 
                 
@@ -733,7 +744,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             
             
         })
- */
+ 
         
         
         
@@ -757,7 +768,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     */
     
     
-    
+    func closeMessage(){
+        print("close message")
+        
+        self.messageView?.isHidden = true
+        
+    }
         
     
     

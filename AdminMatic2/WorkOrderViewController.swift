@@ -13,6 +13,7 @@ import Alamofire
 import SwiftyJSON
 
 protocol WoDelegate{
+    func refreshWo()
     func refreshWo(_refeshWoID:String, _newWoStatus:String)
 }
 
@@ -118,7 +119,9 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     
     init(_workOrderID:String,_customerName:String){
+        
         super.init(nibName:nil,bundle:nil)
+        print("workorder init")
         self.workOrderID = _workOrderID
         self.customerName = _customerName
         
@@ -128,6 +131,17 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         fatalError("init(coder:) has not been implemented")
     }
     
+    func refreshWo(){
+        numberFieldNotePics = 0
+        json = []
+        self.woItems = []
+        self.woItemsArray = []
+        self.empsOnWo = []
+        self.crewsValue = ""
+        self.deadLineValue = ""
+        self.fieldNotes = []
+         self.getWorkOrder()
+    }
     
     func refreshWo(_refeshWoID _refreshWoID:String, _newWoStatus:String){
         //print("refreshWo")
@@ -233,7 +247,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         // Do any additional setup after loading the view.
         //custom back button
@@ -257,7 +271,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     //sends request for wo Data
     func getWorkOrder() {
-        //print(" GetWo  Work Order Id \(self.workOrderID)")
+        print(" GetWo  Work Order Id \(self.workOrderID)")
         
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -281,22 +295,24 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                 // Close Indicator
                 self.indicator.dismissIndicator()
                 
-                //print("----------------")
+                print("----------------")
                 
                 
-                //print("Work Order  JSON: \(json)")
+                print("Work Order  JSON: \(json)")
                 
-                //print("----------------")
+                print("----------------")
                 
                 
                 self.json = JSON(json)["woInfo"]
                 self.parseJSON()
             }
         }
+ 
     }
     
     
     func parseJSON(){
+        
         
         //print(" parseJSON()")
         
@@ -310,7 +326,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         }
         
     
-        //print("date raw = \(self.json["dateRaw"].stringValue)")
+        print("date raw = \(self.json["dateRaw"].stringValue)")
         scheduleKeyWordValue = self.json["date"].stringValue
         
         chargeValue = ""
@@ -377,7 +393,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         self.priceRawValue = self.json["totalPriceRaw"].string
         self.costRawValue = self.json["totalCostRaw"].string
         
-        //print("self.priceValue = \(self.priceValue)")
+        print("self.priceValue = \(self.priceValue)")
         
         
         self.profitValue = self.json["profitAmount"].string
@@ -397,7 +413,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             }
         }
         
-        ////print("\(result)")
+        print("result = \(result)")
         
         self.statusValue = self.json["status"].stringValue
         
@@ -422,27 +438,59 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                     //print("update woItemVC \(self.currentWoItem?.usageQty)")
                     self.woItemViewController!.woItem = self.currentWoItem
                     self.woItemViewController?.customerID = self.customerID
+                    self.woItemViewController?.saleRepName = self.salesRepValue
                     self.woItemViewController?.layoutViews()
                 }
                 
             }
-            //print("usageQty = \(woItem.usageQty)")
+            print("usageQty = \(woItem.usageQty)")
             
             //tasks
             
             let taskCount = self.json["items"][i]["tasks"].count
             for n in 0 ..< taskCount {
-                var taskPicUrl = "0"
-                var taskThumbUrl = "0"
-                if(self.json["items"][i]["tasks"][n]["pic"].stringValue != "0" && self.json["items"][i]["tasks"][n]["image"] != JSON.null){
-                    taskPicUrl = "\(self.json["items"][i]["tasks"][n]["image"]["name"].stringValue)(\(self.json["items"][i]["tasks"][n]["imageID"].stringValue)).\(self.json["items"][i]["tasks"][n]["image"]["type"].stringValue)"
-                    taskThumbUrl = "\(self.json["items"][i]["tasks"][n]["image"]["name"].stringValue)(\(self.json["items"][i]["tasks"][n]["imageID"].stringValue)).\(self.json["items"][i]["tasks"][n]["image"]["type"].stringValue)"
-                }
+                //var taskPicUrl = "0"
+                //var taskThumbUrl = "0"
+                var taskImages:[Image] = []
+                //if(self.json["items"][i]["tasks"][n]["pic"].stringValue != "0" && self.json["items"][i]["tasks"][n]["image"] != JSON.null){
+                    
+                    
+                    
+                    let imageCount = Int((self.json["items"][i]["tasks"][n]["images"].count))
+                    print("imageCount: \(imageCount)")
+                    
+                    
+                    
+                    
+                    for p in 0 ..< imageCount {
+                        
+                        let fileName:String = (self.json["items"][i]["tasks"][n]["images"][p]["fileName"].stringValue)
+                        
+                        let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
+                        let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
+                        
+                        //create a item object
+                        print("create an image object \(i)")
+                        
+                        print("rawPath = \(rawPath)")
+                        
+                        let image = Image(_id: self.json["items"][i]["tasks"][n]["images"][p]["ID"].stringValue,_thumbPath: thumbPath,_rawPath: rawPath,_name: self.json["items"][i]["tasks"][n]["images"][p]["name"].stringValue,_width: self.json["items"][i]["tasks"][n]["images"][p]["width"].stringValue,_height: self.json["items"][i]["tasks"][n]["images"][p]["height"].stringValue,_description: self.json["items"][i]["tasks"][n]["images"][p]["description"].stringValue,_dateAdded: self.json["items"][i]["tasks"][n]["images"][p]["dateAdded"].stringValue,_createdBy: self.json["items"][i]["tasks"][n]["images"][p]["createdByName"].stringValue,_type: self.json["items"][i]["tasks"][n]["images"][p]["type"].stringValue)
+                        
+                        image.customer = (self.json["items"][i]["tasks"][n]["images"][p]["customer"].stringValue)
+                        image.tags = (self.json["items"][i]["tasks"][n]["images"][p]["tags"].stringValue)
+                        
+                        print("appending image")
+                        taskImages.append(image)
+                        
+                    }
+
                 
-                ////print("pic url = \(taskPicUrl)")
+                
+                
+           // print("task = ")
                 ////print("thumb url = \(taskThumbUrl)")
                 
-                let task = Task(_ID: self.json["items"][i]["tasks"][n]["ID"].stringValue, _sort: self.json["items"][i]["tasks"][n]["sort"].stringValue, _status: self.json["items"][i]["tasks"][n]["status"].stringValue, _task: self.json["items"][i]["tasks"][n]["task"].stringValue, _images:nil)
+                let task = Task(_ID: self.json["items"][i]["tasks"][n]["ID"].stringValue, _sort: self.json["items"][i]["tasks"][n]["sort"].stringValue, _status: self.json["items"][i]["tasks"][n]["status"].stringValue, _task: self.json["items"][i]["tasks"][n]["task"].stringValue, _images:taskImages)
                 woItem.tasks.append(task)
             }
             
@@ -586,6 +634,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             
         }
         self.layoutViews()
+ 
     }
     
     
@@ -1245,30 +1294,139 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        return self.woItemsArray.count
+        //return self.woItemsArray.count
+        var count:Int!
+        count = self.woItemsArray.count + 1
+        return count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell:WoItemTableViewCell = itemsTableView.dequeueReusableCell(withIdentifier: "cell") as! WoItemTableViewCell
-        cell.woItem = self.woItemsArray[indexPath.row]
-        cell.setStatus(status: cell.woItem.itemStatus)
-        cell.nameLbl.text = cell.woItem.input
-        cell.estLbl.text = cell.woItem.est
-        cell.actLbl.text = cell.woItem.usageQty
+        
+        if(indexPath.row == self.woItemsArray.count){
+            //cell add btn mode
+            cell.layoutAddBtn()
+        }else{
+            cell.woItem = self.woItemsArray[indexPath.row]
+            
+            cell.layoutViews()
+            
+            
+            cell.setStatus(status: cell.woItem.itemStatus)
+            cell.nameLbl.text = cell.woItem.input
+            cell.estLbl.text = cell.woItem.est
+            cell.actLbl.text = cell.woItem.usageQty
+        }
         return cell;
     }
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let indexPath = tableView.indexPathForSelectedRow;
-        let currentCell = tableView.cellForRow(at: indexPath!) as! WoItemTableViewCell;
-        if(currentCell.woItem != nil && currentCell.woItem.ID != ""){
-            self.woItemViewController = WoItemViewController(_woID: self.workOrderID, _woItem: currentCell.woItem, _empsOnWo: self.empsOnWo, _woStatus: self.statusValue)
-            self.woItemViewController!.woDelegate = self
-            navigationController?.pushViewController(self.woItemViewController!, animated: false )
-            tableView.deselectRow(at: indexPath!, animated: true)
+        
+        if(indexPath.row == self.woItemsArray.count){
+            self.addItem()
+        }else{
+            let indexPath = tableView.indexPathForSelectedRow;
+            let currentCell = tableView.cellForRow(at: indexPath!) as! WoItemTableViewCell;
+            if(currentCell.woItem != nil && currentCell.woItem.ID != ""){
+                self.woItemViewController = WoItemViewController(_woID: self.workOrderID, _woItem: currentCell.woItem, _empsOnWo: self.empsOnWo, _woStatus: self.statusValue)
+                self.woItemViewController!.woDelegate = self
+                print("task count = \(currentCell.woItem.tasks.count)")
+                // print("task image  count = \(currentCell.woItem.tasks)")
+                self.woItemViewController?.tasks = currentCell.woItem.tasks
+                self.woItemViewController?.layoutViews()
+                
+                navigationController?.pushViewController(self.woItemViewController!, animated: false )
+                tableView.deselectRow(at: indexPath!, animated: true)
+            }
         }
+        
+        
     }
+    
+    
+    
+    func addItem(){
+        print("add item rep: \(self.salesRepValue!)")
+        
+        
+        if(self.json["charge"].stringValue == "2"){
+            var message:String = ""
+            if(self.salesRepValue! != "No Rep"){
+                message = "Contact sales rep: \(self.salesRepValue!) or the office to add items to this work order."
+            }else{
+                message = "Contact the office to add items to this work order."
+            }
+            let alertController = UIAlertController(title: "Flat Price Work Order", message: message, preferredStyle: UIAlertControllerStyle.alert)
+            
+            
+            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+                (result : UIAlertAction) -> Void in
+                print("OK")
+                //self.popView()
+            }
+            
+            alertController.addAction(okAction)
+            self.present(alertController, animated: true, completion: nil)
+            return
+        }
+        
+        
+        
+        
+        
+        
+        let newWoItemViewController:NewWoItemViewController = NewWoItemViewController(_woID: self.workOrderID, _charge: self.json["charge"].stringValue)
+        
+        newWoItemViewController.delegate = self
+        
+        
+        //print("url = https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
+        
+       // print("self.selectedImages.count = \(selectedImages.count)")
+        //cache buster
+        let now = Date()
+        let timeInterval = now.timeIntervalSince1970
+        let timeStamp = Int(timeInterval)
+        
+        newWoItemViewController.loadLinkList(_linkType: "items", _loadScript: API.Router.itemList(["cb":timeStamp as AnyObject]))
+        
+        
+        //imageUploadPrepViewController.delegate = self
+        
+        self.navigationController?.pushViewController(newWoItemViewController, animated: false )
+        
+
+        
+        
+        
+        
+        
+        /*
+        
+        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _ID: "0")
+        imageUploadPrepViewController.selectedID = self.woItem.ID
+        imageUploadPrepViewController.customerID = self.customerID
+        // imageUploadPrepViewController.itemID = self.woItem.
+        imageUploadPrepViewController.layoutViews()
+        
+        imageUploadPrepViewController.woID = self.woID
+        imageUploadPrepViewController.groupImages = true
+        imageUploadPrepViewController.fieldNoteDelegate = self
+        
+        
+        self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+        
+        */
+        
+        
+    }
+    
+    
+    
+    
+    
+    
     
     
     func handleDatePicker()

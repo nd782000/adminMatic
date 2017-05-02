@@ -71,7 +71,11 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     var customerID:String = ""
     
-    //var tasks: [Task] = []//data array
+    var tasks: [Task] = []//data array
+    
+    var saleRepName:String = ""
+    
+    var imageUploadPrepViewController:ImageUploadPrepViewController!
     
     
     
@@ -115,7 +119,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
-        layoutViews()
+        //layoutViews()
         
         
     }
@@ -534,22 +538,9 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        
         var count:Int!
-        print("self.woItem.chargeID = \(self.woItem.chargeID)")
-        if(self.woItem.chargeID != "2"){
-            count = self.woItem.tasks.count + 1
-        }else{
-            count = self.woItem.tasks.count
-        }
-        
-        //////////print("schedule count = \(count)", terminator: "")
-        
-        
+        count = self.tasks.count + 1
         return count
-        
-        
     }
     
     
@@ -558,18 +549,35 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         cell.prepareForReuse()
         
         
-        if(indexPath.row == self.woItem.tasks.count){
+        if(indexPath.row == self.tasks.count){
             //cell add btn mode
             cell.layoutAddBtn()
         }else{
             
-            cell.task = self.woItem.tasks[indexPath.row]
+            cell.task = self.tasks[indexPath.row]
             cell.layoutViews()
+            cell.taskLbl.text = self.tasks[indexPath.row].task
             
-            cell.taskLbl.text = self.woItem.tasks[indexPath.row].task
-            cell.setStatus(status: self.woItem.tasks[indexPath.row].status)
-            if(self.woItem.tasks[indexPath.row].images.count > 0){
-                cell.setImageUrl(_url: "\(self.woItem.tasks[indexPath.row].images[0].thumbPath!)")
+            if(self.tasks[indexPath.row].images.count == 0){
+                cell.imageQtyLbl.text = "No Images"
+            }else{
+                if(self.tasks[indexPath.row].images.count == 1){
+                    cell.imageQtyLbl.text = "1 Image"
+                    
+                }else{
+                    cell.imageQtyLbl.text = "\(self.tasks[indexPath.row].images.count) Images"
+                }
+            }
+            
+            
+            cell.setStatus(status: self.tasks[indexPath.row].status)
+            
+            print("image count = \(self.tasks[indexPath.row].images.count)")
+            
+            if(self.tasks[indexPath.row].images.count > 0){
+                print("image path = \(self.tasks[indexPath.row].images[0].thumbPath!)")
+                cell.activityView.startAnimating()
+                cell.setImageUrl(_url: "\(self.tasks[indexPath.row].images[0].thumbPath!)")
             }else{
                 cell.setBlankImage()
             }
@@ -591,10 +599,20 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         //////print("You selected cell #\(indexPath.row)!")
         
         //let indexPath = tableView.indexPathForSelectedRow;
-        if(indexPath.row == self.woItem.tasks.count){
+        if(indexPath.row == self.tasks.count){
             self.addTask()
         }else{
-            tableView.deselectRow(at: indexPath, animated: true)
+            tableView.deselectRow(at: indexPath as IndexPath, animated: true)
+            imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _ID: self.tasks[indexPath.row].ID)
+            imageUploadPrepViewController.images = self.tasks[indexPath.row].images
+            imageUploadPrepViewController.layoutViews()
+            imageUploadPrepViewController.groupDescriptionTxt.text = self.tasks[indexPath.row].task
+            imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
+            imageUploadPrepViewController.selectedID = self.customerID
+            imageUploadPrepViewController.woID = self.woID
+            imageUploadPrepViewController.groupImages = true
+            imageUploadPrepViewController.fieldNoteDelegate = self
+            self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
         }
         
         
@@ -608,7 +626,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
        
         
-        let ID = self.woItem.tasks[indexPath.row].ID
+        let ID = self.tasks[indexPath.row].ID
         
         var newItemStatus:String?
         
@@ -623,7 +641,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         let none = UITableViewRowAction(style: .normal, title: "None") { action, index in
             //print("none button tapped")
             
-            self.woItem.tasks[indexPath.row].status = "1"
+            self.tasks[indexPath.row].status = "1"
             tableView.reloadData()
             
             
@@ -679,7 +697,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         let progress = UITableViewRowAction(style: .normal, title: "Prog.") { action, index in
             //print("progress button tapped")
             
-            self.woItem.tasks[indexPath.row].status = "2"
+            self.tasks[indexPath.row].status = "2"
             tableView.reloadData()
             
             
@@ -731,7 +749,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         let done = UITableViewRowAction(style: .normal, title: "Done") { action, index in
             //print("done button tapped")
-            self.woItem.tasks[indexPath.row].status = "3"
+            self.tasks[indexPath.row].status = "3"
             tableView.reloadData()
             
             var parameters:[String:String]
@@ -779,7 +797,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         let cancel = UITableViewRowAction(style: .normal, title: "Cancel") { action, index in
             //print("cancel button tapped")
-            self.woItem.tasks[indexPath.row].status = "4"
+            self.tasks[indexPath.row].status = "4"
             tableView.reloadData()
             
             var parameters:[String:String]
@@ -838,6 +856,33 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     func addTask(){
         print("add task")
         
+        
+        if(self.woItem.chargeID == "2"){
+            var message:String = ""
+            if(self.saleRepName != "No Rep"){
+                message = "Contact sales rep: \(self.saleRepName) or the office to add tasks to this item."
+            }else{
+                message = "Contact the office to add tasks to this item."
+            }
+            let alertController = UIAlertController(title: "Flat Price Item", message: message, preferredStyle: UIAlertControllerStyle.alert)
+            
+            
+            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+                (result : UIAlertAction) -> Void in
+                print("OK")
+                //self.popView()
+            }
+            
+            alertController.addAction(okAction)
+            self.present(alertController, animated: true, completion: nil)
+            return
+        }
+
+        
+        
+        
+        
+        
         let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _ID: "0")
         imageUploadPrepViewController.selectedID = self.woItem.ID
         imageUploadPrepViewController.customerID = self.customerID
@@ -856,12 +901,23 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
     }
     
-    
+    /*
     func updateTable(){
         print("updateTable")
         self.editsMade = true
         getTasks()
+    }*/
+    
+    
+    func updateTable(_points:Int){
+        print("updateTable")
+        //self.imageUploadPrepViewController.goBack()
+        self.appDelegate.showMessage(_message: "earned \(_points) App Points!")
+        
+        self.editsMade = true
+        getTasks()
     }
+
     
     func getTasks(){
         print("get tasks")
@@ -872,7 +928,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         let timeStamp = Int(timeInterval)
         //, "cb":timeStamp as AnyObject
         
-        let parameters = ["woItemID": self.woItem as AnyObject, "cb":timeStamp as AnyObject]
+        let parameters = ["woItemID": self.woItem.ID as AnyObject, "cb":timeStamp as AnyObject]
         
         print("parameters = \(parameters)")
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/tasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
@@ -895,7 +951,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
                     
                     let ts = self.tasksJson?["tasks"]
                     
-                    self.woItem.tasks = []
+                    self.tasks = []
                     
                     
                     //FieldNotes
@@ -936,7 +992,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
                         let task = Task(_ID: ts?[n]["ID"].stringValue, _sort: ts?[n]["sort"].stringValue, _status: ts?[n]["status"].stringValue, _task: ts?[n]["task"].stringValue, _images: taskImages)
                         
                         
-                        self.woItem.tasks.append(task)
+                        self.tasks.append(task)
                         
                     }
                     
@@ -958,6 +1014,9 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
                     //}
                     
                     self.itemDetailsTableView.reloadData()
+                    
+                    let indexPath = IndexPath(row: self.tasks.count, section: 0)
+                    self.itemDetailsTableView.scrollToRow(at: indexPath, at: .top, animated: true)
                     
                     
                 }

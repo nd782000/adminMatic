@@ -71,7 +71,7 @@ class BugViewController: UIViewController, UITextViewDelegate{
         
         //custom back button
         backButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(FieldNoteViewController.goBack), for: UIControlEvents.touchUpInside)
+        backButton.addTarget(self, action: #selector(BugViewController.goBack), for: UIControlEvents.touchUpInside)
         backButton.setTitle("Back", for: UIControlState.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
@@ -183,7 +183,7 @@ class BugViewController: UIViewController, UITextViewDelegate{
             
             print("2")
             self.submitNoteButton = Button(titleText: "Submit Bug")
-            self.submitNoteButton.addTarget(self, action: #selector(FieldNoteViewController.saveData), for: UIControlEvents.touchUpInside)
+            self.submitNoteButton.addTarget(self, action: #selector(BugViewController.saveData), for: UIControlEvents.touchUpInside)
             self.view.addSubview(self.submitNoteButton)
         }
        

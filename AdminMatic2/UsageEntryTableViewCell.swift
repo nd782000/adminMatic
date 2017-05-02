@@ -9,6 +9,7 @@
 
 import Foundation
 import UIKit
+import Nuke
 
 class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerViewDelegate {
     
@@ -30,7 +31,7 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     
     var empPic:String!
     var employeeImageView:UIImageView = UIImageView()
-    
+    var activityView:UIActivityIndicatorView!
     
     var qtyLbl:Label!
     
@@ -87,6 +88,15 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         self.employeeImageView.clipsToBounds = true
         self.employeeImageView.translatesAutoresizingMaskIntoConstraints = false
         self.contentView.addSubview(self.employeeImageView)
+        
+        
+        activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        activityView.translatesAutoresizingMaskIntoConstraints = false
+        //activityView.center = CGPoint(x: self.employeeImageView.frame.size.width / 2, y: self.employeeImageView.frame.size.height / 2)
+        employeeImageView.addSubview(activityView)
+        
+        
+        
         
         nameLbl.translatesAutoresizingMaskIntoConstraints = false
         
@@ -198,6 +208,13 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[startLbl(40)]|", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[startLbl][startTxtField(70)][stopLbl][stopTxtField(70)][breakLbl][breakTxtField(50)]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        
+        
+        let viewsDictionary2 = ["activityView":activityView] as [String : Any]
+        
+        employeeImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activityView]-|", options: [], metrics: nil, views: viewsDictionary2))
+        employeeImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activityView]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
+        
     }
     
     func displayMaterialMode(){
@@ -353,8 +370,17 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
 
     
     
+    func setImageUrl(_url:String){
+        let imgURL:URL = URL(string: _url)!
+        Nuke.loadImage(with: imgURL, into: self.employeeImageView){ [weak contentView] in
+            //print("nuke loadImage")
+            self.employeeImageView.handle(response: $0, isFromMemoryCache: $1)
+            self.activityView.stopAnimating()
+        }
+    }
     
     
+    /*
     func setImageUrl(_url:String){
         
         let url = URL(string: _url)
@@ -367,7 +393,7 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         }
     }
     
-    
+    */
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
@@ -434,25 +460,6 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     //material mode
     
     
-    func keyboardWillShow(sender: NSNotification) {
-        //print("keyboard will show")
-        
-        if(self.locked == false){
-            if(Double(qtyTxtField.text!) != nil){
-                
-                let qty = Double(qtyTxtField.text!)
-               // print("call delegate \(self.row)  \(qty)")
-                self.delegate.editQty(row: self.row, qty: qty!)
-            }
-            if(Double(costTxtField.text!) != nil){
-                
-                let cost = Double(costTxtField.text!)
-                //print("call delegate \(self.row)  \(cost)")
-                self.delegate.editCost(row: self.row, cost: cost!)
-            }
-        }
-        
-    }
     
     
     func handleQty()
@@ -508,6 +515,28 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     }
     
     
+    
+    
+    func keyboardWillShow(sender: NSNotification) {
+        //print("keyboard will show")
+        
+        if(self.locked == false){
+            if(Double(qtyTxtField.text!) != nil){
+                
+                let qty = Double(qtyTxtField.text!)
+                // print("call delegate \(self.row)  \(qty)")
+                self.delegate.editQty(row: self.row, qty: qty!)
+            }
+            if(Double(costTxtField.text!) != nil){
+                
+                let cost = Double(costTxtField.text!)
+                //print("call delegate \(self.row)  \(cost)")
+                self.delegate.editCost(row: self.row, cost: cost!)
+            }
+        }
+        
+    }
+
     
     //picker view delegate methods
     

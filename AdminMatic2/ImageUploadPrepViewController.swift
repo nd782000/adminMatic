@@ -110,11 +110,14 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     
     var currentImageIndex:Int!
     var imageDetailViewController:ImageDetailViewController!
+    
+    var points:Int = 0
+    
 
     init(_imageType:String,_ID:String,_images:[Image], _saveURLString:String, _linkType:String = ""){
         super.init(nibName:nil,bundle:nil)
         
-        print("ImmageUploadPrep init")
+        print("ImageUploadPrep init")
         self.imageType = _imageType
         self.ID = _ID
         self.images = _images
@@ -337,9 +340,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         }
         
         
-        if(self.ID != "0"){
+        if(self.ID != "0" && self.imageType != "Customer"){
             self.submitBtn.isHidden = true
         }
+        
         
         
         setConstraints()
@@ -377,9 +381,16 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
                 
             }else{
-                self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(50)]-[imageCollection]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-                
-                 self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(50)]-[searchTable]-keyboardHeight-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                if(self.imageType != "Customer"){
+                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(50)]-[imageCollection]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                    
+                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(50)]-[searchTable]-keyboardHeight-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                }else{
+                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[imageCollection]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                    
+                   // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(50)]-[searchTable]-keyboardHeight-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                }
+               
             }
             
             let viewsDictionary2 = ["groupSwitch":self.groupSwitch, "groupSwitchLbl":self.groupSwitchLbl, "groupNameTxt":self.groupNameTxt,"searchBar":groupSearchBar] as [String:Any]
@@ -411,21 +422,36 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 "groupNameView":self.groupNameView, "imageCollection":self.imageCollectionView, "submitBtn":self.submitBtn
                 ] as [String:Any]
             
+            if(self.imageType != "Customer"){
+                self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[groupNameView]|", options: [], metrics: nil, views: viewsDictionary))
+            }
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[groupNameView]|", options: [], metrics: nil, views: viewsDictionary))
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[imageCollection]-|", options: [], metrics: nil, views: viewsDictionary))
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
             
             
             if(images.count > 0){
-                self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]-[imageCollection]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                if(self.imageType != "Customer"){
+                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]-[imageCollection]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                }else{
+                     self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[imageCollection]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                }
+                
                
             }else{
-                self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]", options: [], metrics: sizeVals, views: viewsDictionary))
-                self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:"V:|-90-[imageCollection]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                if(self.imageType != "Customer"){
+
+                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]", options: [], metrics: sizeVals, views: viewsDictionary))
+                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:"V:|-90-[imageCollection]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                }else{
+                    
+                    //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]", options: [], metrics: sizeVals, views: viewsDictionary))
+                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:"V:|-90-[imageCollection]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                    
+                }
             }
             
-            
+        if(self.imageType != "Customer"){
             let viewsDictionary2 = ["groupDescriptionTxt":self.groupDescriptionTxt] as [String:Any]
             
             
@@ -433,6 +459,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
                 self.groupNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[groupDescriptionTxt(70)]", options: [], metrics: nil, views: viewsDictionary2))
             }
+        }
         
     }
     
@@ -441,7 +468,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if(self.images.count > 0){
-            let totalHeight: CGFloat = 250.0
+            let totalHeight: CGFloat = 310.0
             let totalWidth: CGFloat = (self.view.frame.width - 10)
             return CGSize(width: ceil(totalWidth), height: ceil(totalHeight))
         }else{
@@ -646,10 +673,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     func uploadComplete(_images:[Image],_scoreAdjust:Int){
         print("upload complete")
 
-        if(self.imageType == "Gallery"){
+        if(self.imageType == "Gallery" || self.imageType == "Customer"){
             delegate.refreshImages(_images: _images, _scoreAdjust: _scoreAdjust)
         }else{
-            fieldNoteDelegate.updateTable()
+            fieldNoteDelegate.updateTable(_points: (_scoreAdjust + points))
         }
         
         
@@ -1042,6 +1069,22 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
                 if(self.groupDescriptionTxt.text == groupDescriptionPlaceHolder){
                     groupDescString = ""
+                    
+                    if(images.count == 0){
+                        let alertController = UIAlertController(title: "Add Text or Image", message: "Write a description or add an image to submit.", preferredStyle: UIAlertControllerStyle.alert)
+                       
+                        
+                        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+                            (result : UIAlertAction) -> Void in
+                            print("OK")
+                            //self.popView()
+                        }
+                        
+                        alertController.addAction(okAction)
+                        self.present(alertController, animated: true, completion: nil)
+                        return
+                    }
+                    
                 }else{
                     groupDescString = self.groupDescriptionTxt.text
                     
@@ -1056,7 +1099,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             if(self.imageType == "Field Note"){
                 //field note
                 
-                let parameters = ["ID":"0", "note": groupDescString as AnyObject,"createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "custID":self.selectedID as AnyObject, "woID":self.woID as AnyObject, "status":"1" as AnyObject, "cb":timeStamp as AnyObject] as [String : Any]
+                let parameters = ["ID":"0", "note": groupDescString as AnyObject,"createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "custID":self.selectedID as AnyObject, "woID":self.woID as AnyObject, "status":"0" as AnyObject, "cb":timeStamp as AnyObject] as [String : Any]
                 
                 print("parameters = \(parameters)")
                 
@@ -1084,13 +1127,13 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                             }
                             
                             //add appPoints
-                            var points:Int = JSON(json)["scoreAdjust"].intValue
+                             self.points = JSON(json)["scoreAdjust"].intValue
                             //print("points = \(points)")
-                            if(points > 0){
-                                self.appDelegate.showMessage(_message: "earned \(points) App Points!")
-                            }else if(points < 0){
-                                points = points * -1
-                                self.appDelegate.showMessage(_message: "lost \(points) App Points!")
+                            if(self.points > 0){
+                               // self.appDelegate.showMessage(_message: "earned \(points) App Points!")
+                            }else if(self.points < 0){
+                                self.points = self.points * -1
+                                //self.appDelegate.showMessage(_message: "lost \(points) App Points!")
                                 
                             }
                             
@@ -1102,7 +1145,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                             self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
                         }else{
                             if((self.fieldNoteDelegate) != nil){
-                                self.fieldNoteDelegate.updateTable()
+                                self.fieldNoteDelegate.updateTable(_points: self.points)
                             }
                             self.imageAdded = false
                             self.textEdited = false
@@ -1114,6 +1157,8 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 }
             }else{
                 //tasks
+                
+                
                 let parameters = ["ID":"0", "task": groupDescString as AnyObject,"createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "woItemID":self.selectedID as AnyObject, "woID":self.woID as AnyObject, "status":"1" as AnyObject, "cb":timeStamp as AnyObject] as [String : Any]
                 
                 print("parameters = \(parameters)")
@@ -1142,17 +1187,21 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                             }
                             
                             //add appPoints
-                            var points:Int = JSON(json)["scoreAdjust"].intValue
+                            self.points = (self.tasksJson?["scoreAdjust"].intValue)!
                             //print("points = \(points)")
-                            if(points > 0){
-                                self.appDelegate.showMessage(_message: "earned \(points) App Points!")
-                            }else if(points < 0){
-                                points = points * -1
-                                self.appDelegate.showMessage(_message: "lost \(points) App Points!")
+                            if(self.points > 0){
+                               // self.appDelegate.showMessage(_message: "earned \(points) App Points!")
+                            }else if(self.points < 0){
+                                self.points = self.points * -1
+                                //self.appDelegate.showMessage(_message: "lost \(points) App Points!")
                                 
                             }
                             
                         }
+                        
+                        
+                       
+                        
                         
                         if(self.images.count > 0){
                             let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.images)
@@ -1160,13 +1209,15 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                             self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
                         }else{
                             if((self.fieldNoteDelegate) != nil){
-                                self.fieldNoteDelegate.updateTable()
+                                self.fieldNoteDelegate.updateTable(_points: self.points)
                             }
                             self.imageAdded = false
                             self.textEdited = false
                             self.goBack()
                             
                         }
+                        
+                        
                         
                         
                 }

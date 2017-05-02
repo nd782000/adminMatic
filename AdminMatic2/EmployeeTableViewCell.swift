@@ -11,6 +11,7 @@ import UIKit
 import Nuke
 
 
+
 class EmployeeTableViewCell: UITableViewCell {
     
     var employee:Employee!

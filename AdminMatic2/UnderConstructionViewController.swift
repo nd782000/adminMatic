@@ -50,7 +50,7 @@ class UnderConstructionViewController: ViewControllerWithMenu  {
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
-        navigationItem.leftBarButtonItem  = backButtonItem
+       // navigationItem.leftBarButtonItem  = backButtonItem
         
         
         self.layoutViews()
