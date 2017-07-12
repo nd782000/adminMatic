@@ -128,7 +128,7 @@ class VendorViewController: ViewControllerWithMenu, CLLocationManagerDelegate{
         
         
      }
-     
+      
      func parseVendorJSON(){
      
      

@@ -211,7 +211,7 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
                         
                         
                         self.fieldNotes.append(fieldNote)
-                        
+                         
                     }
                     
                     // let scoreJSON =  JSON(json)["scoreAdjust"]

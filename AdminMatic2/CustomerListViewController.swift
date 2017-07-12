@@ -170,13 +170,13 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view4(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[view2(40)][view3][view4(30)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         
-        
+         
         let viewsDictionary2 = [
             
             "countLbl":self.countLbl
             ] as [String : Any]
         
-        
+         
         //////////////   auto layout position constraints   /////////////////////////////
         
         self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[countLbl]|", options: [], metrics: sizeVals, views: viewsDictionary2))

@@ -41,7 +41,7 @@ struct defaultsKeys {
     static let loggedInPic = ""
 }
 
-
+ 
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{

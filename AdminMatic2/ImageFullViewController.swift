@@ -112,7 +112,7 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
         self.imageView.addGestureRecognizer(swipeLeft)
         
         
-        
+         
         
         /*
         //auto layout group

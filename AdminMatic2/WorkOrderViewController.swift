@@ -619,7 +619,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                 
             }
             
-            
+             
             
             
             let fieldNote = FieldNote(_ID: self.json["fieldNotes"][n]["ID"].stringValue, _note: self.json["fieldNotes"][n]["note"].stringValue, _customerID: self.json["fieldNotes"][n]["customerID"].stringValue, _workOrderID: self.json["fieldNotes"][n]["workOrderID"].stringValue, _createdBy: self.json["fieldNotes"][n]["createdBy"].stringValue, _status: self.json["fieldNotes"][n]["status"].stringValue, _images:fieldNoteImages)

@@ -851,7 +851,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         return [cancel, done, progress, none]
     }
-    
+     
     
     func addTask(){
         print("add task")

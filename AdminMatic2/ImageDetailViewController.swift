@@ -44,7 +44,7 @@ class ImageDetailViewController: UIViewController{
     var descriptionLbl:UITextView!
     var tagsLbl:Label!
     
-   
+    
     var saveURLString:String!
     
     var ID:String //elementID to possibly edit

@@ -16,7 +16,7 @@ import UIKit
 class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource  {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    
+     
     var employeeImage:UIImageView!
     var loggedInBtn: Button = Button()
     

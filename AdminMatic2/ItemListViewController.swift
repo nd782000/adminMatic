@@ -198,7 +198,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[countLbl]|", options: [], metrics: sizeVals, views: viewsDictionary2))
         
         self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[countLbl(20)]", options: [], metrics: sizeVals, views: viewsDictionary2))
-        
+         
         
     }
     

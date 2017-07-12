@@ -251,7 +251,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view3(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
         //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[view1(40)][view2][countView(30)][view3(40)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[view2][countView(30)][view3(40)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        
+         
         let viewsDictionary2 = [
             
             "countLbl":self.countLbl

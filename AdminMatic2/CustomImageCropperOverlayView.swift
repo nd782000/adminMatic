@@ -23,7 +23,7 @@ final class CustomImageCropperOverlayView: AKImageCropperOverlayView {
             color = configuraiton.corner.highlightedLineColor
             width = configuraiton.corner.highlightedLineWidth
         }
-        
+         
         let layer: CAShapeLayer = view.layer.sublayers!.first as! CAShapeLayer
         
         let circlePath = UIBezierPath(

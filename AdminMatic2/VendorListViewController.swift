@@ -221,7 +221,7 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
         
         self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[countLbl(20)]", options: [], metrics: sizeVals, views: viewsDictionary2))
         
-        
+         
         
     }
     

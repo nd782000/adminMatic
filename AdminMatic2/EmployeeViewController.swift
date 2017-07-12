@@ -192,7 +192,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         
         
         layoutViews()
-    }
+    } 
     
     func layoutViews(){
         

@@ -113,7 +113,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
             self.employeeLabel?.text = "Uploading \(images.count) Photos by \(appDelegate.loggedInEmployee!.fname!) "
 
         }
-        
+         
         self.employeeView?.addSubview(self.employeeLabel!)
         self.progressLabel = InfoLabel()
         self.employeeView?.addSubview(self.progressLabel!)

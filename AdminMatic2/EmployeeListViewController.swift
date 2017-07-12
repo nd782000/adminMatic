@@ -115,7 +115,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[countLbl(20)]", options: [], metrics: sizeVals, views: viewsDictionary2))
         
         
-        
+         
     }
     
     

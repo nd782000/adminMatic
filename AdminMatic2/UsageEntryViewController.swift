@@ -811,7 +811,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         self.usageToLog[n].lunch = String(_break)
                         
                         
-                        
+                         
                         
                         self.setQty()
                     }

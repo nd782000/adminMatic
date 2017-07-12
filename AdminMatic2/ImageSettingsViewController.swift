@@ -120,7 +120,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         self.filterTxtField.tintColor = UIColor.clear
         self.filterTxtField.inputView = filterPicker
         self.view.addSubview(self.filterTxtField)
-        
+         
         
         print("layoutViews 1")
         let filterToolBar = UIToolbar()
