@@ -25,6 +25,9 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     var itemTableView:TableView = TableView()
     
+    var countView:UIView = UIView()
+    var countLbl:Label = Label()
+    
     var layoutVars:LayoutVars = LayoutVars()
     
     var sections : [(index: Int, length :Int, title: String)] = Array()
@@ -157,15 +160,44 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.itemTableView.register(ItemTableViewCell.self, forCellReuseIdentifier: "cell")
         
         self.view.addSubview(self.itemTableView)
+        
+        self.countView = UIView()
+        self.countView.backgroundColor = layoutVars.backgroundColor
+        //self.countView.layer.borderColor = layoutVars.borderColor
+        //self.countView.layer.borderWidth = 1.0
+        self.countView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(self.countView)
+        
+        
+        self.countLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.countLbl.text = "\(self.itemsArray.count) Active Items "
+        self.countView.addSubview(self.countLbl)
+
+        
+        
         //auto layout group
         let viewsDictionary = [
-            "view1":self.itemTableView
+            "view1":self.itemTableView,
+            "view2":self.countView
         ] as [String : Any]
         
         let sizeVals = ["fullWidth": layoutVars.fullWidth,"width": layoutVars.fullWidth - 30,"navBottom":layoutVars.navAndStatusBarHeight,"height": self.view.frame.size.height - layoutVars.navAndStatusBarHeight] as [String : Any]
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[view1(height)]", options:[], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[view1][view2(30)]|", options:[], metrics: sizeVals, views: viewsDictionary))
+        
+        let viewsDictionary2 = [
+            
+            "countLbl":self.countLbl
+            ] as [String : Any]
+        
+        
+        //////////////   auto layout position constraints   /////////////////////////////
+        
+        self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[countLbl]|", options: [], metrics: sizeVals, views: viewsDictionary2))
+        
+        self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[countLbl(20)]", options: [], metrics: sizeVals, views: viewsDictionary2))
         
         
     }

@@ -112,20 +112,20 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
         cell.contact = Contact(_ID: self.customerJSON["customer"]["contacts"][indexPath.row]["ID"].stringValue, _sort: self.customerJSON["customer"]["contacts"][indexPath.row]["sort"].stringValue, _value: self.customerJSON["customer"]["contacts"][indexPath.row]["value"].stringValue, _type: self.customerJSON["customer"]["contacts"][indexPath.row]["type"].stringValue, _contactName: self.customerJSON["customer"]["contacts"][indexPath.row]["contactName"].stringValue, _main: self.customerJSON["customer"]["contacts"][indexPath.row]["main"].stringValue, _name: self.customerJSON["customer"]["contacts"][indexPath.row]["name"].stringValue,_street1:self.customerJSON["customer"]["contacts"][indexPath.row]["street1"].stringValue,_street2:self.customerJSON["customer"]["contacts"][indexPath.row]["street2"].stringValue,_city:self.customerJSON["customer"]["contacts"][indexPath.row]["city"].stringValue,_state:self.customerJSON["customer"]["contacts"][indexPath.row]["state"].stringValue,_zip:self.customerJSON["customer"]["contacts"][indexPath.row]["zip"].stringValue,_zone:self.customerJSON["customer"]["zone"][indexPath.row]["street1"].stringValue,_zoneName:self.customerJSON["customer"]["contacts"][indexPath.row]["zoneName"].stringValue,_color:self.customerJSON["customer"]["contacts"][indexPath.row]["color"].stringValue,_lat:self.customerJSON["customer"]["contacts"][indexPath.row]["lat"].stringValue as NSString,_lng:self.customerJSON["customer"]["contacts"][indexPath.row]["lng"].stringValue as NSString)
         
         switch  self.customerJSON["customer"]["contacts"][indexPath.row]["type"].stringValue {
-        //phone
+        //main phone
         case "1":
             cell.iconView.image = UIImage(named:"phoneIcon.png")
             
             cell.nameLbl?.text = cell.contact.value
-            cell.detailLbl?.text = cell.contact.name
+            cell.detailLbl?.text = "Main Phone"
             
             break
-        //email
+        //main email
         case "2":
             cell.iconView.image = UIImage(named:"emailIcon.png")
             
             cell.nameLbl?.text = cell.contact.value
-            cell.detailLbl?.text = cell.contact.name
+            cell.detailLbl?.text = "Main Email"
             break
             
         //billing  address
@@ -133,7 +133,7 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
             cell.iconView.image = UIImage(named:"mapIcon.png")
             
             cell.nameLbl?.text = cell.contact.street1 + " " + cell.contact.street2 + " " + cell.contact.city + ", " + cell.contact.state
-            cell.detailLbl?.text = cell.contact.contactName
+            cell.detailLbl?.text = "Billing Address"
             break
             
         //jobSite address
@@ -141,7 +141,7 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
             cell.iconView.image = UIImage(named:"mapIcon.png")
             
             cell.nameLbl?.text = cell.contact.street1 + " " + cell.contact.street2 + " " + cell.contact.city + ", " + cell.contact.state
-            cell.detailLbl?.text = cell.contact.contactName
+            cell.detailLbl?.text = "Jobsite Address"
             
             break
             
@@ -150,22 +150,106 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
             cell.iconView.image = UIImage(named:"webIcon.png")
             
             cell.nameLbl?.text = cell.contact.value
-            cell.detailLbl?.text = cell.contact.name
+            cell.detailLbl?.text = "Website"
             
             break
             
-        //person
+        //alt contact
         case "6":
             cell.iconView.image = UIImage(named:"personIcon.png")
             
             cell.nameLbl?.text = cell.contact.name
-            cell.detailLbl?.text = cell.contact.value
+            cell.detailLbl?.text = "Alt Contact"
             
             break
             
         //fax
         case "7":
             //cell.type = .fax
+            cell.iconView.image = UIImage(named:"phoneIcon.png")
+            
+            cell.nameLbl?.text = cell.contact.value
+            cell.detailLbl?.text = "Fax"
+            
+            
+            break
+        //alt phone
+        case "8":
+            //cell.type = .fax
+            cell.iconView.image = UIImage(named:"phoneIcon.png")
+            
+            cell.nameLbl?.text = cell.contact.value
+            cell.detailLbl?.text = "Alt Phone"
+            
+            
+            break
+        //alt email
+        case "9":
+            //cell.type = .fax
+            cell.iconView.image = UIImage(named:"emailIcon.png")
+            
+            cell.nameLbl?.text = cell.contact.value
+            cell.detailLbl?.text = "Alt Email"
+            
+            
+            break
+        //mobile
+        case "10":
+            //cell.type = .fax
+            cell.iconView.image = UIImage(named:"phoneIcon.png")
+            
+            cell.nameLbl?.text = cell.contact.value
+            cell.detailLbl?.text = "Mobile"
+            
+            
+            break
+        //alt mobile
+        case "11":
+            //cell.type = .fax
+            cell.iconView.image = UIImage(named:"phoneIcon.png")
+            
+            cell.nameLbl?.text = cell.contact.value
+            cell.detailLbl?.text = "Alt Mobile"
+            
+            
+            break
+        //home phone
+        case "12":
+            //cell.type = .fax
+            cell.iconView.image = UIImage(named:"phoneIcon.png")
+            
+            cell.nameLbl?.text = cell.contact.value
+            cell.detailLbl?.text = "Home Phone"
+            
+            
+            break
+        //alt email
+        case "13":
+            //cell.type = .fax
+            cell.iconView.image = UIImage(named:"emailIcon.png")
+            
+            cell.nameLbl?.text = cell.contact.value
+            cell.detailLbl?.text = "Alt Email"
+            
+            
+            break
+        //invoice address
+        case "14":
+            //cell.type = .fax
+            cell.iconView.image = UIImage(named:"mapIcon.png")
+            
+            cell.nameLbl?.text = cell.contact.value
+            cell.detailLbl?.text = "Invoice Address"
+            
+            
+            break
+        //alt jobsite
+        case "15":
+            //cell.type = .fax
+            cell.iconView.image = UIImage(named:"mapIcon.png")
+            
+            cell.nameLbl?.text = cell.contact.value
+            cell.detailLbl?.text = "Alt Jobsite"
             
             
             break
@@ -222,6 +306,38 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
         case "5":
             openWebLink(currentCell.contact.value)
             break
+        case "6":
+            //openWebLink(currentCell.contact.value)
+            break
+        case "7":
+            //openWebLink(currentCell.contact.value)
+            break
+        case "8":
+            callPhoneNumber(currentCell.contact.value!)
+            break
+        case "9":
+            sendEmail(currentCell.contact.value)
+            break
+        case "10":
+            callPhoneNumber(currentCell.contact.value!)
+            break
+        case "11":
+            callPhoneNumber(currentCell.contact.value!)
+            break
+        case "12":
+            callPhoneNumber(currentCell.contact.value!)
+            break
+        case "13":
+            sendEmail(currentCell.contact.value)
+            break
+        case "14":
+            //callPhoneNumber(currentCell.contact.value!)
+            break
+        case "15":
+            openMapForPlace(currentCell.contact.name, _lat: currentCell.contact.lat!, _lng: currentCell.contact.lng!)
+            break
+
+
             //not doing anything for person or fax
             
         default:

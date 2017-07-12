@@ -974,6 +974,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
                             let fileName:String = (ts?[n]["images"][i]["fileName"].stringValue)!
                             
                             let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
+                            let mediumPath:String = "\(self.layoutVars.mediumBase)\(fileName)"
                             let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
                             
                             //create a item object
@@ -981,7 +982,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
                             
                             print("rawPath = \(rawPath)")
                             
-                            let image = Image(_id: ts?[n]["images"][i]["ID"].stringValue,_thumbPath: thumbPath,_rawPath: rawPath,_name: ts?[n]["images"][i]["name"].stringValue,_width: ts?[n]["images"][i]["width"].stringValue,_height: ts?[n]["images"][i]["height"].stringValue,_description: ts?[n]["images"][i]["description"].stringValue,_dateAdded: ts?[n]["images"][i]["dateAdded"].stringValue,_createdBy: ts?[n]["images"][i]["createdByName"].stringValue,_type: ts?[n]["images"][i]["type"].stringValue)
+                            let image = Image(_id: ts?[n]["images"][i]["ID"].stringValue,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: ts?[n]["images"][i]["name"].stringValue,_width: ts?[n]["images"][i]["width"].stringValue,_height: ts?[n]["images"][i]["height"].stringValue,_description: ts?[n]["images"][i]["description"].stringValue,_dateAdded: ts?[n]["images"][i]["dateAdded"].stringValue,_createdBy: ts?[n]["images"][i]["createdByName"].stringValue,_type: ts?[n]["images"][i]["type"].stringValue)
                             
                             image.customer = (ts?[n]["images"][i]["customer"].stringValue)!
                             image.tags = (ts?[n]["images"][i]["tags"].stringValue)!

@@ -11,16 +11,25 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
+import MessageUI
 //import Nuke
 
 
-class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource{
+class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, MFMessageComposeViewControllerDelegate{
     
     var layoutVars:LayoutVars = LayoutVars()
     var employeeTableView: TableView!
+    var countView:UIView = UIView()
+    var countLbl:Label = Label()
+    
     var groupMessageBtn:Button = Button(titleText: "Group Text Message")
 
     var employeeViewController:EmployeeViewController!
+    
+    
+    
+    
+    var controller:MFMessageComposeViewController = MFMessageComposeViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +55,25 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         self.employeeTableView.register(EmployeeTableViewCell.self, forCellReuseIdentifier: "cell")
         self.view.addSubview(self.employeeTableView)
         
+        
+        
+        self.countView = UIView()
+        self.countView.backgroundColor = layoutVars.backgroundColor
+        //self.countView.layer.borderColor = layoutVars.borderColor
+        //self.countView.layer.borderWidth = 1.0
+        self.countView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(self.countView)
+        
+        
+        self.countLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.countLbl.text = "\(appDelegate.employeeArray.count) Active Employees "
+        self.countView.addSubview(self.countLbl)
+        
+        
+        
+        
+        
+        
         self.groupMessageBtn.addTarget(self, action: #selector(EmployeeListViewController.groupMessage), for: UIControlEvents.touchUpInside)
         
        // self.groupMessageBtn.frame = CGRect(x:0, y: self.view.frame.height - 50, width: self.view.frame.width - 100, height: 50)
@@ -61,6 +89,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         let viewsDictionary = [
             
             "empTable":self.employeeTableView,
+            "countView":self.countView,
             "groupMessageBtn":self.groupMessageBtn
         ] as [String : Any]
         
@@ -69,8 +98,23 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         //////////////   auto layout position constraints   /////////////////////////////
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[empTable(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[countView(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[groupMessageBtn(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[empTable][groupMessageBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[empTable][countView(30)][groupMessageBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        
+        let viewsDictionary2 = [
+            
+            "countLbl":self.countLbl
+            ] as [String : Any]
+        
+        
+        //////////////   auto layout position constraints   /////////////////////////////
+        
+        self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[countLbl]|", options: [], metrics: sizeVals, views: viewsDictionary2))
+        
+        self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[countLbl(20)]", options: [], metrics: sizeVals, views: viewsDictionary2))
+        
+        
         
     }
     
@@ -128,11 +172,17 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         
     }
+    
+    
+    
+    
+    
+    
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
         let currentCell = tableView.cellForRow(at: indexPath as IndexPath) as! EmployeeTableViewCell;
         
-        let call = UITableViewRowAction(style: .normal, title: "Phone") { action, index in
+        let call = UITableViewRowAction(style: .normal, title: "Call") { action, index in
             //print("call button tapped")
             
             //callPhoneNumber(currentCell.employee.phone)
@@ -143,12 +193,132 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
                 UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: [:], completionHandler: nil)
             }
  
+            tableView.setEditing(false, animated: true)
+            //tableView.reloadRows(at: [indexPath], with: UITableViewRowAnimation.top)
+
+        }
+        
+        call.backgroundColor = self.layoutVars.buttonColor1
+        
+        
+        let text = UITableViewRowAction(style: .normal, title: "Text") { action, index in
+            //print("call button tapped")
+            
+            //callPhoneNumber(currentCell.employee.phone)
+            
+            
+            if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
+                
+                //UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: [:], completionHandler: nil)
+                //let alertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+                //let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+                    //(result : UIAlertAction) -> Void in
+               // }
+                //let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+                   // (result : UIAlertAction) -> Void in
+                    if (MFMessageComposeViewController.canSendText()) {
+                         self.controller = MFMessageComposeViewController()
+                        //controller.body = "\(self.messageTxt.text!) ~ Atlantic Group Message by \((self.appDelegate.loggedInEmployee?.name!)!)"
+                        //self.controller = MFMessageComposeViewController()
+                        self.controller.recipients = [currentCell.employee.phone]
+                        self.controller.messageComposeDelegate = self
+                        //self.controller.navigationBar.barTintColor = self.layoutVars.buttonColor1
+                        
+                        self.controller.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+                        self.controller.navigationBar.shadowImage = UIImage()
+                        self.controller.navigationBar.isTranslucent = true
+                        
+                        /*
+                        self.controller.navigationBar.barTintColor = UIColor.blue
+                        self.controller.navigationBar.isTranslucent = false
+                        self.controller.navigationBar.barStyle = .black
+                        */
+
+                        
+                        
+                        self.controller.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(EmployeeListViewController.dismissMessage))
+                        self.controller.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.blue]
+
+                        
+                        
+                        self.present(self.controller, animated: true, completion: nil)
+                        
+                        //tableView.reloadRows(at: [indexPath], with: UITableViewRowAnimation.top)
+                        tableView.setEditing(false, animated: true)
+                    }
+                //}
+                //alertController.addAction(cancelAction)
+                //alertController.addAction(okAction)
+               // self.present(alertController, animated: true, completion: nil)
+                
+                
+                
+                
+            }
+            
             
             
         }
-        call.backgroundColor = layoutVars.buttonTint
-        return [call]
+        
+        
+        text.backgroundColor = UIColor.orange
+        return [call,text]
+        
+        
+        
+        
+        
+        
+        
+        
+        
+            
+        
+        
+        
+        
+        
+        
+        
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    func messageComposeViewController(_ controller: MFMessageComposeViewController!, didFinishWith result: MessageComposeResult) {
+        print("didfinish")
+        //... handle sms screen actions
+        self.dismiss(animated: true, completion: nil)
+        //getBatch()
+        //print("try and send text")
+        
+        
+        
+        
+        
+        
+    }
+    
+       
+    func dismissMessage(){
+        print("dismiss")
+       // controller.dismiss(animated: true, completion: nil)
+        //self.navigationController?.popViewController(animated: true)
+        controller.dismiss(animated: true, completion: nil)
+        
+    }
+    
+    
+    
+    
+    
+    
+    
     
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

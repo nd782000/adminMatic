@@ -190,6 +190,7 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
                             let fileName:String = (fn?[n]["images"][i]["fileName"].stringValue)!
                             
                             let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
+                            let mediumPath:String = "\(self.layoutVars.mediumBase)\(fileName)"
                             let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
                             
                             //create a item object
@@ -197,7 +198,7 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
                             
                             print("rawPath = \(rawPath)")
                             
-                            let image = Image(_id: fn?[n]["images"][i]["ID"].stringValue,_thumbPath: thumbPath,_rawPath: rawPath,_name: fn?[n]["images"][i]["name"].stringValue,_width: fn?[n]["images"][i]["width"].stringValue,_height: fn?[n]["images"][i]["height"].stringValue,_description: fn?[n]["images"][i]["description"].stringValue,_dateAdded: fn?[n]["images"][i]["dateAdded"].stringValue,_createdBy: fn?[n]["images"][i]["createdByName"].stringValue,_type: fn?[n]["images"][i]["type"].stringValue)
+                            let image = Image(_id: fn?[n]["images"][i]["ID"].stringValue,_thumbPath: thumbPath, _mediumPath: mediumPath,_rawPath: rawPath,_name: fn?[n]["images"][i]["name"].stringValue,_width: fn?[n]["images"][i]["width"].stringValue,_height: fn?[n]["images"][i]["height"].stringValue,_description: fn?[n]["images"][i]["description"].stringValue,_dateAdded: fn?[n]["images"][i]["dateAdded"].stringValue,_createdBy: fn?[n]["images"][i]["createdByName"].stringValue,_type: fn?[n]["images"][i]["type"].stringValue)
                             
                             image.customer = (fn?[n]["images"][i]["customer"].stringValue)!
                             image.tags = (fn?[n]["images"][i]["tags"].stringValue)!

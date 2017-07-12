@@ -58,6 +58,7 @@
 		016DD5901E9AF8EC00359405 /* PerformanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */; };
 		019B24591EB6D1BB008D4475 /* NewWoItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019B24581EB6D1BB008D4475 /* NewWoItemViewController.swift */; };
 		019B24621EB82EC5008D4475 /* NewWoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019B24611EB82EC5008D4475 /* NewWoItemTableViewCell.swift */; };
+		019B24641EB8BEC0008D4475 /* ScheduleSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019B24631EB8BEC0008D4475 /* ScheduleSettingsViewController.swift */; };
 		01A1F2DF1E0704FF00DCCB39 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A1F2DE1E0704FF00DCCB39 /* AppDelegate.swift */; };
 		01A1F2E61E0704FF00DCCB39 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01A1F2E51E0704FF00DCCB39 /* Assets.xcassets */; };
 		01A1F2F41E0704FF00DCCB39 /* AdminMatic2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A1F2F31E0704FF00DCCB39 /* AdminMatic2Tests.swift */; };
@@ -203,6 +204,7 @@
 		016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceViewController.swift; sourceTree = "<group>"; };
 		019B24581EB6D1BB008D4475 /* NewWoItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewWoItemViewController.swift; sourceTree = "<group>"; };
 		019B24611EB82EC5008D4475 /* NewWoItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewWoItemTableViewCell.swift; sourceTree = "<group>"; };
+		019B24631EB8BEC0008D4475 /* ScheduleSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleSettingsViewController.swift; sourceTree = "<group>"; };
 		01A1F2DB1E0704FF00DCCB39 /* AdminMatic2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AdminMatic2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		01A1F2DE1E0704FF00DCCB39 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		01A1F2E51E0704FF00DCCB39 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -354,6 +356,7 @@
 				01EE1B2F1E201E0C00E5E061 /* TimeEntryView.swift */,
 				015231BA1E1D69FF009949BD /* LogInView.swift */,
 				01EC4E721E1DDBBD009CE261 /* ScheduleViewController.swift */,
+				019B24631EB8BEC0008D4475 /* ScheduleSettingsViewController.swift */,
 				014B02A11E21685A002A41DE /* WorkOrderViewController.swift */,
 				014B02AF1E2169BF002A41DE /* WoItemViewController.swift */,
 				019B24581EB6D1BB008D4475 /* NewWoItemViewController.swift */,
@@ -718,6 +721,7 @@
 				01EC4E731E1DDBBD009CE261 /* ScheduleViewController.swift in Sources */,
 				01A81E5A1E92FC090089B55F /* GroupMessageViewController.swift in Sources */,
 				016634221E340F6D002F7763 /* Item.swift in Sources */,
+				019B24641EB8BEC0008D4475 /* ScheduleSettingsViewController.swift in Sources */,
 				014B029E1E215DB5002A41DE /* CustomerTableViewCell.swift in Sources */,
 				0125B6D91E26B10E00BAC949 /* ImageDrawingViewController.swift in Sources */,
 				0125B6D41E26AE2500BAC949 /* NetData.swift in Sources */,

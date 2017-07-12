@@ -49,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.1"
+    var appVersion:String = "1.2.0"
     
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
@@ -61,6 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var scheduleViewController:ScheduleViewController!
     var imageCollectionViewController:ImageCollectionViewController!
     var performanceViewController:PerformanceViewController!
+    //var topImageViewController:ImageCollectionViewController!
     var bugsListViewController:BugsListViewController!
     
     
@@ -86,12 +87,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     
     var defaults:UserDefaults!
     
-    
-    /*
-    var loggedInUser:String = "0"
-    var loggedInUserFName:String = ""
-    var loggedInUserPic:String = ""
-    */
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
@@ -229,6 +224,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.imageCollectionViewController = ImageCollectionViewController()
         self.imageCollectionViewController.delegate = self
         */
+        
         
         self.bugsListViewController = BugsListViewController()
         self.bugsListViewController.delegate = self
@@ -384,7 +380,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             if(loggedInEmployee != nil){
                 
                 if(self.imageCollectionViewController == nil){
-                    self.imageCollectionViewController = ImageCollectionViewController()
+                    self.imageCollectionViewController = ImageCollectionViewController(_mode: "Gallery")
                     self.imageCollectionViewController.delegate = self
                 }
                 
@@ -409,8 +405,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
 
             
             break;
+            
         case 8:
-            //print("Show  Equipment List")
+            //print("Show  Bug List")
             if(loggedInEmployee != nil){
                 navigationController = UINavigationController(rootViewController: self.bugsListViewController)
                 window?.rootViewController = navigationController
@@ -593,11 +590,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         //frame: CGRect(x: 0, y: 0, width: layoutVars.fullWidth, height: 50)
         
         self.messageView?.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
-        
-        
-        
-
-        
         
         self.messageView?.isHidden = false
         

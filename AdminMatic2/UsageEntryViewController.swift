@@ -643,26 +643,78 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     }
     
     func editStart(row:Int,start:Date){
+        
         print("edit start \(start.description)")
         
         let stopDate = usageToLog[row].stop
         
-       print("stopDate = \(stopDate)")
+        print("stopDate = \(stopDate)")
         
         if(stopDate == nil){
+            
+            editOtherStartTimes(_row:row, _start: start)
+            
+            
             usageToLog[row].start = start
             self.editsMade = true
             setQty()
+            
+            
+            
         }else if(stopDate! < start){
             usageTableView.reloadData()
             self.simpleAlert(_title: "Time Error", _message: "\(usageToLog[row].empName!)'s start time can not be later then their stop time.")
         }else{
+            
+            editOtherStartTimes(_row:row, _start: start)
+
+            
             usageToLog[row].start = start
             
             self.editsMade = true
             setQty()
+            
+        }
+        
+        
+    }
+    
+    
+    func editOtherStartTimes(_row:Int,_start:Date){
+        print("editOtherStartTimes")
+        if(usageToLog.count > 1){
+            let alertController = UIAlertController(title: "Edit Start Time for Others?", message: "", preferredStyle: UIAlertControllerStyle.alert)
+            let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+                (result : UIAlertAction) -> Void in
+            }
+            let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+                (result : UIAlertAction) -> Void in
+                for n in 0 ..< self.usageToLog.count {
+                    if(n != _row){
+                        print("n != row")
+                        let stopDate = self.usageToLog[n].stop
+                        if(stopDate == nil){
+                            self.usageToLog[n].start = _start
+                        }else if(stopDate! < _start){
+                            self.usageTableView.reloadData()
+                            self.simpleAlert(_title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s start time can not be later then their stop time.")
+                        }else{
+                            self.usageToLog[n].start = _start
+                        }
+                    }
+                }
+                self.usageTableView.reloadData()
+            }
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            self.present(alertController, animated: true, completion: nil)
         }
     }
+    
+    
+    
+    
+    
     func editStop(row:Int,stop:Date){
         
         
@@ -677,6 +729,10 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             usageTableView.reloadData()
             self.simpleAlert(_title: "Time Error", _message: "\(usageToLog[row].empName!)'s stop time can not be earlier then their start time.")
         }else{
+            
+            editOtherStopTimes(_row:row, _stop: stop)
+            
+            
             usageToLog[row].stop = stop
             self.editsMade = true
             setQty()
@@ -684,11 +740,94 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
  
  
     }
+    
+    
+    func editOtherStopTimes(_row:Int,_stop:Date){
+        print("editOtherStopTimes")
+        if(usageToLog.count > 1){
+            let alertController = UIAlertController(title: "Edit Stop Time for Others?", message: "", preferredStyle: UIAlertControllerStyle.alert)
+            let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+                (result : UIAlertAction) -> Void in
+            }
+            let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+                (result : UIAlertAction) -> Void in
+                for n in 0 ..< self.usageToLog.count {
+                    if(n != _row){
+                       // print("n != row")
+                        
+                        
+                        
+                        if(self.usageToLog[n].start == nil){
+                            //no start time
+                            self.usageTableView.reloadData()
+                            self.simpleAlert(_title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s has no start time.  Enter start time first.")
+                        }else if(_stop<self.usageToLog[n].start!){
+                            //stop is before start
+                            self.usageTableView.reloadData()
+                            self.simpleAlert(_title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s stop time can not be earlier then their start time.")
+                        }else{
+                            self.usageToLog[n].stop = _stop
+                            self.editsMade = true
+                            self.setQty()
+                        }
+                        
+                        
+                        
+                    }
+                }
+                self.usageTableView.reloadData()
+            }
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
+    
+    
+    
+    
     func editBreak(row:Int,lunch:Int){
+        editOtherBreakTimes(_row: row, _break: lunch)
         usageToLog[row].lunch = String(lunch)
         self.editsMade = true
         setQty()
     }
+    
+    
+    func editOtherBreakTimes(_row:Int,_break:Int){
+        print("editOtherBreakTimes")
+        if(usageToLog.count > 1){
+            let alertController = UIAlertController(title: "Edit Break Time for Others?", message: "", preferredStyle: UIAlertControllerStyle.alert)
+            let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+                (result : UIAlertAction) -> Void in
+            }
+            let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+                (result : UIAlertAction) -> Void in
+                for n in 0 ..< self.usageToLog.count {
+                    if(n != _row){
+                        // print("n != row")
+                        
+                        
+                        self.usageToLog[n].lunch = String(_break)
+                        
+                        
+                        
+                        
+                        self.setQty()
+                    }
+                }
+                self.usageTableView.reloadData()
+            }
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
+
+    
+    
+    
+    
     
     //material usage functions
     func editQty(row:Int,qty:Double){

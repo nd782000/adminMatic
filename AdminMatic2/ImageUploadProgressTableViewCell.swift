@@ -28,6 +28,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
     var layoutVars:LayoutVars = LayoutVars()
     var indexPath:IndexPath!
     var reloadBtn:UIButton!
+   // var topImage:Bool!
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -162,14 +163,16 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                             if let result = response.result.value {
                                 let json = result as! NSDictionary
                                 let thumbBase = JSON(json)["thumbBase"].stringValue
+                                let mediumBase = JSON(json)["mediumBase"].stringValue
                                 let rawBase = JSON(json)["rawBase"].stringValue
                                 let thumbPath = "\(thumbBase)\(JSON(json)["images"][0]["fileName"].stringValue)"
+                                let mediumPath = "\(mediumBase)\(JSON(json)["images"][0]["fileName"].stringValue)"
                                 let rawPath = "\(rawBase)\(JSON(json)["images"][0]["fileName"].stringValue)"
                                 
                                 //let image = Image(_id: JSON(json)["images"][0]["ID"].stringValue, _thumbPath: thumbPath, _rawPath: rawPath, _name: JSON(json)["images"][0]["name"].stringValue, _width: JSON(json)["images"][0]["width"].stringValue, _height: JSON(json)["images"][0]["height"].stringValue, _description: JSON(json)["images"][0]["description"].stringValue, _customer: JSON(json)["images"][0]["customer"].stringValue, _woID: JSON(json)["images"][0]["woID"].stringValue, _dateAdded: JSON(json)["images"][0]["dateAdded"].stringValue, _createdBy: JSON(json)["images"][0]["createdBy"].stringValue, _type: JSON(json)["images"][0]["type"].stringValue, _tags: JSON(json)["images"][0]["tags"].stringValue)
                                 
                                 
-                                let image = Image(_id: JSON(json)["images"][0]["ID"].stringValue, _thumbPath: thumbPath, _rawPath: rawPath, _name: JSON(json)["images"][0]["name"].stringValue, _width: JSON(json)["images"][0]["width"].stringValue, _height: JSON(json)["images"][0]["height"].stringValue, _description: JSON(json)["images"][0]["description"].stringValue, _dateAdded: JSON(json)["images"][0]["dateAdded"].stringValue, _createdBy: JSON(json)["images"][0]["createdBy"].stringValue, _type: JSON(json)["images"][0]["type"].stringValue)
+                                let image = Image(_id: JSON(json)["images"][0]["ID"].stringValue, _thumbPath: thumbPath, _mediumPath: mediumPath, _rawPath: rawPath, _name: JSON(json)["images"][0]["name"].stringValue, _width: JSON(json)["images"][0]["width"].stringValue, _height: JSON(json)["images"][0]["height"].stringValue, _description: JSON(json)["images"][0]["description"].stringValue, _dateAdded: JSON(json)["images"][0]["dateAdded"].stringValue, _createdBy: JSON(json)["images"][0]["createdBy"].stringValue, _type: JSON(json)["images"][0]["type"].stringValue)
                                 
                                 image.customer = JSON(json)["images"][0]["customer"].stringValue
                                 image.woID = JSON(json)["images"][0]["woID"].stringValue

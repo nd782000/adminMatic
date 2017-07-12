@@ -22,6 +22,7 @@ class VendorViewController: ViewControllerWithMenu, CLLocationManagerDelegate{
     
     //let locationManager = CLLocationManager()
     var layoutVars:LayoutVars = LayoutVars()
+    var indicator: SDevIndicator!
     
     //main variables passed to this VC
     var vendorID:String
@@ -103,6 +104,9 @@ class VendorViewController: ViewControllerWithMenu, CLLocationManagerDelegate{
         let timeStamp = Int(timeInterval)
         //, "cb":timeStamp as AnyObject
 
+        // Show Indicator
+        indicator = SDevIndicator.generate(self.view)!
+        
         
         Alamofire.request(API.Router.vendor(["id":_id as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
             response in
@@ -115,7 +119,7 @@ class VendorViewController: ViewControllerWithMenu, CLLocationManagerDelegate{
                 print("JSON: \(json)")
                 self.vendorJSON = JSON(json)
                 self.parseVendorJSON()
-                
+                self.indicator.dismissIndicator()
             }
             
             

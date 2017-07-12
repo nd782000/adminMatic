@@ -7,7 +7,6 @@
 //
 
 
-
 import Foundation
 import UIKit
 import Alamofire
@@ -15,11 +14,10 @@ import SwiftyJSON
 import Nuke
 
 
-
-
 class ImageDetailViewController: UIViewController{
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var delegate:ImageViewDelegate!
+    var imageLikeDelegate:ImageLikeDelegate!
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
     var image:Image!
@@ -32,8 +30,17 @@ class ImageDetailViewController: UIViewController{
     var activityView:UIActivityIndicatorView!
     
     var textView:UIView!
-    var createdByLbl:Label!
-    var dateAddedLbl:Label!
+    
+    var likesBtn:Button = Button(titleText: "")
+    var likesImageView:UIImageView = UIImageView()
+    var likesLbl:Label = Label()
+    
+   // var liked = "0
+    //var likes = 0
+
+    //var createdByLbl:Label!
+    var customerLbl:Label!
+    //var dateAddedLbl:Label!
     var descriptionLbl:UITextView!
     var tagsLbl:Label!
     
@@ -47,14 +54,29 @@ class ImageDetailViewController: UIViewController{
     
     var viewsDictionary:[String:Any] = [:]
     var viewsDictionary2:[String:Any] = [:]
+    var viewsDictionary3:[String:Any] = [:]
     
     
     
     var imageFullViewController:ImageFullViewController!
     
+   // var mode:String = ""
+    
+    //var likesView:UIView = UIView()
+    
+    /*
+    var plusVoteBtn:Button = Button(titleText: "+")
+    var minusVoteBtn:Button = Button(titleText: "-")
+    var myVotesValueLbl:Label = Label()
+    var totalVotesLbl:Label = Label()
+    var totalVotesValueLbl:Label = Label()
+    */
+    
+    
     init(_image:Image, _saveURLString:String, _ID:String = "0"){
         
         self.image = _image
+        //self.mode = _mode
         self.ID = _ID
         
         self.imageFullViewController = ImageFullViewController(_image: _image)
@@ -89,11 +111,16 @@ class ImageDetailViewController: UIViewController{
         if(self.textView != nil){
             self.textView.subviews.forEach({ $0.removeFromSuperview() })
         }
+       // if(self.likesView != nil){
+          //  self.likesView.subviews.forEach({ $0.removeFromSuperview() })
+       // }
         if(self.backgroundImageView != nil){
             self.backgroundImageView.subviews.forEach({ $0.removeFromSuperview() })
         }
         
-        
+        //if(self.mode == "Top Image"){
+           // print("detail view for Top Image")
+        //}
         
         
         
@@ -140,12 +167,60 @@ class ImageDetailViewController: UIViewController{
         //self.view.addSubview(activityView)
         
         
+        /*
+        self.likesView = UIView()
+        self.likesView.translatesAutoresizingMaskIntoConstraints = false
+        self.likesView.backgroundColor = layoutVars.backgroundColor
+        self.likesView.layer.opacity = 0.9
+        */
+        
+        //if(self.mode != "Top Image"){
+           // self.votesView.isHidden = true
+       // }
+        
+       // self.plusVoteBtn.addTarget(self, action: #selector(ImageDetailViewController.handlePlusVote), for: UIControlEvents.touchUpInside)
+        
+        //self.minusVoteBtn.addTarget(self, action: #selector(ImageDetailViewController.handleMinusVote), for: UIControlEvents.touchUpInside)
+        
+        
+        
+        
+        
         self.textView = UIView()
         self.textView.translatesAutoresizingMaskIntoConstraints = false
         self.textView.backgroundColor = UIColor(hex: 0x005100, op: 0.6)
+        
+        self.likesBtn = Button(titleText: "")
+        self.likesBtn.backgroundColor = UIColor.clear
+        
+        if(self.image.liked == "0"){
+            self.likesImageView.image = UIImage(named:"unLiked.png")
+        }else{
+            self.likesImageView.image = UIImage(named:"liked.png")
+        }
+        
+        likesImageView.contentMode = .scaleAspectFill
+        likesImageView.translatesAutoresizingMaskIntoConstraints = false
+        self.likesBtn.addTarget(self, action: #selector(ImageDetailViewController.handleLike), for: UIControlEvents.touchUpInside)
+        
+        //self.textView.addSubview(self.likesImageView)
+        
+        self.likesLbl.text = "x\(self.image.likes)"
+        self.likesLbl.layer.opacity = 1.0
+        self.likesLbl.textColor = UIColor(hex: 0xffffff, op: 1.0)
+        //self.textView.addSubview(self.likesLbl)
+        
+
+        
+        
        
-        self.createdByLbl = Label(text: "by: \(self.image.createdBy!)")
-        self.createdByLbl.textColor = UIColor.white
+       // self.createdByLbl = Label(text: "\(self.image.createdBy!)")
+       // self.createdByLbl.textColor = UIColor.white
+        //self.createdByLbl.textAlignment = NSTextAlignment.right
+        
+        self.customerLbl = Label(text: "\(self.image.customerName)")
+        self.customerLbl.textColor = UIColor.white
+        self.customerLbl.textAlignment = NSTextAlignment.right
         
         
         
@@ -162,18 +237,21 @@ class ImageDetailViewController: UIViewController{
         let addedByDate = shortDateFormatter.string(from: date)
         
         
-        self.dateAddedLbl = Label(text:  "date: \(addedByDate)")
-        self.dateAddedLbl.textAlignment = NSTextAlignment.right
+        //self.dateAddedLbl = Label(text:  "\(addedByDate)")
+       // self.dateAddedLbl.textAlignment = NSTextAlignment.right
        
-        self.dateAddedLbl.textColor = UIColor.white
+        //self.dateAddedLbl.textColor = UIColor.white
         //self.textView.addSubview(self.dateAddedLbl)
         
         self.descriptionLbl = UITextView()
-        self.descriptionLbl.text = self.image.description!
+        self.descriptionLbl.text = "Uploaded by \(self.image.createdBy!) on \(addedByDate) - \(self.image.description!)"
+
+        //self.descriptionLbl.text = "\(self.image.customerName)     \(self.image.description!)"
         self.descriptionLbl.backgroundColor = UIColor(hex: 0xffffff, op: 0.1)
         self.descriptionLbl.layer.cornerRadius = 4.0
         self.descriptionLbl.textColor = UIColor.white
         self.descriptionLbl.font = layoutVars.textFieldFont
+        self.descriptionLbl.isEditable = false
         
         self.descriptionLbl.translatesAutoresizingMaskIntoConstraints = false
         
@@ -182,7 +260,9 @@ class ImageDetailViewController: UIViewController{
 
         activityView.startAnimating()
         
-         let imgUrl = URL(string: image.rawPath)
+         let imgUrl = URL(string: image.mediumPath)
+        
+        print("image url = \(image.mediumPath)")
         
         Nuke.loadImage(with: imgUrl!, into: imageView){ [weak view] in
             self.imageView?.handle(response: $0, isFromMemoryCache: $1)
@@ -201,13 +281,16 @@ class ImageDetailViewController: UIViewController{
         
         
         
+        
+        
+        
         viewsDictionary = [
             "backgroundImageView":self.backgroundImageView, "imageView":self.imageView, "textView":self.textView
             ] as [String:Any]
         
-        viewsDictionary2 = [
-            "createdByLbl":self.createdByLbl, "dateAddedLbl":self.dateAddedLbl, "descriptionLbl":self.descriptionLbl, "tagsLbl":self.tagsLbl
+        viewsDictionary2 = ["likesBtn":self.likesBtn, "likesLbl":self.likesLbl, "customerLbl":self.customerLbl, "descriptionLbl":self.descriptionLbl, "tagsLbl":self.tagsLbl
             ] as [String:Any]
+        viewsDictionary3 = ["likesImage":self.likesImageView] as [String:Any]
         
         setUpViews()
         
@@ -306,12 +389,8 @@ class ImageDetailViewController: UIViewController{
         super.viewWillLayoutSubviews()
         print("rotate view")
         
-        
-        
-        setUpViews()
-        
-        
-       
+       setUpViews()
+    
     }
     
     
@@ -319,84 +398,397 @@ class ImageDetailViewController: UIViewController{
     func setUpViews(){
         
         
+        print("set up views")
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        let sizeVals = ["navHeight":self.layoutVars.navAndStatusBarHeight, "landscapeNavHeight":self.layoutVars.navAndStatusBarHeight - self.layoutVars.statusBarHeight] as [String : Any]
+        
+        print("navHeight = \(self.layoutVars.navAndStatusBarHeight)  statusBarHeight = \(self.layoutVars.statusBarHeight) ")
         
         if(self.textView != nil){
             self.textView.subviews.forEach({ $0.removeFromSuperview() })
         }
+        //if(self.likesView != nil){
+           // self.likesView.subviews.forEach({ $0.removeFromSuperview() })
+       // }
         
     
         self.view.addSubview(self.backgroundImageView)
         self.view.addSubview(self.imageView)
         self.view.addSubview(activityView)
         self.view.addSubview(self.textView)
-        self.textView.addSubview(self.createdByLbl)
-        self.textView.addSubview(self.dateAddedLbl)
+        
+        self.textView.addSubview(self.likesBtn)
         
         
+        self.textView.addSubview(self.likesLbl)
+       // self.textView.addSubview(self.createdByLbl)
+        self.textView.addSubview(self.customerLbl)
         
-    
+        self.likesBtn.addSubview(self.likesImageView)
+        
+       
+
+
+
+
+        
+        
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[backgroundImageView]|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[imageView]|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[textView]|", options: [], metrics: nil, views: viewsDictionary))
+       // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[likesView]|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[backgroundImageView]|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[imageView]|", options: [], metrics: nil, views: viewsDictionary))
+        
+        
+        
+        
+        
+        
+        print("votesView 1")
+        //self.votesView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+
+
+
+        /*let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!)
+        self.likesImageView.layer.opacity = 1.0
+        
+        
+        
+        // let imgURL:URL = URL(string: imgUrl)!
+        Nuke.loadImage(with: imgUrl!, into: self.likesImageView){ [weak likesView] in
+            //print("nuke loadImage")
+            self.likesImageView.handle(response: $0, isFromMemoryCache: $1)
+            //self.activityView.stopAnimating()
+        }
+        */
+        
+                //print("votesView 3")
+       
+        
+        
+        /*
+        //self.plusVoteBtn.titleLabel?.text = "+"
+        self.plusVoteBtn.layer.opacity = 1.0
+        self.plusVoteBtn.titleLabel?.textColor = UIColor.white
+        self.votesView.addSubview(plusVoteBtn)
+        
+        //self.minusVoteBtn.titleLabel?.text = "-"
+        self.minusVoteBtn.layer.opacity = 1.0
+        self.minusVoteBtn.titleLabel?.textColor = UIColor.white
+        self.votesView.addSubview(minusVoteBtn)
+        
+        self.myVotesValueLbl.text = "8"
+        self.myVotesValueLbl.layer.opacity = 1.0
+        self.myVotesValueLbl.textColor = UIColor(hex: 0x005100, op: 1.0)
+        self.votesView.addSubview(self.myVotesValueLbl)
+        
+        self.totalVotesLbl.text = "Total Votes"
+        self.totalVotesLbl.layer.opacity = 1.0
+        self.totalVotesLbl.textColor = UIColor(hex: 0x005100, op: 1.0)
+        self.votesView.addSubview(self.totalVotesLbl)
+        
+        self.totalVotesValueLbl.text = "39"
+        self.totalVotesValueLbl.layer.opacity = 1.0
+        self.totalVotesValueLbl.textColor = UIColor(hex: 0x005100, op: 1.0)
+        self.votesView.addSubview(self.totalVotesValueLbl)
+
+        */
+        
+        
+        
+        
+        /*
+        viewsDictionary3 = [
+            "likesImageView":self.likesImageView, "likesLbl":self.likesLbl
+            ] as [String:Any]
+        self.likesView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likesImageView(30)]-[likesLbl]-|", options: [], metrics: nil, views: viewsDictionary3))
+        
+        print("votesView 4")
+        
+        self.likesView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[likesImageView(30)]", options: [], metrics: nil, views: viewsDictionary3))
+        self.likesView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[likesLbl(30)]", options: [], metrics: nil, views: viewsDictionary3))
+        print("votesView 5")
+        
+       */
+        
+        
+
+        
+        
+        
+        
+        
+
         
         
         if UIInterfaceOrientationIsLandscape(UIApplication.shared.statusBarOrientation) {
             //here you can do the logic for the cell size if phone is in landscape
             print("landscape")
+            
+            let navHeight = self.navigationController!.navigationBar.layer.frame.height
+            
+            let sizeVals2 = ["navHeight":navHeight] as [String : Any]
+
+            //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[votesView(100)]", options: [], metrics: nil, views: viewsDictionary))
+            
+            //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[likesView(80)]", options: [], metrics: sizeVals2, views: viewsDictionary))
+            
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(40)]|", options: [], metrics: nil, views: viewsDictionary))
             
-           // if(image.createdBy == appDelegate.loggedInEmployee?.ID){
-                //self.textView.addSubview(editButton)
-                self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[createdByLbl]-[dateAddedLbl(150)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
-                // self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[editBtn]-|", options: [], metrics: nil, views: viewsDictionary2))
-           // }else{
-               // self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[createdByLbl]-[dateAddedLbl(150)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
-            //}
+            
+            
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likesBtn(30)][likesLbl(50)]-[customerLbl(250)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
             
             
             
-            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[createdByLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
+           // self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|- [likesImageView(30)]-[createdByLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesBtn(30)]", options: [], metrics: nil, views: viewsDictionary2))
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesLbl(30)]", options: [], metrics: nil, views: viewsDictionary2))
+            
+           
+            
+            
+            
+           
+            
+            
             
         } else {
             //logic if not landscape
-            //print("portrait")
+            print("portrait")
             
+           // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[likesView(80)]", options: [], metrics: sizeVals, views: viewsDictionary))
+            
+            //self.textView.addSubview(self.customerLbl)
             self.textView.addSubview(self.descriptionLbl)
             
             self.textView.addSubview(self.tagsLbl)
-
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(150)]|", options: [], metrics: nil, views: viewsDictionary))
             
             
-            //if(image.createdBy == appDelegate.loggedInEmployee?.ID){
-               // self.textView.addSubview(editButton)
-                self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[createdByLbl]-[dateAddedLbl(150)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
-                //self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[editBtn(25)]", options: [], metrics: nil, views: viewsDictionary2))
-                
-           // }else{
-                //self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[createdByLbl]-[dateAddedLbl(150)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
-                
-           // }
+           // self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likesImageView(30)]-[likesLbl(20)]-|", options: [], metrics: nil, views: viewsDictionary2))
+            //self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesImageView(30)]", options: [], metrics: nil, views: viewsDictionary2))
+           // self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesLbl(30)]", options: [], metrics: nil, views: viewsDictionary2))
             
+            
+            
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likesBtn(30)][likesLbl(50)]-[customerLbl(250)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
+            
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesBtn(30)]-[descriptionLbl]-[tagsLbl(25)]-|", options: [], metrics: nil, views: viewsDictionary2))
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesBtn(30)]-[descriptionLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
 
-            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[createdByLbl(25)][descriptionLbl]-[tagsLbl(25)]-|", options: [], metrics: nil, views: viewsDictionary2))
-            
-            
+            //self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[descriptionLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tagsLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
             
             
         }
         
+        
+        self.likesBtn.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[likesImage(30)]", options: [], metrics: nil, views: viewsDictionary3))
+        
+        
+        
+        // self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|- [likesImageView(30)]-[createdByLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
+        self.likesBtn.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[likesImage(30)]", options: [], metrics: nil, views: viewsDictionary3))
+        
+        
+        
+        
+        
+        
+        //vote view
+       // if(self.mode == "Top Image"){
+            
+        
+            
+        //}else{
+            //self.votesView.isHidden = true
+       // }
+        
+        
         self.blurredEffectView.frame = self.view.bounds
         
     }
     
     
+    
+    /*
+    func handlePlusVote(){
+        print("handle Plus Vote")
+        
+        //self.messageView?.isHidden = true
+        
+    }
+    
+    func handleMinusVote(){
+        print("handle Minus Vote")
+        
+        //self.messageView?.isHidden = true
+        
+    }
+
+    
+    */
+    
+    
+    func handleLike(){
+        print("handle Like")
+        
+        indicator = SDevIndicator.generate(self.view)!
+        let parameters = ["empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "imageID":self.image.ID as AnyObject]
+        
+        
+        if(self.image.liked == "0"){
+            self.image.liked = "1"
+            self.likesImageView.image = UIImage(named:"liked.png")
+            
+           /* Alamofire.request(API.Router.newLike(["empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "imageID":self.image.ID as AnyObject])).responseString() {
+                response in
+                print(response.request ?? "")  // original URL request
+                print(response.response ?? "") // URL response
+                print(response.data ?? "")     // server data
+                print(response.result)   // result of response serialization
+                
+            }
+            */
+           // print("imageID = \(self.image.ID)")
+             //print("empID = \(String(describing: self.appDelegate.loggedInEmployee?.ID))")
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            print("parameters = \(parameters)")
+            
+            layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/new/like.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+                .responseString { response in
+                    print("images response = \(response)")
+                }
+                
+                .responseJSON(){
+                    response in
+                    
+                    if let json = response.result.value {
+                        print("JSON: \(json)")
+                        let returnJSON = JSON(json)
+                        self.image.likes = returnJSON["newLikes"].stringValue
+                        self.likesLbl.text = "x\(self.image.likes)"
+                        self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: returnJSON["newLikes"].stringValue)
+                        
+                    }
+                    
+                    self.indicator.dismissIndicator()
+            }
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            /*
+            
+            Alamofire.request(API.Router.newLike(["empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "imageID":self.image.ID as AnyObject])).responseJSON() {
+                response in
+                print(response.request ?? "")  // original URL request
+                print(response.response ?? "") // URL response
+                print(response.data ?? "")     // server data
+                print(response.result)   // result of response serialization
+                
+                if let json = response.result.value {
+                    print("JSON: \(json)")
+                    let returnJSON = JSON(json)
+                    self.image.likes = returnJSON["newLikes"].stringValue
+                    self.likesLbl.text = "x\(self.image.likes)"
+                    self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: returnJSON["newLikes"].stringValue)
+                    
+                }
+               // self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: "100")
+
+                
+                
+            }
+            */
+ 
+            
+        }else{
+            self.image.liked = "0"
+            self.likesImageView.image = UIImage(named:"unLiked.png")
+            
+            
+            
+            
+            
+            layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/delete/like.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+                .responseString { response in
+                    print("images response = \(response)")
+                }
+                
+                .responseJSON(){
+                    response in
+                    
+                    if let json = response.result.value {
+                        print("JSON: \(json)")
+                        let returnJSON = JSON(json)
+                        self.image.likes = returnJSON["newLikes"].stringValue
+                        self.likesLbl.text = "x\(self.image.likes)"
+                        self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: returnJSON["newLikes"].stringValue)
+                        
+                    }
+                    
+                    self.indicator.dismissIndicator()
+            }
+
+            
+            
+            
+            
+            
+            /*
+            Alamofire.request(API.Router.deleteLike(["empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "imageID":self.image.ID as AnyObject])).responseJSON() {
+                response in
+                // //print(response.request ?? "")  // original URL request
+                ////print(response.response ?? "") // URL response
+                ////print(response.data ?? "")     // server data
+                ////print(response.result)   // result of response serialization
+                
+                if let json = response.result.value {
+                    print("JSON: \(json)")
+                    let returnJSON = JSON(json)
+                    self.image.likes = returnJSON["newLikes"].stringValue
+                    self.likesLbl.text = "x\(self.image.likes)"
+                    self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: returnJSON["newLikes"].stringValue)
+                    
+                }
+                
+                
+
+                
+            }
+ */
+            
+            
+        }
+        
+        
+        
+        //self.messageView?.isHidden = true
+        
+    }
     
     
     

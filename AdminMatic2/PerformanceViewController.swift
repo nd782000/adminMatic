@@ -31,6 +31,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     
     var startStopFormatter = DateFormatter()
     
+    
     var performanceTableView: TableView!
     var usageJSON: JSON!
     var usages: [Usage] = []
@@ -693,10 +694,6 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     {
         //print("handle start picker")
         self.startTxtField.resignFirstResponder()
-        //let theDateFormat = DateFormatter.Style.none
-        //let theTimeFormat = DateFormatter.Style.short
-        //startStopFormatter.dateStyle = theDateFormat
-        //startStopFormatter.timeStyle = theTimeFormat
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM-dd-yy"
@@ -715,14 +712,6 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     {
         // print("handle stop picker")
         self.stopTxtField.resignFirstResponder()
-        //let theDateFormat = DateFormatter.Style.none
-        //let theTimeFormat = DateFormatter.Style.short
-        //startStopFormatter.dateStyle = theDateFormat
-        //startStopFormatter.timeStyle = theTimeFormat
-        //self.stopTxtField.text =  startStopFormatter.string(from: stopPickerView.date)
-         //endDate = "\(stopPickerView.date)"
-        // print("call delegate \(self.row)  \(stopPickerView.date)")
-       // self.delegate.editStop(row: self.row, stop: stopDate)
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM-dd-yy"
@@ -734,9 +723,6 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         endDate = dateFormatter.string(from: stopPickerView.date)
         endDateDB = dateFormatterDB.string(from: stopPickerView.date)
         getPerformance()
-        
-        
-        
     }
     
 

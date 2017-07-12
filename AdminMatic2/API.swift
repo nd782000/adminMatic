@@ -133,11 +133,15 @@ struct API {
         
         case vendor([String: AnyObject])
         
-        case images([String: AnyObject])
+        //case images([String: AnyObject])
         
         case bugs([String: AnyObject])
         
         //case newAlbum([String: AnyObject])
+        
+        case newLike([String: AnyObject])
+        
+        case deleteLike([String: AnyObject])
         
         
         var method: HTTPMethod {
@@ -145,7 +149,7 @@ struct API {
             switch self {
             case .fields, .employeeList, .logIn, .currentShiftByEmployee, .workOrderList, .bugs:
                 return .get
-            case .updateUsage, .updateTaskStatus, .updateWoStatus, .images:
+            case .updateUsage, .updateTaskStatus, .updateWoStatus, .newLike, .deleteLike:
                 return .post
             default:
                 return .get
@@ -208,10 +212,16 @@ struct API {
                 return ("/functions/get/vendors.php")
             case .vendor:
                 return ("/functions/get/vendor.php")
-            case .images:
-                return ("/functions/get/images.php?cb=\(timeStamp)")
+            //case .images:
+              //  return ("/functions/get/images.php?cb=\(timeStamp)")
             case .bugs:
                 return ("/functions/get/bugs.php?cb=\(timeStamp)")
+                
+            case .newLike:
+                return ("/functions/new/like.php")
+            case .deleteLike:
+                return ("/functions/delete/like.php")
+                
            // case .newAlbum:
               //  return ("/functions/new/album.php")
             }
@@ -275,9 +285,14 @@ struct API {
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
             case .vendor(let parameters):
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
-            case .images(let parameters):
-                return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
+           // case .images(let parameters):
+               // return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
             case .bugs(let parameters):
+                return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
+            
+            case .newLike(let parameters):
+                return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
+            case .deleteLike(let parameters):
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
             //case .newAlbum(let parameters):
                // return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)

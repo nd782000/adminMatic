@@ -15,6 +15,7 @@ import SwiftyJSON
 // updates status icons without getting new db data
 protocol ScheduleDelegate{
     func reDrawSchedule(_index:Int, _status:String, _price: String, _cost: String, _priceRaw: String, _costRaw: String)
+    func updateSettings(_allDates:String, _startDate:String, _endDate:String,_startDateDB:String, _endDateDB:String, _sort:String)
 }
 
 
@@ -31,7 +32,18 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var personalScheduleBtn:Button!
     var employeeImage:UIImageView!
     
+    var countView:UIView = UIView()
+    var countLbl:Label = Label()
+    
+    
     var tableViewMode:String = "SCHEDULE"
+    var employeeID : String!
+    var allDates:String = "1"
+    var startDate:String = ""
+    var endDate:String = ""
+    var startDateDB:String = ""
+    var endDateDB:String = ""
+    var sort:String = "0"
     
     var fullScheduleJSON:JSON!
     var fullScheduleArray:[WorkOrder] = []
@@ -52,15 +64,23 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var personalScheduleLoaded:Bool = false
     var fullHistoryLoaded:Bool = false
     var personalHistoryLoaded:Bool = false
-    var employeeID : String!
+    
     
     var cellClick:Bool = false
+    
+    
+    var scheduleSettingsBtn:Button = Button(titleText: "")
+    let settingsIcon:UIImageView = UIImageView()
+    let settingsImg = UIImage(named:"settingsIcon.png")
+    let settingsEditedImg = UIImage(named:"settingsEditedIcon.png")
+    
     
     
     init(_employeeID:String){
         super.init(nibName:nil,bundle:nil)
         self.employeeID = _employeeID
         title = "Schedule"
+        print("empID = \(self.employeeID)")
         self.view.backgroundColor = layoutVars.backgroundColor
         self.personalScheduleBtn = Button()
        
@@ -167,8 +187,46 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         scheduleTableView.addSubview(refreshControl)
         
+        self.countView = UIView()
+        self.countView.backgroundColor = layoutVars.backgroundColor
+        //self.countView.layer.borderColor = layoutVars.borderColor
+        //self.countView.layer.borderWidth = 1.0
+        self.countView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(self.countView)
+        
+        
+        self.countLbl.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.countView.addSubview(self.countLbl)
+        
+        
+        
+        
         
          self.view.addSubview(self.personalScheduleBtn)
+        
+        
+        
+        self.scheduleSettingsBtn.addTarget(self, action: #selector(ScheduleViewController.scheduleSettings), for: UIControlEvents.touchUpInside)
+        
+        self.scheduleSettingsBtn.frame = CGRect(x:self.view.frame.width - 40, y: self.view.frame.height - 40, width: 40, height: 40)
+        self.scheduleSettingsBtn.translatesAutoresizingMaskIntoConstraints = true
+       // self.imageSettingsBtn.layer.borderColor = UIColor.white.cgColor
+       // self.imageSettingsBtn.layer.borderWidth = 1.0
+        self.view.addSubview(self.scheduleSettingsBtn)
+        
+        self.scheduleSettingsBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
+        
+        
+        settingsIcon.backgroundColor = UIColor.clear
+        settingsIcon.contentMode = .scaleAspectFill
+        settingsIcon.frame = CGRect(x: 6, y: 6, width: 28, height: 28)
+        
+        settingsIcon.image = settingsImg
+        self.scheduleSettingsBtn.addSubview(settingsIcon)
+        
+        
+        
         
        refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: UIControlEvents.valueChanged)
         
@@ -182,13 +240,29 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         let viewsDictionary : [String:Any] = [
             "view1":customSC,
             "view2":self.scheduleTableView,
-            "view3":self.personalScheduleBtn
+            "countView":self.countView,
+            "view3":self.personalScheduleBtn,
+            "view4":self.scheduleSettingsBtn
         ] as [String : Any]
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[countView(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view3(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[view1(40)][view2(height)][view3(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[view1(40)][view2][countView(30)][view3(40)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[view2][countView(30)][view3(40)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        
+        let viewsDictionary2 = [
+            
+            "countLbl":self.countLbl
+            ] as [String : Any]
+        
+        
+        //////////////   auto layout position constraints   /////////////////////////////
+        
+        self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[countLbl]|", options: [], metrics: sizeVals, views: viewsDictionary2))
+        
+        self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[countLbl(20)]", options: [], metrics: sizeVals, views: viewsDictionary2))
     }
     
 
@@ -211,7 +285,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //, "cb":timeStamp as AnyObject
         
         
-        Alamofire.request(API.Router.workOrderList(["employeeID":_empID as AnyObject,"custID":"" as AnyObject,"active":"1" as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
+        Alamofire.request(API.Router.workOrderList(["employeeID":_empID as AnyObject,"custID":"" as AnyObject,"startDate":self.startDateDB as AnyObject,"endDate":self.endDateDB as AnyObject,"sort":self.sort as AnyObject,"active":"1" as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
             response in
             
             print(response.request ?? "")  // original URL request
@@ -323,7 +397,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         let timeStamp = Int(timeInterval)
         //, "cb":timeStamp as AnyObject
         
-        Alamofire.request(API.Router.workOrderList(["employeeID":_empID as AnyObject,"custID":"" as AnyObject,"active":"0" as AnyObject,"startDate":startDate as AnyObject,"endDate":endDate as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
+        Alamofire.request(API.Router.workOrderList(["employeeID":self.employeeID as AnyObject,"custID":"" as AnyObject,"active":"0" as AnyObject,"startDate":startDate as AnyObject,"endDate":endDate as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
             
             response in
             
@@ -383,6 +457,18 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     
+    func scheduleSettings(){
+        print("schedule settings")
+        
+        let scheduleSettingsViewController = ScheduleSettingsViewController(_allDates:self.allDates, _startDate: self.startDate, _endDate: self.endDate,_startDateDB: self.startDateDB, _endDateDB: self.endDateDB, _sort: self.sort)
+        scheduleSettingsViewController.delegate = self
+        navigationController?.pushViewController(scheduleSettingsViewController, animated: false )
+        
+        
+        
+    }
+    
+    
     
    
     
@@ -400,8 +486,10 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         var count:Int!
         
         if (shouldShowSearchResults == true) {
+            count = self.workOrdersSearchResults.count
             //print("search count = \(self.workOrdersSearchResults.count)")
-            return self.workOrdersSearchResults.count
+            self.countLbl.text = "\(count!) Work Order(s) Found"
+            return count
             
         } else {
             
@@ -415,7 +503,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     count = self.personalScheduleArray.count
                     //print("personal schedule count = \(count)")
                 }
-                
+                self.countLbl.text = "\(count!) Scheduled Work Order(s)"
                 break
             case "HISTORY":
                 if(personalMode == false){
@@ -426,12 +514,15 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     //print("personal history count = \(count)")
                 }
                 
+                self.countLbl.text = "\(count!) Completed/Cancelled Work Order(s)"
+                
                 break
                 
             default:
                 
                 break
             }
+            
             
             return count
         }
@@ -734,6 +825,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //print("refresh")
         refreshFromTable = true
         getSchedule(_empID: (appDelegate.loggedInEmployee?.ID)!)
+       // getSchedule()
     }
     
     
@@ -759,6 +851,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
               
                     if(personalScheduleLoaded != true){
                         getSchedule(_empID: (appDelegate.loggedInEmployee?.ID)!)
+                       // getSchedule()
                     }else{
                         //print("reload Data schedule")
                         DispatchQueue.main.async{
@@ -969,6 +1062,37 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             }
         }
         self.scheduleTableView.reloadData()
+        
+    }
+    
+    func updateSettings(_allDates:String, _startDate:String, _endDate:String,_startDateDB:String, _endDateDB:String, _sort:String){
+        print("update settings")
+        //let editsMade:Bool = false
+        self.allDates = _allDates
+        self.startDate = _startDate
+        self.endDate = _endDate
+        self.startDateDB = _startDateDB
+        self.endDateDB = _endDateDB
+        self.sort = _sort
+        
+        
+        /*
+ var allDates:String = "1"
+ var startDate:String = ""
+ var endDate:String = ""
+ var startDateDB:String = ""
+ var endDateDB:String = ""
+ var sort:String = "0"
+ */
+        
+        if(self.allDates != "1" || self.startDate != "" || self.endDate != "" || self.sort != "0"){
+            print("changes made")
+            settingsIcon.image = settingsEditedImg
+        }else{
+            settingsIcon.image = settingsImg
+        }
+        
+        getSchedule(_empID: (appDelegate.loggedInEmployee?.ID)!)
         
     }
     

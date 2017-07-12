@@ -13,6 +13,7 @@ class Image {
     
     var ID: String!
     var thumbPath: String!
+    var mediumPath: String!
     var rawPath: String!
     var name: String!
     var width: String!
@@ -22,6 +23,7 @@ class Image {
     
     
     var customer: String = "0"
+    var customerName: String = "Unknown"
     var woID: String = "0"
     
     var albumID: String = "0"
@@ -40,9 +42,15 @@ class Image {
     var uploadProgress:Float = 0.0
     var uploadStatus:String = "Uploading..."
     
+    var index = 0
+    var liked = "0"
+    var likes = "0"
+    
+   // var topImage:String = "1"
     
     
-    required init( _id: String?, _thumbPath:String?, _rawPath:String?, _name:String?, _width:String?, _height:String?, _description:String?, _dateAdded:String?, _createdBy:String?, _type:String?) {
+    
+    required init( _id: String?, _thumbPath:String?, _mediumPath:String?, _rawPath:String?, _name:String?, _width:String?, _height:String?, _description:String?, _dateAdded:String?, _createdBy:String?, _type:String?) {
         //print(json)
         if _id != nil {
             self.ID = _id
@@ -54,11 +62,18 @@ class Image {
         }else{
             self.thumbPath = ""
         }
+        if _mediumPath != nil {
+            self.mediumPath = _mediumPath
+        }else{
+            self.mediumPath = ""
+        }
         if _rawPath != nil {
             self.rawPath = _rawPath
         }else{
             self.rawPath = ""
         }
+        
+        print("rawPath = \(self.rawPath)")
         
         if _name != nil {
             self.name = _name
@@ -99,6 +114,13 @@ class Image {
         }else{
             self.type = ""
         }
+        
+       /* if _topImage != nil {
+            self.topImage = _topImage!
+        }else{
+            self.topImage = "1"
+        }
+        */
         
        
 

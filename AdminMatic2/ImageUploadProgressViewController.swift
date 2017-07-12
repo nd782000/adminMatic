@@ -49,10 +49,13 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
     var progressLabel:InfoLabel!
     var imageTableView:TableView = TableView()
     
+   // var topImage:Bool!
+    
     
     init(_imageType: String, _images: [Image]){
         self.imageType = _imageType
         self.images = _images
+        //self.topImage = _topImage
         super.init(nibName:nil,bundle:nil)
     }
     
@@ -186,6 +189,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
             imageTableView.rowHeight = 60.0
             cell.imageData = self.imagesBatch[indexPath.row]
             cell.indexPath = indexPath
+            //cell.topImage = self.topImage
             cell.layoutViews()
             cell.upload()
             cell.uploadDelegate = self

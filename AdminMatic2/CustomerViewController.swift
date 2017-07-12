@@ -305,7 +305,8 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //let timeInterval = now.timeIntervalSince1970
         //let timeStamp = Int(timeInterval)
         
-        let parameters = ["customer": self.customerID as AnyObject]
+        //let parameters = ["customer": self.customerID as AnyObject, "fieldnotes": "1" as AnyObject,]
+        let parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject, "customer": self.customerID as AnyObject]
         
         print("parameters = \(parameters)")
         
@@ -336,17 +337,19 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         print("JSONcount: \(jsonCount)")
         
         let thumbBase:String = self.images["thumbBase"].stringValue
+        let mediumBase:String = self.images["mediumBase"].stringValue
         let rawBase:String = self.images["rawBase"].stringValue
         
         for i in 0 ..< jsonCount {
             
             let thumbPath:String = "\(thumbBase)\(self.images["images"][i]["fileName"].stringValue)"
+            let mediumPath:String = "\(mediumBase)\(self.images["images"][i]["fileName"].stringValue)"
             let rawPath:String = "\(rawBase)\(self.images["images"][i]["fileName"].stringValue)"
             
             //create a item object
             print("create an image object \(i)")
             
-            let image = Image(_id: self.images["images"][i]["ID"].stringValue,_thumbPath: thumbPath,_rawPath: rawPath,_name: self.images["images"][i]["name"].stringValue,_width: self.images["images"][i]["width"].stringValue,_height: self.images["images"][i]["height"].stringValue,_description: self.images["images"][i]["description"].stringValue,_dateAdded: self.images["images"][i]["dateAdded"].stringValue,_createdBy: self.images["images"][i]["createdByName"].stringValue,_type: self.images["images"][i]["type"].stringValue)
+            let image = Image(_id: self.images["images"][i]["ID"].stringValue,_thumbPath: thumbPath, _mediumPath: mediumPath,_rawPath: rawPath,_name: self.images["images"][i]["name"].stringValue,_width: self.images["images"][i]["width"].stringValue,_height: self.images["images"][i]["height"].stringValue,_description: self.images["images"][i]["description"].stringValue,_dateAdded: self.images["images"][i]["dateAdded"].stringValue,_createdBy: self.images["images"][i]["createdByName"].stringValue,_type: self.images["images"][i]["type"].stringValue)
             
             image.customer = self.images["images"][i]["customer"].stringValue
             image.tags = self.images["images"][i]["tags"].stringValue
@@ -664,7 +667,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         imageCollectionView?.dataSource = self
         imageCollectionView?.delegate = self
         imageCollectionView?.register(ImageCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
-        imageCollectionView?.backgroundColor = UIColor.white
+        imageCollectionView?.backgroundColor = UIColor.darkGray
         self.detailsView.addSubview(imageCollectionView!)
         imageCollectionView?.isHidden = true
         
@@ -714,7 +717,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view4(width)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view5(width)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         
-        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(35)][view2(fullHeight)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(35)][view2]|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-35-[view3]-40-|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view4(40)]|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         
@@ -845,7 +848,14 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //UISearchController.isActive = false
         //searchController.isActive = false
         
+        //if(searchController != nil){
+            //searchController.isActive = false
+       // }
+        
         let multiPicker = DKImagePickerController()
+        
+        multiPicker.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        
         var selectedAssets = [DKAsset]()
         var selectedImages:[Image] = [Image]()
         
@@ -874,7 +884,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     
                     print("making image")
                     
-                    let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
+                    let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
                     
                     imageToAdd.image = image
                     
@@ -1385,20 +1395,14 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     
-    //function not used in this class
-    func updateSettings(_portfolio:String, _fieldNote:String){
+  
+    
+    
+    
+    // not used, just to have this class conform to schedule delegate protocol
+    func updateSettings(_allDates:String, _startDate:String, _endDate:String,_startDateDB:String, _endDateDB:String, _sort:String){
         print("update settings")
-       // print("_portfolio = \(_portfolio) _fieldNote = \(_fieldNote)")
-        //self.portfolio = _portfolio
-       // self.fieldNote = _fieldNote
-        
-        //getImages()
     }
-    
-    
-    
-    
-    
     
     
     

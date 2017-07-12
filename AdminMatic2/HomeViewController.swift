@@ -363,7 +363,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             appDelegate.menuChange(7)
             break
         case 8:
-            //equipment
+            //bugs
             appDelegate.menuChange(8)
             break
         default:

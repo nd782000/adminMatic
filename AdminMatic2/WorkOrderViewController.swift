@@ -467,6 +467,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                         let fileName:String = (self.json["items"][i]["tasks"][n]["images"][p]["fileName"].stringValue)
                         
                         let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
+                        let mediumPath:String = "\(self.layoutVars.mediumBase)\(fileName)"
                         let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
                         
                         //create a item object
@@ -474,7 +475,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                         
                         print("rawPath = \(rawPath)")
                         
-                        let image = Image(_id: self.json["items"][i]["tasks"][n]["images"][p]["ID"].stringValue,_thumbPath: thumbPath,_rawPath: rawPath,_name: self.json["items"][i]["tasks"][n]["images"][p]["name"].stringValue,_width: self.json["items"][i]["tasks"][n]["images"][p]["width"].stringValue,_height: self.json["items"][i]["tasks"][n]["images"][p]["height"].stringValue,_description: self.json["items"][i]["tasks"][n]["images"][p]["description"].stringValue,_dateAdded: self.json["items"][i]["tasks"][n]["images"][p]["dateAdded"].stringValue,_createdBy: self.json["items"][i]["tasks"][n]["images"][p]["createdByName"].stringValue,_type: self.json["items"][i]["tasks"][n]["images"][p]["type"].stringValue)
+                        let image = Image(_id: self.json["items"][i]["tasks"][n]["images"][p]["ID"].stringValue,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: self.json["items"][i]["tasks"][n]["images"][p]["name"].stringValue,_width: self.json["items"][i]["tasks"][n]["images"][p]["width"].stringValue,_height: self.json["items"][i]["tasks"][n]["images"][p]["height"].stringValue,_description: self.json["items"][i]["tasks"][n]["images"][p]["description"].stringValue,_dateAdded: self.json["items"][i]["tasks"][n]["images"][p]["dateAdded"].stringValue,_createdBy: self.json["items"][i]["tasks"][n]["images"][p]["createdByName"].stringValue,_type: self.json["items"][i]["tasks"][n]["images"][p]["type"].stringValue)
                         
                         image.customer = (self.json["items"][i]["tasks"][n]["images"][p]["customer"].stringValue)
                         image.tags = (self.json["items"][i]["tasks"][n]["images"][p]["tags"].stringValue)
@@ -603,12 +604,13 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             for i in 0 ..< imageCount {
                 
                 let thumbPath:String = "\(self.layoutVars.thumbBase)\(self.json["fieldNotes"][n]["images"][i]["fileName"].stringValue)"
+                let mediumPath:String = "\(self.layoutVars.mediumBase)\(self.json["fieldNotes"][n]["images"][i]["fileName"].stringValue)"
                 let rawPath:String = "\(self.layoutVars.rawBase)\(self.json["fieldNotes"][n]["images"][i]["fileName"].stringValue)"
                 
                 //create a item object
                 print("create an image object \(i)")
                 
-                let image = Image(_id: self.json["fieldNotes"][n]["images"][i]["ID"].stringValue,_thumbPath: thumbPath,_rawPath: rawPath,_name: self.json["fieldNotes"][n]["images"][i]["name"].stringValue,_width: self.json["fieldNotes"][n]["images"][i]["width"].stringValue,_height: self.json["fieldNotes"][n]["images"][i]["height"].stringValue,_description: self.json["fieldNotes"][n]["images"][i]["description"].stringValue,_dateAdded: self.json["fieldNotes"][n]["images"][i]["dateAdded"].stringValue,_createdBy: self.json["fieldNotes"][n]["images"][i]["createdBy"].stringValue,_type: self.json["fieldNotes"][n]["images"][i]["type"].stringValue)
+                let image = Image(_id: self.json["fieldNotes"][n]["images"][i]["ID"].stringValue,_thumbPath: thumbPath, _mediumPath: mediumPath,_rawPath: rawPath,_name: self.json["fieldNotes"][n]["images"][i]["name"].stringValue,_width: self.json["fieldNotes"][n]["images"][i]["width"].stringValue,_height: self.json["fieldNotes"][n]["images"][i]["height"].stringValue,_description: self.json["fieldNotes"][n]["images"][i]["description"].stringValue,_dateAdded: self.json["fieldNotes"][n]["images"][i]["dateAdded"].stringValue,_createdBy: self.json["fieldNotes"][n]["images"][i]["createdBy"].stringValue,_type: self.json["fieldNotes"][n]["images"][i]["type"].stringValue)
                 
                 image.customer = self.json["fieldNotes"][n]["images"][i]["customer"].stringValue
                 image.tags = self.json["fieldNotes"][n]["images"][i]["tags"].stringValue
