@@ -334,13 +334,16 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             if(usage.start != nil){
                 
                 
-                 cell.startTxtField.text = shortFormatter.string(from: usage.start!)
+                cell.startTxtField.text = shortFormatter.string(from: usage.start!)
+                
+                cell.startPickerView.date = usage.start!
                 
             }else{
                 cell.startTxtField.text = ""
             }
             if(usage.stop != nil){
                 cell.stopTxtField.text = shortFormatter.string(from:usage.stop!)
+                cell.stopPickerView.date = usage.stop!
             }else{
                 cell.stopTxtField.text = ""
             }
@@ -414,7 +417,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                     usageToLogJSON = []
                     let JSONString = usageToLog[indexPath.row].toJSONString(prettyPrint: true)
                     usageToLogJSON.append(JSON(JSONString ?? ""))
-                    print("usage JSONString = \(JSONString)")
+                    print("usage JSONString = \(String(describing: JSONString))")
                     callAlamoFire(_type: "delete")
                     usageToLog.remove(at: indexPath.row)
                     usageTableView.reloadData()
@@ -690,7 +693,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
                 (result : UIAlertAction) -> Void in
                 for n in 0 ..< self.usageToLog.count {
-                    if(n != _row){
+                    if(n != _row && self.usageToLog[n].locked == false){
                         print("n != row")
                         let stopDate = self.usageToLog[n].stop
                         if(stopDate == nil){
@@ -752,7 +755,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
                 (result : UIAlertAction) -> Void in
                 for n in 0 ..< self.usageToLog.count {
-                    if(n != _row){
+                    if(n != _row && self.usageToLog[n].locked == false){
                        // print("n != row")
                         
                         
@@ -804,7 +807,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
                 (result : UIAlertAction) -> Void in
                 for n in 0 ..< self.usageToLog.count {
-                    if(n != _row){
+                    if(n != _row && self.usageToLog[n].locked == false){
                         // print("n != row")
                         
                         

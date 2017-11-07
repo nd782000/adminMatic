@@ -132,7 +132,7 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
         case "3":
             cell.iconView.image = UIImage(named:"mapIcon.png")
             
-            cell.nameLbl?.text = cell.contact.street1 + " " + cell.contact.street2 + " " + cell.contact.city + ", " + cell.contact.state
+           // cell.nameLbl?.text = cell.contact.street1 + " " + cell.contact.street2 + " " + cell.contact.city + ", " + cell.contact.state
             cell.detailLbl?.text = "Billing Address"
             break
             
@@ -140,7 +140,7 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
         case "4":
             cell.iconView.image = UIImage(named:"mapIcon.png")
             
-            cell.nameLbl?.text = cell.contact.street1 + " " + cell.contact.street2 + " " + cell.contact.city + ", " + cell.contact.state
+           // cell.nameLbl?.text = cell.contact.street1 + " " + cell.contact.street2 + " " + cell.contact.city + ", " + cell.contact.state
             cell.detailLbl?.text = "Jobsite Address"
             
             break

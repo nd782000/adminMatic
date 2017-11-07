@@ -235,6 +235,17 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
     }
     
     
+    /*
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if pickerView == filterPicker {
+            filter()
+        } else if pickerView == orderPicker{
+            setOrder()
+        }
+    }
+    */
+    
+    
     
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -357,9 +368,12 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
     func setOrderText(){
         if(self.order == "ID DESC"){
             self.orderTxtField.text = self.orderArray[0]//newest
-        }else{
-            self.orderTxtField.text = self.orderArray[1]//most likes
+        }else if(self.order == "ID ASC"){
+            self.orderTxtField.text = self.orderArray[1]//oldest
             self.orderPicker.selectRow(1, inComponent: 0, animated: true)
+        }else{
+            self.orderTxtField.text = self.orderArray[2]//most likes
+            self.orderPicker.selectRow(2, inComponent: 0, animated: true)
         }
     }
 

@@ -45,6 +45,15 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         super.viewDidLoad()
         title = "Customer List"
         view.backgroundColor = layoutVars.backgroundColor
+        
+        print("test for network")
+        if(self.appDelegate.isConnectedToNetwork() == true){
+            print("network good")
+        }else{
+            print("network bad")
+        }
+        
+        
         getCustomerList()
     }
     
@@ -342,7 +351,7 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
                     print("Oh no! \(regexError)")
                 } else {
                     for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                        highlightedText.addAttribute(NSBackgroundColorAttributeName, value: UIColor.yellow, range: match.range)
+                        highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
                     }
                 }
                 cell.nameLbl.attributedText = highlightedText
@@ -375,7 +384,7 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
                     print("Oh no! \(regexError)")
                 } else {
                     for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                        highlightedText.addAttribute(NSBackgroundColorAttributeName, value: UIColor.yellow, range: match.range)
+                        highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
                     }
                     
                 }

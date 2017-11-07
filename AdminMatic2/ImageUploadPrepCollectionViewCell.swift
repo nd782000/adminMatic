@@ -22,8 +22,10 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
     var delegate:ImageUploadPrepDelegate!
     var indexPath:IndexPath!
     
+    var imageLoaded:Bool = false
+    
     var selectedImageView:UIImageView = UIImageView()
-   var activityView:UIActivityIndicatorView!
+    var activityView:UIActivityIndicatorView!
     
     var descriptionTxt: UITextView = UITextView()
     var descriptionPlaceHolder:String = "Caption..."
@@ -48,7 +50,7 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
     
     
     func layoutViews(){
-        print("cell layout")
+        print("image upload prep cell layout")
         
         self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
 
@@ -74,16 +76,20 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
         }else{
             
             
-            let imgURL:URL = URL(string: self.imageData.rawPath)!
+            let imgURL:URL = URL(string: self.imageData.mediumPath)!
             
-            //print("imgURL = \(imgURL)")
+            print("imgURL = \(imgURL)")
             
+            if(imageLoaded == false){
+                self.activityView.startAnimating()
+            }
             
             
             Nuke.loadImage(with: imgURL, into: self.selectedImageView){ [weak contentView] in
                 //print("nuke loadImage")
                 self.selectedImageView.handle(response: $0, isFromMemoryCache: $1)
                 self.activityView.stopAnimating()
+                self.imageLoaded = true
                 
             }
 

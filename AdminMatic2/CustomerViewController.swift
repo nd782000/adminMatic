@@ -15,7 +15,7 @@ import DKImagePickerController
 
 
 
-class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, ScheduleDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImageViewDelegate{
+class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, ScheduleDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImageViewDelegate, ImageLikeDelegate{
     
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
@@ -93,7 +93,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
+        
+        
+        //print(currentReachabilityStatus) //true connected
+        //print(currentReachabilityStatus != .notReachable) //true connected
         
         // Do any additional setup after loading the view.
         view.backgroundColor = layoutVars.backgroundColor
@@ -1028,6 +1033,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         imageCollectionView?.deselectItem(at: indexPath, animated: true)
         navigationController?.pushViewController(imageDetailViewController, animated: false )
         imageDetailViewController.delegate = self
+        imageDetailViewController.imageLikeDelegate = self
         
        // searchTerm = self.searchController.searchBar.text!
         //imagesSearchResults2 = imagesSearchResults
@@ -1394,6 +1400,13 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
     }
     
+    
+    func updateLikes(_index:Int, _liked:String, _likes:String){
+        print("update likes _liked: \(_liked)  _likes\(_likes)")
+        imageArray[_index].liked = _liked
+        imageArray[_index].likes = _likes
+        
+    }
      
   
     

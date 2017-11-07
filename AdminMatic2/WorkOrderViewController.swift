@@ -113,6 +113,9 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     var incomeView:UIView!
     var costView:UIView!
     
+    var tableCellID:Int? //used to store the cell ID of cell clicked to update status
+    var performanceDelegate:PerformanceDelegate?
+    
    
     
     
@@ -815,7 +818,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         
         self.fieldNotesLbl = GreyLabel(icon: true)
-        self.fieldNotesLbl.text = "Field Notes:"
+        self.fieldNotesLbl.text = "Attachments"
         self.fieldNotesLbl.translatesAutoresizingMaskIntoConstraints = false
         
         self.fieldNotesLbl.addSubview(smallCameraIcon)
@@ -828,12 +831,12 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             picString = "(\(self.numberFieldNotePics) Images)"
         }
         if(self.fieldNotes.count == 0){
-            self.fieldNotesTxt.text = "No Saved Notes"
-        }else if(self.fieldNotes.count > 1){
-            self.fieldNotesTxt.text = "\(self.fieldNotes.count) notes \(picString)"
+            self.fieldNotesTxt.text = "None Saved"
         }else{
-            self.fieldNotesTxt.text = "\(self.fieldNotes.count) note \(picString)"
-        }
+            self.fieldNotesTxt.text = "\(self.fieldNotes.count) w/ \(picString)"
+        }//else{
+            //self.fieldNotesTxt.text = "\(self.fieldNotes.count) note \(picString)"
+        //}
         
         self.fieldNotesTxt.translatesAutoresizingMaskIntoConstraints = false
         
@@ -1464,6 +1467,11 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     
     func goBack(){
+        if((self.performanceDelegate) != nil){
+            if(self.tableCellID! >= 0){
+                self.performanceDelegate?.reDrawList(_index: self.tableCellID!, _status: self.statusValue)
+            }
+        }
         _ = navigationController?.popViewController(animated: true)
         
     }

@@ -237,7 +237,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
                         
                         
                         self.controller.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(EmployeeListViewController.dismissMessage))
-                        self.controller.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.blue]
+                        self.controller.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.blue]
 
                         
                         

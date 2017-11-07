@@ -135,7 +135,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         self.startTxtField.tag = 8
         self.startTxtField.inputView = self.startPickerView
         //self.startTxtField.text = self.startDate
-        self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSForegroundColorAttributeName: layoutVars.buttonColor1])
+        self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.startTxtField)
         
         
@@ -165,7 +165,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         self.stopTxtField.delegate = self
         self.stopTxtField.tag = 8
         self.stopTxtField.inputView = self.stopPickerView
-        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSForegroundColorAttributeName: layoutVars.buttonColor1])
+        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.stopTxtField)
         
         let stopToolBar = UIToolbar()

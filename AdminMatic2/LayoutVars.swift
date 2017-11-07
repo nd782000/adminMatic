@@ -162,7 +162,7 @@ class PaddedTextField: UITextField {
     convenience init(placeholder:String!) {
         self.init()
         self.placeHolder = placeholder
-        self.attributedPlaceholder = NSAttributedString(string:placeholder,attributes:[NSForegroundColorAttributeName: UIColor(hex:0x333333, op: 0.75)])
+        self.attributedPlaceholder = NSAttributedString(string:placeholder,attributes:[NSAttributedStringKey.foregroundColor: UIColor(hex:0x333333, op: 0.75)])
     }
     
     convenience init(textValue:String!) {
@@ -213,7 +213,7 @@ class SegmentedControl:UISegmentedControl{
         let layoutVars:LayoutVars = LayoutVars()
         self.selectedSegmentIndex = 0
         self.backgroundColor = UIColor(hex:0xFFFFFF, op: 1)
-        let attr = NSDictionary(object: UIFont(name: "Avenir Next", size: 16.0)!, forKey: NSFontAttributeName as NSCopying)
+        let attr = NSDictionary(object: UIFont(name: "Avenir Next", size: 16.0)!, forKey: NSAttributedStringKey.font as NSCopying)
         self.setTitleTextAttributes(attr as? [AnyHashable: Any], for: UIControlState())
         self.layer.cornerRadius = 0  // Don't let background bleed
        
@@ -469,19 +469,24 @@ class Cell:UITableViewCell {
 
 
 /////////////////////    Helper Methods     //////////////////////////////////
-
+/*
 func html_Decode(_ _encodedString:String!)->String{
 
     let encodedData = _encodedString.data(using: String.Encoding.utf8)!
     let attributedOptions : [String: AnyObject] = [
-        NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType as AnyObject,
-        NSCharacterEncodingDocumentAttribute: String.Encoding.utf8 as AnyObject
+        NSAttributedString.DocumentAttributeKey.documentType.rawValue: NSAttributedString.DocumentType.html as AnyObject,
+        NSAttributedString.DocumentAttributeKey.characterEncoding.rawValue: String.Encoding.utf8 as AnyObject
     ]
     let attributedString = try! NSAttributedString(data: encodedData, options: attributedOptions, documentAttributes: nil)
+    
+    let attributedString = try! NSAttributedString(data: encodedData, options: <#T##[NSAttributedString.DocumentReadingOptionKey : Any]#>, documentAttributes: nil)
+    
     let decodedString = attributedString.string // The Weeknd ‘King Of The Fall’
     
     return decodedString
 }
+*/
+
 
 func cleanText(_ _text:String!)->String{
     

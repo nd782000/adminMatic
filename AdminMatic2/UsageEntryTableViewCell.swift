@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 import Nuke
 
-class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerViewDelegate {
+class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     
     
     var layoutVars:LayoutVars = LayoutVars()
@@ -121,7 +121,26 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         
         startPickerView = DatePicker()
         startPickerView.datePickerMode = UIDatePickerMode.time
+        
+        
+        
+        /*
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat =  "HH:mm"
+        
+        
+        
+        let date = dateFormatter.date(from: "17:00")
+        
+        startPickerView.date = date!
+        */
+        
+        
+        
+        
         startStopFormatter.dateFormat = "MM/dd/yyyy"
+        
+        //startPickerView.setDate(self, animated: <#T##Bool#>)
         
         self.startTxtField = PaddedTextField()
         
@@ -129,15 +148,16 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         self.startTxtField.delegate = self
         self.startTxtField.tag = 8
         self.startTxtField.inputView = self.startPickerView
-        self.startTxtField.attributedPlaceholder = NSAttributedString(string:"---",attributes:[NSForegroundColorAttributeName: layoutVars.buttonColor1])
+        self.startTxtField.attributedPlaceholder = NSAttributedString(string:"---",attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
         self.contentView.addSubview(self.startTxtField)
         
         let startToolBar = UIToolbar()
         startToolBar.barStyle = UIBarStyle.default
         startToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         startToolBar.sizeToFit()
+        let closeStartButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.closeStartPicker))
         let setStartButton = UIBarButtonItem(title: "Set Start Time", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStartPicker))
-        startToolBar.setItems([spaceButton, setStartButton], animated: false)
+        startToolBar.setItems([closeStartButton, spaceButton, setStartButton], animated: false)
         startToolBar.isUserInteractionEnabled = true
         startTxtField.inputAccessoryView = startToolBar
         
@@ -153,15 +173,16 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         self.stopTxtField.delegate = self
         self.stopTxtField.tag = 8
         self.stopTxtField.inputView = self.stopPickerView
-        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:"---",attributes:[NSForegroundColorAttributeName: layoutVars.buttonColor1])
+        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:"---",attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
         self.contentView.addSubview(self.stopTxtField)
         
         let stopToolBar = UIToolbar()
         stopToolBar.barStyle = UIBarStyle.default
         stopToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         stopToolBar.sizeToFit()
+        let closeStopButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.closeStopPicker))
         let setStopButton = UIBarButtonItem(title: "Set Stop Time", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
-        stopToolBar.setItems([spaceButton, setStopButton], animated: false)
+        stopToolBar.setItems([closeStopButton, spaceButton, setStopButton], animated: false)
         stopToolBar.isUserInteractionEnabled = true
         stopTxtField.inputAccessoryView = stopToolBar
         
@@ -183,8 +204,9 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         breakToolBar.barStyle = UIBarStyle.default
         breakToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         breakToolBar.sizeToFit()
+        let closeBreakButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.closeBreak))
         let setBreakButton = UIBarButtonItem(title: "Set Break Time", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleBreakTime))
-        breakToolBar.setItems([spaceButton, setBreakButton], animated: false)
+        breakToolBar.setItems([closeBreakButton, spaceButton, setBreakButton], animated: false)
         breakToolBar.isUserInteractionEnabled = true
         breakTxtField.inputAccessoryView = breakToolBar
         
@@ -242,8 +264,9 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         qtyToolBar.barStyle = UIBarStyle.default
         qtyToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         qtyToolBar.sizeToFit()
+        let closeQtyButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.closeQty))
         let setQtyButton = UIBarButtonItem(title: "Set Qty", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleQty))
-        qtyToolBar.setItems([spaceButton, setQtyButton], animated: false)
+        qtyToolBar.setItems([closeQtyButton, spaceButton, setQtyButton], animated: false)
         qtyToolBar.isUserInteractionEnabled = true
         qtyTxtField.inputAccessoryView = qtyToolBar
         
@@ -281,8 +304,9 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         vendorToolBar.barStyle = UIBarStyle.default
         vendorToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         vendorToolBar.sizeToFit()
+        let closeVendorButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.closeVendor))
         let setVendorButton = UIBarButtonItem(title: "Set Vendor", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleVendor))
-        vendorToolBar.setItems([spaceButton, setVendorButton], animated: false)
+        vendorToolBar.setItems([closeVendorButton, spaceButton, setVendorButton], animated: false)
         vendorToolBar.isUserInteractionEnabled = true
         vendorTxtField.inputAccessoryView = vendorToolBar
         
@@ -305,8 +329,10 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         costToolBar.barStyle = UIBarStyle.default
         costToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         costToolBar.sizeToFit()
+        let closeCostButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.closeCost))
+        
         let setCostButton = UIBarButtonItem(title: "Set Cost", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleCost))
-        costToolBar.setItems([spaceButton, setCostButton], animated: false)
+        costToolBar.setItems([closeCostButton, spaceButton, setCostButton], animated: false)
         costToolBar.isUserInteractionEnabled = true
         costTxtField.inputAccessoryView = costToolBar
         
@@ -324,7 +350,7 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         let viewsDictionary = ["qtyLbl":qtyLbl,"qtyText":qtyTxtField,"unitsLbl":unitsLbl, "lockIcon":lockIcon,"vendorLbl":vendorLbl,"vendorTxtField":vendorTxtField,"costLbl":costLbl,"costTxtField":costTxtField,"totalCostLbl":totalCostLbl] as [String:AnyObject]
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[qtyLbl(20)]", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[qtyLbl]-[qtyText(80)]-[unitsLbl(60)]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[qtyLbl]-[qtyText(80)]-[unitsLbl(100)]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[lockIcon(20)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[lockIcon(20)]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
@@ -403,6 +429,9 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     
     
     
+    func closeStartPicker(){
+        self.startTxtField.resignFirstResponder()
+    }
     
     func handleStartPicker()
     {
@@ -433,6 +462,10 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         self.delegate.editStop(row: self.row, stop: stopDate)
     }
     
+    func closeStopPicker(){
+        self.stopTxtField.resignFirstResponder()
+    }
+    
     
     func handleBreakTime()
     {
@@ -448,6 +481,11 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         
     }
     
+    func closeBreak(){
+        self.breakTxtField.resignFirstResponder()
+    }
+
+    
     func handleShowHistory()
     {
        //print("handleShowHistory")
@@ -460,7 +498,9 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     //material mode
     
     
-    
+    func closeQty(){
+        self.qtyTxtField.resignFirstResponder()
+    }
     
     func handleQty()
     {
@@ -475,6 +515,10 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         }
         
         
+    }
+    
+    func closeVendor(){
+        self.vendorTxtField.resignFirstResponder()
     }
     
     func handleVendor()
@@ -498,6 +542,10 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
                 self.delegate.editCost(row: self.row, cost: cost!)
             }
         }
+    }
+    
+    func closeCost(){
+        self.costTxtField.resignFirstResponder()
     }
     
     func handleCost()
@@ -538,33 +586,31 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     }
 
     
-    //picker view delegate methods
     
-    func pickerView(pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
-        
-        return self.vendorList.count
-        
+    
+    //picker view methods
+    
+    public func numberOfComponents(in pickerView: UIPickerView) -> Int {
+       // print(" 1numberOfComponents = \(appDelegate.employeeArray.count + 1)")
+        return 1
     }
-    
-    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+         return self.vendorList.count
+    }
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         
-        return self.vendorList[row].name
-    }
-    
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
-    {
+            return self.vendorList[row].name
+            
         
+    }
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.vendorValue = self.vendorList[row].name
         
     }
+
     
-    /*
-    func checkForUnSetValues(_usageQty:String,_vendor:String,_unitCost:String,_totalCost:String){
-        //print("checkForUnSetValues")
-        //print("qty = \(_usageQty) vendor = \(_vendor) unitCost = \(_unitCost) totalCost = \(_totalCost)")
-        
-    }
- */
+    
+    
+    
+
 }

@@ -230,7 +230,8 @@ class ImageDrawingViewController: UIViewController {
         self.view.addSubview(self.purpleBtn)
         
         self.pinkBtn = Button()
-        self.pinkBtn.backgroundColor = UIColor(colorLiteralRed: 255.0/255.0, green: 0.0/255.0, blue: 233.0/255.0, alpha: 1.0)
+        self.pinkBtn.backgroundColor = UIColor(displayP3Red: 255.0/255.0, green: 0.0/255.0, blue: 233.0/255.0, alpha: 1.0)
+        //self.pinkBtn.backgroundColor = UIColor(colorLiteralRed: 255.0/255.0, green: 0.0/255.0, blue: 233.0/255.0, alpha: 1.0)
         self.pinkBtn.tag = 6
         self.pinkBtn.layer.borderColor = UIColor(red:255/255.0, green:255/255.0, blue:255/255.0, alpha: 1.0).cgColor
         self.pinkBtn.layer.borderWidth = 2.0

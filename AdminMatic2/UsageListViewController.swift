@@ -29,7 +29,7 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     let tableHead:UIView! = UIView()
     let nameTH: THead = THead(text: "Employee")
     let dateTH: THead = THead(text: "Date")
-    let qtyTH: THead = THead(text: "Quantity")
+    let qtyTH: THead = THead(text: "Qty.")
    
     init(_workOrderItemID:String,_units:String){
         super.init(nibName:nil,bundle:nil)
@@ -200,7 +200,7 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             "qty":qtyTH
             ] as [String:AnyObject]
         
-        tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[name]-15-[date(80)]-15-[qty(100)]-5-|", options: [], metrics: metricsDictionary, views: thDictionary))
+        tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[name]-15-[date(75)]-[qty(100)]-5-|", options: [], metrics: metricsDictionary, views: thDictionary))
         tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[name(20)]", options: [], metrics: metricsDictionary, views: thDictionary))
         tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[date(20)]", options: [], metrics: metricsDictionary, views: thDictionary))
         tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[qty(20)]", options: [], metrics: metricsDictionary, views: thDictionary))
@@ -229,7 +229,7 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell:UsageTableViewCell = usageListTableView.dequeueReusableCell(withIdentifier: "cell") as! UsageTableViewCell
         
-         cell.layoutPortrait()
+         cell.layoutForHistory()
         
         cell.usageNameLbl.text = usages[indexPath.row].empName
         
@@ -240,6 +240,10 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         print("usages[indexPath.row].qty = \(usages[indexPath.row].qty)")
         print("self.units = \(self.units)")
         cell.usageTotalLbl.text = "\(usages[indexPath.row].qty!) \(self.units!)(s)"
+        
+        //cell.setStatus(status: usages[indexPath.row].woStatus!)
+        
+        
         return cell;
     }
    

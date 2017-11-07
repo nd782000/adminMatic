@@ -30,6 +30,8 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     var chargeTypeView:UIView!
     var chargeTypeLabel:Label!
     var chargeTypeValueLabel:Label!
+    var totalLabel:Label!
+    var totalValueLabel:Label!
     
     var estimatedView:UIView!
     var estLabel:Label!
@@ -41,6 +43,9 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     
     var profitView:UIView!
+    
+    var costLabel:Label!
+    var costValueLabel:Label!
     
     var profitLabel:Label!
     var profitValueLabel:Label!
@@ -293,15 +298,38 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         
         
+        self.totalLabel = Label()
+        self.totalLabel.text = "Total:"
+        self.chargeTypeView.addSubview(self.totalLabel)
+        
+        
+        
+        
+        
+        
+        self.totalValueLabel = Label()
+        self.totalValueLabel.text = "$\(self.woItem.total!)"
+        self.chargeTypeView.addSubview(self.totalValueLabel)
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
         let chargeViewsDictionary = [
             "chargeTypeLabel":self.chargeTypeLabel,
-            "chargeTypeValueLabel":self.chargeTypeValueLabel
+            "chargeTypeValueLabel":self.chargeTypeValueLabel,
+            "totalLabel":self.totalLabel,
+            "totalValueLabel":self.totalValueLabel
         ]  as [String:AnyObject]
         
-        self.chargeTypeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[chargeTypeLabel][chargeTypeValueLabel]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: sizeVals, views: chargeViewsDictionary))
+        self.chargeTypeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[chargeTypeLabel][chargeTypeValueLabel]-[totalLabel][totalValueLabel]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: sizeVals, views: chargeViewsDictionary))
         self.chargeTypeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[chargeTypeLabel(20)]", options: [], metrics: sizeVals, views: chargeViewsDictionary))
         
         
@@ -334,10 +362,14 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         self.estimatedView.addSubview(self.remainLabel)
         
         
-        let remainingValue = Float(self.woItem.est)! - Float(self.woItem.usageQty)!
+        var remainingValue = Float(self.woItem.est)! - Float(self.woItem.usageQty)!
+        
+        if(remainingValue < 0){
+            remainingValue = 0.00
+        }
         
         self.remainValueLabel = Label()
-        self.remainValueLabel.text = "\(remainingValue)"
+        self.remainValueLabel.text = String(format: "%.2f", remainingValue)
         self.estimatedView.addSubview(self.remainValueLabel)
         
         let estimatedViewsDictionary = [
@@ -390,6 +422,16 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         
         
+        self.costLabel = Label()
+        self.costLabel.text = "Cost: "
+        self.profitView.addSubview(self.costLabel)
+        
+        
+        self.costValueLabel = Label()
+        self.costValueLabel.text = "$\(self.woItem.totalCost!)"
+        self.profitView.addSubview(self.costValueLabel)
+
+        
         
         
         self.profitLabel = Label()
@@ -398,7 +440,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         
         self.profitValueLabel = Label()
-        self.profitValueLabel.text = "$\(income! - cost!)"
+        self.profitValueLabel.text = "$\(String(format: "%.2f", income! - cost!))"
         self.profitView.addSubview(self.profitValueLabel)
         
         
@@ -415,10 +457,10 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         //profit label goes here
         
         let profitViewsDictionary = [
-            "profitLabel":self.profitLabel, "profitValueLabel":self.profitValueLabel,"profitBarView":self.profitBarView
+            "costLabel":self.costLabel, "costValueLabel":self.costValueLabel,"profitLabel":self.profitLabel, "profitValueLabel":self.profitValueLabel,"profitBarView":self.profitBarView
             
         ]  as [String:AnyObject]
-        self.profitView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[profitLabel][profitValueLabel]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: sizeVals, views: profitViewsDictionary))
+        self.profitView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[costLabel][costValueLabel]-[profitLabel][profitValueLabel]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: sizeVals, views: profitViewsDictionary))
         self.profitView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[profitLabel(20)]", options: [], metrics: sizeVals, views: profitViewsDictionary))
         
         

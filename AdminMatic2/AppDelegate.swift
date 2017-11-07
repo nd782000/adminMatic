@@ -22,6 +22,9 @@ import Nuke
 import AVFoundation
 
 
+import SystemConfiguration
+
+
 
 protocol MenuDelegate{
     func menuChange(_ menuItem:Int)
@@ -41,6 +44,69 @@ struct defaultsKeys {
     static let loggedInPic = ""
 }
 
+
+
+
+/*
+protocol Utilities {
+}
+
+extension NSObject:Utilities{
+    
+    
+    enum ReachabilityStatus {
+        case notReachable
+        case reachableViaWWAN
+        case reachableViaWiFi
+    }
+    
+    var currentReachabilityStatus: ReachabilityStatus {
+        
+        var zeroAddress = sockaddr_in()
+        zeroAddress.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+        
+        guard let defaultRouteReachability = withUnsafePointer(to: &zeroAddress, {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                SCNetworkReachabilityCreateWithAddress(nil, $0)
+            }
+        }) else {
+            return .notReachable
+        }
+        
+        var flags: SCNetworkReachabilityFlags = []
+        if !SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) {
+            return .notReachable
+        }
+        
+        if flags.contains(.reachable) == false {
+            // The target host is not reachable.
+            return .notReachable
+        }
+        else if flags.contains(.isWWAN) == true {
+            // WWAN connections are OK if the calling application is using the CFNetwork APIs.
+            return .reachableViaWWAN
+        }
+        else if flags.contains(.connectionRequired) == false {
+            // If the target host is reachable and no connection is required then we'll assume that you're on Wi-Fi...
+            return .reachableViaWiFi
+        }
+        else if (flags.contains(.connectionOnDemand) == true || flags.contains(.connectionOnTraffic) == true) && flags.contains(.interventionRequired) == false {
+            // The connection is on-demand (or on-traffic) if the calling application is using the CFSocketStream or higher APIs and no [user] intervention is needed
+            return .reachableViaWiFi
+        }
+        else {
+            return .notReachable
+        }
+    }
+    
+}
+
+*/
+
+
+
+
  
 
 @UIApplicationMain
@@ -49,7 +115,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.2.0"
+    var appVersion:String = "1.2.3"
     
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
@@ -108,7 +174,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         
         
-        
+        /*
         let manager = NetworkReachabilityManager(host: "www.apple.com")
         
         manager?.listener = { status in
@@ -117,7 +183,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         manager?.startListening()
         
-        
+        */
         
         //Get all Fields
         ////print("get fields")
@@ -243,19 +309,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         //style the nav bar
         let layoutVars:LayoutVars = LayoutVars()
         UIBarButtonItem.appearance().tintColor = layoutVars.buttonTextColor
-        UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
+        UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white]
         
         
         let navigationBarAppearace = UINavigationBar.appearance()
         
         navigationBarAppearace.barTintColor = layoutVars.buttonColor1
         //title
-        UINavigationBar.appearance().titleTextAttributes = [ NSFontAttributeName: layoutVars.buttonFont, NSForegroundColorAttributeName: layoutVars.buttonTextColor ]
+        UINavigationBar.appearance().titleTextAttributes = [ NSAttributedStringKey.font: layoutVars.buttonFont, NSAttributedStringKey.foregroundColor: layoutVars.buttonTextColor ]
         //left right buttons
-        UIBarButtonItem.appearance().setTitleTextAttributes([NSFontAttributeName: layoutVars.buttonFont, NSForegroundColorAttributeName: layoutVars.buttonTextColor], for: UIControlState())
+        UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedStringKey.font: layoutVars.buttonFont, NSAttributedStringKey.foregroundColor: layoutVars.buttonTextColor], for: UIControlState())
         
         return true
     }
+    
+    
+    
+    func isConnectedToNetwork() -> Bool {
+        
+        var zeroAddress = sockaddr_in(sin_len: 0, sin_family: 0, sin_port: 0, sin_addr: in_addr(s_addr: 0), sin_zero: (0, 0, 0, 0, 0, 0, 0, 0))
+        zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+        let defaultRouteReachability = withUnsafePointer(to: &zeroAddress) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {zeroSockAddress in
+                SCNetworkReachabilityCreateWithAddress(nil, zeroSockAddress)
+            }
+        }
+        
+        var flags = SCNetworkReachabilityFlags()
+        if !SCNetworkReachabilityGetFlags(defaultRouteReachability!, &flags) {
+            return false
+        }
+        let isReachable = (flags.rawValue & UInt32(kSCNetworkFlagsReachable)) != 0
+        let needsConnection = (flags.rawValue & UInt32(kSCNetworkFlagsConnectionRequired)) != 0
+        
+        return (isReachable && !needsConnection)
+        
+    }
+    
+    
+    
     
     
     

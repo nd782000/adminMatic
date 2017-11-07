@@ -12,8 +12,14 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
+protocol PerformanceDelegate{
+    func reDrawList(_index:Int, _status:String)
+    
+}
 
-class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIPickerViewDelegate{
+
+
+class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIPickerViewDelegate, PerformanceDelegate{
     
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
@@ -290,7 +296,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.startTxtField.delegate = self
         self.startTxtField.tag = 8
         self.startTxtField.inputView = self.startPickerView
-        self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSForegroundColorAttributeName: layoutVars.buttonColor1])
+        self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.startTxtField)
         
         
@@ -315,7 +321,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.stopTxtField.delegate = self
         self.stopTxtField.tag = 8
         self.stopTxtField.inputView = self.stopPickerView
-        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSForegroundColorAttributeName: layoutVars.buttonColor1])
+        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.stopTxtField)
         
         let stopToolBar = UIToolbar()
@@ -437,7 +443,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.startTxtField.delegate = self
         self.startTxtField.tag = 8
         self.startTxtField.inputView = self.startPickerView
-        self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSForegroundColorAttributeName: layoutVars.buttonColor1])
+        self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.startTxtField)
         
         
@@ -462,7 +468,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.stopTxtField.delegate = self
         self.stopTxtField.tag = 8
         self.stopTxtField.inputView = self.stopPickerView
-        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSForegroundColorAttributeName: layoutVars.buttonColor1])
+        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.stopTxtField)
         
         let stopToolBar = UIToolbar()
@@ -617,6 +623,10 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         
         
         let workOrderViewController = WorkOrderViewController(_workOrderID: currentCell.usage.woID!,_customerName: currentCell.usage.custName!)
+        
+        workOrderViewController.tableCellID = indexPath?.row
+        workOrderViewController.performanceDelegate = self
+        
         navigationController?.pushViewController(workOrderViewController, animated: false )
         
         
@@ -729,7 +739,12 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     
     
     
-    
+    func reDrawList(_index:Int, _status:String){
+        print("reDraw List")
+        self.usages[_index].woStatus = _status
+        self.performanceTableView.reloadData()
+    }
+
     
     
     

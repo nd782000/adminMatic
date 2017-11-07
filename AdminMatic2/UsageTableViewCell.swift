@@ -128,6 +128,41 @@ class UsageTableViewCell: UITableViewCell {
         
     }
     
+    func layoutForHistory(){
+        
+        for view in self.contentView.subviews{
+            view.removeFromSuperview()
+        }
+        
+        
+       
+        
+        
+        usageNameLbl = Label(text: "") // not sure how to refer to the cell size here
+        usageDateLbl = Label(text: "") // not sure how to refer to the cell size here
+        usageTotalLbl = Label(text: "") // not sure how to refer to the cell size here
+        contentView.addSubview(usageNameLbl)
+        contentView.addSubview(usageDateLbl)
+        contentView.addSubview(usageTotalLbl)
+        
+        /////////  Auto Layout   //////////////////////////////////////
+        print("usage table view cell")
+        //auto layout group
+        let usageViewsDictionary = ["view1": self.usageNameLbl,"view2": self.usageDateLbl,"view3": self.usageTotalLbl] as [String:AnyObject]
+        
+        let usageViewWidth = (layoutVars.fullWidth - 30) / 2
+        let metricsDictionary = ["halfWidth": usageViewWidth] as [String:Any]
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[view1]-[view2(75)]-[view3(100)]-5-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-7-[view1(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-7-[view2(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-7-[view3(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+    }
+
+    
+    
+    
+    
     func setStatus(status: String) {
         switch (status) {
         case "1":

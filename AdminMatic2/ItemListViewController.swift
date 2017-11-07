@@ -348,7 +348,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                    highlightedText.addAttribute(NSBackgroundColorAttributeName, value: UIColor.yellow, range: match.range)
+                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
                 
             }

@@ -273,29 +273,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         
         
         
-       // self.topImageView.layer.borderWidth = 1.0
-       // self.topImageView.backgroundColor = UIColor.lightGray
-        //self.topImageView.translatesAutoresizingMaskIntoConstraints = false
-        //self.view.addSubview(self.topImageView)
-        
-        /*
-        if(self.topImage == "1"){
-            topImageSwitch.isOn = true
-        }else{
-            topImageSwitch.isOn = false
-        }
- 
-        
-        
-        topImageSwitch.translatesAutoresizingMaskIntoConstraints = false
-        topImageSwitch.addTarget(self, action: #selector(ImageUploadPrepViewController.topImageSwitchValueDidChange(sender:)), for: .valueChanged)
-        self.topImageView.addSubview(topImageSwitch)
-        
-        topImageSwitchLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.topImageView.addSubview(topImageSwitchLbl)
-        topImageSwitchLbl.text = "Enter in Top Image contest"
-        
-        */
+      
         
         if(self.imageType == "Gallery"){
             print("gallery")
@@ -759,19 +737,28 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         print("imageType = \(self.imageType)")
         
         let n: Int! = self.navigationController?.viewControllers.count
+        print("add images 2")
         switch (self.imageType) {
-        case "Field Note":
-            let myUIViewController = self.navigationController?.viewControllers[n-4] as! ScheduleViewController
             
-            if(myUIViewController.searchController != nil){
-                myUIViewController.searchController.isActive = false
+            
+        case "Field Note":
+            
+            if(self.navigationController?.viewControllers[n-4] is ScheduleViewController){
+                let myUIViewController = self.navigationController?.viewControllers[n-4] as! ScheduleViewController
+                
+                if(myUIViewController.searchController != nil){
+                    myUIViewController.searchController.isActive = false
+                }
             }
+            
             break
         case "Task":
-            let myUIViewController = self.navigationController?.viewControllers[n-4] as! ScheduleViewController
-            
-            if(myUIViewController.searchController != nil){
-                myUIViewController.searchController.isActive = false
+            if(self.navigationController?.viewControllers[n-4] is ScheduleViewController){
+                let myUIViewController = self.navigationController?.viewControllers[n-4] as! ScheduleViewController
+                
+                if(myUIViewController.searchController != nil){
+                    myUIViewController.searchController.isActive = false
+                }
             }
             break
             
@@ -784,7 +771,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             break
             
         default://home
-            
+            print("add images 3")
             break
             
         }
@@ -800,6 +787,9 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         let multiPicker = DKImagePickerController()
         
         multiPicker.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        
+        
+        print("add images 4")
         
         var selectedAssets = [DKAsset]()
         //var selectedImages:[Image] = [Image]()
