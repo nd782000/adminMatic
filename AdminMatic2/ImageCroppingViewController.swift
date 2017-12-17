@@ -115,19 +115,19 @@ class ImageCroppingViewController: UIViewController  {
         // Dispose of any resources that can be recreated.
     }
     
-    func undo(){
+    @objc func undo(){
        self.cropView.reset(animationDuration: 0.5, options: [], completion: nil)
     }
     
     
     
-    func crop(){
+    @objc func crop(){
         delegate.updateImage(_indexPath:self.indexPath, _image: self.cropView.croppedImage!)
         _ = navigationController?.popViewController(animated: true)
     }
     
 
-    func goBack(){
+    @objc func goBack(){
         
         if(editsMade == true){
             let alertController = UIAlertController(title: "Edits Made", message: "Crop this Image?", preferredStyle: UIAlertControllerStyle.alert)

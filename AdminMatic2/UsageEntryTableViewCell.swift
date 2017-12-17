@@ -398,7 +398,7 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     
     func setImageUrl(_url:String){
         let imgURL:URL = URL(string: _url)!
-        Nuke.loadImage(with: imgURL, into: self.employeeImageView){ [weak contentView] in
+        Nuke.loadImage(with: imgURL, into: self.employeeImageView){ 
             //print("nuke loadImage")
             self.employeeImageView.handle(response: $0, isFromMemoryCache: $1)
             self.activityView.stopAnimating()
@@ -429,11 +429,11 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     
     
     
-    func closeStartPicker(){
+    @objc func closeStartPicker(){
         self.startTxtField.resignFirstResponder()
     }
     
-    func handleStartPicker()
+    @objc func handleStartPicker()
     {
         //print("handle start picker")
         self.startTxtField.resignFirstResponder()
@@ -448,7 +448,7 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     }
     
     
-    func handleStopPicker()
+    @objc func handleStopPicker()
     {
        // print("handle stop picker")
         self.stopTxtField.resignFirstResponder()
@@ -462,12 +462,12 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         self.delegate.editStop(row: self.row, stop: stopDate)
     }
     
-    func closeStopPicker(){
+    @objc func closeStopPicker(){
         self.stopTxtField.resignFirstResponder()
     }
     
     
-    func handleBreakTime()
+    @objc func handleBreakTime()
     {
         self.breakTxtField.resignFirstResponder()
         if(Int(breakTxtField.text!) == nil){
@@ -481,12 +481,12 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         
     }
     
-    func closeBreak(){
+    @objc func closeBreak(){
         self.breakTxtField.resignFirstResponder()
     }
 
     
-    func handleShowHistory()
+    @objc func handleShowHistory()
     {
        //print("handleShowHistory")
             self.delegate.showHistory()
@@ -498,11 +498,11 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     //material mode
     
     
-    func closeQty(){
+    @objc func closeQty(){
         self.qtyTxtField.resignFirstResponder()
     }
     
-    func handleQty()
+    @objc func handleQty()
     {
         //print("handle qty")
         if(Double(qtyTxtField.text!) == nil){
@@ -517,11 +517,11 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         
     }
     
-    func closeVendor(){
+    @objc func closeVendor(){
         self.vendorTxtField.resignFirstResponder()
     }
     
-    func handleVendor()
+    @objc func handleVendor()
     {
         let row = self.vendorPicker.selectedRow(inComponent: 0)
         let vendor = vendorList[row]
@@ -544,11 +544,11 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         }
     }
     
-    func closeCost(){
+    @objc func closeCost(){
         self.costTxtField.resignFirstResponder()
     }
     
-    func handleCost()
+    @objc func handleCost()
     {
         if(Double(costTxtField.text!) == nil){
             self.costTxtField.resignFirstResponder()
@@ -565,7 +565,7 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     
     
     
-    func keyboardWillShow(sender: NSNotification) {
+    @objc func keyboardWillShow(sender: NSNotification) {
         //print("keyboard will show")
         
         if(self.locked == false){

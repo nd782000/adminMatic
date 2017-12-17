@@ -223,7 +223,7 @@ class TimeEntryView: UIView {
     
     
     
-    func signIn(){
+    @objc func signIn(){
         
         print("signIn")
         
@@ -259,7 +259,7 @@ class TimeEntryView: UIView {
         
     }
     
-    func signOut(){
+    @objc func signOut(){
         print("signOut \(self.startTime)")
         
         
@@ -303,8 +303,8 @@ class TimeEntryView: UIView {
         
         let startDate = f.date(from: date1)
         let endDate = f.date(from: date2)
-        print("startDate \(startDate)")
-        print("endDate \(endDate)")
+        print("startDate \(String(describing: startDate))")
+        print("endDate \(String(describing: endDate))")
         let calendar: NSCalendar = NSCalendar.current as NSCalendar
         
         

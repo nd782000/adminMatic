@@ -85,7 +85,7 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
             }
             
             
-            Nuke.loadImage(with: imgURL, into: self.selectedImageView){ [weak contentView] in
+            Nuke.loadImage(with: imgURL, into: self.selectedImageView){ 
                 //print("nuke loadImage")
                 self.selectedImageView.handle(response: $0, isFromMemoryCache: $1)
                 self.activityView.stopAnimating()

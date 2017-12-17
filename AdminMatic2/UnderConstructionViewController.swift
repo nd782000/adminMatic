@@ -49,7 +49,7 @@ class UnderConstructionViewController: ViewControllerWithMenu  {
         backButton.setTitle("Back", for: UIControlState.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
-        let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
+       // let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
        // navigationItem.leftBarButtonItem  = backButtonItem
         
         
@@ -110,7 +110,7 @@ class UnderConstructionViewController: ViewControllerWithMenu  {
     
     
     
-    func goBack(){
+    @objc func goBack(){
         _ = navigationController?.popViewController(animated: false)
        
     }

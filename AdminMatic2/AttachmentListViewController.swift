@@ -1,5 +1,5 @@
 //
-//  FieldNoteListViewController.swift
+//  AttachmentListViewController.swift
 //  AdminMatic2
 //
 //  Created by Nick on 1/11/17.
@@ -12,7 +12,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-protocol FieldNoteDelegate{
+protocol AttachmentDelegate{
     func updateTable(_points:Int)
     
 }
@@ -20,8 +20,8 @@ protocol FieldNoteDelegate{
 
 
 
-class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, FieldNoteDelegate{
-//class FieldNoteListViewController: UIViewController{
+class AttachmentListViewController: ViewControllerWithMenu, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate{
+//class AttachmentListViewController: UIViewController{
     
     var layoutVars:LayoutVars = LayoutVars()
     //let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -38,23 +38,23 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
     
     var json:JSON!
     
-    var addFieldNoteBtn: Button!
-    var fieldNoteTableView: TableView!
-    var fieldNotesJson:JSON?
+    var addAttachmentBtn: Button!
+    var attachmentTableView: TableView!
+    var attachmentsJson:JSON?
 
     
-    var fieldNotes: [FieldNote] = []//data array
+    var attachments: [Attachment] = []//data array
     
-    // var fieldNoteViewEntered:Int = 0
+    // var attachmentViewEntered:Int = 0
     
     var editsMade:Bool = false
     
     
-    init(_workOrderID:String,_customerID:String,_fieldNotes:[FieldNote]){
+    init(_workOrderID:String,_customerID:String,_attachments:[Attachment]){
         super.init(nibName:nil,bundle:nil)
         self.workOrderID = _workOrderID
         self.customerID = _customerID
-        self.fieldNotes = _fieldNotes
+        self.attachments = _attachments
         
         
     }
@@ -66,11 +66,11 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Field Notes"
+        title = "Attachments"
         
         
         let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(FieldNoteListViewController.goBack), for: UIControlEvents.touchUpInside)
+        backButton.addTarget(self, action: #selector(AttachmentListViewController.goBack), for: UIControlEvents.touchUpInside)
         backButton.setTitle("Back", for: UIControlState.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
@@ -87,27 +87,27 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
         
         
         
-        self.addFieldNoteBtn = Button(titleText: "Add")
+        self.addAttachmentBtn = Button(titleText: "Add")
         
-        self.addFieldNoteBtn.titleLabel?.textAlignment = NSTextAlignment.center
-        self.addFieldNoteBtn.contentEdgeInsets = UIEdgeInsets(top: 0, left: 35, bottom: 0, right: 10)
-        self.addFieldNoteBtn.addTarget(self, action: #selector(FieldNoteListViewController.addFieldNote), for: UIControlEvents.touchUpInside)
-        self.containerView.addSubview(self.addFieldNoteBtn)
+        self.addAttachmentBtn.titleLabel?.textAlignment = NSTextAlignment.center
+        self.addAttachmentBtn.contentEdgeInsets = UIEdgeInsets(top: 0, left: 35, bottom: 0, right: 10)
+        self.addAttachmentBtn.addTarget(self, action: #selector(AttachmentListViewController.addAttachment), for: UIControlEvents.touchUpInside)
+        self.containerView.addSubview(self.addAttachmentBtn)
         
         //employee table
-        self.fieldNoteTableView =  TableView()
-        self.fieldNoteTableView.delegate  =  self
-        self.fieldNoteTableView.dataSource  =  self
-        self.fieldNoteTableView.rowHeight = 60.0
+        self.attachmentTableView =  TableView()
+        self.attachmentTableView.delegate  =  self
+        self.attachmentTableView.dataSource  =  self
+        self.attachmentTableView.rowHeight = 60.0
         
-        self.fieldNoteTableView.register(FieldNoteTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.containerView.addSubview(self.fieldNoteTableView)
+        self.attachmentTableView.register(AttachmentTableViewCell.self, forCellReuseIdentifier: "cell")
+        self.containerView.addSubview(self.attachmentTableView)
         
         //auto layout group
         let viewsDictionary = [
             "container":self.containerView,
-            "addBtn":self.addFieldNoteBtn,
-            "table":self.fieldNoteTableView
+            "addBtn":self.addAttachmentBtn,
+            "table":self.attachmentTableView
         ]as [String : Any]
         // ////print("2")
         let metricsDictionary = ["screenWidth": self.view.frame.size.width,"screenHeight": self.view.frame.size.height,"fullWidth": self.view.frame.size.width - 20,"halfWidth": (self.view.frame.size.width - 20)/2,"inputHeight":layoutVars.inputHeight,"doubleInputHeight":layoutVars.inputHeight*2] as [String : Any]
@@ -130,22 +130,24 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
     
     func updateTable(_points:Int){
         print("updateTable")
-        self.appDelegate.showMessage(_message: "earned \(_points) App Points!")
+        //self.appDelegate.showMessage(_message: "earned \(_points) App Points!")
         
         self.editsMade = true
-        getFieldNotes()
+        getAttachments()
     }
     
-    func getFieldNotes(){
+    func getAttachments(){
         print("get field notes")
         
+        /*
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
         //, "cb":timeStamp as AnyObject
+ */
         
-        let parameters = ["woID": self.workOrderID as AnyObject, "cb":timeStamp as AnyObject]
+        let parameters = ["woID": self.workOrderID as AnyObject]
         
         print("parameters = \(parameters)")
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/fieldNotes.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
@@ -164,19 +166,19 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
                 
                 if let json = response.result.value {
                     print("Field Note Json = \(json)")
-                    self.fieldNotesJson = JSON(json)
+                    self.attachmentsJson = JSON(json)
                     
-                    let fn = self.fieldNotesJson?["fieldNotes"]
+                    let fn = self.attachmentsJson?["attachments"]
                     
-                    self.fieldNotes = []
+                    self.attachments = []
                     
-                    //FieldNotes
-                    print("Field Note Count = \(fn?.count)")
+                    //Attachments
+                    print("Field Note Count = \(String(describing: fn?.count))")
                     
                     for n in 0 ..< Int((fn?.count)!) {
                         
                         
-                        var fieldNoteImages:[Image]  = []
+                        var attachmentImages:[Image]  = []
                         
                         
                         let imageCount = Int((fn?[n]["images"].count)!)
@@ -203,35 +205,20 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
                             image.customer = (fn?[n]["images"][i]["customer"].stringValue)!
                             image.tags = (fn?[n]["images"][i]["tags"].stringValue)!
                             
-                            fieldNoteImages.append(image)
+                            attachmentImages.append(image)
                             
                         }
                         
-                        let fieldNote = FieldNote(_ID: fn?[n]["ID"].stringValue, _note: fn?[n]["note"].stringValue, _customerID: fn?[n]["customerID"].stringValue, _workOrderID: fn?[n]["workOrderID"].stringValue, _createdBy: fn?[n]["createdBy"].stringValue, _status: fn?[n]["status"].stringValue, _images:fieldNoteImages)
+                        let attachment = Attachment(_ID: fn?[n]["ID"].stringValue, _note: fn?[n]["note"].stringValue, _customerID: fn?[n]["customerID"].stringValue, _workOrderID: fn?[n]["workOrderID"].stringValue, _createdBy: fn?[n]["createdBy"].stringValue, _status: fn?[n]["status"].stringValue, _images:attachmentImages)
                         
                         
-                        self.fieldNotes.append(fieldNote)
+                        self.attachments.append(attachment)
                          
                     }
                     
-                    // let scoreJSON =  JSON(json)["scoreAdjust"]
                     
-                    /*
-                    //add appPoints
-                    var points:Int = JSON(json)["scoreAdjust"].intValue
-                    //print("points = \(points)")
-                    if(points > 0){
-                        self.appDelegate.showMessage(_message: "earned \(points) App Points!")
-                    }else if(points < 0){
-                        points = points * -1
-                        self.appDelegate.showMessage(_message: "lost \(points) App Points!")
-                        
-                    }
-                    */
-                    
-                //}
                 
-                    self.fieldNoteTableView.reloadData()
+                    self.attachmentTableView.reloadData()
                 
                  
                 }
@@ -239,19 +226,24 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
     }
     
     
-    func addFieldNote(){
+    @objc func addAttachment(){
         //print("Add Field Note")
         
         print("making prep view")
         print("self.customerID = \(self.customerID)")
         
-        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Field Note", _ID: "0")
+        //let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Field Note", _ID: "0")
+        //let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Attachment", _woID: self.workOrderID, _attachmentID: "0", _images: [])
+        
+        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Attachment", _woID: self.workOrderID, _customerID: self.customerID, _attachmentID: "0", _images: [])
+        
+        
         imageUploadPrepViewController.selectedID = self.customerID
         imageUploadPrepViewController.layoutViews()
         
         imageUploadPrepViewController.woID = self.workOrderID
         imageUploadPrepViewController.groupImages = true
-        imageUploadPrepViewController.fieldNoteDelegate = self
+        imageUploadPrepViewController.attachmentDelegate = self
         
         
         self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
@@ -262,54 +254,54 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        print("fieldNotes tableCount \(fieldNotes.count)")
-        return fieldNotes.count
+        print("attachments tableCount \(attachments.count)")
+        return attachments.count
         
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         ////print("cellForRowAtIndexPath")
-        print("fieldNotes cellForRowAtIndexPath")
-        let cell:FieldNoteTableViewCell = fieldNoteTableView.dequeueReusableCell(withIdentifier: "cell") as! FieldNoteTableViewCell
+        print("attachments cellForRowAtIndexPath")
+        let cell:AttachmentTableViewCell = attachmentTableView.dequeueReusableCell(withIdentifier: "cell") as! AttachmentTableViewCell
         
         
         cell.imageView?.image = nil
-        cell.fieldNote = self.fieldNotes[indexPath.row]
-        if(self.fieldNotes[indexPath.row].note == ""){
+        cell.attachment = self.attachments[indexPath.row]
+        if(self.attachments[indexPath.row].note == ""){
             cell.noteLbl.text = "No text given"
         }else{
-            cell.noteLbl.text = self.fieldNotes[indexPath.row].note
+            cell.noteLbl.text = self.attachments[indexPath.row].note
         }
         
         
-        print("image count = \(self.fieldNotes[indexPath.row].images.count)")
+        print("image count = \(self.attachments[indexPath.row].images.count)")
         
-        if(self.fieldNotes[indexPath.row].images.count == 0){
+        if(self.attachments[indexPath.row].images.count == 0){
             cell.imageQtyLbl.text = "No Images"
         }else{
-            if(self.fieldNotes[indexPath.row].images.count == 1){
+            if(self.attachments[indexPath.row].images.count == 1){
                 cell.imageQtyLbl.text = "1 Image"
                 
             }else{
-                cell.imageQtyLbl.text = "\(self.fieldNotes[indexPath.row].images.count) Images"
+                cell.imageQtyLbl.text = "\(self.attachments[indexPath.row].images.count) Images"
             }
         }
 
         
-        //print("pic = \(self.fieldNotes[indexPath.row].pic)")
-        ////print("thumb = \(self.fieldNotes[indexPath.row].thumb)")
+        //print("pic = \(self.attachments[indexPath.row].pic)")
+        ////print("thumb = \(self.attachments[indexPath.row].thumb)")
         
-        //print("ID = \(self.fieldNotes[indexPath.row].ID)")
+        //print("ID = \(self.attachments[indexPath.row].ID)")
         cell.activityView.startAnimating()
         
         
-        if(self.fieldNotes[indexPath.row].images.count > 0){
+        if(self.attachments[indexPath.row].images.count > 0){
             // //print("image")
             
-            print("url = \(self.fieldNotes[indexPath.row].images[0].thumbPath!)")
-            if(verifyUrl("\(self.fieldNotes[indexPath.row].images[0].thumbPath!)")){
-            cell.setImageUrl(_url: "\(self.fieldNotes[indexPath.row].images[0].thumbPath!)")
+            print("url = \(self.attachments[indexPath.row].images[0].thumbPath!)")
+            if(verifyUrl("\(self.attachments[indexPath.row].images[0].thumbPath!)")){
+            cell.setImageUrl(_url: "\(self.attachments[indexPath.row].images[0].thumbPath!)")
             }else{
             cell.setBlankImage()
            }
@@ -329,15 +321,20 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //print("You selected cell #\(indexPath.row)!")
         tableView.deselectRow(at: indexPath as IndexPath, animated: true)
-        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Field Note", _ID: self.fieldNotes[indexPath.row].ID)
-        imageUploadPrepViewController.images = self.fieldNotes[indexPath.row].images
+        
+        
+        
+        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Attachment", _woID: self.workOrderID, _customerID: self.customerID, _attachmentID: self.attachments[indexPath.row].ID, _images: self.attachments[indexPath.row].images)
+        
+        
+        imageUploadPrepViewController.images = self.attachments[indexPath.row].images
         imageUploadPrepViewController.layoutViews()
-        imageUploadPrepViewController.groupDescriptionTxt.text = self.fieldNotes[indexPath.row].note
+        imageUploadPrepViewController.groupDescriptionTxt.text = self.attachments[indexPath.row].note
         imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
-        imageUploadPrepViewController.selectedID = self.fieldNotes[indexPath.row].customerID
-        imageUploadPrepViewController.woID = self.fieldNotes[indexPath.row].workOrderID
+        imageUploadPrepViewController.selectedID = self.attachments[indexPath.row].customerID
+        imageUploadPrepViewController.woID = self.attachments[indexPath.row].workOrderID
         imageUploadPrepViewController.groupImages = true
-        imageUploadPrepViewController.fieldNoteDelegate = self
+        imageUploadPrepViewController.attachmentDelegate = self
         self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
     }
     
@@ -352,7 +349,7 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
         if (editingStyle == UITableViewCellEditingStyle.delete) {
             
             
-            //print("delete fieldNote ID = \(fieldNotes[indexPath.row].ID)")
+            //print("delete attachment ID = \(attachments[indexPath.row].ID)")
             
             //cache buster
             let now = Date()
@@ -360,7 +357,7 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
             let timeStamp = Int(timeInterval)
             //, "cb":timeStamp as AnyObject
             
-            Alamofire.request(API.Router.deleteFieldNote(["ID":fieldNotes[indexPath.row].ID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
+            Alamofire.request(API.Router.deleteAttachment(["ID":attachments[indexPath.row].ID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
                 
                 response in
                 //print(response.request ?? "")  // original URL request
@@ -369,42 +366,12 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
                 //print(response.result)   // result of response serialization
                 
                 
-                //let str = NSString(data: response.data!, encoding: String.Encoding.utf8.rawValue)
-                //print("string = \(str)")
-                ////print(error)
                 
                 
-                
-                
-                
-                
-                
-                
-                if let json = response.result.value {
-                    //print("JSON: \(json)")
-                    
-                    
-                    
-                    //add appPoints
-                    var points:Int = JSON(json)["scoreAdjust"].intValue
-                    //print("points = \(points)")
-                    if(points > 0){
-                        self.appDelegate.showMessage(_message: "earned \(points) App Points!")
-                    }else if(points < 0){
-                        points = points * -1
-                        self.appDelegate.showMessage(_message: "lost \(points) App Points!")
-                        
-                    }
-
-                    
-                    
-                    
-                    
-                }
             }
             
-            _ = fieldNotes.remove(at: indexPath.row)
-            fieldNoteTableView.reloadData()
+            _ = attachments.remove(at: indexPath.row)
+            attachmentTableView.reloadData()
             
             self.editsMade = true
             
@@ -429,7 +396,7 @@ class FieldNoteListViewController: ViewControllerWithMenu, UITextFieldDelegate, 
     }
     
     
-    func goBack(){
+    @objc func goBack(){
         //print("goBack")
         
         _ = navigationController?.popViewController(animated: false)

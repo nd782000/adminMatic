@@ -284,7 +284,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         textField.resignFirstResponder()
         return true
     }
-    func cancelPicker() {
+    @objc func cancelPicker() {
         selectEmployeesTxtField.resignFirstResponder()
     }
     
@@ -423,7 +423,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                     usageTableView.reloadData()
                 }
             }else{
-                self.simpleAlert(_title: "Can't Delete Saved Rows", _message: "")
+                simpleAlert(_vc: self,_title: "Can't Delete Saved Rows", _message: "")
                 tableView.setEditing(false, animated: true)
             }
         }
@@ -449,7 +449,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     
     
     
-    func goBack(){
+    @objc func goBack(){
         if(self.editsMade == true){
             print("editsMade = true")
             let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertControllerStyle.alert)
@@ -510,7 +510,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     }
     
     
-    func addEmployee() {
+    @objc func addEmployee() {
        // print("Add Employee \(appDelegate.employeesJson)")
         let row = employeePicker.selectedRow(inComponent: 0)
         if(row == 0){
@@ -575,7 +575,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         print("addActiveUsage()")
         var openUsage:Bool = false
         for usage in self.woItem.usages {
-            print("usage.qty = \(usage.qty)")
+            print("usage.qty = \(String(describing: usage.qty))")
             usageToLog.append(usage)//append to your list
             if(usage.stop == nil){
                 openUsage = true
@@ -651,7 +651,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         
         let stopDate = usageToLog[row].stop
         
-        print("stopDate = \(stopDate)")
+        print("stopDate = \(String(describing: stopDate))")
         
         if(stopDate == nil){
             
@@ -666,7 +666,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             
         }else if(stopDate! < start){
             usageTableView.reloadData()
-            self.simpleAlert(_title: "Time Error", _message: "\(usageToLog[row].empName!)'s start time can not be later then their stop time.")
+            simpleAlert(_vc:self, _title: "Time Error", _message: "\(usageToLog[row].empName!)'s start time can not be later then their stop time.")
         }else{
             
             editOtherStartTimes(_row:row, _start: start)
@@ -684,8 +684,9 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     
     
     func editOtherStartTimes(_row:Int,_start:Date){
-        print("editOtherStartTimes")
+        print("editOtherStartTimes usageToLog.count = \(usageToLog.count)")
         if(usageToLog.count > 1){
+            print("show alert")
             let alertController = UIAlertController(title: "Edit Start Time for Others?", message: "", preferredStyle: UIAlertControllerStyle.alert)
             let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
                 (result : UIAlertAction) -> Void in
@@ -700,7 +701,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                             self.usageToLog[n].start = _start
                         }else if(stopDate! < _start){
                             self.usageTableView.reloadData()
-                            self.simpleAlert(_title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s start time can not be later then their stop time.")
+                            simpleAlert(_vc: self, _title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s start time can not be later then their stop time.")
                         }else{
                             self.usageToLog[n].start = _start
                         }
@@ -710,7 +711,8 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             }
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            //self.present(alertController, animated: true, completion: nil)
+            present(alertController, animated: true)
         }
     }
     
@@ -726,11 +728,11 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         if(usageToLog[row].start == nil){
             //no start time
             usageTableView.reloadData()
-             self.simpleAlert(_title: "Time Error", _message: "\(usageToLog[row].empName!)'s has no start time.  Enter start time first.")
+             simpleAlert(_vc: self, _title: "Time Error", _message: "\(usageToLog[row].empName!)'s has no start time.  Enter start time first.")
         }else if(stop<usageToLog[row].start!){
             //stop is before start
             usageTableView.reloadData()
-            self.simpleAlert(_title: "Time Error", _message: "\(usageToLog[row].empName!)'s stop time can not be earlier then their start time.")
+            simpleAlert(_vc: self, _title: "Time Error", _message: "\(usageToLog[row].empName!)'s stop time can not be earlier then their start time.")
         }else{
             
             editOtherStopTimes(_row:row, _stop: stop)
@@ -763,11 +765,11 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         if(self.usageToLog[n].start == nil){
                             //no start time
                             self.usageTableView.reloadData()
-                            self.simpleAlert(_title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s has no start time.  Enter start time first.")
+                            simpleAlert(_vc: self, _title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s has no start time.  Enter start time first.")
                         }else if(_stop<self.usageToLog[n].start!){
                             //stop is before start
                             self.usageTableView.reloadData()
-                            self.simpleAlert(_title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s stop time can not be earlier then their start time.")
+                            simpleAlert(_vc: self, _title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s stop time can not be earlier then their start time.")
                         }else{
                             self.usageToLog[n].stop = _stop
                             self.editsMade = true
@@ -883,7 +885,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     
     
     
-    func startTime() {
+    @objc func startTime() {
         print("startTime 1")
     //loop thru usage array and edit start time
         for usage in usageToLog {
@@ -895,7 +897,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                     self.editsMade = true
                 }else if(usageStop!  < Date()){
                     //start is after stop
-                    self.simpleAlert(_title: "Time Error", _message: "\(usage.empName!)'s start time can not be later then their stop time.")
+                    simpleAlert(_vc: self, _title: "Time Error", _message: "\(usage.empName!)'s start time can not be later then their stop time.")
                 }else{
                     
                     usage.start = Date()
@@ -911,17 +913,17 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     }
     
     
-    func stopTime() {
+    @objc func stopTime() {
         //loop thru usage array and edit stop time
         for usage in usageToLog {
             if(usage.locked == false){
                 //test if stop is after start or start is nil
                 if(usage.start == nil){
                     //no start time
-                    self.simpleAlert(_title: "Time Error", _message: "\(usage.empName!)'s has no start time.  Enter start time first.")
+                    simpleAlert(_vc: self, _title: "Time Error", _message: "\(usage.empName!)'s has no start time.  Enter start time first.")
                 }else if(Date() <  usage.start!){
                     //stop is before start
-                     self.simpleAlert(_title: "Time Error", _message: "\(usage.empName!)'s stop time can not be earlier then their start time.")
+                     simpleAlert(_vc: self, _title: "Time Error", _message: "\(usage.empName!)'s stop time can not be earlier then their start time.")
                 }else{
                     usage.stop =  Date()
                     self.editsMade = true
@@ -954,7 +956,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                     if(usage.lunch != "" && usage.lunch != "0"){
                         breakTime = Double(usage.lunch!)! * 60
                         if(breakTime >= qtySeconds!){
-                            self.simpleAlert(_title: "Time Error", _message: "\(usage.empName!)'s break time can not be equal or greater then their shift time.")
+                            simpleAlert(_vc: self, _title: "Time Error", _message: "\(usage.empName!)'s break time can not be equal or greater then their shift time.")
                             usage.lunch = "0"
                             breakTime = 0.0
                         }
@@ -968,7 +970,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         usageTableView.reloadData()
     }
     
-    func submit() {
+    @objc func submit() {
         usageToLogJSON = []
         //loop thru usage array and build JSON array
         self.editsMade = false //resets edit checker
@@ -977,7 +979,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             if(usage.locked == false){
                 if(usage.type == "1"){
                     if(usage.start == nil){
-                        self.simpleAlert(_title: "Time Error", _message: "\(usage.empName!)'s break time can not be equal or greater then their shift time.")
+                        simpleAlert(_vc: self, _title: "Time Error", _message: "\(usage.empName!)'s break time can not be equal or greater then their shift time.")
                     }else{
                         if(usageQty! > 0.0){
                             if(Int(appDelegate.loggedInEmployee!.ID!)! > 0 &&  appDelegate.loggedInEmployee!.ID! == usage.addedBy){
@@ -988,7 +990,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         }
                         let JSONString = usage.toJSONString(prettyPrint: true)
                         usageToLogJSON.append(JSON(JSONString ?? ""))
-                        print("usage JSONString = \(JSONString)")
+                        print("usage JSONString = \(String(describing: JSONString))")
                     }
                 }else{
                     if(usageQty! > 0.0){
@@ -1007,7 +1009,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         let JSONString = usage.toJSONString(prettyPrint: true)
                         usageToLogJSON.append(JSON(JSONString ?? ""))
                     }else{
-                        self.simpleAlert(_title: "Qty Error", _message: "Qty needs to be added.")
+                        simpleAlert(_vc: self, _title: "Qty Error", _message: "Qty needs to be added.")
                     }
                 }
             }
@@ -1042,6 +1044,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         let updatedJSON = JSON(value)
                         self.indicator.dismissIndicator()
                         
+                        /*
                         //add appPoints
                         var points:Int = updatedJSON["scoreAdjust"].intValue
                         
@@ -1052,7 +1055,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                              self.appDelegate.showMessage(_message: "lost \(points) App Points!")
                             
                         }
-                        
+                        */
                         
                         
                         let usageCount = updatedJSON["usage"].count
@@ -1107,9 +1110,11 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         }
                         if(_type == "new" && self.woItem.type == "2"){
                             
+                            /*
                             //add appPoints
                             let points:Int = usageCount * 10
                             self.appDelegate.showMessage(_message: "earned \(points) App Points!")
+                            */
                             
                             let usage:Usage = Usage(_ID: "0",
                                                     _empID: nil,
@@ -1149,18 +1154,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         
     }
     
-    func simpleAlert(_title:String,_message:String?){
-        print("simpleAlert: \(_message)")
-        let alertController = UIAlertController(title: _title, message: _message, preferredStyle: UIAlertControllerStyle.alert)
-        
-        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
-            (result : UIAlertAction) -> Void in
-            print("OK")
-        }
-        alertController.addAction(okAction)
-        self.present(alertController, animated: true, completion: nil)
-        
-    }
+    
     
 }
 

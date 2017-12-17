@@ -36,8 +36,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var itemsSearchResults:[Item] = []
     var shouldShowSearchResults:Bool = false
     
-    let viewsConstraint_V:NSArray = []
-    let viewsConstraint_V2:NSArray = []
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,13 +64,13 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         Alamofire.request(API.Router.itemList(["cb":timeStamp as AnyObject])).responseJSON(){ response in
-            print(response.request ?? "")  // original URL request
-            print(response.response ?? "") // URL response
-            print(response.data ?? "")     // server data
-            print(response.result)   // result of response serialization
+            //print(response.request ?? "")  // original URL request
+            //print(response.response ?? "") // URL response
+            //print(response.data ?? "")     // server data
+            //print(response.result)   // result of response serialization
             
             if let json = response.result.value {
-                print("JSON: \(json)")
+                //print("JSON: \(json)")
                 self.items = JSON(json)
                 self.parseJSON()
                 
@@ -83,17 +82,16 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     func parseJSON(){
         let jsonCount = self.items["items"].count
         self.totalItems = jsonCount
-        print("JSONcount: \(jsonCount)")
         for i in 0 ..< jsonCount {
             
             //create a item object
-            let item = Item( _name: self.items["items"][i]["name"].stringValue, _id: self.items["items"][i]["ID"].stringValue, _type: self.items["items"][i]["type"].stringValue, _price: self.items["items"][i]["price"].stringValue, _units: self.items["items"][i]["unit"].stringValue)
+            let item = Item( _name: self.items["items"][i]["name"].stringValue, _id: self.items["items"][i]["ID"].stringValue, _type: self.items["items"][i]["type"].stringValue, _price: self.items["items"][i]["price"].stringValue, _units: self.items["items"][i]["unit"].stringValue, _description: self.items["items"][i]["description"].stringValue, _taxable: self.items["items"][i]["taxable"].stringValue)
             
             self.itemsArray.append(item)
             
         }
-        let item = Item(_name:"# \(jsonCount) Items", _id: "", _type: "", _price: "", _units: "")
-        self.itemsArray.append(item)
+        //let item = Item(_name:"# \(jsonCount) Items", _id: "", _type: "", _price: "", _units: "",_description:"",_taxable:"")
+        //self.itemsArray.append(item)
         
         
         
@@ -103,11 +101,8 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         var firstCharacterArray:[String] = [" "]
         
         for i in 0 ..< self.itemsArray.count {
-            print("loop for first character")
             let stringToTest = self.itemsArray[i].name.uppercased()
-            print("stringToTest = \(stringToTest)")
             let firstCharacter = String(stringToTest[stringToTest.startIndex])
-            print("firstCharacter = \(firstCharacter)")
             if(i == 0){
                 firstCharacterArray.append(firstCharacter)
             }
@@ -117,24 +112,27 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             if !firstCharacterArray.contains(firstCharacter) {
                 
-                print("new")
+                //print("new")
                 let title = firstCharacterArray[firstCharacterArray.count - 1]
                 firstCharacterArray.append(firstCharacter)
                 
                 let newSection = (index: index, length: i - index, title: title)
                 sections.append(newSection)
-                print("firstCharacterArray = \(firstCharacterArray)")
                 index = i;
             }
+            
             if(i == self.itemsArray.count - 1){
                 let title = firstCharacterArray[firstCharacterArray.count - 1]
-                
-                //let title = "count: #  \(jsonCount)  Items Found"
-                let newSection = (index: index, length: i - index, title: title)
-                sections.append(newSection)
+                let newSection = (index: index, length: i - index + 1, title: title)
+                self.sections.append(newSection)
             }
+            
+            
         }
-        print("sections = \(sections)")
+        
+        
+        
+        
         self.layoutViews()
         
     }
@@ -153,7 +151,18 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         searchController.searchBar.delegate = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
-        navigationItem.titleView = searchController.searchBar
+        searchController.searchBar.backgroundColor = UIColor.clear
+        
+        
+        
+        
+        
+        //workaround for ios 11 larger search bar
+        let searchBarContainer = SearchBarContainerView(customSearchBar: searchController.searchBar)
+        searchBarContainer.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 44)
+        navigationItem.titleView = searchBarContainer
+        
+        
         
         self.itemTableView.delegate  =  self
         self.itemTableView.dataSource = self
@@ -163,8 +172,6 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         self.countView = UIView()
         self.countView.backgroundColor = layoutVars.backgroundColor
-        //self.countView.layer.borderColor = layoutVars.borderColor
-        //self.countView.layer.borderWidth = 1.0
         self.countView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.countView)
         
@@ -208,7 +215,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func updateSearchResults(for searchController: UISearchController) {
-        print("updateSearchResultsForSearchController \(searchController.searchBar.text)")
+        //print("updateSearchResultsForSearchController \(String(describing: searchController.searchBar.text))")
         filterSearchResults()
     }
    
@@ -220,20 +227,20 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        print("searchBarTextDidBeginEditing")
+        //print("searchBarTextDidBeginEditing")
         shouldShowSearchResults = true
         self.itemTableView.reloadData()
     }
     
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        print("searchBarCancelButtonClicked")
+        //print("searchBarCancelButtonClicked")
         shouldShowSearchResults = false
         self.itemTableView.reloadData()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        print("searchBarSearchButtonClicked")
+        //print("searchBarSearchButtonClicked")
         if !shouldShowSearchResults {
             shouldShowSearchResults = true
             self.itemTableView.reloadData()
@@ -243,7 +250,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        print("searchBarTextDidEndEditing")
+        //print("searchBarTextDidEndEditing")
         shouldShowSearchResults = false;
     }
     
@@ -261,6 +268,8 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     /////////////// TableView Delegate Methods   ///////////////////////
     
     
+    
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         if shouldShowSearchResults{
             return 1
@@ -269,21 +278,35 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         }
     }
     
+    
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        ////print("titleForHeaderInSection")
         if shouldShowSearchResults{
             return nil
         }else{
-            if(sections[section].title == "#"){
-                return "    # \(itemsArray.count)  Items Found"
-            }else{
+            
                 return "    " + sections[section].title //hack way of indenting section text
                 
-            }
         }
         
     }
     
+    
+    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        if shouldShowSearchResults{
+            return nil
+        }else{
+            
+            return sections.map { $0.title }
+            
+        }
+    }
+    
+    /*
     func sectionIndexTitlesForTableView(tableView: UITableView) -> [String]? {
+        print("------------------------------")
+        print("sectionIndexTitlesForTableView")
+        print("------------------------------")
         if shouldShowSearchResults{
             return nil
         }else{
@@ -293,7 +316,14 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         }
         
     }
+ */
+    
+    
+    
+    
+    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        //print("heightForHeaderInSection")
         if shouldShowSearchResults{
             return 0
         }else{
@@ -302,21 +332,24 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        
         return index
-        
     }
+    
+    
     
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        //print("numberOfRowsInSection")
         if shouldShowSearchResults{
-            return self.itemsSearchResults.count 
+            return self.itemsSearchResults.count
         } else {
-            //return self.itemsArray.count ?? 0
-            return sections[section].length 
+            return sections[section].length
         }
     }
+    
+    
+   
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -324,7 +357,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         itemTableView.rowHeight = 50.0
         // cell.textLabel?.text = array[sections[indexPath.section].index + indexPath.row]
         
-        print("self.itemsArray!.count = \(self.itemsArray.count)")
+        //print("self.itemsArray!.count = \(self.itemsArray.count)")
         
         if shouldShowSearchResults{
             cell.item = self.itemsSearchResults[indexPath.row]
@@ -345,7 +378,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             }
             
             if let regexError = error {
-                print("Oh no! \(regexError)")
+                //print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
                     highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
@@ -374,20 +407,22 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("You selected cell #\(indexPath.row)!")
+        //print("You selected cell #\(indexPath.row)!")
         
         let indexPath = tableView.indexPathForSelectedRow;
         
         let currentCell = tableView.cellForRow(at: indexPath!) as! ItemTableViewCell;
         
-        if(currentCell.item != nil && currentCell.item.ID != ""){
+        //if(currentCell.item != nil && currentCell.item.ID != ""){
             
-            searchController.isActive = false
+            //searchController.isActive = false
             let itemViewController = ItemViewController(_item: currentCell.item)
             navigationController?.pushViewController(itemViewController, animated: false )
             
             tableView.deselectRow(at: indexPath!, animated: true)
-        }
+        //}
+        
+        
         
     }
     

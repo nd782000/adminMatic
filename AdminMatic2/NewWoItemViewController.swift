@@ -23,7 +23,6 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var layoutVars:LayoutVars = LayoutVars()
    var delegate:WoDelegate!  // refreshing the list
-   // var fieldNoteDelegate:FieldNoteDelegate!  // refreshing the list
     var indicator: SDevIndicator!
     var backButton:UIButton!
     
@@ -110,7 +109,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         
         //custom back button
         backButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControlEvents.touchUpInside)
+        backButton.addTarget(self, action: #selector(NewWoItemViewController.goBack), for: UIControlEvents.touchUpInside)
         backButton.setTitle("Back", for: UIControlState.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
@@ -291,13 +290,13 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
      
     
     
-    func handleEstQty()
+    @objc func handleEstQty()
     {
         //print("handle qty")
         if(Double(estQtyTxtField.text!) == nil){
             self.estQtyTxtField.resignFirstResponder()
         }else{
-            let qty = Double(estQtyTxtField.text!)
+            //let qty = Double(estQtyTxtField.text!)
             //print("call delegate \(self.row)  \(qty)")
             self.estQtyTxtField.resignFirstResponder()
         }
@@ -305,13 +304,13 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         
     }
     
-    func handlePrice()
+    @objc func handlePrice()
     {
         //print("handle qty")
         if(Double(priceTxtField.text!) == nil){
             self.priceTxtField.resignFirstResponder()
         }else{
-            let price = Double(priceTxtField.text!)
+           // let price = Double(priceTxtField.text!)
             //print("call delegate \(self.row)  \(qty)")
             // self.delegate.editQty(row: self.row, qty: qty!)
             self.priceTxtField.resignFirstResponder()
@@ -382,10 +381,11 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         // Filter the data you have. For instance:
         print("search edit")
-        print("searchText.characters.count = \(searchText.characters.count)")
+        //print("searchText.characters.count = \(searchText.characters.count)")
+        print("searchText.characters.count = \(searchText.count)")
+
         
-        
-        if (searchText.characters.count == 0) {
+        if (searchText.count == 0) {
             self.itemResultsTableView.alpha = 0.0
             self.selectedID = ""
         }else{
@@ -429,7 +429,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
     
     
     
-    func submit(){
+    @objc func submit(){
         print("Submit")
         
         
@@ -529,7 +529,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
     
     
     
-    func goBack(){
+   @objc func goBack(){
         print("go back")
         
        
@@ -546,3 +546,4 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
     }
     
 }
+

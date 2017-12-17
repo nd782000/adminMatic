@@ -13,9 +13,12 @@ import SwiftyJSON
 import Nuke
 import DKImagePickerController
 
+protocol CustomerDelegate{
+    func cancelSearch()//to resolve problem with imageSelection bug when search mode is active
+}
 
 
-class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, ScheduleDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImageViewDelegate, ImageLikeDelegate{
+class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, ScheduleDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImageViewDelegate, ImageLikeDelegate, CustomerDelegate{
     
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
@@ -43,8 +46,16 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var customerAddressBtn:Button!
     var allContactsBtn:Button!
     
+    var addLeadBtn:Button!
+    
+    
     //details view
     var detailsView:UIView!
+    
+    
+    let items = ["Schedule","History","Communication","Images"]
+    var customSC:SegmentedControl!
+    
     
     var customerDetailsTableView:TableView = TableView()
     var tableViewMode:String = "SCHEDULE"
@@ -74,6 +85,10 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var portraitMode:Bool = true
     var refresher:UIRefreshControl!
     
+    var displayImages:Bool?
+    
+    var customerListDelegate:CustomerListDelegate!
+    
     
     
     
@@ -83,6 +98,18 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
 
         super.init(nibName:nil,bundle:nil)
     }
+    
+    init(_customerID:String,_customerName:String,_imageView:Bool){
+        self.customerID = _customerID
+        self.customerName = _customerName
+        
+        super.init(nibName:nil,bundle:nil)
+        
+        self.displayImages = true
+        //self.showImages()
+    }
+    
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -310,7 +337,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //let timeInterval = now.timeIntervalSince1970
         //let timeStamp = Int(timeInterval)
         
-        //let parameters = ["customer": self.customerID as AnyObject, "fieldnotes": "1" as AnyObject,]
         let parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject, "customer": self.customerID as AnyObject]
         
         print("parameters = \(parameters)")
@@ -477,7 +503,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             "view1":self.customerView,
         "view2":self.detailsView] as [String:Any]
         
-        let sizeVals = ["width": layoutVars.fullWidth,"height": 24,"fullHeight":layoutVars.fullHeight - 235,"collectionViewOffset":(layoutVars.navAndStatusBarHeight - 35) * -1] as [String:Any]
+        let sizeVals = ["halfWidth": layoutVars.halfWidth,"width": layoutVars.fullWidth,"height": 24,"fullHeight":layoutVars.fullHeight - 235,"collectionViewOffset":(layoutVars.navAndStatusBarHeight - 35) * -1] as [String:Any]
         
         //////////////   auto layout position constraints   /////////////////////////////
         
@@ -586,25 +612,26 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.allContactsBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.center
         self.allContactsBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
         
-        self.allContactsBtn.setTitle("Show All Contacts", for: UIControlState.normal)
+        self.allContactsBtn.setTitle("All Contacts", for: UIControlState.normal)
         self.allContactsBtn.addTarget(self, action: #selector(CustomerViewController.showAllContacts), for: UIControlEvents.touchUpInside)
         
         
         self.customerView.addSubview(self.allContactsBtn)
         
+        self.addLeadBtn = Button()
+        self.addLeadBtn.translatesAutoresizingMaskIntoConstraints = false
+        self.addLeadBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.center
+        self.addLeadBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+        
+        self.addLeadBtn.setTitle("Add Lead", for: UIControlState.normal)
+        self.addLeadBtn.addTarget(self, action: #selector(CustomerViewController.addLead), for: UIControlEvents.touchUpInside)
+        
+        
+        self.customerView.addSubview(self.addLeadBtn)
         
         
         
-       // imageCollectionView = UICollectionView()
-       // imageCollectionView?.collectionViewLayout = layout
        
-
-        
-        
-        
-        
-        
-        
         
         
         
@@ -615,7 +642,8 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             "view3":self.customerPhoneBtn,
             "view4":self.customerEmailBtn,
             "view5":self.customerAddressBtn,
-            "view6":self.allContactsBtn
+            "view6":self.allContactsBtn,
+            "view7":self.addLeadBtn
         ] as [String : Any]
         
         
@@ -623,15 +651,16 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.customerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view3]-10-|", options: [], metrics: sizeVals, views: customersViewsDictionary))
         self.customerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view4]-10-|", options: [], metrics: sizeVals, views: customersViewsDictionary))
         self.customerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view5]-10-|", options: [], metrics: sizeVals, views: customersViewsDictionary))
-        self.customerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view6]-10-|", options: [], metrics: sizeVals, views: customersViewsDictionary))
+        self.customerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view6(halfWidth)]-[view7(halfWidth)]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: sizeVals, views: customersViewsDictionary))
         self.customerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[view2(35)]-[view3(30)]-[view4(30)]-[view5(30)]-[view6(30)]", options: [], metrics: sizeVals, views: customersViewsDictionary))
         
         
         
         ///////////   Customer Details Section   /////////////
         
-        let items = ["Schedule","History","Communication","Images"]
-        let customSC = SegmentedControl(items: items)
+        //let items = ["Schedule","History","Communication","Images"]
+        //let customSC = SegmentedControl(items: items)
+        customSC = SegmentedControl(items: items)
         customSC.selectedSegmentIndex = 0
         
         customSC.addTarget(self, action: #selector(self.changeSearchOptions(sender:)), for: .valueChanged)
@@ -677,7 +706,9 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         imageCollectionView?.isHidden = true
         
        // self.automaticallyAdjustsScrollViewInsets = NO
-        self.automaticallyAdjustsScrollViewInsets = false
+       // self.automaticallyAdjustsScrollViewInsets = false
+        
+        //self.contentInsetAdjustmentBehavior = .never
         
         //self.edgesForExtendedLayout = UIRectEdgeNone;
         
@@ -711,7 +742,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         let customerDetailsViewsDictionary = [
             "view1":customSC,
             "view2":customerDetailsTableView,
-            "view3":imageCollectionView,
+            "view3":imageCollectionView!,
             "view4":addImageBtn,
             "view5":self.noResultsLabel
         ] as [String : Any]
@@ -726,26 +757,28 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-35-[view3]-40-|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view4(40)]|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         
+        if (self.displayImages == true){
+            self.showImages()
+        }
         
     }
     
     
-    func phoneHandler(){
+    @objc func phoneHandler(){
         //print("phone handler")
         
         callPhoneNumber(self.phoneNumberClean)
     }
     
     
-    func emailHandler(){
+    @objc func emailHandler(){
         sendEmail(self.email)
     }
     
-    func mapHandler() {
+    @objc func mapHandler() {
         //print("map handler")
         openMapForPlace(self.customerName, _lat: self.lat!, _lng: self.lng!)
         
-         //openMapForPlace(currentCell.contact.name, _lat: currentCell.contact.lat!, _lng: currentCell.contact.lng!)
         
         
         
@@ -753,15 +786,20 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     
-    func showAllContacts(){
-        //let customerContactViewController = CustomerViewController(_customerJSON:self.customerJSON!)
+    @objc func showAllContacts(){
          let customerContactViewController = CustomerContactViewController(_customerJSON: self.customerJSON)
         navigationController?.pushViewController(customerContactViewController, animated: false )
         
     }
     
+    @objc func addLead(){
+        let newLeadViewController = NewEditLeadViewController(_customer: self.customerID, _customerName: self.customerName)
+        navigationController?.pushViewController(newLeadViewController, animated: false )
+        
+    }
     
-    func changeSearchOptions(sender: UISegmentedControl) {
+    
+    @objc func changeSearchOptions(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
             
         case 0://schedule
@@ -812,14 +850,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             break
         case 3://images
             
-            self.customerDetailsTableView.isHidden = true
-            
-            self.noResultsLabel.isHidden = true
-           // self.tableViewMode = "IMAGES"
-            
-            //self.getImages()
-            imageCollectionView?.isHidden = false
-            addImageBtn.isHidden = false
+            showImages()
             
             break
         default:
@@ -829,9 +860,20 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
     }
     
+    func showImages(){
+        print("show images")
+        self.customerDetailsTableView.isHidden = true
+        
+        self.noResultsLabel.isHidden = true
+        
+        imageCollectionView?.isHidden = false
+        addImageBtn.isHidden = false
+        customSC.selectedSegmentIndex = 3
+    }
     
     
-    func loadData()
+    
+    @objc func loadData()
     {
         print("loadData")
         getImages()
@@ -844,18 +886,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     
-    func addImage(){
+    @objc func addImage(){
         print("Add Image")
         
-       // self.view.window!.rootViewController?.dismissViewControllerAnimated(false, completion: nil)
 
         self.dismiss(animated: false, completion: nil)
-        //UISearchController.isActive = false
-        //searchController.isActive = false
         
-        //if(searchController != nil){
-            //searchController.isActive = false
-       // }
         
         let multiPicker = DKImagePickerController()
         
@@ -870,7 +906,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.present(multiPicker, animated: false) {
             print("done")
         }
-       // self.presentingViewController?.present(multiPicker, animated: true) {}
         
          print("Add Image 1")
         
@@ -899,22 +934,22 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 })
             }
             
-            //cache buster
-            let now = Date()
-            let timeInterval = now.timeIntervalSince1970
-            let timeStamp = Int(timeInterval)
+            
             
             print("making prep view")
             print("selectedimages count = \(selectedImages.count)")
+            //print("selectedimages count = \(selectedImages.count)")
+            print("customerID = \(self.customerID)")
             
-            let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Customer", _ID: "0", _images: selectedImages, _saveURLString: "https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
-            imageUploadPrepViewController.customerID = self.customerID
             
-            print("url = https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
+            
+            let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Customer", _customerID: self.customerID, _images: selectedImages)
+                
+            
+           // print("url = https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
             
             print("self.selectedImages.count = \(selectedImages.count)")
             
-           // imageUploadPrepViewController.loadLinkList(_linkType: "customers", _loadScript: API.Router.customerList(["cb":timeStamp as AnyObject]))
             
             
             imageUploadPrepViewController.delegate = self
@@ -960,11 +995,8 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-       // if(shouldShowSearchResults == false){
             return self.imageArray.count
-        //}else{
-           // return self.imagesSearchResults.count
-       // }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -976,7 +1008,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         //print("name = \(self.imageArray)")
         
-       // if(shouldShowSearchResults == false){
             print("name = \(self.imageArray[indexPath.row].name!)")
             cell.textLabel.text = " \(self.imageArray[indexPath.row].name!)"
             cell.image = self.imageArray[indexPath.row]
@@ -990,30 +1021,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             
             
-            Nuke.loadImage(with: imgURL, into: cell.imageView){ [weak view] in
+            Nuke.loadImage(with: imgURL, into: cell.imageView){
                 //print("nuke loadImage")
                 cell.imageView?.handle(response: $0, isFromMemoryCache: $1)
                 cell.activityView.stopAnimating()
                 
             }
-            
-            
-            
-            
-        /*}else{
-            cell.textLabel.text = " \(self.imagesSearchResults[indexPath.row].name!)"
-            cell.image = self.imagesSearchResults[indexPath.row]
-            cell.activityView.startAnimating()
-            let imgURL:URL = URL(string: self.imagesSearchResults[indexPath.row].thumbPath!)!
-            Nuke.loadImage(with: imgURL, into: cell.imageView){ [weak view] in
-                cell.imageView?.handle(response: $0, isFromMemoryCache: $1)
-                cell.activityView.stopAnimating()
-            }
-            
-            
-            
-        }*/
-        
         
         //print("view width = \(imageCollectionView?.frame.width)")
         //print("cell width = \(cell.frame.width)")
@@ -1028,39 +1041,19 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         //print("name = \(currentCell.image.name)")
         
-        imageDetailViewController = ImageDetailViewController(_image: currentCell.image,_saveURLString:"https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php")
+        imageDetailViewController = ImageDetailViewController(_image: currentCell.image, _ID: currentCell.image.ID)
         imageDetailViewController.imageFullViewController.delegate = self
         imageCollectionView?.deselectItem(at: indexPath, animated: true)
         navigationController?.pushViewController(imageDetailViewController, animated: false )
         imageDetailViewController.delegate = self
         imageDetailViewController.imageLikeDelegate = self
         
-       // searchTerm = self.searchController.searchBar.text!
-        //imagesSearchResults2 = imagesSearchResults
-        
-       // searchController.isActive = false
         
         currentImageIndex = indexPath.row
         
         
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     /////////////// TableView Delegate Methods   ///////////////////////
@@ -1097,10 +1090,8 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             break
         case "COMMUNICATION":
-            // cell.workOrder = self.customerScheduleArray[indexPath.row]
             break
         case "IMAGES":
-            // cell.workOrder = self.customerScheduleArray[indexPath.row]
             break
         default:
             
@@ -1115,55 +1106,25 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = customerDetailsTableView.dequeueReusableCell(withIdentifier: "cell") as! ScheduleTableViewCell
-        //cell.prepareForReuse()
         switch self.tableViewMode{
         case "SCHEDULE":
             
             //print("Schedule customer")
-            // cell.resetCell("CUSTOMER")
             cell.workOrder = self.customerScheduleArray[indexPath.row]
             cell.layoutViews(_scheduleMode: "CUSTOMER")
             cell.dateLbl.text = cell.workOrder.date
-            //cell.firstItemLbl.text = cell.workOrder.firstItem
             cell.firstItemLbl.text = "\(cell.workOrder.firstItem!) #\(cell.workOrder.ID!)"
             cell.setStatus(status: cell.workOrder.statusId)
-            //cell.woIDLbl.text = "#\(cell.workOrder.ID!)"
-            
-            //print("cell.workOrder.date \(cell.workOrder.date)")
-            //print("cell.workOrder.firstItem \(cell.workOrder.firstItem)")
+           
             
             
-            /*
-            var chargeTypeName:String
-            switch (cell.workOrder.charge) {
-            case "1":
-                chargeTypeName = "NC"
-                break;
-            case "2":
-                chargeTypeName = "FL"
-                break;
-            case "3":
-                chargeTypeName = "T&M"
-                break;
-            default:
-                chargeTypeName = "Null"//online
-                break;
-            }
-            cell.chargeLbl.text = chargeTypeName
- */
             
             cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
             
-           // let formatter = NumberFormatter()
-           // formatter.numberStyle = .currency
-            // formatter.locale = NSLocale.currentLocale() // This is the default
-            //formatter.string(from: cell.workOrder.totalPrice as NSNumber) // "$123.44"
-            
-            //print("cell.workOrder.totalPrice! = \(cell.workOrder.totalPrice!)")
+          
             cell.priceLbl.text = cell.workOrder.totalPrice!
              //print("cell.workOrder.totalPrice! = \(cell.workOrder.totalPrice!)")
             
-            //cell.setProfitBar(_price:self.customerScheduleArray[indexPath.row].totalPrice!, _cost:self.customerScheduleArray[indexPath.row].totalCost!)
             cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
             
             
@@ -1173,7 +1134,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             break
         case "HISTORY":
-            // cell.resetCell("CUSTOMER")
             
             //print("a")
             cell.workOrder = self.customerHistoryArray[indexPath.row]
@@ -1185,39 +1145,11 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             cell.dateLbl.text = cell.workOrder.date
             cell.firstItemLbl.text = "\(cell.workOrder.firstItem!) #\(cell.workOrder.ID!)"
             cell.setStatus(status: cell.workOrder.statusId)
-           // cell.woIDLbl.text = "#\(cell.workOrder.ID!)"
-            ////print("b")
+           
             
             cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
             
-            /*
-            var chargeTypeName:String
-            switch (cell.workOrder.charge) {
-            case "1":
-                chargeTypeName = "NC"
-                break;
-            case "2":
-                chargeTypeName = "FL"
-                break;
-            case "3":
-                chargeTypeName = "T&M"
-                break;
-            default:
-                chargeTypeName = ""//online
-                break;
-            }
-            cell.chargeLbl.text = chargeTypeName
- */
-            
-           // //print("c")
-            //let formatter = NumberFormatter()
-            //formatter.numberStyle = .currency
-            // formatter.locale = NSLocale.currentLocale() // This is the default
-            //formatter.string(from: cell.workOrder.totalPrice as NSNumber) // "$123.44"
-            
-            
-            //cell.priceLbl.text = formatter.string(from: cell.workOrder.totalPrice as NSNumber)
-            
+           
             cell.priceLbl.text = cell.workOrder.totalPrice!
             
             //print("d")
@@ -1226,7 +1158,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             cell.priceLbl.text = cell.workOrder.totalPrice!
             //print("cell.workOrder.totalPrice! = \(cell.workOrder.totalPrice!)")
             
-            //cell.setProfitBar(_price:self.customerHistoryArray[indexPath.row].totalPrice!, _cost:self.customerHistoryArray[indexPath.row].totalCost!)
             
             
            cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
@@ -1234,10 +1165,8 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             //print("e")
             break
         case "COMMUNICATION":
-            // cell.workOrder = self.customerScheduleArray[indexPath.row]
             break
         case "IMAGES":
-            // cell.workOrder = self.customerScheduleArray[indexPath.row]
             break
         default:
             
@@ -1255,6 +1184,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //print("You selected cell #\(indexPath.row)!")
         
+        
         let indexPath = tableView.indexPathForSelectedRow;
         
         let currentCell = tableView.cellForRow(at: indexPath!) as! ScheduleTableViewCell;
@@ -1266,6 +1196,8 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         navigationController?.pushViewController(workOrderViewController, animated: true )
         
         workOrderViewController.scheduleDelegate = self
+        workOrderViewController.customerDelegate = self
+        
         
         workOrderViewController.scheduleIndex = indexPath?.row
         
@@ -1312,8 +1244,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func getPrevNextImage(_next:Bool){
-        //print("IN  getPrevNextImage currentImageIndex = \(currentImageIndex!)")
-       // if(shouldShowSearchResults == false){
             if(_next == true){
                 if(currentImageIndex + 1) > (self.imageArray.count - 1){
                     currentImageIndex = 0
@@ -1346,13 +1276,11 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     imageDetailViewController.imageFullViewController.layoutViews()
                 }
             }
-               //print("OUT  getPrevNextImage currentImageIndex = \(currentImageIndex!)")
         
-        //if(shouldShowSearchResults == false){
             imageCollectionView?.scrollToItem(at: IndexPath(row: currentImageIndex, section: 0),
                                               at: .top,
                                               animated: false)
-        //}
+        
         
         
     }
@@ -1369,35 +1297,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         }
         
         
-        //shouldShowSearchResults = false
         
         imageCollectionView?.reloadData()
         
         imageCollectionView?.scrollToItem(at: IndexPath(row: 0, section: 0),
                                           at: .top,
                                           animated: true)
-        
-        
-        
-        print("scoreAdjust")
-        
-        print("scoreAdjust = \(_scoreAdjust)")
-        
-        //add appPoints
-        var points:Int = _scoreAdjust
-        
-        print("points = \(points)")
-        
-        if(points > 0){
-            self.appDelegate.showMessage(_message: "earned \(points) App Points!")
-        }else if(points < 0){
-            points = points * -1
-            self.appDelegate.showMessage(_message: "lost \(points) App Points!")
-            
-        }
-        
-        
-        
     }
     
     
@@ -1413,8 +1318,13 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     // not used, just to have this class conform to schedule delegate protocol
-    func updateSettings(_allDates:String, _startDate:String, _endDate:String,_startDateDB:String, _endDateDB:String, _sort:String){
+    func updateSettings(_allDates:String, _startDate:String, _endDate:String,_startDateDB:String, _endDateDB:String, _mowSort:String, _plowSort:String, _plowDepth:String){
         print("update settings")
+    }
+    
+    func cancelSearch() {
+         print("cancelSearch")
+        customerListDelegate.cancelSearch()
     }
     
     
@@ -1422,7 +1332,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     
-    func goBack(){
+    @objc func goBack(){
         _ = navigationController?.popViewController(animated: true)
         
     }

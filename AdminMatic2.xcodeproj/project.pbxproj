@@ -12,6 +12,8 @@
 		010937C01E81EE24007865FB /* ImageCroppingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010937BF1E81EE24007865FB /* ImageCroppingViewController.swift */; };
 		0109382B1E835394007865FB /* CustomImageCropperOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0109382A1E835394007865FB /* CustomImageCropperOverlayView.swift */; };
 		0116A7FB1E1DD4B7002C5051 /* ScheduleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0116A7FA1E1DD4B7002C5051 /* ScheduleTableViewCell.swift */; };
+		0121DEF51FBA71BF00AD6039 /* LeadTaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0121DEF41FBA71BF00AD6039 /* LeadTaskTableViewCell.swift */; };
+		0121DF001FBD147800AD6039 /* NewEditLeadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0121DEFF1FBD147800AD6039 /* NewEditLeadViewController.swift */; };
 		0125B6D41E26AE2500BAC949 /* NetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0125B6D31E26AE2500BAC949 /* NetData.swift */; };
 		0125B6D91E26B10E00BAC949 /* ImageDrawingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0125B6D81E26B10E00BAC949 /* ImageDrawingViewController.swift */; };
 		014B02951E21577D002A41DE /* CustomerListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02941E21577D002A41DE /* CustomerListViewController.swift */; };
@@ -20,15 +22,15 @@
 		014B02A01E2160BF002A41DE /* CustomerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B029F1E2160BF002A41DE /* CustomerViewController.swift */; };
 		014B02A21E21685A002A41DE /* WorkOrderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02A11E21685A002A41DE /* WorkOrderViewController.swift */; };
 		014B02A41E2168C6002A41DE /* Employee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02A31E2168C6002A41DE /* Employee.swift */; };
-		014B02A61E2168D3002A41DE /* FieldNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02A51E2168D3002A41DE /* FieldNote.swift */; };
+		014B02A61E2168D3002A41DE /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02A51E2168D3002A41DE /* Attachment.swift */; };
 		014B02A81E2168DF002A41DE /* WoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02A71E2168DF002A41DE /* WoItem.swift */; };
 		014B02AA1E216939002A41DE /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02A91E216939002A41DE /* Task.swift */; };
 		014B02AC1E216944002A41DE /* Usage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02AB1E216944002A41DE /* Usage.swift */; };
 		014B02AE1E216950002A41DE /* Vendor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02AD1E216950002A41DE /* Vendor.swift */; };
 		014B02B01E2169BF002A41DE /* WoItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02AF1E2169BF002A41DE /* WoItemViewController.swift */; };
 		014B02B21E2690AC002A41DE /* WoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02B11E2690AC002A41DE /* WoItemTableViewCell.swift */; };
-		014B02B61E269449002A41DE /* FieldNoteListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02B51E269449002A41DE /* FieldNoteListViewController.swift */; };
-		014B02B81E26A8E6002A41DE /* FieldNoteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02B71E26A8E6002A41DE /* FieldNoteTableViewCell.swift */; };
+		014B02B61E269449002A41DE /* AttachmentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02B51E269449002A41DE /* AttachmentListViewController.swift */; };
+		014B02B81E26A8E6002A41DE /* AttachmentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02B71E26A8E6002A41DE /* AttachmentTableViewCell.swift */; };
 		014CC8DC1E539C9A00D48A26 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014CC8DB1E539C9A00D48A26 /* Image.swift */; };
 		014CC8E41E539EB100D48A26 /* ImageCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014CC8E31E539EB100D48A26 /* ImageCollectionViewController.swift */; };
 		014CC8E61E53A00F00D48A26 /* ImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014CC8E51E53A00F00D48A26 /* ImageCollectionViewCell.swift */; };
@@ -65,6 +67,15 @@
 		01A1F2FF1E0704FF00DCCB39 /* AdminMatic2UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A1F2FE1E0704FF00DCCB39 /* AdminMatic2UITests.swift */; };
 		01A1F33D1E0708CA00DCCB39 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 01A1F33C1E0708CA00DCCB39 /* Podfile */; };
 		01A81E5A1E92FC090089B55F /* GroupMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A81E591E92FC090089B55F /* GroupMessageViewController.swift */; };
+		01A9DDD41FE0B59C0075AC72 /* EquipmentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A9DDD31FE0B59C0075AC72 /* EquipmentListViewController.swift */; };
+		01A9DDDD1FE0BAD60075AC72 /* Equipment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A9DDDC1FE0BAD60075AC72 /* Equipment.swift */; };
+		01A9DDDF1FE0D4480075AC72 /* EquipmentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A9DDDE1FE0D4480075AC72 /* EquipmentTableViewCell.swift */; };
+		01A9DDE11FE409A90075AC72 /* EquipmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A9DDE01FE409A80075AC72 /* EquipmentViewController.swift */; };
+		01A9DDE31FE430C90075AC72 /* EquipmentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A9DDE21FE430C90075AC72 /* EquipmentService.swift */; };
+		01C8B9741FB26ED800ADF284 /* LeadListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C8B9731FB26ED800ADF284 /* LeadListViewController.swift */; };
+		01C8B97D1FB2755200ADF284 /* LeadTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C8B97C1FB2755200ADF284 /* LeadTableViewCell.swift */; };
+		01C8B97F1FB278AA00ADF284 /* Lead.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C8B97E1FB278AA00ADF284 /* Lead.swift */; };
+		01C8B9811FB27D0400ADF284 /* LeadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C8B9801FB27D0400ADF284 /* LeadViewController.swift */; };
 		01D9AD971E6DD14900BD35AE /* UnderConstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */; };
 		01DC79371E2803BB0022566C /* UsageEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DC79361E2803BB0022566C /* UsageEntryViewController.swift */; };
 		01DC793E1E2805200022566C /* UsageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DC793D1E2805200022566C /* UsageTableViewCell.swift */; };
@@ -158,6 +169,8 @@
 		010937BF1E81EE24007865FB /* ImageCroppingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCroppingViewController.swift; sourceTree = "<group>"; };
 		0109382A1E835394007865FB /* CustomImageCropperOverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomImageCropperOverlayView.swift; sourceTree = "<group>"; };
 		0116A7FA1E1DD4B7002C5051 /* ScheduleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleTableViewCell.swift; sourceTree = "<group>"; };
+		0121DEF41FBA71BF00AD6039 /* LeadTaskTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadTaskTableViewCell.swift; sourceTree = "<group>"; };
+		0121DEFF1FBD147800AD6039 /* NewEditLeadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditLeadViewController.swift; sourceTree = "<group>"; };
 		0125B6D31E26AE2500BAC949 /* NetData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetData.swift; sourceTree = "<group>"; };
 		0125B6D81E26B10E00BAC949 /* ImageDrawingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageDrawingViewController.swift; sourceTree = "<group>"; };
 		014B02941E21577D002A41DE /* CustomerListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomerListViewController.swift; sourceTree = "<group>"; };
@@ -166,15 +179,15 @@
 		014B029F1E2160BF002A41DE /* CustomerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomerViewController.swift; sourceTree = "<group>"; };
 		014B02A11E21685A002A41DE /* WorkOrderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkOrderViewController.swift; sourceTree = "<group>"; };
 		014B02A31E2168C6002A41DE /* Employee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Employee.swift; sourceTree = "<group>"; };
-		014B02A51E2168D3002A41DE /* FieldNote.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldNote.swift; sourceTree = "<group>"; };
+		014B02A51E2168D3002A41DE /* Attachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
 		014B02A71E2168DF002A41DE /* WoItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WoItem.swift; sourceTree = "<group>"; };
 		014B02A91E216939002A41DE /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		014B02AB1E216944002A41DE /* Usage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Usage.swift; sourceTree = "<group>"; };
 		014B02AD1E216950002A41DE /* Vendor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vendor.swift; sourceTree = "<group>"; };
 		014B02AF1E2169BF002A41DE /* WoItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WoItemViewController.swift; sourceTree = "<group>"; };
 		014B02B11E2690AC002A41DE /* WoItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WoItemTableViewCell.swift; sourceTree = "<group>"; };
-		014B02B51E269449002A41DE /* FieldNoteListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldNoteListViewController.swift; sourceTree = "<group>"; };
-		014B02B71E26A8E6002A41DE /* FieldNoteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldNoteTableViewCell.swift; sourceTree = "<group>"; };
+		014B02B51E269449002A41DE /* AttachmentListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentListViewController.swift; sourceTree = "<group>"; };
+		014B02B71E26A8E6002A41DE /* AttachmentTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentTableViewCell.swift; sourceTree = "<group>"; };
 		014CC8DB1E539C9A00D48A26 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		014CC8E31E539EB100D48A26 /* ImageCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCollectionViewController.swift; sourceTree = "<group>"; };
 		014CC8E51E53A00F00D48A26 /* ImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -218,6 +231,15 @@
 		01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		01A1F33C1E0708CA00DCCB39 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		01A81E591E92FC090089B55F /* GroupMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMessageViewController.swift; sourceTree = "<group>"; };
+		01A9DDD31FE0B59C0075AC72 /* EquipmentListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentListViewController.swift; sourceTree = "<group>"; };
+		01A9DDDC1FE0BAD60075AC72 /* Equipment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Equipment.swift; sourceTree = "<group>"; };
+		01A9DDDE1FE0D4480075AC72 /* EquipmentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentTableViewCell.swift; sourceTree = "<group>"; };
+		01A9DDE01FE409A80075AC72 /* EquipmentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentViewController.swift; sourceTree = "<group>"; };
+		01A9DDE21FE430C90075AC72 /* EquipmentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentService.swift; sourceTree = "<group>"; };
+		01C8B9731FB26ED800ADF284 /* LeadListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadListViewController.swift; sourceTree = "<group>"; };
+		01C8B97C1FB2755200ADF284 /* LeadTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadTableViewCell.swift; sourceTree = "<group>"; };
+		01C8B97E1FB278AA00ADF284 /* Lead.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lead.swift; sourceTree = "<group>"; };
+		01C8B9801FB27D0400ADF284 /* LeadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadViewController.swift; sourceTree = "<group>"; };
 		01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnderConstructionViewController.swift; sourceTree = "<group>"; };
 		01DC79361E2803BB0022566C /* UsageEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsageEntryViewController.swift; sourceTree = "<group>"; };
 		01DC793D1E2805200022566C /* UsageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsageTableViewCell.swift; sourceTree = "<group>"; };
@@ -341,14 +363,17 @@
 			isa = PBXGroup;
 			children = (
 				01EC4E741E1EF8BC009CE261 /* HomeViewController.swift */,
-				014B02941E21577D002A41DE /* CustomerListViewController.swift */,
 				0160A1B31E89BD2C00C2AB4A /* BugsListViewController.swift */,
 				0160A1B91E8A08B800C2AB4A /* BugViewController.swift */,
+				014B02941E21577D002A41DE /* CustomerListViewController.swift */,
 				014B029F1E2160BF002A41DE /* CustomerViewController.swift */,
 				01DC79481E292CF30022566C /* CustomerContactViewController.swift */,
 				015231AB1E1A982F009949BD /* EmployeeListViewController.swift */,
-				01A81E591E92FC090089B55F /* GroupMessageViewController.swift */,
 				015231AD1E1A9EFF009949BD /* EmployeeViewController.swift */,
+				01C8B9731FB26ED800ADF284 /* LeadListViewController.swift */,
+				01C8B9801FB27D0400ADF284 /* LeadViewController.swift */,
+				0121DEFF1FBD147800AD6039 /* NewEditLeadViewController.swift */,
+				01A81E591E92FC090089B55F /* GroupMessageViewController.swift */,
 				01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */,
 				01DC79361E2803BB0022566C /* UsageEntryViewController.swift */,
 				01DC79411E281C8B0022566C /* UsageListViewController.swift */,
@@ -360,11 +385,13 @@
 				014B02A11E21685A002A41DE /* WorkOrderViewController.swift */,
 				014B02AF1E2169BF002A41DE /* WoItemViewController.swift */,
 				019B24581EB6D1BB008D4475 /* NewWoItemViewController.swift */,
-				014B02B51E269449002A41DE /* FieldNoteListViewController.swift */,
+				014B02B51E269449002A41DE /* AttachmentListViewController.swift */,
 				0166341D1E340F48002F7763 /* ItemListViewController.swift */,
 				0166341F1E340F5A002F7763 /* ItemViewController.swift */,
 				016634271E3415FE002F7763 /* VendorListViewController.swift */,
 				016634291E341616002F7763 /* VendorViewController.swift */,
+				01A9DDD31FE0B59C0075AC72 /* EquipmentListViewController.swift */,
+				01A9DDE01FE409A80075AC72 /* EquipmentViewController.swift */,
 				014CC8E31E539EB100D48A26 /* ImageCollectionViewController.swift */,
 				0160A1B11E873F3D00C2AB4A /* ImageSettingsViewController.swift */,
 				014CC8E71E53E8E900D48A26 /* ImageDetailViewController.swift */,
@@ -395,9 +422,12 @@
 				01DDE06F1E071FB3002C0F8B /* JsonDataHolder.swift */,
 				015B9AF61E27DDFD0020FB58 /* Date.swift */,
 				01EC4E6B1E1DDA90009CE261 /* WorkOrder.swift */,
+				01C8B97E1FB278AA00ADF284 /* Lead.swift */,
+				01A9DDDC1FE0BAD60075AC72 /* Equipment.swift */,
+				01A9DDE21FE430C90075AC72 /* EquipmentService.swift */,
 				014B029B1E21585A002A41DE /* Customer.swift */,
 				014B02A31E2168C6002A41DE /* Employee.swift */,
-				014B02A51E2168D3002A41DE /* FieldNote.swift */,
+				014B02A51E2168D3002A41DE /* Attachment.swift */,
 				014B02A71E2168DF002A41DE /* WoItem.swift */,
 				014B02A91E216939002A41DE /* Task.swift */,
 				014B02AB1E216944002A41DE /* Usage.swift */,
@@ -415,12 +445,15 @@
 			children = (
 				01DDE0721E071FEC002C0F8B /* EmployeeTableViewCell.swift */,
 				0116A7FA1E1DD4B7002C5051 /* ScheduleTableViewCell.swift */,
+				01C8B97C1FB2755200ADF284 /* LeadTableViewCell.swift */,
+				01A9DDDE1FE0D4480075AC72 /* EquipmentTableViewCell.swift */,
+				0121DEF41FBA71BF00AD6039 /* LeadTaskTableViewCell.swift */,
 				01EE1B2D1E20105A00E5E061 /* HomeCollectionViewCell.swift */,
 				014B029D1E215DB5002A41DE /* CustomerTableViewCell.swift */,
 				0160A1B71E89F98200C2AB4A /* BugTableViewCell.swift */,
 				019B24611EB82EC5008D4475 /* NewWoItemTableViewCell.swift */,
 				014B02B11E2690AC002A41DE /* WoItemTableViewCell.swift */,
-				014B02B71E26A8E6002A41DE /* FieldNoteTableViewCell.swift */,
+				014B02B71E26A8E6002A41DE /* AttachmentTableViewCell.swift */,
 				015B9AEF1E27D4C50020FB58 /* TaskTableViewCell.swift */,
 				01DC793D1E2805200022566C /* UsageTableViewCell.swift */,
 				01DC793F1E2805590022566C /* UsageEntryTableViewCell.swift */,
@@ -519,12 +552,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0820;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = Nick;
 				TargetAttributes = {
 					01A1F2DA1E0704FF00DCCB39 = {
 						CreatedOnToolsVersion = 8.2;
-						DevelopmentTeam = 63U3Y52697;
+						DevelopmentTeam = Q78B4XEVQ4;
 						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 					};
@@ -706,9 +739,11 @@
 				019B24621EB82EC5008D4475 /* NewWoItemTableViewCell.swift in Sources */,
 				014B02B21E2690AC002A41DE /* WoItemTableViewCell.swift in Sources */,
 				014B02951E21577D002A41DE /* CustomerListViewController.swift in Sources */,
+				01C8B97D1FB2755200ADF284 /* LeadTableViewCell.swift in Sources */,
 				0160A1B61E89EA8400C2AB4A /* Bug.swift in Sources */,
 				014CC8E61E53A00F00D48A26 /* ImageCollectionViewCell.swift in Sources */,
 				015231BB1E1D69FF009949BD /* LogInView.swift in Sources */,
+				01A9DDE31FE430C90075AC72 /* EquipmentService.swift in Sources */,
 				0160A1B41E89BD2D00C2AB4A /* BugsListViewController.swift in Sources */,
 				014B02A81E2168DF002A41DE /* WoItem.swift in Sources */,
 				0116A7FB1E1DD4B7002C5051 /* ScheduleTableViewCell.swift in Sources */,
@@ -718,6 +753,7 @@
 				010937BE1E802313007865FB /* ImageUploadProgressTableViewCell.swift in Sources */,
 				01DC793E1E2805200022566C /* UsageTableViewCell.swift in Sources */,
 				010937B61E801B91007865FB /* ImageUploadProgressViewController.swift in Sources */,
+				01C8B97F1FB278AA00ADF284 /* Lead.swift in Sources */,
 				01EC4E731E1DDBBD009CE261 /* ScheduleViewController.swift in Sources */,
 				01A81E5A1E92FC090089B55F /* GroupMessageViewController.swift in Sources */,
 				016634221E340F6D002F7763 /* Item.swift in Sources */,
@@ -727,11 +763,13 @@
 				0125B6D41E26AE2500BAC949 /* NetData.swift in Sources */,
 				014CC8EA1E53F4E000D48A26 /* ImageFullViewController.swift in Sources */,
 				014B02A21E21685A002A41DE /* WorkOrderViewController.swift in Sources */,
+				01C8B9741FB26ED800ADF284 /* LeadListViewController.swift in Sources */,
 				01EE1B2E1E20105A00E5E061 /* HomeCollectionViewCell.swift in Sources */,
 				014B02AE1E216950002A41DE /* Vendor.swift in Sources */,
 				0166342A1E341616002F7763 /* VendorViewController.swift in Sources */,
 				014CC8E81E53E8E900D48A26 /* ImageDetailViewController.swift in Sources */,
 				019B24591EB6D1BB008D4475 /* NewWoItemViewController.swift in Sources */,
+				01A9DDDD1FE0BAD60075AC72 /* Equipment.swift in Sources */,
 				01E01C2F1E7E05F400385B86 /* ImageUploadPrepCollectionViewCell.swift in Sources */,
 				01EC4E751E1EF8BC009CE261 /* HomeViewController.swift in Sources */,
 				016634281E3415FE002F7763 /* VendorListViewController.swift in Sources */,
@@ -740,9 +778,11 @@
 				015B9AF71E27DDFD0020FB58 /* Date.swift in Sources */,
 				01DC79421E281C8B0022566C /* UsageListViewController.swift in Sources */,
 				014B02B01E2169BF002A41DE /* WoItemViewController.swift in Sources */,
+				01C8B9811FB27D0400ADF284 /* LeadViewController.swift in Sources */,
 				014B02AC1E216944002A41DE /* Usage.swift in Sources */,
-				014B02A61E2168D3002A41DE /* FieldNote.swift in Sources */,
+				014B02A61E2168D3002A41DE /* Attachment.swift in Sources */,
 				016634261E3415DF002F7763 /* VendorTableViewCell.swift in Sources */,
+				01A9DDD41FE0B59C0075AC72 /* EquipmentListViewController.swift in Sources */,
 				01E01C1A1E7DB54D00385B86 /* ImageUploadPrepViewController.swift in Sources */,
 				014B02A41E2168C6002A41DE /* Employee.swift in Sources */,
 				0109382B1E835394007865FB /* CustomImageCropperOverlayView.swift in Sources */,
@@ -753,6 +793,7 @@
 				01DC79491E292CF30022566C /* CustomerContactViewController.swift in Sources */,
 				014B029C1E21585A002A41DE /* Customer.swift in Sources */,
 				016DD5901E9AF8EC00359405 /* PerformanceViewController.swift in Sources */,
+				0121DEF51FBA71BF00AD6039 /* LeadTaskTableViewCell.swift in Sources */,
 				01DDE0731E071FEC002C0F8B /* EmployeeTableViewCell.swift in Sources */,
 				01DC79371E2803BB0022566C /* UsageEntryViewController.swift in Sources */,
 				010937C01E81EE24007865FB /* ImageCroppingViewController.swift in Sources */,
@@ -761,18 +802,21 @@
 				016634201E340F5A002F7763 /* ItemViewController.swift in Sources */,
 				01DC79401E2805590022566C /* UsageEntryTableViewCell.swift in Sources */,
 				015231AC1E1A982F009949BD /* EmployeeListViewController.swift in Sources */,
+				01A9DDDF1FE0D4480075AC72 /* EquipmentTableViewCell.swift in Sources */,
+				0121DF001FBD147800AD6039 /* NewEditLeadViewController.swift in Sources */,
 				015B9AF01E27D4C50020FB58 /* TaskTableViewCell.swift in Sources */,
 				01DDE0691E071BAC002C0F8B /* ViewControllerWithMenu.swift in Sources */,
 				0166341E1E340F48002F7763 /* ItemListViewController.swift in Sources */,
 				016634241E340F91002F7763 /* ItemTableViewCell.swift in Sources */,
 				0160A1B81E89F98200C2AB4A /* BugTableViewCell.swift in Sources */,
 				016634171E33F496002F7763 /* ContactTableViewCell.swift in Sources */,
-				014B02B61E269449002A41DE /* FieldNoteListViewController.swift in Sources */,
+				014B02B61E269449002A41DE /* AttachmentListViewController.swift in Sources */,
 				015231AE1E1A9EFF009949BD /* EmployeeViewController.swift in Sources */,
 				01A1F2DF1E0704FF00DCCB39 /* AppDelegate.swift in Sources */,
 				014CC8E41E539EB100D48A26 /* ImageCollectionViewController.swift in Sources */,
-				014B02B81E26A8E6002A41DE /* FieldNoteTableViewCell.swift in Sources */,
+				014B02B81E26A8E6002A41DE /* AttachmentTableViewCell.swift in Sources */,
 				014CC8DC1E539C9A00D48A26 /* Image.swift in Sources */,
+				01A9DDE11FE409A90075AC72 /* EquipmentViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -817,7 +861,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -825,7 +871,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -849,14 +899,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_WHOLE_MODULE_OPTIMIZATION = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -870,7 +919,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -878,7 +929,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -896,12 +951,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_WHOLE_MODULE_OPTIMIZATION = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -915,10 +969,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 63U3Y52697;
+				DEVELOPMENT_TEAM = Q78B4XEVQ4;
 				INFOPLIST_FILE = AdminMatic2/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -935,10 +990,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 63U3Y52697;
+				DEVELOPMENT_TEAM = Q78B4XEVQ4;
 				INFOPLIST_FILE = AdminMatic2/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

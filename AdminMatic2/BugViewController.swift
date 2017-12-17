@@ -42,8 +42,7 @@ class BugViewController: UIViewController, UITextViewDelegate{
         print("init")
         super.init(nibName:nil,bundle:nil)
         
-        //print("pic = \(self.fieldNote.pic)")
-        //print("note = \(self.fieldNote.note)")
+        
     }
     
     
@@ -51,8 +50,7 @@ class BugViewController: UIViewController, UITextViewDelegate{
         bug = _bug
         super.init(nibName:nil,bundle:nil)
 
-        //print("pic = \(self.fieldNote.pic)")
-        //print("note = \(self.fieldNote.note)")
+        
     }
     
     
@@ -138,7 +136,6 @@ class BugViewController: UIViewController, UITextViewDelegate{
             
             
             self.submitNoteButton = Button(titleText: "Submit Bug")
-           // self.submitNoteButton.addTarget(self, action: #selector(FieldNoteViewController.saveData), for: UIControlEvents.touchUpInside)
             self.view.addSubview(self.submitNoteButton)
             self.submitNoteButton.isHidden = true
             
@@ -221,18 +218,12 @@ class BugViewController: UIViewController, UITextViewDelegate{
     
     
     
-    func saveData(){
+    @objc func saveData(){
         print("Save Data")
         
         
         if(self.descriptionTxtView.text != descriptionPlaceHolder){
-            //print("not nil")
-            
-            //if(self.fieldNote.note != self.noteTxtView.text!){
-            // editsMade = true
-            //}
-            
-            // //print("editsMade = \(self.editsMade)")
+           
             
             indicator = SDevIndicator.generate(self.view)!
             
@@ -240,7 +231,7 @@ class BugViewController: UIViewController, UITextViewDelegate{
             parameters = [
                 "title": "\(self.titleTxtView.text!)",
                 "description": "\(self.descriptionTxtView.text!)",
-                "createdBy": "\(self.appDelegate.loggedInEmployee?.ID)"
+                "createdBy": "\(String(describing: self.appDelegate.loggedInEmployee?.ID))"
                 
             ]
             
@@ -306,7 +297,7 @@ class BugViewController: UIViewController, UITextViewDelegate{
     
     
     
-    func goBack(){
+    @objc func goBack(){
         //print("Go Back")
         
         if(self.bugEdit == true){

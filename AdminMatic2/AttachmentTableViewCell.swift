@@ -1,5 +1,5 @@
 //
-//  FieldNoteTableViewCell.swift
+//  AttachmentTableViewCell.swift
 //  AdminMatic2
 //
 //  Created by Nick on 1/11/17.
@@ -11,9 +11,9 @@ import Foundation
 import UIKit
 import Nuke
 
-class FieldNoteTableViewCell: UITableViewCell {
+class AttachmentTableViewCell: UITableViewCell {
     
-    var fieldNote:FieldNote!
+    var attachment:Attachment!
     var noteLbl: UILabel! = UILabel()
     var imageQtyLbl: UILabel! = UILabel()
     
@@ -85,7 +85,7 @@ class FieldNoteTableViewCell: UITableViewCell {
         
         
         
-        Nuke.loadImage(with: imgURL, into: self.picImageView){ [weak contentView] in
+        Nuke.loadImage(with: imgURL, into: self.picImageView){ 
             //print("nuke loadImage")
             self.picImageView.handle(response: $0, isFromMemoryCache: $1)
             self.activityView.stopAnimating()

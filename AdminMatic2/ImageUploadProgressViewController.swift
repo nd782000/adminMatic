@@ -94,7 +94,8 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
         
         let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!)
         
-        Nuke.loadImage(with: imgUrl!, into: self.employeeImageView){ [weak view] in
+        //Nuke.loadImage(with: imgUrl!, into: self.employeeImageView){ [weak view] in
+        Nuke.loadImage(with: imgUrl!, into: self.employeeImageView){ 
             //print("nuke loadImage")
             self.employeeImageView.handle(response: $0, isFromMemoryCache: $1)
         }
@@ -225,7 +226,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
 
     }
     
-    func cancel(){
+    @objc func cancel(){
         
         
         let alertController = UIAlertController(title: "All upload didn't Finish", message: "Leave this page?", preferredStyle: UIAlertControllerStyle.alert)

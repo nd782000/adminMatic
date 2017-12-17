@@ -362,7 +362,7 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
     }
     
     
-    func goBack(){
+    @objc func goBack(){
         _ = navigationController?.popViewController(animated: true)
         
     }

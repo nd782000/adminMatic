@@ -39,13 +39,16 @@ class ImageDetailViewController: UIViewController{
     //var likes = 0
 
     //var createdByLbl:Label!
-    var customerLbl:Label!
+    //var customerLbl:Label!
+    var customerBtn:Button!
     //var dateAddedLbl:Label!
     var descriptionLbl:UITextView!
     var tagsLbl:Label!
     
     
-    var saveURLString:String!
+    
+    
+    //var saveURLString:String!
     
     var ID:String //elementID to possibly edit
     
@@ -73,7 +76,7 @@ class ImageDetailViewController: UIViewController{
     */
     
     
-    init(_image:Image, _saveURLString:String, _ID:String = "0"){
+    init(_image:Image, _ID:String = "0"){
         
         self.image = _image
         //self.mode = _mode
@@ -95,7 +98,7 @@ class ImageDetailViewController: UIViewController{
         
         //custom back button
         let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControlEvents.touchUpInside)
+        backButton.addTarget(self, action: #selector(ImageDetailViewController.goBack), for: UIControlEvents.touchUpInside)
         backButton.setTitle("Back", for: UIControlState.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
@@ -218,9 +221,27 @@ class ImageDetailViewController: UIViewController{
        // self.createdByLbl.textColor = UIColor.white
         //self.createdByLbl.textAlignment = NSTextAlignment.right
         
+        /*
         self.customerLbl = Label(text: "\(self.image.customerName)")
         self.customerLbl.textColor = UIColor.white
         self.customerLbl.textAlignment = NSTextAlignment.right
+        */
+        
+        self.customerBtn = Button()
+        self.customerBtn.translatesAutoresizingMaskIntoConstraints = false
+        self.customerBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.right
+        self.customerBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+        self.customerBtn.backgroundColor = UIColor.clear
+        self.customerBtn.titleLabel?.textColor = UIColor.white
+        
+        self.customerBtn.setTitle(image.customerName, for: UIControlState.normal)
+        self.customerBtn.addTarget(self, action: #selector(ImageDetailViewController.showCustomerView), for: UIControlEvents.touchUpInside)
+        
+        
+        //self.customerView.addSubview(self.allContactsBtn)
+        
+        
+        
         
         
         
@@ -264,7 +285,7 @@ class ImageDetailViewController: UIViewController{
         
         print("image url = \(image.mediumPath)")
         
-        Nuke.loadImage(with: imgUrl!, into: imageView){ [weak view] in
+        Nuke.loadImage(with: imgUrl!, into: imageView){
             self.imageView?.handle(response: $0, isFromMemoryCache: $1)
             self.backgroundImageView.image = self.imageView.image
             self.activityView.stopAnimating()
@@ -288,7 +309,7 @@ class ImageDetailViewController: UIViewController{
             "backgroundImageView":self.backgroundImageView, "imageView":self.imageView, "textView":self.textView
             ] as [String:Any]
         
-        viewsDictionary2 = ["likesBtn":self.likesBtn, "likesLbl":self.likesLbl, "customerLbl":self.customerLbl, "descriptionLbl":self.descriptionLbl, "tagsLbl":self.tagsLbl
+        viewsDictionary2 = ["likesBtn":self.likesBtn, "likesLbl":self.likesLbl, "customerLbl":self.customerBtn, "descriptionLbl":self.descriptionLbl, "tagsLbl":self.tagsLbl
             ] as [String:Any]
         viewsDictionary3 = ["likesImage":self.likesImageView] as [String:Any]
         
@@ -297,7 +318,19 @@ class ImageDetailViewController: UIViewController{
         
     }
     
-    func showFullScreenImage(_ sender: UITapGestureRecognizer){
+    @objc func showCustomerView(){
+        print("customer = \(image.customer)")
+        if(image.customer != "0"){
+            let customerViewController = CustomerViewController(_customerID: image.customer, _customerName: image.customerName, _imageView: true)
+            //let customerViewController = CustomerViewController(_customerID: image.customer,_customerName: image.customerName)
+            navigationController?.pushViewController(customerViewController, animated: false )
+            //customerViewController.showImages()
+        }
+        
+        
+    }
+    
+    @objc func showFullScreenImage(_ sender: UITapGestureRecognizer){
         
         
         
@@ -305,7 +338,7 @@ class ImageDetailViewController: UIViewController{
     }
     
     
-    func swiped(_ gesture: UIGestureRecognizer){
+    @objc func swiped(_ gesture: UIGestureRecognizer){
         //print("swiped")
         if let swipeGesture = gesture as? UISwipeGestureRecognizer{
             switch swipeGesture.direction {
@@ -321,7 +354,7 @@ class ImageDetailViewController: UIViewController{
         }
     }
     
-    func share() {
+    @objc func share() {
         //print("share")
         if self.presentedViewController == nil {
             let activity = UIActivityViewController(activityItems: [self.imageView.image!], applicationActivities: nil)
@@ -379,7 +412,7 @@ class ImageDetailViewController: UIViewController{
     
         
     
-    func goBack(){
+    @objc func goBack(){
         _ = navigationController?.popViewController(animated: false)
        
     }
@@ -402,7 +435,7 @@ class ImageDetailViewController: UIViewController{
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
-        let sizeVals = ["navHeight":self.layoutVars.navAndStatusBarHeight, "landscapeNavHeight":self.layoutVars.navAndStatusBarHeight - self.layoutVars.statusBarHeight] as [String : Any]
+       // _ = ["navHeight":self.layoutVars.navAndStatusBarHeight, "landscapeNavHeight":self.layoutVars.navAndStatusBarHeight - self.layoutVars.statusBarHeight] as [String : Any]
         
         print("navHeight = \(self.layoutVars.navAndStatusBarHeight)  statusBarHeight = \(self.layoutVars.statusBarHeight) ")
         
@@ -424,7 +457,8 @@ class ImageDetailViewController: UIViewController{
         
         self.textView.addSubview(self.likesLbl)
        // self.textView.addSubview(self.createdByLbl)
-        self.textView.addSubview(self.customerLbl)
+        //self.textView.addSubview(self.customerLbl)
+        self.textView.addSubview(self.customerBtn)
         
         self.likesBtn.addSubview(self.likesImageView)
         
@@ -528,9 +562,9 @@ class ImageDetailViewController: UIViewController{
             //here you can do the logic for the cell size if phone is in landscape
             print("landscape")
             
-            let navHeight = self.navigationController!.navigationBar.layer.frame.height
+           // let navHeight = self.navigationController!.navigationBar.layer.frame.height
             
-            let sizeVals2 = ["navHeight":navHeight] as [String : Any]
+           // let sizeVals2 = ["navHeight":navHeight] as [String : Any]
 
             //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[votesView(100)]", options: [], metrics: nil, views: viewsDictionary))
             
@@ -635,7 +669,7 @@ class ImageDetailViewController: UIViewController{
     */
     
     
-    func handleLike(){
+    @objc func handleLike(){
         print("handle Like")
         
         indicator = SDevIndicator.generate(self.view)!
@@ -798,3 +832,4 @@ class ImageDetailViewController: UIViewController{
     }
     
 }
+

@@ -15,7 +15,8 @@ import SwiftyJSON
 // updates status icons without getting new db data
 protocol ScheduleDelegate{
     func reDrawSchedule(_index:Int, _status:String, _price: String, _cost: String, _priceRaw: String, _costRaw: String)
-    func updateSettings(_allDates:String, _startDate:String, _endDate:String,_startDateDB:String, _endDateDB:String, _sort:String)
+    func updateSettings(_allDates:String, _startDate:String, _endDate:String,_startDateDB:String, _endDateDB:String, _mowSort:String, _plowSort:String, _plowDepth:String)
+    func cancelSearch()//to resolve problem with imageSelection bug when search mode is active
 }
 
 
@@ -43,7 +44,10 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var endDate:String = ""
     var startDateDB:String = ""
     var endDateDB:String = ""
-    var sort:String = "0"
+    var mowSort:String = "0"
+    var plowSort:String = "0"
+    var plowDepth:String = "0"
+    
     
     var fullScheduleJSON:JSON!
     var fullScheduleArray:[WorkOrder] = []
@@ -93,7 +97,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     override func viewWillAppear(_ animated: Bool) {
-        //print("viewWillAppear")
+        print("viewWillAppear")
         
         //print("self.tableViewMode = \(self.tableViewMode)")
          //print("personalMode = \(self.personalMode)")
@@ -101,10 +105,10 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         cellClick = false
         
         if(shouldShowSearchResults == true){
-             scheduleTableView.reloadData()
+            scheduleTableView.reloadData()
         }else{
             if(self.personalMode == false){
-                //print("------FULL-------")
+                print("------FULL-------")
                 
                 if(self.tableViewMode == "SCHEDULE"){
                     if(fullScheduleLoaded != true){
@@ -121,7 +125,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 }
                 
             }else{
-                //print("------PERSONAL-------")
+                print("------PERSONAL-------")
                 
                 if(self.tableViewMode == "SCHEDULE"){
                     
@@ -139,10 +143,16 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     
                 }
             }
-
+            
         }
         
     }
+    
+    
+    
+        
+    
+    
     
     
     func layoutViews(){
@@ -152,15 +162,38 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         layoutViewsCalled = true
         
-        
+        print("layout views")
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchBar.placeholder = "Search Schedule"
         searchController.searchResultsUpdater = self
         searchController.delegate = self
         searchController.searchBar.delegate = self
+        searchController.searchBar.barTintColor = layoutVars.buttonBackground
+        
         searchController.dimsBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
-        navigationItem.titleView = searchController.searchBar
+        
+        
+        
+        //workaround for ios 11 larger search bar
+        let searchBarContainer = SearchBarContainerView(customSearchBar: searchController.searchBar)
+        searchBarContainer.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 44)
+        navigationItem.titleView = searchBarContainer
+        
+        
+        /*
+        // navigationItem.titleView = searchController.searchBar
+        searchController.searchBar.backgroundColor = UIColor.white
+        if #available(iOS 11.0, *) {
+            navigationItem.searchController = searchController
+        } else {
+            // Fallback on earlier versions
+            navigationItem.titleView = searchController?.searchBar
+        }
+        */
+        
+        //controller.searchBar.barTintColor = UIColor(red: 76/255, green: 203/255, blue: 124/255, alpha: 1)
+       
         
         let items = ["Active","History"]
         let customSC = SegmentedControl(items: items)
@@ -173,7 +206,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.view.addSubview(customSC)
         
         
-        
+        print("calling tableView")
         self.scheduleTableView =  TableView()
         self.scheduleTableView.delegate  =  self
         self.scheduleTableView.dataSource  =  self
@@ -203,7 +236,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         
-         self.view.addSubview(self.personalScheduleBtn)
+        self.view.addSubview(self.personalScheduleBtn)
         
         
         
@@ -267,7 +300,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
 
     func getSchedule(_empID:String) {
-        //print("getSchedule empID:\(_empID)")
+        print("getSchedule empID:\(_empID)")
         
         if(refreshFromTable == true){
             self.refreshControl.endRefreshing()
@@ -285,13 +318,24 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //, "cb":timeStamp as AnyObject
         
         
-        Alamofire.request(API.Router.workOrderList(["employeeID":_empID as AnyObject,"custID":"" as AnyObject,"startDate":self.startDateDB as AnyObject,"endDate":self.endDateDB as AnyObject,"sort":self.sort as AnyObject,"active":"1" as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
+        var sort:String = "0"
+        
+        if(mowSort == "1"){
+            sort = "1"
+            plowDepth = "0"
+        }else if(plowSort == "1"){
+            sort = "2"
+        }
+        
+        
+        
+        Alamofire.request(API.Router.workOrderList(["employeeID":_empID as AnyObject,"custID":"" as AnyObject,"startDate":self.startDateDB as AnyObject,"endDate":self.endDateDB as AnyObject,"sort":sort as AnyObject,"plowDepth":self.plowDepth as AnyObject,"active":"1" as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
             response in
             
             print(response.request ?? "")  // original URL request
             // //print(response.response) // URL response
-            ////print(response.data)     // server data
-            // //print(response.result)   // result of response serialization
+            print(response.data)     // server data
+            print(response.result)   // result of response serialization
             
             if(_empID == ""){
                 self.fullScheduleLoaded = true
@@ -326,6 +370,13 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             for i in 0 ..< workOrderCount {
                 
                 let workOrder = WorkOrder(_ID: self.fullScheduleJSON["workOrder"][i]["ID"].stringValue, _statusID: self.fullScheduleJSON["workOrder"][i]["statusID"].stringValue, _date: self.fullScheduleJSON["workOrder"][i]["date"].stringValue, _firstItem: self.fullScheduleJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.fullScheduleJSON["workOrder"][i]["statusName"].stringValue, _customer: self.fullScheduleJSON["workOrder"][i]["customer"].stringValue, _type: self.fullScheduleJSON["workOrder"][i]["type"].stringValue, _progress: self.fullScheduleJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.fullScheduleJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.fullScheduleJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.fullScheduleJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.fullScheduleJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.fullScheduleJSON["workOrder"][i]["charge"].stringValue)
+                
+                if(plowSort == "1"){
+                    workOrder.plowPriority = self.fullScheduleJSON["workOrder"][i]["plowPriority"].stringValue
+                    workOrder.plowDepth = self.fullScheduleJSON["workOrder"][i]["plowDepth"].stringValue
+                    workOrder.plowMonitoring = self.fullScheduleJSON["workOrder"][i]["plowMonitorList"].stringValue
+                }
+                
                 self.fullScheduleArray.append(workOrder)
             }
         }else{
@@ -337,7 +388,16 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 ////print("ID: " + self.scheduleJSON["workOrder"][i]["ID"].stringValue)
                 
                 let workOrder = WorkOrder(_ID: self.personalScheduleJSON["workOrder"][i]["ID"].stringValue, _statusID: self.personalScheduleJSON["workOrder"][i]["statusID"].stringValue, _date: self.personalScheduleJSON["workOrder"][i]["date"].stringValue, _firstItem: self.personalScheduleJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.personalScheduleJSON["workOrder"][i]["statusName"].stringValue, _customer: self.personalScheduleJSON["workOrder"][i]["customer"].stringValue, _type: self.personalScheduleJSON["workOrder"][i]["type"].stringValue, _progress: self.personalScheduleJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.personalScheduleJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.personalScheduleJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.personalScheduleJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.personalScheduleJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.personalScheduleJSON["workOrder"][i]["charge"].stringValue)
+                
+                if(plowSort == "1"){
+                    workOrder.plowPriority = self.personalScheduleJSON["workOrder"][i]["plowPriority"].stringValue
+                    workOrder.plowDepth = self.personalScheduleJSON["workOrder"][i]["plowDepth"].stringValue
+                    workOrder.plowMonitoring = self.personalScheduleJSON["workOrder"][i]["plowMonitorList"].stringValue
+                }
+                
                 self.personalScheduleArray.append(workOrder)
+                
+                
             }
         }
         
@@ -357,7 +417,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func getHistory(_empID:String){
-        //print("getHistory empID:\(_empID)")
+        print("getHistory empID:\(_empID)")
         // Show Indicator
         
         //limited history message
@@ -397,7 +457,16 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         let timeStamp = Int(timeInterval)
         //, "cb":timeStamp as AnyObject
         
-        Alamofire.request(API.Router.workOrderList(["employeeID":self.employeeID as AnyObject,"custID":"" as AnyObject,"active":"0" as AnyObject,"startDate":startDate as AnyObject,"endDate":endDate as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
+        var sort:String = "0"
+        
+        if(mowSort == "1"){
+            sort = "1"
+            plowDepth = "0"
+        }else if(plowSort == "1"){
+            sort = "2"
+        }
+        
+        Alamofire.request(API.Router.workOrderList(["employeeID":self.employeeID as AnyObject,"custID":"" as AnyObject,"active":"0" as AnyObject,"startDate":startDate as AnyObject,"endDate":endDate as AnyObject,"sort":sort as AnyObject, "plowDepth":self.plowDepth as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
             
             response in
             
@@ -434,6 +503,13 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             for i in 0 ..< workOrderCount {
                 // //print("ID: " + self.historyJSON["workOrder"][i]["ID"].stringValue)
                 let workOrder = WorkOrder(_ID: self.fullHistoryJSON["workOrder"][i]["ID"].stringValue, _statusID: self.fullHistoryJSON["workOrder"][i]["statusID"].stringValue, _date: self.fullHistoryJSON["workOrder"][i]["date"].stringValue, _firstItem: self.fullHistoryJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.fullHistoryJSON["workOrder"][i]["statusName"].stringValue, _customer: self.fullHistoryJSON["workOrder"][i]["customer"].stringValue, _type: self.fullHistoryJSON["workOrder"][i]["type"].stringValue, _progress: self.fullHistoryJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.fullHistoryJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.fullHistoryJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.fullHistoryJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.fullHistoryJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.fullHistoryJSON["workOrder"][i]["charge"].stringValue)
+                
+                if(plowSort == "1"){
+                    workOrder.plowPriority = self.fullHistoryJSON["workOrder"][i]["plowPriority"].stringValue
+                    workOrder.plowDepth = self.fullHistoryJSON["workOrder"][i]["plowDepth"].stringValue
+                    workOrder.plowMonitoring = self.fullHistoryJSON["workOrder"][i]["plowMonitorList"].stringValue
+                }
+                
                 self.fullHistoryArray.append(workOrder)
             }
         }else{
@@ -444,6 +520,13 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             personalHistoryArray = []
             for i in 0 ..< workOrderCount {
                 let workOrder = WorkOrder(_ID: self.personalHistoryJSON["workOrder"][i]["ID"].stringValue, _statusID: self.personalHistoryJSON["workOrder"][i]["statusID"].stringValue, _date: self.personalHistoryJSON["workOrder"][i]["date"].stringValue, _firstItem: self.personalHistoryJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.personalHistoryJSON["workOrder"][i]["statusName"].stringValue, _customer: self.personalHistoryJSON["workOrder"][i]["customer"].stringValue, _type: self.personalHistoryJSON["workOrder"][i]["type"].stringValue, _progress: self.personalHistoryJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.personalHistoryJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.personalHistoryJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.personalHistoryJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.personalHistoryJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.personalHistoryJSON["workOrder"][i]["charge"].stringValue)
+                
+                if(plowSort == "1"){
+                    workOrder.plowPriority = self.personalHistoryJSON["workOrder"][i]["plowPriority"].stringValue
+                    workOrder.plowDepth = self.personalHistoryJSON["workOrder"][i]["plowDepth"].stringValue
+                    workOrder.plowMonitoring = self.personalHistoryJSON["workOrder"][i]["plowMonitorList"].stringValue
+                }
+                
                 self.personalHistoryArray.append(workOrder)
             }
         }
@@ -457,10 +540,10 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     
-    func scheduleSettings(){
+    @objc func scheduleSettings(){
         print("schedule settings")
         
-        let scheduleSettingsViewController = ScheduleSettingsViewController(_allDates:self.allDates, _startDate: self.startDate, _endDate: self.endDate,_startDateDB: self.startDateDB, _endDateDB: self.endDateDB, _sort: self.sort)
+        let scheduleSettingsViewController = ScheduleSettingsViewController(_allDates:self.allDates, _startDate: self.startDate, _endDate: self.endDate,_startDateDB: self.startDateDB, _endDateDB: self.endDateDB, _mowSort: self.mowSort, _plowSort: self.plowSort, _plowDepth: self.plowDepth)
         scheduleSettingsViewController.delegate = self
         navigationController?.pushViewController(scheduleSettingsViewController, animated: false )
         
@@ -537,11 +620,16 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             if (shouldShowSearchResults == true){
                 //print("make cell for schedule search mode row: \(indexPath.row)")
-                
+                print("cell 1")
                 cell.workOrder = self.workOrdersSearchResults[indexPath.row]
-                cell.layoutViews(_scheduleMode: "SCHEDULE")
+                if(plowSort == "1"){
+                    cell.layoutViews(_scheduleMode: "PLOWING")
+                }else{
+                    cell.layoutViews(_scheduleMode: "SCHEDULE")
+                }
+                
                 cell.setStatus(status: cell.workOrder.statusId)
-                 cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
+                cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
                 
                 let searchString = self.searchController.searchBar.text!.lowercased()
                 
@@ -571,10 +659,15 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 cell.priceLbl.text = cell.workOrder.totalPrice!
                 
                 
-                 cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
+                cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
+                
+                
                 
                 
             } else {
+                
+                print("cell 2")
+                
                 
                 //print("make cell for schedule reg mode row: \(indexPath.row)")
                 if(personalMode == false){
@@ -583,15 +676,21 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 }else{
                     cell.workOrder = self.personalScheduleArray[indexPath.row]
                 }
-                cell.layoutViews(_scheduleMode: "SCHEDULE")
+                if(plowSort == "1"){
+                    print("cell 2a")
+                    cell.layoutViews(_scheduleMode: "PLOWING")
+                }else{
+                    cell.layoutViews(_scheduleMode: "SCHEDULE")
+                    cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
+                    
+                    cell.priceLbl.text = cell.workOrder.totalPrice!
+                }
                 cell.customerLbl.text = cell.workOrder.title
                 cell.setStatus(status: cell.workOrder.statusId)
+                cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
                 
-                cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
                 
-                cell.priceLbl.text = cell.workOrder.totalPrice!
                 
-                 cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
                 
                 
             }
@@ -604,7 +703,11 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 //print("make cell for history search mode row: \(indexPath.row)")
                 
                 cell.workOrder = self.workOrdersSearchResults[indexPath.row]
-                cell.layoutViews(_scheduleMode: "SCHEDULE")
+                if(plowSort == "1"){
+                    cell.layoutViews(_scheduleMode: "PLOWING")
+                }else{
+                    cell.layoutViews(_scheduleMode: "SCHEDULE")
+                }
                 cell.setStatus(status: cell.workOrder.statusId)
                 
                 let searchString = self.searchController.searchBar.text!.lowercased()
@@ -620,7 +723,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     regex = nil
                 }
                 if let regexError = error {
-                    //print("Oh no! \(regexError)")
+                    print("Oh no! \(regexError)")
                 } else {
                     
                     for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
@@ -630,12 +733,19 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 }
                 cell.customerLbl.attributedText = highlightedText
               
+                
                 cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
                 
                 cell.priceLbl.text = cell.workOrder.totalPrice!
                 
                 
                 cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
+                
+                
+                
+                
+                
+                
             } else {
                 
                 //print("make cell for history reg mode row: \(indexPath.row)")
@@ -646,7 +756,11 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     
                     cell.workOrder = self.personalHistoryArray[indexPath.row]
                 }
-                cell.layoutViews(_scheduleMode: "SCHEDULE")
+                if(plowSort == "1"){
+                    cell.layoutViews(_scheduleMode: "PLOWING")
+                }else{
+                    cell.layoutViews(_scheduleMode: "SCHEDULE")
+                }
                 cell.customerLbl.text = cell.workOrder.title
                 cell.setStatus(status: cell.workOrder.statusId)
                 
@@ -656,6 +770,9 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 cell.priceLbl.text = cell.workOrder.totalPrice!
                 
                 cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
+                
+                
+                
 
             }
             
@@ -665,6 +782,20 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             break
         }
+        
+        print("cell 3")
+        if(plowSort == "1"){
+            cell.depthLbl.text = "\(cell.workOrder.plowDepth)\""
+            cell.priorityLbl.text = "Priority: \(cell.workOrder.plowPriority)"
+            if(cell.workOrder.plowMonitoring == "1"){
+                cell.monitoringLbl.text = "Monitor: Yes"
+            }else{
+                cell.monitoringLbl.text = "Monitor: No"
+            }
+            
+        }
+        
+        
         return cell
     }
     
@@ -685,12 +816,9 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         let workOrderViewController = WorkOrderViewController(_workOrderID: currentCell.workOrder.ID,_customerName: currentCell.workOrder.customer)
         navigationController?.pushViewController(workOrderViewController, animated: false )
         
-        
-        
         workOrderViewController.scheduleDelegate = self
         workOrderViewController.scheduleIndex = indexPath?.row
         
-        self.searchController.isActive = false
         
     }
 
@@ -821,7 +949,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     
-    func refresh(_ sender: AnyObject){
+    @objc func refresh(_ sender: AnyObject){
         //print("refresh")
         refreshFromTable = true
         getSchedule(_empID: (appDelegate.loggedInEmployee?.ID)!)
@@ -830,7 +958,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     
-    func filterUsersSchedule(){
+    @objc func filterUsersSchedule(){
         //print("filterUsersSchedule")
         //print("personalMode \(personalMode)")
         //print("personalScheduleLoaded \(personalScheduleLoaded)")
@@ -913,7 +1041,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     
-    func changeSearchOptions(sender: UISegmentedControl) {
+    @objc func changeSearchOptions(sender: UISegmentedControl) {
         //print("personalMode = \(personalMode)")
         //print("personalScheduleLoaded = \(personalScheduleLoaded)")
         //print("fullScheduleLoaded = \(fullScheduleLoaded)")
@@ -1065,7 +1193,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
     }
     
-    func updateSettings(_allDates:String, _startDate:String, _endDate:String,_startDateDB:String, _endDateDB:String, _sort:String){
+    func updateSettings(_allDates:String, _startDate:String, _endDate:String,_startDateDB:String, _endDateDB:String, _mowSort:String, _plowSort:String, _plowDepth:String){
         print("update settings")
         //let editsMade:Bool = false
         self.allDates = _allDates
@@ -1073,7 +1201,9 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.endDate = _endDate
         self.startDateDB = _startDateDB
         self.endDateDB = _endDateDB
-        self.sort = _sort
+        self.mowSort = _mowSort
+        self.plowSort = _plowSort
+        self.plowDepth = _plowDepth
         
         
         /*
@@ -1085,15 +1215,31 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
  var sort:String = "0"
  */
         
-        if(self.allDates != "1" || self.startDate != "" || self.endDate != "" || self.sort != "0"){
+        if(self.allDates != "1" || self.startDate != "" || self.endDate != "" || self.mowSort != "0" || self.plowSort != "0" || self.plowDepth != "0"){
             print("changes made")
             settingsIcon.image = settingsEditedImg
         }else{
             settingsIcon.image = settingsImg
         }
         
-        getSchedule(_empID: (appDelegate.loggedInEmployee?.ID)!)
+        shouldShowSearchResults = false
+         fullScheduleLoaded = false
+         personalScheduleLoaded = false
+         fullHistoryLoaded = false
+         personalHistoryLoaded = false
         
+        
+        //decideWhichScheduleToPresent()
+        
+        //getSchedule(_empID: (appDelegate.loggedInEmployee?.ID)!)
+        
+    }
+    
+    func cancelSearch() {
+        print("cancel search")
+        if(self.searchController.isActive == true){
+            self.searchController.isActive = false
+        }
     }
     
     func goBack(){

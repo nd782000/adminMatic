@@ -47,7 +47,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextFieldDelegate, U
         navigationItem.leftBarButtonItem  = backButtonItem
 
         
-        for emp in self.appDelegate.employeeArray{
+        for _ in self.appDelegate.employeeArray{
             selectedStates.append(true)
         }
         layoutViews()
@@ -191,21 +191,21 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextFieldDelegate, U
     }
 
     
-    func handleSelectNone(){
+    @objc func handleSelectNone(){
         for index in 0 ..< selectedStates.count {
             selectedStates[index] = false
         }
         self.employeeTableView.reloadData()
     }
     
-    func handleSelectAll(){
+    @objc func handleSelectAll(){
         for index in 0 ..< selectedStates.count {
             selectedStates[index] = true
         }
         self.employeeTableView.reloadData()
     }
     
-    func buildRecipientList(){
+    @objc func buildRecipientList(){
         print("buildRecipientList")
         
         for index in 0 ..< appDelegate.employeeArray.count {
@@ -295,7 +295,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextFieldDelegate, U
         }
     }
     
-    func messageComposeViewController(_ controller: MFMessageComposeViewController!, didFinishWith result: MessageComposeResult) {
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
         //... handle sms screen actions
         self.dismiss(animated: true, completion: nil)
         getBatch()
@@ -311,7 +311,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextFieldDelegate, U
         batchOfTexts = []
     }
     
-    func goBack(){
+    @objc func goBack(){
         _ = navigationController?.popViewController(animated: true)
     }
     

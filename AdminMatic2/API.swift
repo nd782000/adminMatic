@@ -105,6 +105,7 @@ struct API {
         
         case currentShiftByEmployee([String: AnyObject])
         
+        
         case workOrderList([String: AnyObject])
         
         case workOrder([String: AnyObject])
@@ -123,11 +124,10 @@ struct API {
         
         case updateWoStatus([String: AnyObject])
         
-        case deleteFieldNote([String: AnyObject])
+        case deleteAttachment([String: AnyObject])
         
         case itemList([String: AnyObject])
         
-        case item([String: AnyObject])
         
         case vendorList([String: AnyObject])
         
@@ -202,12 +202,11 @@ struct API {
                 return ("/functions/update/taskStatus.php")
             case .updateWoStatus:
                 return ("/functions/update/workOrderStatus.php")
-            case .deleteFieldNote:
+            case .deleteAttachment:
                 return ("/functions/delete/fieldNote.php")
             case .itemList:
                 return ("/functions/get/items.php")
-            case .item:
-                return ("/functions/get/item.php")
+            
             case .vendorList:
                 return ("/functions/get/vendors.php")
             case .vendor:
@@ -275,11 +274,9 @@ struct API {
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
             case .updateWoStatus(let parameters):
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
-            case .deleteFieldNote(let parameters):
+            case .deleteAttachment(let parameters):
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
             case .itemList(let parameters):
-                return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
-            case .item(let parameters):
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
             case .vendorList(let parameters):
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)

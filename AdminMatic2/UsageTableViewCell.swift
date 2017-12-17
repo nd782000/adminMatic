@@ -113,7 +113,7 @@ class UsageTableViewCell: UITableViewCell {
         let metricsDictionary = ["halfWidth": usageViewWidth] as [String:Any]
         
         
-        "H:|-5-[sts(30)]-[name]-[date(60)]-[start(80)]-[stop(80)]-[qty(40)]-[price(60)]-5-|"
+        //"H:|-5-[sts(30)]-[name]-[date(60)]-[start(80)]-[stop(80)]-[qty(40)]-[price(60)]-5-|"
         
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[stsIcon(30)]-[view1]-[view2(60)]-[view3(80)]-[view4(80)]-[view5(40)]-[view6(60)]-5-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))

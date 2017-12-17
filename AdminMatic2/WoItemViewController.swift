@@ -12,7 +12,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, FieldNoteDelegate{
+class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate{
     
     var layoutVars:LayoutVars = LayoutVars()
     
@@ -50,7 +50,6 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     var profitLabel:Label!
     var profitValueLabel:Label!
     
-    //the profit progress bar
     
     var profitBarView:UIView!
     var incomeView:UIView!
@@ -60,9 +59,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     var usageView:UIView!
     var usageBtn:UIButton!
-    
-   
-    
+
     //details view
     var detailsView:UIView!
     
@@ -70,8 +67,6 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     
     var newWoStatus:String!
-    
-    var editsMade:Bool = false
     var tasksJson:JSON?
     
     var customerID:String = ""
@@ -82,27 +77,17 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     var imageUploadPrepViewController:ImageUploadPrepViewController!
     
-    
-    
-    
     init(_woID:String,_woItem:WoItem,_empsOnWo:[Employee],_woStatus:String){
         super.init(nibName:nil,bundle:nil)
         self.woID = _woID
         self.woItem = _woItem
         self.empsOnWo = _empsOnWo
         self.newWoStatus = _woStatus
-        //print("wo item init")
-        
-        
-        
-        
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
-    
+
     
     override func viewWillAppear(_ animated: Bool) {
         ////print("view will appear")
@@ -123,10 +108,6 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
-        
-        //layoutViews()
-        
-        
     }
     
     
@@ -134,8 +115,6 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
     }
     
     
@@ -171,12 +150,8 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[view1(160)][view2(fullHeight)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
-        
-        
-        
         ///////////   wo item header section   /////////////
         
-        ////print("item view layoutViews 2")
         //name
         self.itemNameView = UIView()
         self.itemNameView.backgroundColor = layoutVars.backgroundColor
@@ -201,21 +176,9 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         self.usageView = UIView()
         self.usageView.backgroundColor = layoutVars.backgroundColor
-        
-        //self.usageView.backgroundColor = UIColor.redColor();
-        
-        
-        
         self.usageView.translatesAutoresizingMaskIntoConstraints = false
         self.itemView.addSubview(self.usageView)
-        
-        
-        
-        
-        
-        
-        
-        
+    
         let containersViewsDictionary = [
             "itemNameView":self.itemNameView,
             "chargeTypeView":self.chargeTypeView,
@@ -231,46 +194,23 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[usageView(width)]", options: [], metrics: sizeVals, views: containersViewsDictionary))
         
         self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[itemNameView(35)][chargeTypeView(25)][estimatedView(25)][profitView(25)][usageView(50)]", options: [], metrics: sizeVals, views: containersViewsDictionary))
-        
-        
-        
-        
-        
-        
-        
+
         self.itemLbl = GreyLabel()
         self.itemLbl.text = self.woItem.input
         self.itemLbl.font = layoutVars.labelFont
         self.itemNameView.addSubview(self.itemLbl)
         
-        let itemNameViewsDictionary = [
-            
-            
-            "itemLbl":self.itemLbl       ]  as [String:AnyObject]
+        let itemNameViewsDictionary = ["itemLbl":self.itemLbl]  as [String:AnyObject]
         
-        
-        
-        
-        
+
         self.itemNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-50-[itemLbl]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: sizeVals, views: itemNameViewsDictionary))
         
         self.itemNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[itemLbl(20)]", options: [], metrics: sizeVals, views: itemNameViewsDictionary))
         
-        
-        
-        
         //charge Info
-        
-        
-        
-        
         self.chargeTypeLabel = Label()
         self.chargeTypeLabel.text = "Charge Type:"
         self.chargeTypeView.addSubview(self.chargeTypeLabel)
-        
-        
-        
-        
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         
@@ -295,31 +235,13 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         self.chargeTypeValueLabel.text = chargeTypeName
         self.chargeTypeView.addSubview(self.chargeTypeValueLabel)
         
-        
-        
-        
         self.totalLabel = Label()
         self.totalLabel.text = "Total:"
         self.chargeTypeView.addSubview(self.totalLabel)
-        
-        
-        
-        
-        
-        
+    
         self.totalValueLabel = Label()
         self.totalValueLabel.text = "$\(self.woItem.total!)"
         self.chargeTypeView.addSubview(self.totalValueLabel)
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         
         let chargeViewsDictionary = [
@@ -625,273 +547,326 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             }
             
         }
-        
-        
-        
-        
         return cell
         
     }
     
     
     
-    
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //////print("You selected cell #\(indexPath.row)!")
         
-        //let indexPath = tableView.indexPathForSelectedRow;
         if(indexPath.row == self.tasks.count){
             self.addTask()
         }else{
             tableView.deselectRow(at: indexPath as IndexPath, animated: true)
-            imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _ID: self.tasks[indexPath.row].ID)
+            imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _taskID: tasks[indexPath.row].ID, _customerID: self.customerID, _images: self.tasks[indexPath.row].images)
             imageUploadPrepViewController.images = self.tasks[indexPath.row].images
             imageUploadPrepViewController.layoutViews()
             imageUploadPrepViewController.groupDescriptionTxt.text = self.tasks[indexPath.row].task
             imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
+            imageUploadPrepViewController.taskStatus = self.tasks[indexPath.row].status
             imageUploadPrepViewController.selectedID = self.customerID
             imageUploadPrepViewController.woID = self.woID
             imageUploadPrepViewController.groupImages = true
-            imageUploadPrepViewController.fieldNoteDelegate = self
+            imageUploadPrepViewController.attachmentDelegate = self
             self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
         }
-        
-        
-        
-        
     }
+    
+    
+    
+    
+    
+    
+    /*
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-       
-        
         let ID = self.tasks[indexPath.row].ID
-        
         var newItemStatus:String?
-        
-        
-        //print("ID = \(ID)")
-        //print("empID = \(self.appDelegate.loggedInEmployee?.ID)")
-        //print("woItemID = \(self.woItem.ID)")
-        //print("woID = \(self.woID)")
-        
         
         //indexPath
         let none = UITableViewRowAction(style: .normal, title: "None") { action, index in
             //print("none button tapped")
-            
             self.tasks[indexPath.row].status = "1"
-            tableView.reloadData()
-            
-            
-            
-        var parameters:[String:String]
-            parameters = [
-                "taskID":ID!,
-                "status":"1",
-                "empID":(self.appDelegate.loggedInEmployee?.ID)!,
-                "woItemID":self.woItem.ID,
-                "woID":self.woID
-                
-            ]
-            
-            print("parameters = \(parameters)")
-            
-            
-            
-            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/taskStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
-                response in
-                print(response.request ?? "")  // original URL request
-                //print(response.response ?? "") // URL response
-                //print(response.data ?? "")     // server data
-                print(response.result)   // result of response serialization
-                
-
-                
-                
-            
-                
-                if let json = response.result.value {
-                    print("JSON: \(json)")
-                    //self.self.employeeJSON = JSON(json)
-                    //self.self.parseEmployeeJSON()
-                    newItemStatus = JSON(json)["newItemStatus"].stringValue
-                    self.newWoStatus = JSON(json)["newWoStatus"].stringValue
-                    
-                }
-                
-                
-                
-                }.responseString { response in
-                    //print("response = \(response)")
-            }
-
-            
-            
+            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "1", _row: indexPath.row)
             
         }
         none.backgroundColor = UIColor.gray
-        
-        
         let progress = UITableViewRowAction(style: .normal, title: "Prog.") { action, index in
             //print("progress button tapped")
             
+            
+            
             self.tasks[indexPath.row].status = "2"
-            tableView.reloadData()
+            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "2", _row: indexPath.row)
             
-            
-            var parameters:[String:String]
-            parameters = [
-                "taskID":ID!,
-                "status":"2",
-                "empID":(self.appDelegate.loggedInEmployee?.ID)!,
-                "woItemID":self.woItem.ID,
-                "woID":self.woID
-                
-            ]
-            
-            print("parameters = \(parameters)")
-            
-            
-            
-            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/taskStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
-                response in
-                print(response.request ?? "")  // original URL request
-                //print(response.response ?? "") // URL response
-                //print(response.data ?? "")     // server data
-                print(response.result)   // result of response serialization
-                
-
-                
-                
-                if let json = response.result.value {
-                    print("JSON: \(json)")
-                    //self.self.employeeJSON = JSON(json)
-                    //self.self.parseEmployeeJSON()
-                    
-                    newItemStatus = JSON(json)["newItemStatus"].stringValue
-                    self.newWoStatus = JSON(json)["newWoStatus"].stringValue
-                    
-                    
-                    
-                }
-                
-                
-                
-                }.responseString { response in
-                    //print("response = \(response)")
-            }
-            
-            
+            self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
         }
         progress.backgroundColor = UIColor.orange
         
         let done = UITableViewRowAction(style: .normal, title: "Done") { action, index in
             //print("done button tapped")
             self.tasks[indexPath.row].status = "3"
-            tableView.reloadData()
-            
-            var parameters:[String:String]
-            parameters = [
-                "taskID":ID!,
-                "status":"3",
-                "empID":(self.appDelegate.loggedInEmployee?.ID)!,
-                "woItemID":self.woItem.ID,
-                "woID":self.woID
-                
-            ]
-            
-            print("parameters = \(parameters)")
+            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "3", _row: indexPath.row)
             
             
             
-            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/taskStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
-                response in
-                print(response.request ?? "")  // original URL request
-                //print(response.response ?? "") // URL response
-                //print(response.data ?? "")     // server data
-                print(response.result)   // result of response serialization
-                
-
-                
-                if let json = response.result.value {
-                    print("JSON: \(json)")
-                    //self.self.employeeJSON = JSON(json)
-                    //self.self.parseEmployeeJSON()
-                    
-                    newItemStatus = JSON(json)["newItemStatus"].stringValue
-                    self.newWoStatus = JSON(json)["newWoStatus"].stringValue
-                    
-                }
-                
-                
-                
-                }.responseString { response in
-                    //print("response = \(response)")
-            }
-            
-            
+            self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
         }
         done.backgroundColor = layoutVars.buttonColor1
         
         let cancel = UITableViewRowAction(style: .normal, title: "Cancel") { action, index in
             //print("cancel button tapped")
             self.tasks[indexPath.row].status = "4"
-            tableView.reloadData()
-            
-            var parameters:[String:String]
-            parameters = [
-                "taskID":ID!,
-                "status":"4",
-                "empID":(self.appDelegate.loggedInEmployee?.ID)!,
-                "woItemID":self.woItem.ID,
-                "woID":self.woID
-                
-            ]
-            
-            print("parameters = \(parameters)")
-            
-            
-            
-            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/taskStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
-                response in
-                print(response.request ?? "")  // original URL request
-                //print(response.response ?? "") // URL response
-                //print(response.data ?? "")     // server data
-                print(response.result)   // result of response serialization
-                
-
-            
-                
-                
-                if let json = response.result.value {
-                    print("JSON: \(json)")
-                    //self.self.employeeJSON = JSON(json)
-                    //self.self.parseEmployeeJSON()
-                    
-                    newItemStatus = JSON(json)["newItemStatus"].stringValue
-                    self.newWoStatus = JSON(json)["newWoStatus"].stringValue
-                    
-                }
-                
-                
-                
-                }.responseString { response in
-                    //print("response = \(response)")
-            }
-            
+            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "4", _row: indexPath.row)
             
         }
+        
+        
+        
         cancel.backgroundColor = UIColor.red
         
         
         self.woItem.itemStatus = newItemStatus
-        //tableView.reloadData()
         
-        return [cancel, done, progress, none]
+        return [done, progress, none, cancel]
+    }
+ 
+ 
+ */
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    /*
+    @nonobjc func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        // Return false if you do not want the specified item to be editable.
+        return true
+    }
+ */
+    
+    /*
+     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        if editingStyle == .delete {
+            objects.removeObjectAtIndex(indexPath.row)
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        } else if editingStyle == .Insert {
+            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+        }
+    }
+ */
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let ID = self.tasks[indexPath.row].ID
+        var newItemStatus:String?
+        
+        //indexPath
+        let none = UITableViewRowAction(style: .normal, title: "None") { action, index in
+            //print("none button tapped")
+            self.tasks[indexPath.row].status = "1"
+            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "1", _row: indexPath.row)
+            
+        }
+        none.backgroundColor = UIColor.gray
+        let progress = UITableViewRowAction(style: .normal, title: "Prog.") { action, index in
+            //print("progress button tapped")
+            
+            
+            
+            self.tasks[indexPath.row].status = "2"
+            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "2", _row: indexPath.row)
+            
+            self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
+        }
+        progress.backgroundColor = UIColor.orange
+        
+        let done = UITableViewRowAction(style: .normal, title: "Done") { action, index in
+            //print("done button tapped")
+            self.tasks[indexPath.row].status = "3"
+            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "3", _row: indexPath.row)
+            
+            
+            
+            self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
+        }
+        done.backgroundColor = layoutVars.buttonColor1
+        
+        /*
+        let cancel = UITableViewRowAction(style: .normal, title: "Cancel") { action, index in
+            //print("cancel button tapped")
+            self.tasks[indexPath.row].status = "4"
+            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "4", _row: indexPath.row)
+            
+        }
+        
+        
+        
+        cancel.backgroundColor = UIColor.red
+        */
+        
+        
+        self.woItem.itemStatus = newItemStatus
+        
+        //return [done, progress, none, cancel]
+        
+        return [done, progress, none]
+        
+    }
+    
+    /*
+    @nonobjc func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
+        
+        let ID = self.tasks[indexPath.row].ID
+        var newItemStatus:String?
+        
+        //indexPath
+        let none = UITableViewRowAction(style: .normal, title: "None") { action, index in
+            //print("none button tapped")
+            self.tasks[indexPath.row].status = "1"
+            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "1", _row: indexPath.row)
+            
+        }
+        none.backgroundColor = UIColor.gray
+        let progress = UITableViewRowAction(style: .normal, title: "Prog.") { action, index in
+            //print("progress button tapped")
+            
+            
+            
+            self.tasks[indexPath.row].status = "2"
+            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "2", _row: indexPath.row)
+            
+            self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
+        }
+        progress.backgroundColor = UIColor.orange
+        
+        let done = UITableViewRowAction(style: .normal, title: "Done") { action, index in
+            //print("done button tapped")
+            self.tasks[indexPath.row].status = "3"
+            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "3", _row: indexPath.row)
+            
+            
+            
+            self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
+        }
+        done.backgroundColor = layoutVars.buttonColor1
+        
+        let cancel = UITableViewRowAction(style: .normal, title: "Cancel") { action, index in
+            //print("cancel button tapped")
+            self.tasks[indexPath.row].status = "4"
+            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "4", _row: indexPath.row)
+            
+        }
+        
+        
+        
+        cancel.backgroundColor = UIColor.red
+        
+        
+        self.woItem.itemStatus = newItemStatus
+        
+        return [done, progress, none, cancel]
+    }
+ 
+ */
+    
+    
+    
+    
+    
+    
+    
+    func setTaskStatus(_ID:String,_status:String,_row:Int)->String{
+        self.tasks[_row].status = _status
+        self.itemDetailsTableView.reloadData()
+        var newItemStatus:String = "1"
+        var parameters:[String:String]
+        parameters = [
+            "taskID":_ID,
+            "status":_status,
+            "empID":(self.appDelegate.loggedInEmployee?.ID)!,
+            "woItemID":self.woItem.ID,
+            "woID":self.woID
+            
+        ]
+        
+        print("parameters = \(parameters)")
+        self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/taskStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+            response in
+            print(response.request ?? "")  // original URL request
+            //print(response.response ?? "") // URL response
+            //print(response.data ?? "")     // server data
+            print(response.result)   // result of response serialization
+            if let json = response.result.value {
+                print("JSON: \(json)")
+                
+                newItemStatus = JSON(json)["newItemStatus"].stringValue
+                self.newWoStatus = JSON(json)["newWoStatus"].stringValue
+            }
+            }.responseString { response in
+                //print("response = \(response)")
+        }
+        return newItemStatus
+    }
+    
+    func showImageActionSheet(_ID:String, _row:Int){
+        print("photo action sheet")
+        //photos for done action
+        
+        let actionSheet = UIAlertController(title: "Add image(s) of completed work ", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        actionSheet.view.backgroundColor = UIColor.white
+        actionSheet.view.layer.cornerRadius = 5;
+        
+        actionSheet.addAction(UIAlertAction(title: "Add Task Image(s)", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _taskID: _ID, _customerID: self.customerID, _images: [])
+            imageUploadPrepViewController.selectedID = self.customerID
+            imageUploadPrepViewController.taskStatus = self.tasks[_row].status
+            imageUploadPrepViewController.layoutViews()
+            imageUploadPrepViewController.groupDescriptionTxt.text = self.tasks[_row].task
+            imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
+            imageUploadPrepViewController.woID = self.woID
+            imageUploadPrepViewController.groupImages = true
+            imageUploadPrepViewController.attachmentDelegate = self
+            self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+            imageUploadPrepViewController.addImages()
+            
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
+        }))
+        
+        
+        switch UIDevice.current.userInterfaceIdiom {
+        case .phone:
+            self.present(actionSheet, animated: true, completion: nil)
+            
+            break
+        // It's an iPhone
+        case .pad:
+            let nav = UINavigationController(rootViewController: actionSheet)
+            nav.modalPresentationStyle = UIModalPresentationStyle.popover
+            let popover = nav.popoverPresentationController as UIPopoverPresentationController!
+            actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
+            popover?.sourceView = self.view
+            popover?.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
+            
+            self.present(nav, animated: true, completion: nil)
+            break
+        // It's an iPad
+        case .unspecified:
+            break
+        default:
+            self.present(actionSheet, animated: true, completion: nil)
+            break
+            
+            // Uh, oh! What could it be?
+        }
+        
+        
     }
      
     
@@ -912,51 +887,31 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
-                //self.popView()
             }
-            
             alertController.addAction(okAction)
             self.present(alertController, animated: true, completion: nil)
             return
         }
 
+        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _taskID: "0", _customerID: self.customerID, _images: [])
         
-        
-        
-        
-        
-        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _ID: "0")
         imageUploadPrepViewController.selectedID = self.woItem.ID
         imageUploadPrepViewController.customerID = self.customerID
-       // imageUploadPrepViewController.itemID = self.woItem.
         imageUploadPrepViewController.layoutViews()
         
         imageUploadPrepViewController.woID = self.woID
         imageUploadPrepViewController.groupImages = true
-        imageUploadPrepViewController.fieldNoteDelegate = self
+        imageUploadPrepViewController.attachmentDelegate = self
         
         
         self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
-
-        
-        
-        
     }
     
-    /*
-    func updateTable(){
-        print("updateTable")
-        self.editsMade = true
-        getTasks()
-    }*/
+    
     
     
     func updateTable(_points:Int){
         print("updateTable")
-        //self.imageUploadPrepViewController.goBack()
-        self.appDelegate.showMessage(_message: "earned \(_points) App Points!")
-        
-        self.editsMade = true
         getTasks()
     }
 
@@ -964,13 +919,15 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     func getTasks(){
         print("get tasks")
         
+        /*
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
         //, "cb":timeStamp as AnyObject
+        */
         
-        let parameters = ["woItemID": self.woItem.ID as AnyObject, "cb":timeStamp as AnyObject]
+        let parameters = ["woItemID": self.woItem.ID as AnyObject]
         
         print("parameters = \(parameters)")
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/tasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
@@ -994,21 +951,12 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
                     let ts = self.tasksJson?["tasks"]
                     
                     self.tasks = []
-                    
-                    
-                    //FieldNotes
-                    print("Task Count = \(ts?.count)")
+                    print("Task Count = \(String(describing: ts?.count))")
                     
                     for n in 0 ..< Int((ts?.count)!) {
-                        
-                        
                         var taskImages:[Image]  = []
-                        
-                        
                         let imageCount = Int((ts?[n]["images"].count)!)
                         print("imageCount: \(imageCount)")
-                        
-                        
                         
                         
                         for i in 0 ..< imageCount {
@@ -1033,66 +981,28 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
                             
                         }
                         let task = Task(_ID: ts?[n]["ID"].stringValue, _sort: ts?[n]["sort"].stringValue, _status: ts?[n]["status"].stringValue, _task: ts?[n]["task"].stringValue, _images: taskImages)
-                        
-                        
                         self.tasks.append(task)
                         
                     }
                     
-                    // let scoreJSON =  JSON(json)["scoreAdjust"]
-                    
-                    /*
-                     //add appPoints
-                     var points:Int = JSON(json)["scoreAdjust"].intValue
-                     //print("points = \(points)")
-                     if(points > 0){
-                     self.appDelegate.showMessage(_message: "earned \(points) App Points!")
-                     }else if(points < 0){
-                     points = points * -1
-                     self.appDelegate.showMessage(_message: "lost \(points) App Points!")
-                     
-                     }
-                     */
-                    
-                    //}
-                    
                     self.itemDetailsTableView.reloadData()
-                    
                     let indexPath = IndexPath(row: self.tasks.count, section: 0)
                     self.itemDetailsTableView.scrollToRow(at: indexPath, at: .top, animated: true)
-                    
-                    
                 }
-                
-                
         }
         
     }
-
-   
     
-    
-    
-    func enterUsage(){
+    @objc func enterUsage(){
         let usageEntryViewController = UsageEntryViewController(_workOrderID: woID,_workOrderItem:self.woItem,_empsOnWo:self.empsOnWo)
         navigationController?.pushViewController(usageEntryViewController, animated: false )
         
     }
     
     
-    func goBack(){
-        
-        
-        
-       
-        
-         //woDelegate.refreshWo(_refeshWoID: self.woItem.ID)
-        
-        
+    @objc func goBack(){
         _ = navigationController?.popViewController(animated: true)
-        
          woDelegate.refreshWo(_refeshWoID: self.woItem.ID, _newWoStatus: self.newWoStatus)
-        
     }
     
     

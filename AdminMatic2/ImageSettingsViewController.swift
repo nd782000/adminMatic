@@ -21,7 +21,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
     
     var uploadedBy:String!
     var portfolio:String!
-    var fieldNote:String!
+    var attachment:String!
     var task:String!
     
     
@@ -49,13 +49,13 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
     
     
     
-    init(_uploadedBy:String,_portfolio:String,_fieldNote:String,_task:String,_order:String){
+    init(_uploadedBy:String,_portfolio:String,_attachment:String,_task:String,_order:String){
         super.init(nibName:nil,bundle:nil)
-        print("init _uploadedBy = \(_uploadedBy) _portfolio = \(_portfolio)   _fieldNote = \(_fieldNote) _task = \(_task) _order = \(_order)")
+        print("init _uploadedBy = \(_uploadedBy) _portfolio = \(_portfolio)   _attachment = \(_attachment) _task = \(_task) _order = \(_order)")
         
         self.uploadedBy = _uploadedBy
         self.portfolio = _portfolio
-        self.fieldNote = _fieldNote
+        self.attachment = _attachment
         self.task = _task
         self.order = _order
         
@@ -85,7 +85,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         
         //custom back button
         let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControlEvents.touchUpInside)
+        backButton.addTarget(self, action: #selector(ImageSettingsViewController.goBack), for: UIControlEvents.touchUpInside)
         backButton.setTitle("Back", for: UIControlState.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
@@ -258,13 +258,13 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
     
     
     
-    func cancelFilter() {
+    @objc func cancelFilter() {
         filterTxtField.resignFirstResponder()
     }
     
     
     
-    func filter() {
+    @objc func filter() {
         filterTxtField.resignFirstResponder()
 
         print("set filter")
@@ -288,7 +288,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
             self.portfolio = "1"
         case 3:
             //fieldnote
-            self.fieldNote = "1"
+            self.attachment = "1"
         case 4:
             //task
             self.task = "1"
@@ -306,13 +306,13 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
     
     
     
-    func cancelOrder() {
+    @objc func cancelOrder() {
         orderTxtField.resignFirstResponder()
     }
     
     
     
-    func setOrder() {
+    @objc func setOrder() {
         orderTxtField.resignFirstResponder()
         
         print("set order")
@@ -354,7 +354,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         }else if(self.portfolio == "1"){
             self.filterTxtField.text = self.filterArray[2]//portfolio
             self.filterPicker.selectRow(2, inComponent: 0, animated: true)
-        }else if(self.fieldNote == "1"){
+        }else if(self.attachment == "1"){
             self.filterTxtField.text = self.filterArray[3]//fieldnote
             self.filterPicker.selectRow(3, inComponent: 0, animated: true)
         }else if(self.task == "1"){
@@ -382,7 +382,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
     func resetVals(){
         print("resetVals")
         self.portfolio = "0"
-        self.fieldNote = "0"
+        self.attachment = "0"
         self.task = "0"
         self.uploadedBy = "0"
         
@@ -390,11 +390,11 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
     
     
     
-    func goBack(){
+   @objc func goBack(){
         _ = navigationController?.popViewController(animated: false)
         
         if(editsMade == true){
-            imageSettingsDelegate.updateSettings(_uploadedBy:self.uploadedBy, _portfolio:self.portfolio, _fieldNote:self.fieldNote, _task:self.task, _order: self.order)
+            imageSettingsDelegate.updateSettings(_uploadedBy:self.uploadedBy, _portfolio:self.portfolio, _attachment:self.attachment, _task:self.task, _order: self.order)
 
         }
     }
@@ -407,3 +407,4 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
     }
     
 }
+

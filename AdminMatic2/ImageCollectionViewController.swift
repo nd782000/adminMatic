@@ -19,7 +19,7 @@ protocol ImageViewDelegate{
 }
 
 protocol ImageSettingsDelegate{
-    func updateSettings(_uploadedBy:String,_portfolio:String,_fieldNote:String,_task:String,_order:String)
+    func updateSettings(_uploadedBy:String,_portfolio:String,_attachment:String,_task:String,_order:String)
 }
     
 protocol ImageLikeDelegate{
@@ -53,7 +53,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     //setting vars
     var uploadedBy:String = "0"
     var portfolio:String = "0"
-    var fieldNote:String = "0"
+    var attachment:String = "0"
     var task:String = "0"
     
     var order:String = "ID DESC"
@@ -75,42 +75,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     init(_mode:String){
         super.init(nibName:nil,bundle:nil)
         print("init _mode = \(_mode)")
-        /*
-        self.mode = _mode
         
-        
-        let date = Date()
-        let formatter = DateFormatter()
-        
-        formatter.dateFormat = "yyyy"
-       
-        
-        self.year = formatter.string(from: date)
-        
-        print("year = \(year)")
-        
-        formatter.dateFormat = "MM"
-        
-        
-        self.month = formatter.string(from: date)
-
-        print("month = \(month)")
-       */
-            
-       /* switch (_mode) {
-            case "Top Image":
-                
-                title = "Top Image"
-               
-                break;
-                
-            default://home
-                //print("Show  Home Screen")
- 
-                
-                break;
-            }
- */
         
         title = "Images"
  
@@ -118,16 +83,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         
-        /*
-        //monthPickerView.datePickerMode = UIDatePickerMode.date
-        monthFormatter.dateFormat = "MM"
-        
-        let now = Date()
-        self.month = monthFormatter.string(from: now)
-        monthFormatter.dateFormat = "yyyy"
-        self.year = monthFormatter.string(from: now)
-        
-        */
+       
         
         
     }
@@ -142,9 +98,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
        layoutVars = LayoutVars()
         
-        //if(self.mode != "Top Image"){
             getImages()
-       // }
        
     }
     
@@ -160,22 +114,14 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             self.searchController.searchBar.text = searchTerm
         }
         
-        /*if(self.mode == "Top Image"){
-            getImages()
-        }
-        */
+       
     }
     
     func getImages() {
         //remove any added views (needed for table refresh
         
         print("get images")
-       /* for view in self.view.subviews{
-            view.removeFromSuperview()
-        }
-        
-        imageArray = []
- */
+       
         
         // Show Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -188,13 +134,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         var parameters = [String:AnyObject]()
         
-       // if(self.mode == "Top Image"){
-            //parameters = ["month": self.month as AnyObject, "year": self.year as AnyObject, "topImage": "1" as AnyObject, "cb":timeStamp as AnyObject]
-       // }else{
-        
-        
-        //parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject, "portfolio": self.portfolio as AnyObject, "fieldnotes": self.fieldNote as AnyObject, "cb":timeStamp as AnyObject]
-       // }
+       
          parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject,"limit": "\(self.limit)" as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject, "cb":timeStamp as AnyObject]
         
         if(self.uploadedBy != "0"){
@@ -205,8 +145,8 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject,"limit": "\(self.limit)" as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject, "cb":timeStamp as AnyObject, "portfolio": self.portfolio as AnyObject]
         }
         
-        if(self.fieldNote == "1"){
-             parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject,"limit": "\(self.limit)" as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject, "cb":timeStamp as AnyObject, "fieldnotes": self.fieldNote as AnyObject]
+        if(self.attachment == "1"){
+             parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject,"limit": "\(self.limit)" as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject, "cb":timeStamp as AnyObject, "fieldnotes": self.attachment as AnyObject]
         }
         
         if(self.task == "1"){
@@ -294,12 +234,9 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         indicator.dismissIndicator()
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
-        //self.likeView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         
-        //var now:String!
-        
-        // if(self.mode != "Top Image"){
+       
             // Initialize and perform a minimum configuration to the search controller.
             searchController = UISearchController(searchResultsController: nil)
             searchController.searchBar.placeholder = "Search Images"
@@ -308,110 +245,26 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             searchController.searchBar.delegate = self
             searchController.dimsBackgroundDuringPresentation = false
             searchController.hidesNavigationBarDuringPresentation = false
-            navigationItem.titleView = searchController.searchBar
-       // }
+           // navigationItem.titleView = searchController.searchBar
         
-        /*
-        if(self.mode == "Top Image"){
-            print("top image mode")
-            //var topImageViewHeight:Int = 50
-            //self.topImageView.frame = CGRect(x:0, y:layoutVars.navAndStatusBarHeight, width: self.view.frame.width, height: 100)
-            
-            
-            
-            
-            
-            
-            imageCollectionView = UICollectionView(frame: CGRect(x: 0, y: layoutVars.navAndStatusBarHeight + 50, width: self.view.frame.width, height: self.view.frame.height - (layoutVars.navAndStatusBarHeight + 50 + 50)), collectionViewLayout: layout)
-            
-            
-            imageCollectionView?.contentInset = UIEdgeInsets(top: layoutVars.navAndStatusBarHeight + 50, left: 0.0, bottom: 0.0, right: 0.0)
-            self.view.addSubview(imageCollectionView!)
-            
-            
-            self.topImageView.backgroundColor = UIColor.lightGray
-            self.topImageView.translatesAutoresizingMaskIntoConstraints = false
-            self.view.addSubview(self.topImageView)
-            
-            
-            monthLbl.translatesAutoresizingMaskIntoConstraints = false
-            self.topImageView.addSubview(monthLbl)
-            monthLbl.text = "Month"
-            
-            
-            
-            
-            let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-            
-            monthPickerView = MonthYearPickerView()
-            
-            
-            
-            self.monthTxtField = PaddedTextField()
-            //self.monthTxtField.frame = CGRect(x:100, y:5, width: self.view.frame.width-100, height: 40)
-            self.monthTxtField.returnKeyType = UIReturnKeyType.next
-            self.monthTxtField.delegate = self
-            self.monthTxtField.tag = 8
-            self.monthTxtField.inputView = self.monthPickerView
-            self.monthTxtField.attributedPlaceholder = NSAttributedString(string:"\(self.month!)/\(self.year!)",attributes:[NSForegroundColorAttributeName: layoutVars.buttonColor1])
-            self.topImageView.addSubview(self.monthTxtField)
-            
-            
-            
-            
-            let monthToolBar = UIToolbar()
-            monthToolBar.barStyle = UIBarStyle.default
-            monthToolBar.barTintColor = UIColor(hex:0x005100, op:1)
-            monthToolBar.sizeToFit()
-            let setMonthButton = UIBarButtonItem(title: "Set Month", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ImageCollectionViewController.handleMonthPicker))
-            monthToolBar.setItems([spaceButton, setMonthButton], animated: false)
-            monthToolBar.isUserInteractionEnabled = true
-            monthTxtField.inputAccessoryView = monthToolBar
-            
-            
-            
-            
-            let sizeVals = ["width": layoutVars.fullWidth - 30,"height": 40, "navBarHeight":layoutVars.navAndStatusBarHeight] as [String : Any]
-            
-            
-            
-            //auto layout group
-            let viewsDictionary = [
-                "topImageView":topImageView] as [String:Any]
-            
-            
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topImageView]|", options: [], metrics: nil, views: viewsDictionary))
-            
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[topImageView(50)]", options: [], metrics: sizeVals, views: viewsDictionary))
-            
-            //auto layout group
-            let viewsDictionary2 = [
-                "monthLbl":monthLbl, "monthTxtField":monthTxtField] as [String:Any]
-            
-            
-            self.topImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[monthLbl]-[monthTxtField(160)]-|", options: [], metrics: nil, views: viewsDictionary2))
-            
-            self.topImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[monthLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary2))
-            
-            self.topImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[monthTxtField(40)]", options: [], metrics: sizeVals, views: viewsDictionary2))
-            
-            
-            
-            
-            
-            
-            
+        
+        
+        //workaround for ios 11 larger search bar
+        let searchBarContainer = SearchBarContainerView(customSearchBar: searchController.searchBar)
+        searchBarContainer.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 44)
+        navigationItem.titleView = searchBarContainer
+        
+        
+        
+        
+        
 
-
-        }else{
- */
-            imageCollectionView = UICollectionView(frame: CGRect(x: 0, y: layoutVars.navAndStatusBarHeight, width: self.view.frame.width, height: self.view.frame.height - (layoutVars.navAndStatusBarHeight + 50)), collectionViewLayout: layout)
+            imageCollectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height), collectionViewLayout: layout)
             
             
-            imageCollectionView?.contentInset = UIEdgeInsets(top: layoutVars.navAndStatusBarHeight, left: 0.0, bottom: 0.0, right: 0.0)
+            imageCollectionView?.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
             
             self.view.addSubview(imageCollectionView!)
-       // }
         
         
         
@@ -458,9 +311,8 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         settingsIcon.contentMode = .scaleAspectFill
         settingsIcon.frame = CGRect(x: 11, y: 11, width: 28, height: 28)
         
-        //settingsIcon.image = settingsImg
         
-        if(self.uploadedBy != "0" || self.portfolio != "0" || self.fieldNote != "0" || self.task != "0" || self.order != "ID DESC"){
+        if(self.uploadedBy != "0" || self.portfolio != "0" || self.attachment != "0" || self.task != "0" || self.order != "ID DESC"){
             print("changes made")
             settingsIcon.image = settingsEditedImg
         }else{
@@ -474,32 +326,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     }
     
     
-    /*
-    
-    func handleMonthPicker()
-    {
-        //print("handle start picker")
-        self.monthTxtField.resignFirstResponder()
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/yyyy"
-        
-        let dateFormatterDB = DateFormatter()
-        dateFormatterDB.dateFormat = "yyyy-MM-dd"
-        
-        
-        //self.monthTxtField.text = "\(monthPickerView.month)/\(monthPickerView.year)"
-        //startDate = dateFormatter.string(from: startPickerView.date)
-       // startDateDB = dateFormatterDB.string(from: startPickerView.date)
-        //getPerformance()
-        self.month = "\(monthPickerView.month)"
-        self.year = "\(monthPickerView.year)"
-        getImages()
-       
- 
-    }
-    
-    */
+   
     
     
     
@@ -549,7 +376,6 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         if(shouldShowSearchResults == false){
             print("name = \(self.imageArray[indexPath.row].name!)")
-           // cell.textLabel.text = " \(self.imageArray[indexPath.row].name!)"
             
             cell.textLabel.text = " \(self.imageArray[indexPath.row].customerName)"
             
@@ -565,7 +391,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             
             
             
-            Nuke.loadImage(with: imgURL, into: cell.imageView){ [weak view] in
+            Nuke.loadImage(with: imgURL, into: cell.imageView){
                 //print("nuke loadImage")
                 cell.imageView?.handle(response: $0, isFromMemoryCache: $1)
                 cell.activityView.stopAnimating()
@@ -580,7 +406,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             cell.image = self.imagesSearchResults[indexPath.row]
             cell.activityView.startAnimating()
             let imgURL:URL = URL(string: self.imagesSearchResults[indexPath.row].thumbPath!)!
-            Nuke.loadImage(with: imgURL, into: cell.imageView){ [weak view] in
+            Nuke.loadImage(with: imgURL, into: cell.imageView){ 
                 cell.imageView?.handle(response: $0, isFromMemoryCache: $1)
                 cell.activityView.stopAnimating()
             }
@@ -602,7 +428,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
        // print("mode = \(self.mode)")
         
-        imageDetailViewController = ImageDetailViewController(_image: currentCell.image,_saveURLString:"https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php")
+        imageDetailViewController = ImageDetailViewController(_image: currentCell.image)
         imageDetailViewController.imageFullViewController.delegate = self
         imageCollectionView?.deselectItem(at: indexPath, animated: true)
         navigationController?.pushViewController(imageDetailViewController, animated: false )
@@ -684,7 +510,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
 
     //refresh functions
     
-    func loadData()
+    @objc func loadData()
     {
         
         for view in self.view.subviews{
@@ -709,7 +535,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     
     
     
-    func addImage(){
+    @objc func addImage(){
         print("Add Image")
         if(searchController != nil){
             searchController.isActive = false
@@ -744,7 +570,6 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                
                     
                     print("making image")
-                    //let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _customer: "0", _woID: "0", _dateAdded: "", _createdBy: self.appDelegate.loggedInEmployee?.ID, _type: "", _tags: "")
                     
                      let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
                     
@@ -764,7 +589,9 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             print("making prep view")
             print("selectedimages count = \(selectedImages.count)")
             
-            let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Gallery", _ID: "0", _images: selectedImages, _saveURLString: "https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
+           // let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Gallery", _ID: "0", _images: selectedImages, _saveURLString: "https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
+            
+            let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Gallery", _images: selectedImages)
             
             
             print("url = https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
@@ -785,10 +612,10 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     }
     
     
-    func imageSettings(){
+    @objc func imageSettings(){
         print("image settings")
         
-        let imageSettingsViewController = ImageSettingsViewController(_uploadedBy:self.uploadedBy,_portfolio: self.portfolio, _fieldNote: self.fieldNote, _task: self.task, _order:self.order)
+        let imageSettingsViewController = ImageSettingsViewController(_uploadedBy:self.uploadedBy,_portfolio: self.portfolio, _attachment: self.attachment, _task: self.task, _order:self.order)
         imageSettingsViewController.imageSettingsDelegate = self
         navigationController?.pushViewController(imageSettingsViewController, animated: false )
         
@@ -899,8 +726,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                                           animated: true)
          
  
-        //self.getImages()
-        
+        /*
          print("scoreAdjust")
         
         print("scoreAdjust = \(_scoreAdjust)")
@@ -917,16 +743,17 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             self.appDelegate.showMessage(_message: "lost \(points) App Points!")
             
         }
+ */
 
         
         
     }
     
-    func updateSettings(_uploadedBy:String,_portfolio:String, _fieldNote:String,_task:String,_order:String){
+    func updateSettings(_uploadedBy:String,_portfolio:String, _attachment:String,_task:String,_order:String){
         print("update settings")
-        print("_uploadedBy = \(_uploadedBy) _portfolio = \(_portfolio) _fieldNote = \(_fieldNote) _task = \(_task) _order = \(_order)")
+        print("_uploadedBy = \(_uploadedBy) _portfolio = \(_portfolio) _attachment = \(_attachment) _task = \(_task) _order = \(_order)")
         self.portfolio = _portfolio
-        self.fieldNote = _fieldNote
+        self.attachment = _attachment
         self.task = _task
         self.uploadedBy = _uploadedBy
         self.order = _order
@@ -1017,16 +844,5 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     
     func canRotate() -> Void {}
     
-   
-
-    
-    
-   
-    
-    
-    
-    
-    
-   
     
 }

@@ -18,7 +18,13 @@ class ScheduleTableViewCell: UITableViewCell {
     var chargeLbl: UILabel!
     var priceLbl: UILabel!
     
+    var priorityLbl: UILabel!
+    var depthLbl: UILabel!
+    var monitoringLbl: UILabel!
+    
     var statusIcon: UIImageView!
+    
+    var remainingQtyLbl: UILabel!
     
     
     
@@ -35,6 +41,17 @@ class ScheduleTableViewCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        
+       
+    }
+    
+    
+    
+    func layoutViews(_scheduleMode:String){
+        
+        print("layout views _scheduleMode = \(_scheduleMode)")
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
         self.selectionStyle = .none
         
         dateLbl = UILabel()
@@ -43,6 +60,10 @@ class ScheduleTableViewCell: UITableViewCell {
         statusIcon = UIImageView()
         chargeLbl = UILabel()
         priceLbl = UILabel()
+        priorityLbl = UILabel()
+        depthLbl = UILabel()
+        monitoringLbl = UILabel()
+        remainingQtyLbl = UILabel()
         
         customerLbl.font = layoutVars.smallFont
         firstItemLbl.font = layoutVars.smallFont
@@ -51,29 +72,27 @@ class ScheduleTableViewCell: UITableViewCell {
         chargeLbl.textAlignment = .center
         priceLbl.font = layoutVars.textFieldFont
         
-              
+        remainingQtyLbl.font = layoutVars.textFieldFont
+        
+        
         //statusIcon = UIImageView()
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
         contentView.addSubview(statusIcon)
         
-        contentView.addSubview(dateLbl)
-        contentView.addSubview(customerLbl)
-        contentView.addSubview(firstItemLbl)
-        contentView.addSubview(chargeLbl)
-        contentView.addSubview(priceLbl)
-       
-    }
-    
-    
-    
-    func layoutViews(_scheduleMode:String){
+        
+        
+        
         dateLbl.text = ""
         firstItemLbl.text = ""
         customerLbl.text = ""
          chargeLbl.text = ""
          priceLbl.text = ""
+        priorityLbl.text = ""
+        depthLbl.text = ""
+        monitoringLbl.text = ""
+        remainingQtyLbl.text = ""
         
         setStatus(status: "")
         
@@ -83,8 +102,13 @@ class ScheduleTableViewCell: UITableViewCell {
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         chargeLbl.translatesAutoresizingMaskIntoConstraints = false
         priceLbl.translatesAutoresizingMaskIntoConstraints = false
+        priorityLbl.translatesAutoresizingMaskIntoConstraints = false
+        depthLbl.translatesAutoresizingMaskIntoConstraints = false
+        monitoringLbl.translatesAutoresizingMaskIntoConstraints = false
+        remainingQtyLbl.translatesAutoresizingMaskIntoConstraints = false
         
-        
+        print("layout views 2")
+            
         self.profitBarView = UIView()
         self.profitBarView.backgroundColor = UIColor.gray
         self.profitBarView.layer.borderColor = layoutVars.borderColor
@@ -92,30 +116,115 @@ class ScheduleTableViewCell: UITableViewCell {
         self.profitBarView.translatesAutoresizingMaskIntoConstraints = false
         self.contentView.addSubview(self.profitBarView)
         
-        let viewsDictionary = ["view1":dateLbl,"view2":customerLbl,"view3":firstItemLbl,"view4":statusIcon, "view6":self.chargeLbl, "view7":self.profitBarView, "view8":self.priceLbl] as [String : Any]
+        
+        print("layout views 3")
+        let viewsDictionary = ["dateLbl":dateLbl,"customerLbl":customerLbl,"firstItemLbl":firstItemLbl,"statusIcon":statusIcon, "chargeLbl":self.chargeLbl, "profitBarView":self.profitBarView, "priceLbl":self.priceLbl, "priorityLbl":self.priorityLbl, "depthLbl":self.depthLbl, "monitoringLbl":self.monitoringLbl, "remainingQtyLbl":self.remainingQtyLbl] as [String : Any]
         
         
-        if (_scheduleMode == "CUSTOMER"){
-            
+        print("layout views 4")
+            switch (_scheduleMode){
+                case "CUSTOMER":
+                    
+                    contentView.addSubview(dateLbl)
+                    contentView.addSubview(customerLbl)
+                    contentView.addSubview(firstItemLbl)
+                    contentView.addSubview(chargeLbl)
+                    contentView.addSubview(priceLbl)
+                    //contentView.addSubview(priorityLbl)
+                    //contentView.addSubview(depthLbl)
+                   // contentView.addSubview(monitoringLbl)
+                   // contentView.addSubview(remainingQtyLbl)
+                    
+                    
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[dateLbl]-[firstItemLbl]", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-42-[chargeLbl(25)]-[profitBarView(100)]-[priceLbl]", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[dateLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[firstItemLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[chargeLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[profitBarView(6)]-4-|", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[priceLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
+                    
+                    break
+                case "ITEM":
+                    print("layout views 4a")
+                    contentView.addSubview(dateLbl)
+                    contentView.addSubview(customerLbl)
+                    contentView.addSubview(firstItemLbl)
+                    contentView.addSubview(chargeLbl)
+                    contentView.addSubview(priceLbl)
+                    //contentView.addSubview(priorityLbl)
+                    //contentView.addSubview(depthLbl)
+                    //contentView.addSubview(monitoringLbl)
+                    contentView.addSubview(remainingQtyLbl)
+                    print("layout views 4b")
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[customerLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-60-[remainingQtyLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+                    print("layout views 4c")
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerLbl(22)]", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[remainingQtyLbl(15)]-4-|", options: [], metrics: nil, views: viewsDictionary))
+                   print("layout views 4d")
+                
+                break
+                case "SCHEDULE":
+                    
+                    contentView.addSubview(dateLbl)
+                    contentView.addSubview(customerLbl)
+                    contentView.addSubview(firstItemLbl)
+                    contentView.addSubview(chargeLbl)
+                    contentView.addSubview(priceLbl)
+                    //contentView.addSubview(priorityLbl)
+                    //contentView.addSubview(depthLbl)
+                    //contentView.addSubview(monitoringLbl)
+                    //contentView.addSubview(remainingQtyLbl)
+                    print("layout views 5")
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[customerLbl]", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-42-[chargeLbl(25)]-[profitBarView(100)]-[priceLbl]", options: [], metrics: nil, views: viewsDictionary))
+                     print("layout views 5a")
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[customerLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[chargeLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
+                    print("layout views 5b")
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[profitBarView(6)]-4-|", options: [], metrics: nil, views: viewsDictionary))
+                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[priceLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
+                
+                break
+            case "PLOWING":
+                print("layout views 6")
+                
+                contentView.addSubview(dateLbl)
+                contentView.addSubview(customerLbl)
+                contentView.addSubview(firstItemLbl)
+                //contentView.addSubview(chargeLbl)
+                //contentView.addSubview(priceLbl)
+                contentView.addSubview(priorityLbl)
+                contentView.addSubview(depthLbl)
+                contentView.addSubview(monitoringLbl)
+                //contentView.addSubview(remainingQtyLbl)
+                
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[customerLbl]", options: [], metrics: nil, views: viewsDictionary))
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[priorityLbl(80)]-[depthLbl(20)]-[monitoringLbl(100)]-[profitBarView(100)]", options: [], metrics: nil, views: viewsDictionary))
+                
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[customerLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[priorityLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[depthLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[monitoringLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
+                 contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[profitBarView(6)]-4-|", options: [], metrics: nil, views: viewsDictionary))
+                
+                break
+            default:
+                print("cell type not set")
+                
+            }
            
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[view4(30)]-[view1]-[view3]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-42-[view6(25)]-[view7(100)]-[view8]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[view1(30)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[view3(30)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[view4(30)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view6(15)]|", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view7(6)]-4-|", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view8(15)]|", options: [], metrics: nil, views: viewsDictionary))
-        }else{
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[view4(30)]-[view2]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-42-[view6(25)]-[view7(100)]-[view8]", options: [], metrics: nil, views: viewsDictionary))
-           
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[view2(30)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[view4(30)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view6(15)]|", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view7(6)]-4-|", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view8(15)]|", options: [], metrics: nil, views: viewsDictionary))
-        }
+        
+       
+        
+       
+        print("layout views 7")
+        
         
         incomeView = UIView()
         incomeView.layer.cornerRadius = 3

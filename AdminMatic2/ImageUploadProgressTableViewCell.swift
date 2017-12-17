@@ -83,7 +83,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[progressBar]-|", options: [], metrics: nil, views: viewsDictionary))
     }
     
-    func handleReload(){
+    @objc func handleReload(){
         self.progressLbl.text = "Uploading"
         self.reloadBtn.isHidden = true
         self.progressLbl.textColor = UIColor(hex: 0x005100, op: 1.0)
@@ -110,7 +110,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                     "tags":"",
                     "customer":imageData.customer,
                     "createdBy":createdBy,
-                    "fieldNote":imageData.fieldNoteID,
+                    "leadTask":imageData.leadTaskID,
                     "task":imageData.taskID,
                     "woID":imageData.woID,
                     "albumID":imageData.albumID

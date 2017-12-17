@@ -286,6 +286,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
         
+        //start
         startPickerView = DatePicker()
         startPickerView.datePickerMode = UIDatePickerMode.date
         startStopFormatter.dateFormat = "MM/dd/yy"
@@ -300,16 +301,16 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.view.addSubview(self.startTxtField)
         
         
-        
-        
         let startToolBar = UIToolbar()
         startToolBar.barStyle = UIBarStyle.default
         startToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         startToolBar.sizeToFit()
-        let setStartButton = UIBarButtonItem(title: "Set Start Date", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStartPicker))
+        let setStartButton = UIBarButtonItem(title: "Set Start Date", style: UIBarButtonItemStyle.plain, target: self, action: #selector(PerformanceViewController.handleStartPicker))
         startToolBar.setItems([spaceButton, setStartButton], animated: false)
         startToolBar.isUserInteractionEnabled = true
         startTxtField.inputAccessoryView = startToolBar
+        
+        
         
         //stop
         
@@ -328,7 +329,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         stopToolBar.barStyle = UIBarStyle.default
         stopToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         stopToolBar.sizeToFit()
-        let setStopButton = UIBarButtonItem(title: "Set Stop Date", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
+        let setStopButton = UIBarButtonItem(title: "Set Stop Date", style: UIBarButtonItemStyle.plain, target: self, action: #selector(PerformanceViewController.handleStopPicker))
         stopToolBar.setItems([spaceButton, setStopButton], animated: false)
         stopToolBar.isUserInteractionEnabled = true
         stopTxtField.inputAccessoryView = stopToolBar
@@ -453,7 +454,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         startToolBar.barStyle = UIBarStyle.default
         startToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         startToolBar.sizeToFit()
-        let setStartButton = UIBarButtonItem(title: "Set Start Date", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStartPicker))
+        let setStartButton = UIBarButtonItem(title: "Set Start Date", style: UIBarButtonItemStyle.plain, target: self, action: #selector(PerformanceViewController.handleStartPicker))
         startToolBar.setItems([spaceButton, setStartButton], animated: false)
         startToolBar.isUserInteractionEnabled = true
         startTxtField.inputAccessoryView = startToolBar
@@ -700,7 +701,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     
     
     
-    func handleStartPicker()
+    @objc func handleStartPicker()
     {
         //print("handle start picker")
         self.startTxtField.resignFirstResponder()
@@ -718,7 +719,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     }
     
     
-    func handleStopPicker()
+    @objc func handleStopPicker()
     {
         // print("handle stop picker")
         self.stopTxtField.resignFirstResponder()
@@ -748,7 +749,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     
     
     
-    func goBack(){
+    @objc func goBack(){
         print("back")
         displayHomeView()
        // _ = appDelegate.navigationController.popViewController(animated: false)

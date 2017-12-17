@@ -45,78 +45,13 @@ struct defaultsKeys {
 }
 
 
-
-
-/*
-protocol Utilities {
-}
-
-extension NSObject:Utilities{
-    
-    
-    enum ReachabilityStatus {
-        case notReachable
-        case reachableViaWWAN
-        case reachableViaWiFi
-    }
-    
-    var currentReachabilityStatus: ReachabilityStatus {
-        
-        var zeroAddress = sockaddr_in()
-        zeroAddress.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
-        zeroAddress.sin_family = sa_family_t(AF_INET)
-        
-        guard let defaultRouteReachability = withUnsafePointer(to: &zeroAddress, {
-            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
-                SCNetworkReachabilityCreateWithAddress(nil, $0)
-            }
-        }) else {
-            return .notReachable
-        }
-        
-        var flags: SCNetworkReachabilityFlags = []
-        if !SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) {
-            return .notReachable
-        }
-        
-        if flags.contains(.reachable) == false {
-            // The target host is not reachable.
-            return .notReachable
-        }
-        else if flags.contains(.isWWAN) == true {
-            // WWAN connections are OK if the calling application is using the CFNetwork APIs.
-            return .reachableViaWWAN
-        }
-        else if flags.contains(.connectionRequired) == false {
-            // If the target host is reachable and no connection is required then we'll assume that you're on Wi-Fi...
-            return .reachableViaWiFi
-        }
-        else if (flags.contains(.connectionOnDemand) == true || flags.contains(.connectionOnTraffic) == true) && flags.contains(.interventionRequired) == false {
-            // The connection is on-demand (or on-traffic) if the calling application is using the CFSocketStream or higher APIs and no [user] intervention is needed
-            return .reachableViaWiFi
-        }
-        else {
-            return .notReachable
-        }
-    }
-    
-}
-
-*/
-
-
-
-
- 
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.2.3"
-    
+    var appVersion:String = "1.3.0"
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
     var employeeListViewController:EmployeeListViewController!
@@ -126,8 +61,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var employeeViewController:EmployeeViewController!
     var scheduleViewController:ScheduleViewController!
     var imageCollectionViewController:ImageCollectionViewController!
+    var equipmentListViewController:EquipmentListViewController!
     var performanceViewController:PerformanceViewController!
-    //var topImageViewController:ImageCollectionViewController!
+    var leadListViewController:LeadListViewController!
     var bugsListViewController:BugsListViewController!
     
     
@@ -171,26 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             }
         }
         
-        
-        
-        
-        /*
-        let manager = NetworkReachabilityManager(host: "www.apple.com")
-        
-        manager?.listener = { status in
-            print("Network Status Changed: \(status)")
-        }
-        
-        manager?.startListening()
-        
-        */
-        
-        //Get all Fields
-        ////print("get fields")
-        //let testEmp = Employee(_ID: "1", _name: "Tyrone Tester", _lname: "Tester", _fname: "Tyrone", _username: "tester", _pic: "", _phone: "", _depID: "", _payRate: "", _appScore: "1000000")
-        //self.loggedInEmployee = testEmp
-            
-       // self.layoutVars = LayoutVars()
+    
         
         //cache buster
         let now = Date()
@@ -215,15 +132,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 
         
         
-        //Get employee list
-        
-        
+    //Get employee list
         var parameters:[String:String]
         parameters = ["cb":"\(timeStamp)"]
-        
         print("parameters = \(parameters)")
-        
-        
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/employees.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
@@ -236,9 +148,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 self.employees = JSON(json)
                 //self.employeeListViewController.layoutViews()
                 
-                
-                
-                
                 let jsonCount = self.employees["employees"].count
                 //self.totalItems = jsonCount
                 print("JSONcount: \(jsonCount)")
@@ -247,17 +156,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                     
                     let employee = Employee(_ID: self.employees["employees"][i]["ID"].stringValue, _name: self.employees["employees"][i]["name"].stringValue, _lname: self.employees["employees"][i]["lname"].stringValue, _fname: self.employees["employees"][i]["fname"].stringValue, _username: self.employees["employees"][i]["username"].stringValue, _pic: self.employees["employees"][i]["pic"].stringValue, _phone: self.employees["employees"][i]["phone"].stringValue, _depID: self.employees["employees"][i]["depID"].stringValue, _payRate: self.employees["employees"][i]["payRate"].stringValue, _appScore: self.employees["employees"][i]["appScore"].stringValue)
                     
-                    
-                    
-                    
                     self.employeeArray.append(employee)
                     
                 }
-                
-                
-                
-                
-                
                 
             }
         }
@@ -279,7 +180,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.vendorListViewController = VendorListViewController()
         self.vendorListViewController.delegate = self
         
-       self.itemListViewController = ItemListViewController()
+        self.itemListViewController = ItemListViewController()
         self.itemListViewController.delegate = self
         
         self.scheduleViewController = ScheduleViewController(_employeeID: "")
@@ -291,6 +192,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.imageCollectionViewController.delegate = self
         */
         
+        
+        self.leadListViewController = LeadListViewController()
+        self.leadListViewController.delegate = self
+        
+        self.equipmentListViewController = EquipmentListViewController()
+        self.equipmentListViewController.delegate = self
         
         self.bugsListViewController = BugsListViewController()
         self.bugsListViewController.delegate = self
@@ -340,7 +247,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         if !SCNetworkReachabilityGetFlags(defaultRouteReachability!, &flags) {
             return false
         }
-        let isReachable = (flags.rawValue & UInt32(kSCNetworkFlagsReachable)) != 0
+        let isReachable = (flags.rawValue & UInt32(kSCNetworkFlagsReachable)) != 0 
         let needsConnection = (flags.rawValue & UInt32(kSCNetworkFlagsConnectionRequired)) != 0
         
         return (isReachable && !needsConnection)
@@ -357,8 +264,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         print("getLoggedInEmployeeData id = \(_id)")
         // indicator = SDevIndicator.generate(self.view)!
-        
-        
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
@@ -376,34 +281,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 print("JSON: \(json)")
                 self.loggedInEmployeeJSON = JSON(json)
                 self.parseLoggedInEmployeeJSON()
-                
             }
-            
-            
-            
         }
-        
-        
-        
-        
-        
     }
     
+    
+    
     func parseLoggedInEmployeeJSON(){
-        
         print("parseEmployeeJSON")
         
         let logInEmployee = Employee(_ID: self.loggedInEmployeeJSON["employees"][0]["ID"].stringValue, _name: self.loggedInEmployeeJSON["employees"][0]["name"].stringValue, _lname: self.loggedInEmployeeJSON["employees"][0]["lname"].stringValue, _fname: self.loggedInEmployeeJSON["employees"][0]["fname"].stringValue, _username: self.loggedInEmployeeJSON["employees"][0]["username"].stringValue, _pic: self.loggedInEmployeeJSON["employees"][0]["pic"].stringValue, _phone: self.loggedInEmployeeJSON["employees"][0]["phone"].stringValue, _depID: self.loggedInEmployeeJSON["employees"][0]["depID"].stringValue, _payRate: self.loggedInEmployeeJSON["employees"][0]["payRate"].stringValue, _appScore: self.loggedInEmployeeJSON["employees"][0]["appScore"].stringValue)
         self.loggedInEmployee = logInEmployee
-        
-        
         self.homeViewController.layoutViews()
         
     }
-    
-    
-    
-    
     
     
     func menuChange(_ menuItem:Int){
@@ -489,7 +380,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         case 7:
             //print("Show  Equipment List")
             if(loggedInEmployee != nil){
-                navigationController = UINavigationController(rootViewController: self.underConstructionViewController)
+                navigationController = UINavigationController(rootViewController: self.equipmentListViewController)
                 window?.rootViewController = navigationController
                 window?.makeKeyAndVisible()
             }else{
@@ -500,6 +391,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             break;
             
         case 8:
+            print("Show  Lead List")
+            if(loggedInEmployee != nil){
+                navigationController = UINavigationController(rootViewController: self.leadListViewController)
+                window?.rootViewController = navigationController
+                window?.makeKeyAndVisible()
+            }else{
+                requireLogIn(_destination: "leads")
+            }
+            
+            
+            break;
+            
+        case 9:
             //print("Show  Bug List")
             if(loggedInEmployee != nil){
                 navigationController = UINavigationController(rootViewController: self.bugsListViewController)
@@ -613,7 +517,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                     error = error1
                     // Replace this implementation with code to handle the error appropriately.
                     // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                    NSLog("Unresolved error \(error), \(error!.userInfo)")
+                    NSLog("Unresolved error \(String(describing: error)), \(error!.userInfo)")
                     abort()
                 }
             }
@@ -696,31 +600,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         
         
-       // let imgURL:URL = URL(string: imgUrl)!
-        Nuke.loadImage(with: imgUrl!, into: self.messageImageView){ [weak messageView] in
+        Nuke.loadImage(with: imgUrl!, into: self.messageImageView){ 
             //print("nuke loadImage")
             self.messageImageView.handle(response: $0, isFromMemoryCache: $1)
-            //self.activityView.stopAnimating()
         }
 
-        /*
-        DispatchQueue.global().async {
-            let data = try? Data(contentsOf: imgUrl!) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
-            DispatchQueue.main.async {
-                self.messageImageView.image = UIImage(data: data!)
-            }
-        }
-        */
+        
         
         
         messageImageView.contentMode = .scaleAspectFill
         messageImageView.translatesAutoresizingMaskIntoConstraints = false
-        //messageImageView.frame = CGRect(x: 5, y: 5, width: 40, height: 40)
         self.messageView?.addSubview(self.messageImageView)
         
         self.messageLabel = InfoLabel()
         self.messageLabel?.text = "\(self.loggedInEmployee!.fname!) \(_message)"
-        //self.messageLabel?.font = layoutVars.labelFont
         self.messageView?.addSubview(self.messageLabel!)
         
         
@@ -738,25 +631,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         
         self.messageView?.addSubview(messageCloseBtn!)
-
-        
-        
-        
-        
-        
         
         if var topController = UIApplication.shared.keyWindow?.rootViewController {
             while let presentedViewController = topController.presentedViewController {
                 topController = presentedViewController
             }
             
-            // topController should now be your topmost view controller
-            
             topController.view.addSubview(self.messageView!)
             
             
             //auto layout group
-            
             let metricsDictionary = ["inputHeight":layoutVars.inputHeight, "navHeight": self.layoutVars.navAndStatusBarHeight] as [String : Any]
             
             
@@ -780,20 +664,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
              self.messageView?.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[messageLabel(30)]", options: [], metrics: nil, views: messageViewsDictionary2))
              self.messageView?.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[messageClose(30)]", options: [], metrics: nil, views: messageViewsDictionary2))
             
-            
-            
-            
-            
-            
         }
         
-        
-       
-
-        
-        
-        
-       
         self.messageView?.layer.removeAllAnimations()
         UIView.animate(withDuration: 1.0, delay: 0.5, animations: {
             self.messageView?.alpha = 1.0
@@ -810,62 +682,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 self.messageView?.alpha = 0.0
             }, completion: {
                 (value: Bool) in
-                //let systemSoundID: SystemSoundID = 1054
-                
-                // to play sound
-               // AudioServicesPlaySystemSound (systemSoundID)
-                
-
-                
-                
-                
                 self.messageView?.isHidden = true
-                
-                
-                
             })
-           
-            
-            
-            
         })
- 
-        
-        
-        
     }
     
-    /*
-    func showLoggedInUser(){
-        //print("show logged in user")
-        ////print("name = \(currentCell.name)")
-        
-        
-        
-        let employeeViewController = EmployeeViewController(_employee: loggedInEmployee!)
-        
-       // tableView.deselectRow(at: indexPath!, animated: true)
-        
-        navigationController?.pushViewController(employeeViewController, animated: false )
 
-    }
-    
-    */
-    
-    
-    func closeMessage(){
+    @objc func closeMessage(){
         print("close message")
         
         self.messageView?.isHidden = true
         
     }
         
-    
-    
-    
-    
-    
-    
 }
 
 

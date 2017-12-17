@@ -13,14 +13,21 @@ class Item {
     var ID: String!
     var name: String!
     var type: String!
+    
+    var typeID: String?
+    var totalRemainingQty: String?
+    
+    
     //var desc: String!
     //var cost: String!
     // var vendor: String!
     var price: String!
     var units: String!
+    var description: String!
+    var taxable: String!
     
     
-    required init(_name:String?, _id: String?, _type:String?, _price:String?, _units:String?) {
+    required init(_name:String?, _id: String?, _type:String?, _price:String?, _units:String?, _description:String?, _taxable:String?) {
         //print(json)
         if _id != nil {
             self.ID = _id
@@ -64,6 +71,16 @@ class Item {
             self.units = _units
         }else{
             self.units = ""
+        }
+        if _description != nil {
+            self.description = _description
+        }else{
+            self.description = ""
+        }
+        if _taxable != nil {
+            self.taxable = _units
+        }else{
+            self.taxable = ""
         }
     }
 }

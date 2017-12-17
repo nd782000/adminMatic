@@ -11,11 +11,9 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-
 import MapKit
 import CoreLocation
-//import CoreLocation
-//import MapKit
+
 
 
 class VendorViewController: ViewControllerWithMenu, CLLocationManagerDelegate{
@@ -49,6 +47,8 @@ class VendorViewController: ViewControllerWithMenu, CLLocationManagerDelegate{
     
     var mapView:MKMapView!
     var locationManager: CLLocationManager!
+    var currentLocation: CLLocation?
+    var foundLocation:Bool = false
     
     
     init(_vendorID:String){
@@ -352,10 +352,10 @@ for i in 0 ..< contactCount {
             longitude: Double(self.vendor.lng)!
         )
         
-        let span = MKCoordinateSpanMake(0.5, 0.5)
-        let region = MKCoordinateRegion(center: location, span: span)
+        //let span = MKCoordinateSpanMake(0.5, 0.5)
+        //let region = MKCoordinateRegion(center: location, span: span)
         
-        mapView.setRegion(region, animated: true)
+        //mapView.setRegion(region, animated: true)
         
         let annotation = MKPointAnnotation()
         annotation.coordinate = location
@@ -363,6 +363,11 @@ for i in 0 ..< contactCount {
         //annotation.subtitle = "Honduras"
         
         mapView.addAnnotation(annotation)
+            
+            mapView.showsUserLocation = true
+            mapView.showAnnotations(mapView.annotations, animated: true)
+            
+            
         
         }
         
@@ -378,7 +383,6 @@ for i in 0 ..< contactCount {
             locationManager.requestAlwaysAuthorization()
             locationManager.startUpdatingLocation()
         }
-        
         
         
         
@@ -412,8 +416,10 @@ for i in 0 ..< contactCount {
         self.vendorView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[view2(35)]-[balance(25)]-[view3(30)]-[view4(30)]-[view5(30)]-[map]-|", options: [], metrics: sizeVals, views: vendorsViewsDictionary))
         
     }
+    
+    
         
-        func phoneHandler(){
+    @objc func phoneHandler(){
             
             callPhoneNumber(self.phoneNumberClean)
         }
@@ -423,7 +429,10 @@ for i in 0 ..< contactCount {
     func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
         print("monitoring")
         
+        
     }
+    
+    /*
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         print("updating location")
         let location = locations.last
@@ -432,16 +441,43 @@ for i in 0 ..< contactCount {
         let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
         
         mapView.setRegion(region, animated: true)
+        mapView.showsUserLocation = true
+    }
+ */
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        defer { currentLocation = locations.last }
+        print("didUpdateLocations \(foundLocation)")
+        if(foundLocation == false){
+            var zoomRect:MKMapRect = MKMapRectNull
+            for  annotation in mapView.annotations {
+                let annotationPoint:MKMapPoint = MKMapPointForCoordinate(annotation.coordinate)
+                let pointRect:MKMapRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0, 0);
+                if (MKMapRectIsNull(zoomRect)) {
+                    zoomRect = pointRect;
+                } else {
+                    zoomRect = MKMapRectUnion(zoomRect, pointRect);
+                }
+            }
+        
+            mapView.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(50, 50, 50, 50), animated: true)
+            foundLocation = true
+        }
+        
+        
+        
+       
+        
     }
     
     
     
-    func webHandler(){
+    @objc func webHandler(){
         // sendEmail(self.email)
         openWebLink(self.vendor.website)
     }
     
-    func mapHandler() {
+    @objc func mapHandler() {
         print("map handler")
         //need to set lat and lng
         openMapForPlace(self.vendor.name, _lat: self.vendor.lat! as NSString, _lng: self.vendor.lng! as NSString)
@@ -450,7 +486,7 @@ for i in 0 ..< contactCount {
     
     
     
-    func goBack(){
+    @objc func goBack(){
      _ = navigationController?.popViewController(animated: false)
         
     }

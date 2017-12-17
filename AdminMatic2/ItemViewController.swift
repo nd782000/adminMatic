@@ -2,72 +2,63 @@
 //  ItemViewController.swift
 //  AdminMatic2
 //
-//  Created by Nick on 1/21/17.
+//  Created by Nick on 12/5/17.
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
-//
-//  ItemViewController.swift
-//  Atlantic_Blank
-//
-//  Created by nicholasdigiando on 11/30/15.
-//  Copyright © 2015 Nicholas Digiando. All rights reserved.
-//
 
 import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-//import CoreLocation
-//import MapKit
+import MapKit
+import CoreLocation
 
 
-//class ItemViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
 
-class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource{
+class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate{
     
-    //let locationManager = CLLocationManager()
     var layoutVars:LayoutVars = LayoutVars()
+    var indicator: SDevIndicator!
     
-    //main variables passed to this VC
     
     
     var item:Item!
-    
     var itemJSON: JSON!
+    var itemVendorArray:[Vendor] = []
+    
+    
+    var itemWorkOrderArray:[WorkOrder] = []
     //extra item properties, item object doesn't have'
-    /*
-     var phone: String = "No Phone Found"
-     var phoneName: String = ""
-     var email: String = "No Email Found"
-     var emailName: String = ""
-     var jobSiteAddress: String = "No Job Site Found"
-     var lat: NSString?
-     var lng: NSString?
-     */
-    
-    
+   
     //item info
     var itemView:UIView!
     var itemLbl:GreyLabel!
+    var priceUnitLbl:GreyLabel!
+    var descriptionLbl:GreyLabel!
+    var typeLbl:GreyLabel!
+    var taxLbl:GreyLabel!
     
-    //var itemPhoneBtn:UIButton!
-    // var phoneNumberClean:String!
-    //var itemEmailBtn:UIButton!
-    //var itemAddressBtn:UIButton!
-    // var allContactsBtn:UIButton!
-    
+   
     //details view
     var detailsView:UIView!
     
-    var itemDetailsTableView:TableView = TableView()
-    // var tableViewMode:String = "SCHEDULE"
+    let controlItems = ["Locate","Vendors","Work Orders"]
+    var segmentedControl:SegmentedControl!
     
-    var itemVendors: JSON!
-    var itemVendorsArray:[Vendor] = []
+    var locateView:MKMapView!
+    var locationManager: CLLocationManager!
+    var currentLocation: CLLocation?
+    var foundLocation:Bool = false
+
     
     
+    var tableViewMode:String = "VENDOR"
+    var vendorTableView:TableView!
+    var workOrderTableView:TableView!
     
+    var countView:UIView = UIView()
+    var countLbl:Label = Label()
     
     
     
@@ -80,10 +71,6 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
-    
-    
     
     
     override func viewDidLoad() {
@@ -110,113 +97,76 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
     
     
     func getItemData(_id:String){
-        //cache buster
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
-        //, "cb":timeStamp as AnyObject
-
         
-         Alamofire.request(API.Router.item(["id":_id as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
-            
-
-                   response in
-            
-            
-       // Alamofire.request(API.Router.item(["itemID":self.item.ID as AnyObject]).responseJSON() {
-           // response in
-            print(response.request ?? "")  // original URL request
-            print(response.response ?? "") // URL response
-            print(response.data ?? "")     // server data
-            print(response.result)   // result of response serialization
-            
-            if let json = response.result.value {
-                print("JSON: \(json)")
-                self.itemJSON = JSON(json)
-                self.parseItemJSON()
-                
+        
+        // Show Loading Indicator
+        indicator = SDevIndicator.generate(self.view)!
+        //reset task array
+        //self.tasksArray = []
+        let parameters = ["itemID": self.item.ID as AnyObject]
+        print("parameters = \(parameters)")
+        
+        
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/item.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("lead response = \(response)")
             }
-            
-            
-            
+            .responseJSON(){
+                response in
+                if let json = response.result.value {
+                    
+                    print(" dismissIndicator")
+                    self.indicator.dismissIndicator()
+                    
+                    
+                    print("JSON: \(json)")
+                    self.itemJSON = JSON(json)
+                    self.parseItemJSON()
+                    
+                    
+                    
+                }
+                
         }
         
+        
+       
     }
     
     func parseItemJSON(){
         
+        //itemLbl.text = self.itemJSON["item"]["item"].stringValue
+       // priceUnitLbl.text = self.itemJSON["item"]["price"].stringValue  self.itemJSON["item"]["unit"].stringValue
         
-        /*
-         print("parse itemJSON: \(self.itemJSON)")
-         
-         //loop through contacts and put them in appropriate places
-         let contactCount:Int = self.itemJSON["item"]["contacts"].count
-         print("contactCount: \(contactCount)")
-         for(var i = 0; i<contactCount;i++){
-         print("contactID: " + self.itemJSON["item"]["contacts"][i]["ID"].stringValue)
-         switch  self.itemJSON["item"]["contacts"][i]["type"].stringValue {
-         //phone
-         case "1":
-         print("case = phone")
-         if(self.itemJSON["item"]["contacts"][i]["main"].stringValue == "1"){
-         self.phone = self.itemJSON["item"]["contacts"][i]["value"].stringValue
-         if self.itemJSON["item"]["contacts"][i]["name"] != nil
-         {
-         self.phoneName = " (" + self.itemJSON["item"]["contacts"][i]["name"].stringValue + ")"
-         }
-         }
-         break
-         //email
-         case "2":
-         print("case = email")
-         if(self.itemJSON["item"]["contacts"][i]["main"].stringValue == "1"){
-         self.email = self.itemJSON["item"]["contacts"][i]["value"].stringValue
-         if self.itemJSON["item"]["contacts"][i]["name"] != nil
-         {
-         self.emailName =  " (" + self.itemJSON["item"]["contacts"][i]["name"].stringValue + ")"
-         }
-         }
-         break
-         
-         //job site address
-         case "4":
-         //check if address is same as one displayed in item list
-         print("case = address")
-         print(self.itemJSON["item"]["contacts"][i]["main"].stringValue)
-         print(self.itemJSON["item"]["contacts"][i]["ID"].stringValue)
-         print(self.item.contactID)
-         print(self.itemJSON["item"]["contacts"][i])
-         //let street1:String = self.jobSiteAddress = self.itemJSON["item"]["contacts"][i]["street1"].stringValue
-         //let street2 = self.jobSiteAddress = self.itemJSON["item"]["contacts"][i]["street2"].stringValue
-         // let city = self.jobSiteAddress = self.itemJSON["item"]["contacts"][i]["city"].stringValue
-         // let state = self.jobSiteAddress = self.itemJSON["item"]["contacts"][i]["state"].stringValue
-         if(self.itemJSON["item"]["contacts"][i]["ID"].stringValue == self.item.contactID){
-         
-         
-         // self.jobSiteAddress = self.itemJSON["item"]["contacts"][i]["street1"].stringValue + " " + self.itemJSON["item"]["contacts"][i]["street2"].stringValue + " " + self.itemJSON["item"]["contacts"][i]["city"].stringValue + ", " + self.itemJSON["item"]["contacts"][i]["state"].stringValue
-         
-         // self.jobSiteAddress = self.itemJSON["item"]["contacts"][i]["street1"].stringValue + " " + self.itemJSON["item"]["contacts"][i]["street2"].stringValue + " " + self.itemJSON["item"]["contacts"][i]["city"].stringValue + ", " + self.itemJSON["item"]["contacts"][i]["state"].stringValue
-         
-         
-         
-         self.lat = self.itemJSON["item"]["contacts"][i]["lat"].stringValue as NSString
-         self.lng = self.itemJSON["item"]["contacts"][i]["lng"].stringValue as NSString
-         print("set lat \(self.lat)")
-         }
-         break
-         
-         default :
-         break
-         
-         }
-         
-         }
-         
-         
-         //self.layoutViews()
-         getItemSchedule(self.item.ID!)
-         */
+        item.description = self.itemJSON["item"]["description"].stringValue
+        item.taxable = self.itemJSON["item"]["tax"].stringValue
+        item.typeID = self.itemJSON["item"]["type"].stringValue
+        item.totalRemainingQty = self.itemJSON["item"]["remQty"].stringValue
         
+        let vendorCount = Int((self.itemJSON["item"]["vendors"].count))
+        print("vendorCount: \(vendorCount)")
+        for i in 0 ..< vendorCount {
+            let vendor = Vendor(_name: self.itemJSON["item"]["vendors"][i]["name"].stringValue, _id: self.itemJSON["item"]["vendors"][i]["vendorID"].stringValue, _address: self.itemJSON["item"]["vendors"][i]["adname"].stringValue, _phone: self.itemJSON["item"]["vendors"][i]["phone"].stringValue, _website: self.itemJSON["item"]["vendors"][i]["website"].stringValue, _balance: self.itemJSON["item"]["vendors"][i]["balance"].stringValue, _lng: self.itemJSON["item"]["vendors"][i]["address"][0]["lng"].stringValue, _lat: self.itemJSON["item"]["vendors"][i]["address"][0]["lat"].stringValue)
+            vendor.itemCost = self.itemJSON["item"]["vendors"][i]["cost"].stringValue
+            vendor.itemPreffered = self.itemJSON["item"]["vendors"][i]["preffered"].stringValue
+            itemVendorArray.append(vendor)
+        }
+        
+        let workOrderCount = Int((self.itemJSON["item"]["workOrders"].count))
+        print("workOrderCount: \(workOrderCount)")
+        for n in 0 ..< workOrderCount {
+            let workOrder = WorkOrder(_ID: self.itemJSON["item"]["workOrders"][n]["ID"].stringValue, _statusID: self.itemJSON["item"]["workOrders"][n]["status"].stringValue, _date: "", _firstItem: self.itemJSON["item"]["workOrders"][n]["title"].stringValue, _statusName: "", _customer: self.itemJSON["item"]["workOrders"][n]["custName"].stringValue, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "")
+           workOrder.itemRemQty = self.itemJSON["item"]["workOrders"][n]["remQty"].stringValue
+            itemWorkOrderArray.append(workOrder)
+        }
+        
+        
+        
+        
+       
+        
+        layoutViews()
     }
     
     
@@ -231,8 +181,8 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         print("item view layoutViews")
         //////////   containers for different sections
         self.itemView = UIView()
-        self.itemView.layer.borderColor = layoutVars.borderColor
-        self.itemView.layer.borderWidth = 1.0
+        //self.itemView.layer.borderColor = layoutVars.borderColor
+        //self.itemView.layer.borderWidth = 1.0
         self.itemView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.itemView)
         
@@ -242,7 +192,6 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         
         self.detailsView = UIView()
         self.detailsView.backgroundColor = layoutVars.backgroundColor
-        //self.detailsView.backgroundColor = UIColor.redColor()
         
         self.detailsView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.detailsView)
@@ -257,27 +206,10 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         
         let sizeVals = ["width": layoutVars.fullWidth,"height": 24,"fullHeight":layoutVars.fullHeight - 270] as [String : Any]
         
-        //////////////   auto layout position constraints   /////////////////////////////
-        
-        /*
-         let view1Constraint_H:NSArray = NSLayoutConstraint.constraintsWithVisualFormat("H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary)
-         let view2Constraint_H:NSArray = NSLayoutConstraint.constraintsWithVisualFormat("H:[view2(width)]|", options: [], metrics: sizeVals, views: viewsDictionary)
-         
-         let viewsConstraint_V:NSArray = NSLayoutConstraint.constraintsWithVisualFormat("V:|-64-[view1(210)][view2(fullHeight)]", options:[], metrics: sizeVals, views: viewsDictionary)
-         
-         
-         self.view.addConstraints(view1Constraint_H as [AnyObject] as [AnyObject])
-         self.view.addConstraints(view2Constraint_H as [AnyObject] as [AnyObject])
-         self.view.addConstraints(viewsConstraint_V as [AnyObject] as [AnyObject])
-         */
-        
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[view1(210)][view2(fullHeight)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        
-        
-        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[view1(120)]-[view2]-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
         ///////////   item contact section   /////////////
         
@@ -286,195 +218,378 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         self.itemLbl = GreyLabel()
         self.itemLbl.text = self.item.name
         self.itemLbl.font = layoutVars.largeFont
+        self.itemLbl.translatesAutoresizingMaskIntoConstraints = false
         self.itemView.addSubview(self.itemLbl)
         
-        /*
-         //phone
-         self.phoneNumberClean = cleanPhoneNumber(self.phone)
-         
-         self.itemPhoneBtn = Button()
-         self.itemPhoneBtn.translatesAutoresizingMaskIntoConstraints = false
-         self.itemPhoneBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.Left
-         self.itemPhoneBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 35.0, 0.0, 0.0)
-         
-         
-         self.itemPhoneBtn.setTitle(self.phoneNumberClean + self.phoneName, forState: UIControlState.Normal)
-         if self.phone != "No Phone Found" {
-         self.itemPhoneBtn.addTarget(self, action: "phoneHandler", forControlEvents: UIControlEvents.TouchUpInside)
-         }
-         
-         let phoneIcon:UIImageView = UIImageView()
-         phoneIcon.backgroundColor = UIColor.clearColor()
-         phoneIcon.contentMode = .ScaleAspectFill
-         phoneIcon.frame = CGRect(x: -36, y: -6, width: 32, height: 32)
-         let phoneImg = UIImage(named:"phoneIcon.png")
-         phoneIcon.image = phoneImg
-         self.itemPhoneBtn.titleLabel?.addSubview(phoneIcon)
-         
-         
-         self.itemView.addSubview(self.itemPhoneBtn)
-         print("item view layoutViews 3")
-         
-         
-         
-         
-         self.itemEmailBtn = Button()
-         self.itemEmailBtn.translatesAutoresizingMaskIntoConstraints = false
-         self.itemEmailBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.Left
-         self.itemEmailBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 35.0, 0.0, 0.0)
-         
-         
-         self.itemEmailBtn.setTitle(self.email + self.emailName, forState: UIControlState.Normal)
-         if self.email != "No Email Found" {
-         self.itemEmailBtn.addTarget(self, action: "emailHandler", forControlEvents: UIControlEvents.TouchUpInside)
-         }
-         
-         let emailIcon:UIImageView = UIImageView()
-         emailIcon.backgroundColor = UIColor.clearColor()
-         emailIcon.contentMode = .ScaleAspectFill
-         emailIcon.frame = CGRect(x: -36, y: -6, width: 32, height: 32)
-         let emailImg = UIImage(named:"emailIcon.png")
-         emailIcon.image = emailImg
-         self.itemEmailBtn.titleLabel?.addSubview(emailIcon)
-         
-         
-         self.itemView.addSubview(self.itemEmailBtn)
-         
-         
-         
-         
-         self.itemAddressBtn = Button()
-         self.itemAddressBtn.translatesAutoresizingMaskIntoConstraints = false
-         self.itemAddressBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.Left
-         self.itemAddressBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 35.0, 0.0, 0.0)
-         
-         
-         self.itemAddressBtn.setTitle(self.jobSiteAddress, forState: UIControlState.Normal)
-         if self.jobSiteAddress != "No Job Site Found" {
-         self.itemAddressBtn.addTarget(self, action: "mapHandler", forControlEvents: UIControlEvents.TouchUpInside)
-         }
-         
-         print("item view layoutViews 4")
-         
-         let addressIcon:UIImageView = UIImageView()
-         addressIcon.backgroundColor = UIColor.clearColor()
-         addressIcon.contentMode = .ScaleAspectFill
-         addressIcon.frame = CGRect(x: -36, y: -6, width: 32, height: 32)
-         let addressImg = UIImage(named:"mapIcon.png")
-         addressIcon.image = addressImg
-         self.itemAddressBtn.titleLabel?.addSubview(addressIcon)
-         
-         
-         self.itemView.addSubview(self.itemAddressBtn)
-         
-         
-         self.allContactsBtn = Button()
-         self.allContactsBtn.translatesAutoresizingMaskIntoConstraints = false
-         self.allContactsBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.Center
-         self.allContactsBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
-         
-         self.allContactsBtn.setTitle("Show All Contacts", forState: UIControlState.Normal)
-         self.allContactsBtn.addTarget(self, action: "showAllContacts", forControlEvents: UIControlEvents.TouchUpInside)
-         
-         
-         self.itemView.addSubview(self.allContactsBtn)
-         
-         
-         
-         
-         
-         
-         
-         
-         //auto layout group
-         let itemsViewsDictionary = [
-         
-         "view2":self.itemLbl,
-         "view3":self.itemPhoneBtn,
-         "view4":self.itemEmailBtn,
-         "view5":self.itemAddressBtn,
-         "view6":self.allContactsBtn
-         ]
-         
-         */
+        //price / unit
+        self.priceUnitLbl = GreyLabel()
+        self.priceUnitLbl.text = "$\(self.item.price!)/\(self.item.units!)"
+        self.priceUnitLbl.font = layoutVars.smallBoldFont
+        self.priceUnitLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.itemView.addSubview(self.priceUnitLbl)
         
+        //description
+        self.descriptionLbl = GreyLabel()
+        if(item.description == ""){
+            self.descriptionLbl.text = "No description provided"
+        }else{
+            self.descriptionLbl.text = item.description
+        }
+        
+        self.descriptionLbl.font = layoutVars.buttonFont
+        self.descriptionLbl.adjustsFontSizeToFitWidth = true
+        
+        self.descriptionLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.itemView.addSubview(self.descriptionLbl)
+        
+        //type
+        self.typeLbl = GreyLabel()
+        //if(item.typeID == "1"){
+            self.typeLbl.text = item.type
+        //}else{
+            //self.typeLbl.text = "Material Type"
+        //}
+        self.typeLbl.font = layoutVars.smallFont
+        self.typeLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.itemView.addSubview(self.typeLbl)
+        
+        //tax
+        self.taxLbl = GreyLabel()
+        if(item.taxable == "1"){
+            self.taxLbl.text = "Taxable"
+        }else{
+            self.taxLbl.text = "Non Taxable"
+        }
+        self.taxLbl.font = layoutVars.smallFont
+        self.taxLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.itemView.addSubview(self.taxLbl)
+       
         
         let itemsViewsDictionary = [
-            
-            "view1":self.itemLbl
+            "itemLbl":self.itemLbl,
+            "priceUnitLbl":self.priceUnitLbl,
+            "descriptionLbl":self.descriptionLbl,
+            "typeLbl":self.typeLbl,
+            "taxLbl":self.taxLbl
         ] as [String:Any]
-        /*
-         print("window width = \(layoutVars.fullWidth)")
-         let itemViewsConstraint_H:NSArray = NSLayoutConstraint.constraintsWithVisualFormat("H:|-10-[view2]-10-|", options: [], metrics: sizeVals, views: itemsViewsDictionary)
-         
-         let itemViewsConstraint_H2:NSArray = NSLayoutConstraint.constraintsWithVisualFormat("H:|-10-[view3]-10-|", options: [], metrics: sizeVals, views: itemsViewsDictionary)
-         let itemViewsConstraint_H3:NSArray = NSLayoutConstraint.constraintsWithVisualFormat("H:|-10-[view4]-10-|", options: [], metrics: sizeVals, views: itemsViewsDictionary)
-         let itemViewsConstraint_H4:NSArray = NSLayoutConstraint.constraintsWithVisualFormat("H:|-10-[view5]-10-|", options: [], metrics: sizeVals, views: itemsViewsDictionary)
-         let itemViewsConstraint_H5:NSArray = NSLayoutConstraint.constraintsWithVisualFormat("H:|-10-[view6]-10-|", options: [], metrics: sizeVals, views: itemsViewsDictionary)
-         
-         
-         
-         
-         
-         let itemViewsConstraint_V2:NSArray = NSLayoutConstraint.constraintsWithVisualFormat("V:|-10-[view2(35)]-[view3(30)]-[view4(30)]-[view5(30)]-[view6(30)]", options:[], metrics: nil, views: itemsViewsDictionary)
-         
-         self.itemView.addConstraints(itemViewsConstraint_H as [AnyObject] as [AnyObject])
-         self.itemView.addConstraints(itemViewsConstraint_H2 as [AnyObject] as [AnyObject])
-         self.itemView.addConstraints(itemViewsConstraint_H3 as [AnyObject] as [AnyObject])
-         self.itemView.addConstraints(itemViewsConstraint_H4 as [AnyObject] as [AnyObject])
-         self.itemView.addConstraints(itemViewsConstraint_H5 as [AnyObject] as [AnyObject])
-         self.itemView.addConstraints(itemViewsConstraint_V2 as [AnyObject] as [AnyObject])
-         */
+       
         
+        self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[itemLbl]-[priceUnitLbl(120)]-|", options: [], metrics: sizeVals, views: itemsViewsDictionary))
+        self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[descriptionLbl]-|", options: [], metrics: sizeVals, views: itemsViewsDictionary))
+        self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[typeLbl]-[taxLbl(120)]-|", options: [], metrics: sizeVals, views: itemsViewsDictionary))
         
-        self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view1]-10-|", options: [], metrics: sizeVals, views: itemsViewsDictionary))
-        /*
-         self.itemView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-10-[view3]-10-|", options: [], metrics: sizeVals, views: itemsViewsDictionary))
-         self.itemView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-10-[view4]-10-|", options: [], metrics: sizeVals, views: itemsViewsDictionary))
-         self.itemView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-10-[view5]-10-|", options: [], metrics: sizeVals, views: itemsViewsDictionary))
-         self.itemView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-10-[view6]-10-|", options: [], metrics: sizeVals, views: itemsViewsDictionary))
-         self.itemView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-10-[view2(35)]-[view3(30)]-[view4(30)]-[view5(30)]-[view6(30)]", options: [], metrics: sizeVals, views: itemsViewsDictionary))
-         */
+        self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[itemLbl(40)][descriptionLbl(56)][typeLbl(20)]", options: [], metrics: sizeVals, views: itemsViewsDictionary))
+        self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[priceUnitLbl(40)][descriptionLbl(56)][taxLbl(20)]", options: [], metrics: sizeVals, views: itemsViewsDictionary))
+        
         
         
         ///////////   Item Details Section   /////////////
         
+            //material type
+            segmentedControl = SegmentedControl(items: controlItems)
+            segmentedControl.selectedSegmentIndex = 0
+            segmentedControl.addTarget(self, action: #selector(self.switchViews(sender:)), for: .valueChanged)
+            self.detailsView.addSubview(segmentedControl)
+            
+            
+            //map
+            locateView = MKMapView()
+            locateView.translatesAutoresizingMaskIntoConstraints = false
+            self.detailsView.addSubview(locateView)
+            
+           
+            
+            //showMapLocations()
+            
+            if(item.typeID != "1" && itemVendorArray.count != 0){
+                
+                for vendor in itemVendorArray {
+                    if(vendor.lat != ""){
+                    
+                    
+                    
+                        locateView.setCenter(CLLocationCoordinate2D(latitude: Double(vendor.lat)!,longitude:
+                            Double(vendor.lng)!), animated: true)
+                    
+                    
+                    
+                        let location = CLLocationCoordinate2D(
+                            latitude: Double(vendor.lat)!,
+                            longitude: Double(vendor.lng)!
+                        )
+                    
+                        let span = MKCoordinateSpanMake(0.5, 0.5)
+                        let region = MKCoordinateRegion(center: location, span: span)
+                    
+                        locateView.setRegion(region, animated: true)
+                    
+                        let annotation = MKPointAnnotation()
+                        annotation.coordinate = location
+                        annotation.title = "$\(String(describing: vendor.itemCost!))/\(self.item.units!)"
+                        annotation.subtitle = vendor.name
+                    
+                        locateView.addAnnotation(annotation)
+                        
+                    
+                    }
+                }
+                
+                locateView.showsUserLocation = true
+                locateView.showAnnotations(locateView.annotations, animated: true)
+                
+                var zoomRect:MKMapRect = MKMapRectNull
+                for  annotation in locateView.annotations {
+                    let annotationPoint:MKMapPoint = MKMapPointForCoordinate(annotation.coordinate)
+                    let pointRect:MKMapRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0, 0);
+                    if (MKMapRectIsNull(zoomRect)) {
+                        zoomRect = pointRect;
+                    } else {
+                        zoomRect = MKMapRectUnion(zoomRect, pointRect);
+                    }
+                }
+                
+                
+                
+                
+                
+                
+                
+                if (CLLocationManager.locationServicesEnabled())
+                {
+                    print("location available")
+                    locationManager = CLLocationManager()
+                    locationManager.delegate = self
+                    locationManager.desiredAccuracy = kCLLocationAccuracyBest
+                    locationManager.requestAlwaysAuthorization()
+                    locationManager.startUpdatingLocation()
+                }else{
+                    print("location not available")
+                    
+                    locateView.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(50, 50, 50, 50), animated: true)
+                }
+        }
         
-        self.itemDetailsTableView.delegate  =  self
-        self.itemDetailsTableView.dataSource = self
-        self.itemDetailsTableView.rowHeight = 50.0
-        self.itemDetailsTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.detailsView.addSubview(itemDetailsTableView)
         
-        //  self.refreshControl = UIRefreshControl()
-        //self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-        //self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
-        // self.itemTableView.addSubview(refreshControl)
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        //vendor table
+        tableViewMode = "VENDOR"
+        vendorTableView = TableView()
+        vendorTableView.delegate  =  self
+        vendorTableView.dataSource = self
+        vendorTableView.register(VendorTableViewCell.self, forCellReuseIdentifier: "vendorCell")
+        vendorTableView.rowHeight = 50.0
+        self.detailsView.addSubview(vendorTableView)
+        
+        vendorTableView.alpha = 0.0
+            
+        
+        //work order table
+        tableViewMode = "WORKORDER"
+        workOrderTableView = TableView()
+        workOrderTableView.delegate  =  self
+        workOrderTableView.dataSource = self
+        workOrderTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "workOrderCell")
+        workOrderTableView.rowHeight = 50.0
         
         
+        self.detailsView.addSubview(workOrderTableView)
+        
+        
+        self.countView = UIView()
+        self.countView.backgroundColor = layoutVars.backgroundColor
+        self.countView.translatesAutoresizingMaskIntoConstraints = false
+        self.detailsView.addSubview(self.countView)
+        
+        self.countLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.countLbl.adjustsFontSizeToFitWidth = true
+        self.countView.addSubview(self.countLbl)
+        
+        countLblText(_type: "WORKORDER")
+        
+
         
         //auto layout group
         let itemDetailsViewsDictionary = [
-            
-            "view1":itemDetailsTableView
+            "segmentedControl":segmentedControl,
+            "locateView":locateView,
+            "vendorTableView":vendorTableView,
+            "workOrderTableView":workOrderTableView,
+            "countView":countView
         ] as [String : Any]
-        /*
-         print("window width = \(layoutVars.fullWidth)")
-         let itemDetailsViewsConstraint_H:NSArray = NSLayoutConstraint.constraintsWithVisualFormat("H:|[view1]|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary)
-         
-         let itemDetailsViewsConstraint_H2:NSArray = NSLayoutConstraint.constraintsWithVisualFormat("H:|[view2(width)]", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary)
-         
-         let itemDetailsViewsConstraint_V:NSArray = NSLayoutConstraint.constraintsWithVisualFormat("V:|[view1(35)][view2(fullHeight)]", options:[], metrics: sizeVals, views: itemDetailsViewsDictionary)
-         
-         self.detailsView.addConstraints(itemDetailsViewsConstraint_H as [AnyObject] as [AnyObject])
-         self.detailsView.addConstraints(itemDetailsViewsConstraint_H2 as [AnyObject] as [AnyObject])
-         self.detailsView.addConstraints(itemDetailsViewsConstraint_V as [AnyObject] as [AnyObject])
-         */
         
-        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
-        // self.detailsView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[view2(width)]", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
-        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(35)]", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
         
+        //material type
+            self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[segmentedControl]-|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+            self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[locateView]-|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+            self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[vendorTableView]-|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+            self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[workOrderTableView]-|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+            self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[countView]-|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+
+        
+            //material type
+            self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[segmentedControl(35)]-[locateView]-|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+            self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[segmentedControl(35)]-[vendorTableView][countView(30)]-|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+            self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[segmentedControl(35)]-[workOrderTableView][countView(30)]-|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+        
+            //labor type
+        
+        print("item.typeID = \(item.typeID)")
+        if(item.typeID == "1"){
+            segmentedControl.isEnabled = false
+            segmentedControl.selectedSegmentIndex = 2
+            locateView.alpha = 0.0
+            vendorTableView.alpha = 0.0
+            workOrderTableView.alpha = 1.0
+            countView.alpha = 1.0
+        }else{
+            if(itemVendorArray.count == 0){
+                print("no vendors")
+                simpleAlert(_vc: self, _title: "No Vendors", _message: "We do not have any registered vendors in our system.")
+                segmentedControl.isEnabled = false
+                segmentedControl.selectedSegmentIndex = 2
+                locateView.alpha = 0.0
+                vendorTableView.alpha = 0.0
+                workOrderTableView.alpha = 1.0
+                countView.alpha = 1.0
+            }else{
+                locateView.alpha = 1.0
+                vendorTableView.alpha = 0.0
+                workOrderTableView.alpha = 0.0
+                countView.alpha = 0.0
+            }
+            
+            
+        }
+        
+        let viewsDictionary2 = [
+            "countLbl":self.countLbl
+            ] as [String : Any]
+        
+        
+        //////////////   auto layout position constraints   /////////////////////////////
+        
+        self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[countLbl]|", options: [], metrics: sizeVals, views: viewsDictionary2))
+        
+        self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[countLbl(20)]", options: [], metrics: sizeVals, views: viewsDictionary2))
+        
+    }
+    
+  
+    
+    func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
+        print("monitoring")
+        
+        
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        defer { currentLocation = locations.last }
+        
+        print("didUpdateLocations \(foundLocation)")
+        if(foundLocation == false){
+            var zoomRect:MKMapRect = MKMapRectNull
+            for  annotation in locateView.annotations {
+                let annotationPoint:MKMapPoint = MKMapPointForCoordinate(annotation.coordinate)
+                let pointRect:MKMapRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0, 0);
+                if (MKMapRectIsNull(zoomRect)) {
+                    zoomRect = pointRect;
+                } else {
+                    zoomRect = MKMapRectUnion(zoomRect, pointRect);
+                }
+            }
+            
+            locateView.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(50, 50, 50, 50), animated: true)
+            foundLocation = true
+        }
+    }
+    
+    
+    
+    @objc func switchViews(sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            print("locate view")
+            locateView.alpha = 1.0
+            vendorTableView.alpha = 0.0
+            workOrderTableView.alpha = 0.0
+            tableViewMode = ""
+            self.countLbl.text = ""
+            countView.alpha = 0.0
+            break
+        case 1:
+            print("vendor view")
+            locateView.alpha = 0.0
+            vendorTableView.alpha = 1.0
+            workOrderTableView.alpha = 0.0
+            tableViewMode = "VENDOR"
+            vendorTableView.reloadData()
+            countLblText(_type: "VENDOR")
+            countView.alpha = 1.0
+            break
+        case 2:
+            print("work order view")
+            locateView.alpha = 0.0
+            vendorTableView.alpha = 0.0
+            workOrderTableView.alpha = 1.0
+            tableViewMode = "WORKORDER"
+            workOrderTableView.reloadData()
+            countLblText(_type: "WORKORDER")
+            countView.alpha = 1.0
+            break
+        default:
+            break
+        }
+    }
+    
+    
+    func countLblText(_type:String){
+        if(_type == "WORKORDER"){
+            if(self.itemWorkOrderArray.count == 0){
+                self.countLbl.text = "No workorders found with \(item.name!)"
+            }else{
+                var workOrderString:String
+                var remainingQty:String
+                if(self.itemWorkOrderArray.count > 1){
+                    workOrderString = "Work Orders"
+                }else{
+                    workOrderString = "Work Order"
+                }
+                if(Float(self.item.totalRemainingQty!)! == 0){
+                    remainingQty = "0 \(self.item.units!)s"
+                }else if (Float(self.item.totalRemainingQty!)! > 1){
+                    remainingQty = "\(self.item.totalRemainingQty!) \(self.item.units!)s"
+                }else{
+                    remainingQty = "\(self.item.totalRemainingQty!) \(self.item.units!)"
+                }
+                
+                
+                self.countLbl.text = "\(self.itemWorkOrderArray.count) \(workOrderString) with  \(remainingQty) Remaining"
+            }
+        }else{
+            
+            if(self.itemVendorArray.count == 0){
+                self.countLbl.text = "No Vendors Found with \(item.name!)"
+            }else{
+                var vendorString:String
+                
+                if(self.itemVendorArray.count > 1){
+                    vendorString = "Vendors"
+                }else{
+                    vendorString = "Vendor"
+                }
+                
+                self.countLbl.text = "\(self.itemVendorArray.count) \(vendorString) Found with \(item.name!)"
+            }
+            
+        }
         
     }
     
@@ -488,47 +603,64 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
     /////////////// TableView Delegate Methods   ///////////////////////
     
     
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        
-        return 0
-        
-    }
-    
-    func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        
-        return index
-        
-    }
-    
-    
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
+        //print("numberOfRowsInSection")
+        print("numberOfRowsInSection \(self.tableViewMode)")
         
         var count:Int!
-        
-        count = self.itemVendorsArray.count
-        //print("schedule count = \(count)", terminator: "")
-        
+        switch self.tableViewMode{
+        case "VENDOR":
+            count = self.itemVendorArray.count
+            break
+        case "WORKORDER":
+            count = self.itemWorkOrderArray.count
+            break
+        default:
+            count = self.itemVendorArray.count
+            
+        }
         
         return count
         
-        
     }
     
     
-    internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = itemDetailsTableView.dequeueReusableCell(withIdentifier: "cell") as! VendorTableViewCell
-        cell.prepareForReuse()
+     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        // cell.resetCell("CUSTOMER")
-        //cell.vendor = self.itemVendorsArray[indexPath.row]
-        //cell.layoutViews("CUSTOMER")
-        
-        
-        return cell
-        
+        print("cellForRowAt \(self.tableViewMode)")
+        switch self.tableViewMode{
+        case "VENDOR":
+            let cell = vendorTableView.dequeueReusableCell(withIdentifier: "vendorCell") as! VendorTableViewCell
+            cell.id = itemVendorArray[indexPath.row].ID
+            print("vendor name = \(itemVendorArray[indexPath.row].name)")
+            cell.name = itemVendorArray[indexPath.row].name
+            cell.nameLbl.text = itemVendorArray[indexPath.row].name
+            cell.itemCostLbl.text = "$\(itemVendorArray[indexPath.row].itemCost!)/\(self.item.units!)"
+            if(itemVendorArray[indexPath.row].itemPreffered == "1"){
+                cell.setPreffered()
+            }
+            
+            return cell
+            
+        case "WORKORDER":
+            let cell = workOrderTableView.dequeueReusableCell(withIdentifier: "workOrderCell") as! ScheduleTableViewCell
+            
+            cell.workOrder = self.itemWorkOrderArray[indexPath.row]
+            cell.layoutViews(_scheduleMode: "ITEM")
+            cell.setStatus(status: self.itemWorkOrderArray[indexPath.row].statusId)
+            cell.customerLbl.text = "\(self.itemWorkOrderArray[indexPath.row].title!)  \(self.itemWorkOrderArray[indexPath.row].customer!)"
+            cell.remainingQtyLbl.text = "Remaining Qty.: \(String(describing: self.itemWorkOrderArray[indexPath.row].itemRemQty!)) \(self.item.units!)"
+            
+            return cell
+            
+        default:
+            let cell = vendorTableView.dequeueReusableCell(withIdentifier: "vendorCell") as! VendorTableViewCell
+            cell.prepareForReuse()
+            
+            return cell
+            
+        }
     }
     
     
@@ -539,13 +671,31 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         
         let indexPath = tableView.indexPathForSelectedRow;
         
-        let currentCell = tableView.cellForRow(at: indexPath!) as! VendorTableViewCell;
+        
+        switch self.tableViewMode{
+        case "VENDOR":
+            
+            let currentCell = tableView.cellForRow(at: indexPath!) as! VendorTableViewCell;
+            let vendorViewController = VendorViewController(_vendorID: currentCell.id)
+            navigationController?.pushViewController(vendorViewController, animated: false )
+            
+        case "WORKORDER":
+            let currentCell = tableView.cellForRow(at: indexPath!) as! ScheduleTableViewCell;
+            let workOrderViewController = WorkOrderViewController(_workOrderID: currentCell.workOrder.ID,_customerName: currentCell.workOrder.customer)
+            navigationController?.pushViewController(workOrderViewController, animated: false )
+            
+            //workOrderViewController.scheduleDelegate = self
+            //workOrderViewController.scheduleIndex = indexPath?.row
+            
+        default:
+            let currentCell = tableView.cellForRow(at: indexPath!) as! VendorTableViewCell;
+            let vendorViewController = VendorViewController(_vendorID: currentCell.id)
+            navigationController?.pushViewController(vendorViewController, animated: false )
+            
+        }
         
         
         
-        
-        let vendorViewController = VendorViewController(_vendorID: currentCell.id)
-        navigationController?.pushViewController(vendorViewController, animated: false )
         
         tableView.deselectRow(at: indexPath!, animated: true)
         
@@ -556,7 +706,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
     
      
     
-    func goBack(){
+    @objc func goBack(){
         _ = navigationController?.popViewController(animated: true)
         
     }

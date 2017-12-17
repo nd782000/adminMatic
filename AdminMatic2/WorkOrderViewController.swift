@@ -43,6 +43,8 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     var statusValue: String!
     var statusValueToUpdate: String!
+    
+    
     var customerBtn: Button!
     var locationValue:String?
     var infoMode:Int! = 0
@@ -72,20 +74,20 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     var salesRep:GreyLabel!
     var salesRepValue:String!
 
-    var fieldNotesView: UIView! = UIView()
-    var fieldNotesLbl:GreyLabel!
-    var fieldNotesTxt:GreyLabel!
+    var attachmentsView: UIView! = UIView()
+    var attachmentsLbl:GreyLabel!
+    var attachmentsTxt:GreyLabel!
     
     var woItems: JSON!
     var woItemsArray:[WoItem] = []
     var empsOnWo:[Employee] = []
-    var fieldNotes:[FieldNote] = []
+    var attachments:[Attachment] = []
     
     var woItemViewController:WoItemViewController?
     var refreshWoID:String?
     var currentWoItem:WoItem?
     
-    var numberFieldNotePics: Int = 0
+    var numberAttachmentPics: Int = 0
     
     var itemsTableView: TableView!
     
@@ -118,7 +120,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
    
     
-    
+    var customerDelegate:CustomerDelegate!
     
     
     init(_workOrderID:String,_customerName:String){
@@ -135,37 +137,33 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     }
     
     func refreshWo(){
-        numberFieldNotePics = 0
+        numberAttachmentPics = 0
         json = []
         self.woItems = []
         self.woItemsArray = []
         self.empsOnWo = []
         self.crewsValue = ""
         self.deadLineValue = ""
-        self.fieldNotes = []
-         self.getWorkOrder()
+        self.attachments = []
+        self.getWorkOrder()
     }
     
     func refreshWo(_refeshWoID _refreshWoID:String, _newWoStatus:String){
-        //print("refreshWo")
-        //print("current status = \(self.statusValue)")
+        print("refreshWo")
+        print("current status = \(self.statusValue)")
+        print("_newWoStatus = \(_newWoStatus)")
         
         
         self.refreshWoID = _refreshWoID
-        numberFieldNotePics = 0
+        numberAttachmentPics = 0
         json = []
         self.woItems = []
         self.woItemsArray = []
         self.empsOnWo = []
         self.crewsValue = ""
         self.deadLineValue = ""
-        self.fieldNotes = []
-        
-        
-       
-
-        
-        
+        self.attachments = []
+    
         if(self.statusValue != _newWoStatus && _newWoStatus != "na"){
             
             var statusName = ""
@@ -225,15 +223,11 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                     //print(response.response ?? "") // URL response
                     //print(response.data ?? "")     // server data
                     print(response.result)   // result of response serialization
-                    
-                    
-                    
+                
                      self.getWorkOrder()
                     
                     
-                    }
- 
-                
+                }
             }
             
             alertController.addAction(cancelAction)
@@ -396,7 +390,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         self.priceRawValue = self.json["totalPriceRaw"].string
         self.costRawValue = self.json["totalCostRaw"].string
         
-        print("self.priceValue = \(self.priceValue)")
+        print("self.priceValue = \(self.priceValue ?? "default")")
         
         
         self.profitValue = self.json["profitAmount"].string
@@ -585,20 +579,20 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         }
         
         
-        //FieldNotes
-        let fieldNoteCount = self.json["fieldNotes"].count
+        //Attachments
+        let attachmentCount = self.json["attachments"].count
         
-        print("fieldNoteCount: \(fieldNoteCount)")
-        print("JSON fieldnotes: \(self.json["fieldNotes"])")
-        for n in 0 ..< fieldNoteCount {
+        print("attachmentCount: \(attachmentCount)")
+        print("JSON attachments: \(self.json["attachments"])")
+        for n in 0 ..< attachmentCount {
             
            // var picUrl = "0"
            // var thumbUrl = "0"
             
-            var fieldNoteImages:[Image]  = []
+            var attachmentImages:[Image]  = []
             
             
-            let imageCount = self.json["fieldNotes"][n]["images"].count
+            let imageCount = self.json["attachments"][n]["images"].count
             print("imageCount: \(imageCount)")
             
            // let thumbBase:String = self.images["thumbBase"].stringValue
@@ -606,36 +600,36 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             
             for i in 0 ..< imageCount {
                 
-                let thumbPath:String = "\(self.layoutVars.thumbBase)\(self.json["fieldNotes"][n]["images"][i]["fileName"].stringValue)"
-                let mediumPath:String = "\(self.layoutVars.mediumBase)\(self.json["fieldNotes"][n]["images"][i]["fileName"].stringValue)"
-                let rawPath:String = "\(self.layoutVars.rawBase)\(self.json["fieldNotes"][n]["images"][i]["fileName"].stringValue)"
+                let thumbPath:String = "\(self.layoutVars.thumbBase)\(self.json["attachments"][n]["images"][i]["fileName"].stringValue)"
+                let mediumPath:String = "\(self.layoutVars.mediumBase)\(self.json["attachments"][n]["images"][i]["fileName"].stringValue)"
+                let rawPath:String = "\(self.layoutVars.rawBase)\(self.json["attachments"][n]["images"][i]["fileName"].stringValue)"
                 
                 //create a item object
                 print("create an image object \(i)")
                 
-                let image = Image(_id: self.json["fieldNotes"][n]["images"][i]["ID"].stringValue,_thumbPath: thumbPath, _mediumPath: mediumPath,_rawPath: rawPath,_name: self.json["fieldNotes"][n]["images"][i]["name"].stringValue,_width: self.json["fieldNotes"][n]["images"][i]["width"].stringValue,_height: self.json["fieldNotes"][n]["images"][i]["height"].stringValue,_description: self.json["fieldNotes"][n]["images"][i]["description"].stringValue,_dateAdded: self.json["fieldNotes"][n]["images"][i]["dateAdded"].stringValue,_createdBy: self.json["fieldNotes"][n]["images"][i]["createdBy"].stringValue,_type: self.json["fieldNotes"][n]["images"][i]["type"].stringValue)
+                let image = Image(_id: self.json["attachments"][n]["images"][i]["ID"].stringValue,_thumbPath: thumbPath, _mediumPath: mediumPath,_rawPath: rawPath,_name: self.json["attachments"][n]["images"][i]["name"].stringValue,_width: self.json["attachments"][n]["images"][i]["width"].stringValue,_height: self.json["attachments"][n]["images"][i]["height"].stringValue,_description: self.json["attachments"][n]["images"][i]["description"].stringValue,_dateAdded: self.json["attachments"][n]["images"][i]["dateAdded"].stringValue,_createdBy: self.json["attachments"][n]["images"][i]["createdBy"].stringValue,_type: self.json["attachments"][n]["images"][i]["type"].stringValue)
                 
-                image.customer = self.json["fieldNotes"][n]["images"][i]["customer"].stringValue
-                image.tags = self.json["fieldNotes"][n]["images"][i]["tags"].stringValue
+                image.customer = self.json["attachments"][n]["images"][i]["customer"].stringValue
+                image.tags = self.json["attachments"][n]["images"][i]["tags"].stringValue
                 
-                fieldNoteImages.append(image)
+                attachmentImages.append(image)
                 
             }
             
              
             
             
-            let fieldNote = FieldNote(_ID: self.json["fieldNotes"][n]["ID"].stringValue, _note: self.json["fieldNotes"][n]["note"].stringValue, _customerID: self.json["fieldNotes"][n]["customerID"].stringValue, _workOrderID: self.json["fieldNotes"][n]["workOrderID"].stringValue, _createdBy: self.json["fieldNotes"][n]["createdBy"].stringValue, _status: self.json["fieldNotes"][n]["status"].stringValue, _images:fieldNoteImages)
+            let attachment = Attachment(_ID: self.json["attachments"][n]["ID"].stringValue, _note: self.json["attachments"][n]["note"].stringValue, _customerID: self.json["attachments"][n]["customerID"].stringValue, _workOrderID: self.json["attachments"][n]["workOrderID"].stringValue, _createdBy: self.json["attachments"][n]["createdBy"].stringValue, _status: self.json["attachments"][n]["status"].stringValue, _images:attachmentImages)
             
             //print("thumb url = \(thumbUrl)")
             
             
-            if(Int(self.json["fieldNotes"][n]["images"].count) > 0){
-                self.numberFieldNotePics += Int(self.json["fieldNotes"][n]["images"].count)
+            if(Int(self.json["attachments"][n]["images"].count) > 0){
+                self.numberAttachmentPics += Int(self.json["attachments"][n]["images"].count)
             }
             
             
-            self.fieldNotes.append(fieldNote)
+            self.attachments.append(attachment)
             
         }
         self.layoutViews()
@@ -646,9 +640,9 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     func layoutViews(){
         //print("layout views")
         
-        for fieldNote in fieldNotes{
-            ////print("thumb = \(fieldNote.thumb)")
-        }
+       // for attachment in attachments{
+            ////print("thumb = \(attachment.thumb)")
+        //}
         
         title =  "Work Order #" + self.workOrderID
         
@@ -656,12 +650,13 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         if(self.scrollView != nil){
             self.scrollView.subviews.forEach({ $0.removeFromSuperview() })
         }
+        
         if(self.infoView != nil){
             self.infoView.subviews.forEach({ $0.removeFromSuperview() })
         }
         
-        if(self.fieldNotesView != nil){
-            self.fieldNotesView.subviews.forEach({ $0.removeFromSuperview() })
+        if(self.attachmentsView != nil){
+            self.attachmentsView.subviews.forEach({ $0.removeFromSuperview() })
         }
         
         if(self.profitView != nil){
@@ -803,10 +798,10 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         // Field Notes Window
         
-        self.fieldNotesView.translatesAutoresizingMaskIntoConstraints = false
-        self.fieldNotesView.backgroundColor = UIColor(hex:0xFFFFFc, op: 0.8)
-        self.fieldNotesView.layer.cornerRadius = 4
-        self.view.addSubview(fieldNotesView)
+        self.attachmentsView.translatesAutoresizingMaskIntoConstraints = false
+        self.attachmentsView.backgroundColor = UIColor(hex:0xFFFFFc, op: 0.8)
+        self.attachmentsView.layer.cornerRadius = 4
+        self.view.addSubview(attachmentsView)
         
         
         let smallCameraIcon:UIImageView = UIImageView()
@@ -817,36 +812,36 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         smallCameraIcon.image = smallCameraImg
         
         
-        self.fieldNotesLbl = GreyLabel(icon: true)
-        self.fieldNotesLbl.text = "Attachments"
-        self.fieldNotesLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.attachmentsLbl = GreyLabel(icon: true)
+        self.attachmentsLbl.text = "Attachments"
+        self.attachmentsLbl.translatesAutoresizingMaskIntoConstraints = false
         
-        self.fieldNotesLbl.addSubview(smallCameraIcon)
+        self.attachmentsLbl.addSubview(smallCameraIcon)
         
-        self.fieldNotesView.addSubview(fieldNotesLbl)
+        self.attachmentsView.addSubview(attachmentsLbl)
         
-        self.fieldNotesTxt = GreyLabel()
+        self.attachmentsTxt = GreyLabel()
         var picString:String = ""
-        if(self.numberFieldNotePics > 0){
-            picString = "(\(self.numberFieldNotePics) Images)"
+        if(self.numberAttachmentPics > 0){
+            picString = "(\(self.numberAttachmentPics) Images)"
         }
-        if(self.fieldNotes.count == 0){
-            self.fieldNotesTxt.text = "None Saved"
+        if(self.attachments.count == 0){
+            self.attachmentsTxt.text = "None Saved"
         }else{
-            self.fieldNotesTxt.text = "\(self.fieldNotes.count) w/ \(picString)"
+            self.attachmentsTxt.text = "\(self.attachments.count) w/ \(picString)"
         }//else{
-            //self.fieldNotesTxt.text = "\(self.fieldNotes.count) note \(picString)"
+            //self.attachmentsTxt.text = "\(self.attachments.count) note \(picString)"
         //}
         
-        self.fieldNotesTxt.translatesAutoresizingMaskIntoConstraints = false
+        self.attachmentsTxt.translatesAutoresizingMaskIntoConstraints = false
         
-        self.fieldNotesView.addSubview(fieldNotesTxt)
+        self.attachmentsView.addSubview(attachmentsTxt)
         
         
 
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(WorkOrderViewController.showFieldNotesList))
-        fieldNotesView.addGestureRecognizer(tapGesture)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(WorkOrderViewController.showAttachmentsList))
+        attachmentsView.addGestureRecognizer(tapGesture)
         
         
         let tableHead:UIView! = UIView()
@@ -983,7 +978,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             "statusTxtField":self.statusTxtField,
             "customerBtn":self.customerBtn,
             "info":self.infoView,
-            "fieldNotes":self.fieldNotesView,
+            "attachments":self.attachmentsView,
             "th":tableHead,
             "table":self.itemsTableView,
             "profitView":self.profitView,
@@ -997,11 +992,11 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[info]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[fieldNotes]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[attachments]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[table]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[th]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[profitView]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(90)]-[fieldNotes(40)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(90)]-[attachments(40)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
@@ -1031,15 +1026,15 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         
         //auto layout group
-        let fieldNotesDictionary = [
-            "fieldNotesLbl":self.fieldNotesLbl,
-            "fieldNotesTxt":self.fieldNotesTxt
+        let attachmentsDictionary = [
+            "attachmentsLbl":self.attachmentsLbl,
+            "attachmentsTxt":self.attachmentsTxt
         ] as [String:AnyObject]
         
         
-        self.fieldNotesView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[fieldNotesLbl(130)]-[fieldNotesTxt]-10-|", options: [], metrics: metricsDictionary, views: fieldNotesDictionary))
-        self.fieldNotesView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[fieldNotesLbl]", options: [], metrics: metricsDictionary, views: fieldNotesDictionary))
-        self.fieldNotesView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[fieldNotesTxt]", options: [], metrics: metricsDictionary, views: fieldNotesDictionary))
+        self.attachmentsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[attachmentsLbl(130)]-[attachmentsTxt]-10-|", options: [], metrics: metricsDictionary, views: attachmentsDictionary))
+        self.attachmentsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[attachmentsLbl]", options: [], metrics: metricsDictionary, views: attachmentsDictionary))
+        self.attachmentsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[attachmentsTxt]", options: [], metrics: metricsDictionary, views: attachmentsDictionary))
         
         
         // Tablehead
@@ -1123,10 +1118,19 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         //print("8")
     }
     
-    func showFieldNotesList(){
-        let fieldNotesListViewControler:FieldNoteListViewController = FieldNoteListViewController(_workOrderID: self.workOrderID,_customerID: self.customerID, _fieldNotes: self.fieldNotes)
-        fieldNotesListViewControler.woDelegate = self
-        navigationController?.pushViewController(fieldNotesListViewControler, animated: false )
+    @objc func showAttachmentsList(){
+        if(scheduleDelegate != nil){
+            scheduleDelegate.cancelSearch()
+        }
+        if(customerDelegate != nil){
+            customerDelegate.cancelSearch()
+        }
+        
+        
+        
+        let attachmentsListViewControler:AttachmentListViewController = AttachmentListViewController(_workOrderID: self.workOrderID,_customerID: self.customerID, _attachments: self.attachments)
+        attachmentsListViewControler.woDelegate = self
+        navigationController?.pushViewController(attachmentsListViewControler, animated: false )
     }
     
     func enterEditMode(){
@@ -1142,7 +1146,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
     }
     
-    func showCustInfo() {
+    @objc func showCustInfo() {
         ////print("SHOW CUST INFO")
         let customerViewController = CustomerViewController(_customerID: self.customerID,_customerName: self.customerName)
         navigationController?.pushViewController(customerViewController, animated: false )
@@ -1229,25 +1233,15 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         self.statusValueToUpdate = "\(row + 1)"
     }
     
-    func cancelPicker(){
+    @objc func cancelPicker(){
          //self.statusValueToUpdate = self.statusValue
         self.statusTxtField.resignFirstResponder()
     }
     
-    func handleStatusChange(){
+    @objc func handleStatusChange(){
         
         self.statusTxtField.resignFirstResponder()
-        
-        //cache buster
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
-        
-        //print("status = \(self.statusValueToUpdate)")
-        
-        
-        
-        
+    
         var parameters:[String:String]
         parameters = [
             "woID":self.workOrderID,
@@ -1255,17 +1249,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             "empID":(self.appDelegate.loggedInEmployee?.ID)!
         ]
         
-        /*
-        parameters = [
-            "woID":self.workOrderID,
-            "status":"\(self.statusPicker.selectedRow(inComponent: 0))",
-            "empID":(self.appDelegate.loggedInEmployee?.ID)!
-        ]
- */
-        
         print("parameters = \(parameters)")
-        
-        
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/workOrderStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
             response in
@@ -1274,12 +1258,9 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             //print(response.data ?? "")     // server data
             print(response.result)   // result of response serialization
             
-            
-             self.statusValue = self.statusValueToUpdate
-            
+            self.statusValue = self.statusValueToUpdate
             self.setStatus(status: self.statusValue)
           
-            
         if(self.scheduleDelegate != nil){
                 self.scheduleDelegate.reDrawSchedule(_index: self.scheduleIndex, _status: self.statusValue, _price: self.priceValue!, _cost: self.costValue!, _priceRaw: self.priceRawValue!, _costRaw: self.costRawValue!)
                 }
@@ -1287,8 +1268,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                 response in
                 print(response)  // original URL request
             }
-        
-        
         
     }
     
@@ -1327,6 +1306,15 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        
+        if(scheduleDelegate != nil){
+            scheduleDelegate.cancelSearch()
+        }
+        if(customerDelegate != nil){
+            customerDelegate.cancelSearch()
+        }
+        
         
         if(indexPath.row == self.woItemsArray.count){
             self.addItem()
@@ -1405,25 +1393,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         
         
-        
-        
-        /*
-        
-        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _ID: "0")
-        imageUploadPrepViewController.selectedID = self.woItem.ID
-        imageUploadPrepViewController.customerID = self.customerID
-        // imageUploadPrepViewController.itemID = self.woItem.
-        imageUploadPrepViewController.layoutViews()
-        
-        imageUploadPrepViewController.woID = self.woID
-        imageUploadPrepViewController.groupImages = true
-        imageUploadPrepViewController.fieldNoteDelegate = self
-        
-        
-        self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
-        
-        */
-        
+
         
     }
     
@@ -1466,7 +1436,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     }
     
     
-    func goBack(){
+    @objc func goBack(){
         if((self.performanceDelegate) != nil){
             if(self.tableCellID! >= 0){
                 self.performanceDelegate?.reDrawList(_index: self.tableCellID!, _status: self.statusValue)

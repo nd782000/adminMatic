@@ -27,7 +27,7 @@ class Image {
     var woID: String = "0"
     
     var albumID: String = "0"
-    var fieldNoteID: String = "0"
+    var leadTaskID: String = "0"
     var taskID: String = "0"
     
     

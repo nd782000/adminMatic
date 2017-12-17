@@ -49,5 +49,9 @@
 	</array>
 	<key>re</key>
 	<string></string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Needed for in app maps</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Needed for in app maps</string>
 </dict>
 </plist>

@@ -24,6 +24,12 @@ class WorkOrder {
     var totalCostRaw:String!
     var charge:String!
     
+    var itemRemQty:String?
+    
+    var plowDepth:String = "NA"
+    var plowPriority:String = "NA"
+    var plowMonitoring:String = "NA"
+    
     
     required init(_ID:String?, _statusID: String?, _date:String?, _firstItem:String?, _statusName:String?, _customer:String?, _type:String?, _progress:String?, _totalPrice:String?, _totalCost:String?, _totalPriceRaw:String?, _totalCostRaw:String?, _charge:String?) {
         //print(json)

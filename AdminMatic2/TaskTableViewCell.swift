@@ -118,7 +118,7 @@ class TaskTableViewCell: UITableViewCell {
     func setImageUrl(_url:String?){
         print("set Task ImageUrl")
         
-        print("url = \(_url)")
+        print("url = \(String(describing: _url))")
         
         if(_url == nil){
             setBlankImage()
@@ -126,7 +126,7 @@ class TaskTableViewCell: UITableViewCell {
             
             let url = URL(string: _url!)
             
-            Nuke.loadImage(with: url!, into: self.thumbView){ [weak contentView] in
+            Nuke.loadImage(with: url!, into: self.thumbView){ 
                 //print("nuke loadImage")
                 self.thumbView.handle(response: $0, isFromMemoryCache: $1)
                 self.activityView.stopAnimating()

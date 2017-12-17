@@ -17,7 +17,13 @@ enum SearchMode{
     case address
 }
 
-class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating{
+protocol CustomerListDelegate{
+    func cancelSearch()//to resolve problem with imageSelection bug when search mode is active
+}
+
+
+
+class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating, CustomerListDelegate{
     
     var indicator: SDevIndicator!
     var totalCustomers:Int!
@@ -120,7 +126,7 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
                 }
                 if(i == self.names.count - 1){
                     let title = firstCharacterArray[firstCharacterArray.count - 1]
-                    let newSection = (index: index, length: i - index, title: title)
+                    let newSection = (index: index, length: i - index + 1, title: title)
                     self.sections.append(newSection)
                 }
             }
@@ -136,9 +142,19 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         searchController.searchResultsUpdater = self
         searchController.delegate = self
         searchController.searchBar.delegate = self
+        
         searchController.dimsBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
-        navigationItem.titleView = searchController.searchBar
+        searchController.searchBar.barTintColor = layoutVars.buttonBackground
+        
+        //workaround for ios 11 larger search bar
+        let searchBarContainer = SearchBarContainerView(customSearchBar: searchController.searchBar)
+        searchBarContainer.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 44)
+        navigationItem.titleView = searchBarContainer
+        
+        
+        
+       
         
         let items = ["Name","Address"]
         let customSC = SegmentedControl(items: items)
@@ -155,11 +171,8 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         self.countView = UIView()
         self.countView.backgroundColor = layoutVars.backgroundColor
-        //self.countView.layer.borderColor = layoutVars.borderColor
-        //self.countView.layer.borderWidth = 1.0
         self.countView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.countView)
-        
         
         self.countLbl.translatesAutoresizingMaskIntoConstraints = false
         self.countLbl.text = "\(self.ids.count) Active Customers "
@@ -197,7 +210,7 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     
 /////////////// Search Methods   ///////////////////////
     
-    func changeSearchOptions(sender: UISegmentedControl) {
+    @objc func changeSearchOptions(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
             currentSearchMode = .name
@@ -407,10 +420,24 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         let indexPath = tableView.indexPathForSelectedRow;
         let currentCell = tableView.cellForRow(at: indexPath!) as! CustomerTableViewCell
         let customerViewController = CustomerViewController(_customerID: currentCell.id,_customerName: currentCell.name)
+        customerViewController.customerListDelegate = self
         navigationController?.pushViewController(customerViewController, animated: false )
+        
+        
         
         tableView.deselectRow(at: indexPath!, animated: true)
     }
+    
+    func cancelSearch() {
+        print("cancel search")
+        if(self.searchController.isActive == true){
+            self.searchController.isActive = false
+            shouldShowSearchResults = false
+            self.customerTableView.reloadData()
+        }
+    }
+    
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

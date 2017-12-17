@@ -19,7 +19,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     var endDate:String!
     var startDateDB:String!
     var endDateDB:String!
-    var sort:String!
+    
     
     
     var allDatesSwitch:UISwitch = UISwitch()
@@ -39,6 +39,20 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     
     var mowSortSwitch:UISwitch = UISwitch()
     var mowSortSwitchLbl:Label = Label()
+    var mowSort:String!
+    
+    var plowSortSwitch:UISwitch = UISwitch()
+    var plowSortSwitchLbl:Label = Label()
+    var plowSort:String!
+    
+    
+    var plowDepthTxtField:PaddedTextField!
+    var plowDepthPicker: Picker!
+    var plowDepthArray = ["All Depths","1 Inch","2 Inches","3 Inches","4 Inches","5 Inches","6 Inches","7 Inches","8 Inches","9 Inches","10 Inches","11 Inches","12 Inches"]
+    var plowDepth:String = "0"
+    
+    
+    
     
     var delegate:ScheduleDelegate!
     
@@ -47,15 +61,17 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     
     
     
-    init(_allDates:String,_startDate:String,_endDate:String,_startDateDB:String,_endDateDB:String,_sort:String){
+    init(_allDates:String,_startDate:String,_endDate:String,_startDateDB:String,_endDateDB:String,_mowSort:String,_plowSort:String, _plowDepth:String){
         super.init(nibName:nil,bundle:nil)
-        print("init _allDates = \(_allDates)  _startDate = \(_startDate)   _stopDate = \(_endDate)  _sort = \(_sort)")
+        print("init _allDates = \(_allDates)  _startDate = \(_startDate)   _stopDate = \(_endDate)  _mowSort = \(_mowSort) _plowSort = \(_plowSort) _plowDepth = \(_plowDepth)")
         self.allDates = _allDates
         self.startDate = _startDate
         self.endDate = _endDate
         self.startDateDB = _startDateDB
         self.endDateDB = _endDateDB
-        self.sort = _sort
+        self.mowSort = _mowSort
+        self.plowSort = _plowSort
+        self.plowDepth = _plowDepth
         
     }
     
@@ -83,7 +99,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         
         //custom back button
         let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControlEvents.touchUpInside)
+        backButton.addTarget(self, action: #selector(ScheduleSettingsViewController.goBack), for: UIControlEvents.touchUpInside)
         backButton.setTitle("Back", for: UIControlState.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
@@ -181,9 +197,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         print("layoutViews 3")
         
         
-        
-        
-        if(self.sort == "1"){
+        if(self.mowSort == "1"){
             mowSortSwitch.isOn = true
         }else{
             mowSortSwitch.isOn = false
@@ -198,6 +212,59 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         
         
         
+        plowSortSwitch.translatesAutoresizingMaskIntoConstraints = false
+        plowSortSwitch.addTarget(self, action: #selector(ScheduleSettingsViewController.plowSortValueDidChange(sender:)), for: .valueChanged)
+        self.view.addSubview(plowSortSwitch)
+        
+        plowSortSwitchLbl.translatesAutoresizingMaskIntoConstraints = false
+        plowSortSwitchLbl.text = "Sort for Plowing"
+        self.view.addSubview(plowSortSwitchLbl)
+        
+        
+        
+        
+        
+        
+        
+        //status picker
+        self.plowDepthPicker = Picker()
+        self.plowDepthPicker.tag = 1
+        self.plowDepthPicker.delegate = self
+        //set status
+        self.plowDepthPicker.selectRow(Int(plowDepth)!, inComponent: 0, animated: false)
+        self.plowDepthTxtField = PaddedTextField(placeholder: "Plow Depth")
+        self.plowDepthTxtField.textAlignment = NSTextAlignment.center
+        self.plowDepthTxtField.translatesAutoresizingMaskIntoConstraints = false
+        //self.statusTxtField.tag = 1
+        self.plowDepthTxtField.delegate = self
+        //self.plowDepthTxtField.tintColor = UIColor.clear
+       // self.plowDepthTxtField.backgroundColor = UIColor.clear
+        self.plowDepthTxtField.inputView = plowDepthPicker
+        //self.plowDepthTxtField.layer.borderWidth = 0
+        self.view.addSubview(self.plowDepthTxtField)
+        let plowDepthToolBar = UIToolbar()
+        plowDepthToolBar.barStyle = UIBarStyle.default
+        plowDepthToolBar.barTintColor = UIColor(hex:0x005100, op:1)
+        plowDepthToolBar.sizeToFit()
+        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ScheduleSettingsViewController.cancelPlowDepthInput))
+        //let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let setPlowDepthButton = UIBarButtonItem(title: "Set Plow Depth", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ScheduleSettingsViewController.handlePlowDepthChange))
+        plowDepthToolBar.setItems([closeButton, spaceButton, setPlowDepthButton], animated: false)
+        plowDepthToolBar.isUserInteractionEnabled = true
+        plowDepthTxtField.inputAccessoryView = plowDepthToolBar
+        
+        
+        
+        if(self.plowSort == "1"){
+            plowSortSwitch.isOn = true
+            plowDepthTxtField.alpha = 1.0
+        }else{
+            plowSortSwitch.isOn = false
+            plowDepthTxtField.alpha = 0.0
+            
+        }
+        
+        
         
         
         //auto layout group
@@ -208,8 +275,11 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
             "view1":self.startTxtField,
             "stopLbl":self.stopLbl,
             "view2":self.stopTxtField,
-            "view3":self.mowSortSwitch,
-            "view4":self.mowSortSwitchLbl
+            "mowSwitch":self.mowSortSwitch,
+            "mowLbl":self.mowSortSwitchLbl,
+            "plowSwitch":self.plowSortSwitch,
+            "plowLbl":self.plowSortSwitchLbl,
+            "plowDepthTxtField":self.plowDepthTxtField
             ] as [String:Any]
         
         let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": (layoutVars.fullWidth/2)-15, "height": 24,"fullHeight":layoutVars.fullHeight - 344, "navHeight":layoutVars.navAndStatusBarHeight + 20] as [String:Any]
@@ -219,14 +289,16 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[allDatesSwitch(60)]-[allDatesSwitchLbl]-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
          self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[startLbl(80)]-[view1(80)]-[stopLbl(80)]-[view2(80)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view3(60)]-[view4]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[mowSwitch(60)]-[mowLbl]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[plowSwitch(60)]-[plowLbl]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[plowDepthTxtField(200)]", options: [], metrics: sizeVals, views: viewsDictionary))
        // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view3(60)]-[view4]-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[allDatesSwitch(40)]-[startLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[allDatesSwitch(40)]-[stopLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[allDatesSwitch(40)]-[view1(40)]-[view3(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[allDatesSwitchLbl(40)]-[view2(40)]-[view4(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[allDatesSwitch(40)]-[view1(40)]-[mowSwitch(40)]-[plowSwitch(40)]-[plowDepthTxtField(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[allDatesSwitchLbl(40)]-[view2(40)]-[mowLbl(40)]-[plowLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
         
         
@@ -234,24 +306,59 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         
     }
     
-    func mowSortValueDidChange(sender:UISwitch!)
+    @objc func mowSortValueDidChange(sender:UISwitch!)
     {
-        print("sortValueDidChange")
+        print("mowSortValueDidChange")
         
         editsMade = true
         if (sender.isOn == true){
             print("on")
-            sort = "1"
+            mowSort = "1"
+            plowSort = "0"
+            plowSortSwitch.isOn = false
         }
         else{
             print("off")
-            sort = "0"
+            mowSort = "0"
         }
         
         
     }
     
-    func allDatesValueDidChange(sender:UISwitch!)
+    
+    @objc func plowSortValueDidChange(sender:UISwitch!)
+    {
+        print("plowSortValueDidChange")
+        
+        editsMade = true
+        if (sender.isOn == true){
+            print("on")
+            plowSort = "1"
+            mowSort = "0"
+            mowSortSwitch.isOn = false
+            plowDepthTxtField.alpha = 1.0
+        }
+        else{
+            print("off")
+            plowSort = "0"
+            plowDepth = "0"
+            plowDepthTxtField.alpha = 0.0
+        }
+        
+        
+    }
+    
+    @objc func cancelPlowDepthInput(){
+        print("Cancel Plow Depth Input")
+        self.plowDepthTxtField.resignFirstResponder()
+    }
+    
+    
+    
+    
+    
+    
+    @objc func allDatesValueDidChange(sender:UISwitch!)
     {
         print("allDatesValueDidChange")
         
@@ -273,6 +380,99 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         
         
     }
+    
+    
+    // returns the number of 'columns' to display.
+    func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
+        return 1
+    }
+    
+    
+    // returns the # of rows in each component..
+    func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
+        // shows first 3 status options, not cancel or waiting
+       
+        var count:Int = self.plowDepthArray.count
+       
+       
+        return count
+    }
+    
+    
+    func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        return 60
+    }
+    /*
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        print("pickerview tag: \(pickerView.tag)")
+        let myView = UIView(frame: CGRect(x:0, y:0, width:pickerView.bounds.width - 30, height:60))
+        
+        var rowString = String()
+        if(pickerView.tag == 1){
+            let myImageView = UIImageView(frame: CGRect(x:0, y:0, width:50, height:50))
+            rowString = statusArray[row]
+            switch row {
+            case 0:
+                myImageView.image = UIImage(named:"unDoneStatus.png")
+                break
+            case 1:
+                myImageView.image = UIImage(named:"inProgressStatus.png")
+                break
+            case 2:
+                myImageView.image = UIImage(named:"doneStatus.png")
+                break
+            case 3:
+                myImageView.image = UIImage(named:"cancelStatus.png")
+                break
+            case 4:
+                myImageView.image = UIImage(named:"waitingStatus.png")
+                break
+            default:
+                myImageView.image = nil
+            }
+            let myLabel = UILabel(frame: CGRect(x:60, y:0, width:pickerView.bounds.width - 90, height:60 ))
+            myLabel.font = layoutVars.smallFont
+            myLabel.text = rowString
+            myView.addSubview(myLabel)
+            myView.addSubview(myImageView)
+            
+        }else{
+            
+            
+            rowString = scheduleTypeArray[row]
+            
+            let myLabel = UILabel(frame: CGRect(x:60, y:0, width:pickerView.bounds.width - 90, height:60 ))
+            myLabel.font = layoutVars.smallFont
+            myLabel.text = rowString
+            myView.addSubview(myLabel)
+            
+        }
+        return myView
+        
+    }
+ */
+    
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return self.plowDepthArray[row]
+    }
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
+    {
+        
+       
+            //self.scheduleTypeValueToUpdate = "\(row + 1)"
+            self.plowDepth = "\(row)"
+            self.plowDepthTxtField.text = self.plowDepthArray[self.plowDepthPicker.selectedRow(inComponent: 0)]
+        
+        
+    }
+    /*
+    func cancelPicker(){
+        //self.statusValueToUpdate = self.statusValue
+        self.statusTxtField.resignFirstResponder()
+        self.scheduleTypeTxtField.resignFirstResponder()
+    }
+ */
      
     
     func handleStartPicker()
@@ -320,6 +520,11 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     }
     
     
+    @objc func handlePlowDepthChange(){
+        self.plowDepthTxtField.resignFirstResponder()
+        editsMade = true
+        plowDepth = "\(self.plowDepthPicker.selectedRow(inComponent: 0))"
+    }
     
     
     
@@ -327,11 +532,15 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     
     
     
-    func goBack(){
+    
+    
+    
+    
+    @objc func goBack(){
         _ = navigationController?.popViewController(animated: false)
         
         if(editsMade == true){
-            delegate.updateSettings(_allDates:self.allDates, _startDate:self.startDate, _endDate:self.endDate, _startDateDB:self.startDateDB, _endDateDB:self.endDateDB, _sort:self.sort)
+            delegate.updateSettings(_allDates:self.allDates, _startDate:self.startDate, _endDate:self.endDate, _startDateDB:self.startDateDB, _endDateDB:self.endDateDB, _mowSort:self.mowSort, _plowSort:self.plowSort, _plowDepth:self.plowDepth)
             
         }
     }
@@ -344,3 +553,4 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     }
     
 }
+

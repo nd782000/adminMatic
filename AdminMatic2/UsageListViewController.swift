@@ -237,7 +237,7 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         cell.usageDateLbl.text = self.shortDateFormatter.string(from: usages[indexPath.row].start!)
         
         
-        print("usages[indexPath.row].qty = \(usages[indexPath.row].qty)")
+        print("usages[indexPath.row].qty = \(String(describing: usages[indexPath.row].qty))")
         print("self.units = \(self.units)")
         cell.usageTotalLbl.text = "\(usages[indexPath.row].qty!) \(self.units!)(s)"
         
@@ -248,7 +248,7 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     }
    
     
-    func goBack(){
+    @objc func goBack(){
         
         _ = navigationController?.popViewController(animated: false)
     }

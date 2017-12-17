@@ -271,7 +271,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         
         
         
-        Nuke.loadImage(with: imgURL, into: self.employeeImage!){ [weak view] in
+        Nuke.loadImage(with: imgURL, into: self.employeeImage!){ 
             print("nuke loadImage")
             self.employeeImage?.handle(response: $0, isFromMemoryCache: $1)
             self.activityView.stopAnimating()
@@ -515,7 +515,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
        
     }
     
-    func keyboardWillShow(notification: NSNotification) {
+    @objc func keyboardWillShow(notification: NSNotification) {
         
         if let keyboardFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as AnyObject).cgRectValue {
             // tableView.contentInset.bottom = keyboardFrame.height
@@ -536,7 +536,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     }
 
     
-    func keyboardDidHide(notification: NSNotification) {
+    @objc func keyboardDidHide(notification: NSNotification) {
         keyBoardShown = false
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
             // var fabricTopFrame = self.fabricTop.frame
@@ -556,7 +556,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
 
     
     
-    func attemptLogIn(){
+    @objc func attemptLogIn(){
         
         //print("setLoginStatus")
         self.logInView.passTxt.reset()
@@ -703,7 +703,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     
    
-    func logOut() {
+    @objc func logOut() {
         
         //print("setLoginStatus")
         
@@ -1171,7 +1171,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     
     
-    func displayWorkingTime() {
+    @objc func displayWorkingTime() {
         
         
         let now = NSDate()
@@ -1212,7 +1212,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     
     
-    func handlePhone(){
+    @objc func handlePhone(){
         
         callPhoneNumber(self.phoneNumberClean)
         
@@ -1267,7 +1267,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     
     
-    func goBack(){
+    @objc func goBack(){
         _ = navigationController?.popViewController(animated: false)
         //print("Test")
         if(self.workTimer != nil){

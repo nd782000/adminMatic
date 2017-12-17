@@ -6,18 +6,11 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
-//
-//  VendorListViewController.swift
-//  Atlantic_Blank
-//
-//  Created by nicholasdigiando on 11/28/15.
-//  Copyright (c) 2015 Nicholas Digiando. All rights reserved.
-//
+
 
 import Foundation
 import UIKit
 import Alamofire
-//import Alamofire
 import SwiftyJSON
 
 //extension String: SequenceType {}
@@ -101,6 +94,7 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
                         }
                         if let name = vendor["name"] as? String {
                             self.names.append(name)
+                            print("vendor name = \(name)")
                         }
                         
                         if let address = vendor["address"] as? String {
@@ -116,6 +110,8 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
             } catch {
                 print("Error deserializing JSON: \(error)")
             }
+            
+            /*
             // build sections based on first letter(json is already sorted alphabetically)
             var index = 0;
             var firstCharacterArray:[String] = [" "]
@@ -137,13 +133,45 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
                     self.sections.append(newSection)
                     index = i;
                 }
+                
+                }
                 if(i == self.names.count - 1){
                     let title = firstCharacterArray[firstCharacterArray.count - 1]
-                    let newSection = (index: index, length: i - index, title: title)
+                    let newSection = (index: index, length: i - index + 1, title: title)
                     self.sections.append(newSection)
                 }
+            }
+ */
+            
+            
+            
+            // build sections based on first letter(json is already sorted alphabetically)
+            var index = 0;
+            var firstCharacterArray:[String] = [" "]
+            for i in 0 ..< self.names.count {
+                let stringToTest = self.names[i].uppercased()
+                let firstCharacter = String(stringToTest[stringToTest.startIndex])
+                
+                if(i == 0){
+                    firstCharacterArray.append(firstCharacter)
+                }
+                if !firstCharacterArray.contains(firstCharacter) {
+                    let title = firstCharacterArray[firstCharacterArray.count - 1]
+                    firstCharacterArray.append(firstCharacter)
+                    let newSection = (index: index, length: i - index, title: title)
+                    self.sections.append(newSection)
+                    index = i;
+                }
+                if(i == self.names.count - 1){
+                    let title = firstCharacterArray[firstCharacterArray.count - 1]
+                    let newSection = (index: index, length: i - index + 1, title: title)
+                    self.sections.append(newSection)
                 }
             }
+            
+            
+            
+            
             self.layoutViews()
         }
         
@@ -174,7 +202,29 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
         searchController.searchBar.delegate = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
-        navigationItem.titleView = searchController.searchBar
+        
+        searchController.searchBar.barTintColor = layoutVars.buttonBackground
+        
+        //navigationItem.titleView = searchController.searchBar
+        
+        
+        
+        //workaround for ios 11 larger search bar
+        let searchBarContainer = SearchBarContainerView(customSearchBar: searchController.searchBar)
+        searchBarContainer.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 44)
+        navigationItem.titleView = searchBarContainer
+        
+        
+        /*
+        searchController.searchBar.backgroundColor = UIColor.white
+        if #available(iOS 11.0, *) {
+            navigationItem.searchController = searchController
+        } else {
+            // Fallback on earlier versions
+            navigationItem.titleView = searchController?.searchBar
+        }
+ */
+        
         
         
         

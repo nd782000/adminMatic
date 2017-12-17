@@ -35,6 +35,7 @@ class BugsListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         //custom back button
         let backButton:UIButton = UIButton(type: UIButtonType.custom)
+        
         backButton.addTarget(self, action: #selector(BugsListViewController.goBack), for: UIControlEvents.touchUpInside)
         backButton.setTitle("Back", for: UIControlState.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
@@ -257,7 +258,7 @@ class BugsListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
  
     
-    func addBug(){
+    @objc func addBug(){
         print("add bug")
         
         let bugViewController = BugViewController()
@@ -269,7 +270,7 @@ class BugsListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     
-    func goBack(){
+    @objc func goBack(){
         displayHomeView()
        // _ = navigationController?.popViewController(animated: false)
         

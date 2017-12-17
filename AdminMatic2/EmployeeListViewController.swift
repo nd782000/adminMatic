@@ -290,7 +290,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     
     
     
-    func messageComposeViewController(_ controller: MFMessageComposeViewController!, didFinishWith result: MessageComposeResult) {
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
         print("didfinish")
         //... handle sms screen actions
         self.dismiss(animated: true, completion: nil)
@@ -305,7 +305,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     }
     
        
-    func dismissMessage(){
+    @objc func dismissMessage(){
         print("dismiss")
        // controller.dismiss(animated: true, completion: nil)
         //self.navigationController?.popViewController(animated: true)
@@ -331,7 +331,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         // you need to implement this method too or you can't swipe to display the actions
     }
     
-    func groupMessage(){
+    @objc func groupMessage(){
         print("group message")
         
         let groupMessageViewController = GroupMessageViewController()

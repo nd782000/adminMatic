@@ -19,6 +19,8 @@ class Vendor {
     var website: String!
     var balance: String!
     var itemCost: String?
+    var itemPrice: String?
+    var itemPreffered: String?
     
     
     required init(_name:String?, _id: String?, _address:String?, _phone:String?, _website:String?, _balance:String?, _lng:String?, _lat:String?) {

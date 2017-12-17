@@ -464,7 +464,7 @@ class ImageDrawingViewController: UIViewController {
     
     
     
-    func share() {
+    @objc func share() {
         //print("share")
         if self.presentedViewController == nil {
             let activity = UIActivityViewController(activityItems: [self.imageView.image!], applicationActivities: nil)
@@ -479,7 +479,7 @@ class ImageDrawingViewController: UIViewController {
     
 
     
-    func colorChange(sender:AnyObject){
+    @objc func colorChange(sender:AnyObject){
         var index = sender.tag ?? 0
         if index < 0 || index >= colors.count {
             index = 0
@@ -491,38 +491,38 @@ class ImageDrawingViewController: UIViewController {
         }
     }
     
-    func smallBrush(){
+    @objc func smallBrush(){
         //print("smallBrush")
         self.brush = 5
         
     }
     
-    func mediumBrush(){
+    @objc func mediumBrush(){
         //print("mediumBrush")
         self.brush = 15
         
     }
     
-    func largeBrush(){
+    @objc func largeBrush(){
         //print("largeBrush")
         self.brush = 30
         
     }
     
-    func clear(){
+    @objc func clear(){
         
         self.imageView.image = self.image
         
         
     }
     
-    func done(){
+    @objc func done(){
         goBack()
     }
    
 
  
-    func goBack(){
+    @objc func goBack(){
         //print("Go Back")
         delegate.updateImage(_indexPath:self.indexPath, _image: self.imageView.image!)
         _ = navigationController?.popViewController(animated: true)

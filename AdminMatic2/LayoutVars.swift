@@ -57,9 +57,24 @@ extension String {
 }
 
 
+//used to color map pins
+extension MKPinAnnotationView {
+    class func bluePinColor() -> UIColor {
+        return UIColor.blue
+    }
+    class func grayPinColor() -> UIColor {
+        return UIColor.gray
+    }
+}
+
+
+
+
+
 class LayoutVars: UIViewController {
     
     var fullWidth:CGFloat! = UIScreen.main.bounds.width
+    var halfWidth:CGFloat! = (UIScreen.main.bounds.width - 25)/2
     var fullHeight:CGFloat! = UIScreen.main.bounds.height
     
     var colorBtnSize:CGFloat! = UIScreen.main.bounds.width/7
@@ -78,6 +93,8 @@ class LayoutVars: UIViewController {
     var labelBoldFont = UIFont(name:"HelveticaNeue-Bold", size: 16)!
     
     var smallFont:UIFont = UIFont(name: "Helvetica Neue", size: 20)!
+    var smallBoldFont:UIFont = UIFont(name: "HelveticaNeue-Bold", size: 20)!
+    var extraSmallFont:UIFont = UIFont(name: "Helvetica Neue", size: 14)!
     var buttonFont:UIFont = UIFont(name: "Helvetica Neue", size: 18)!
     var textFieldFont:UIFont = UIFont(name: "Helvetica Neue", size: 12)!
 
@@ -467,25 +484,53 @@ class Cell:UITableViewCell {
 }
 
 
+class SearchBarContainerView: UIView {
+    
+    let searchBar: UISearchBar
+    
+    init(customSearchBar: UISearchBar) {
+        searchBar = customSearchBar
+        super.init(frame: CGRect.zero)
+        
+        addSubview(searchBar)
+    }
+    
+    override convenience init(frame: CGRect) {
+        self.init(customSearchBar: UISearchBar())
+        self.frame = frame
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        searchBar.frame = bounds
+    }
+}
+
+
+
+
+
 
 /////////////////////    Helper Methods     //////////////////////////////////
-/*
-func html_Decode(_ _encodedString:String!)->String{
 
-    let encodedData = _encodedString.data(using: String.Encoding.utf8)!
-    let attributedOptions : [String: AnyObject] = [
-        NSAttributedString.DocumentAttributeKey.documentType.rawValue: NSAttributedString.DocumentType.html as AnyObject,
-        NSAttributedString.DocumentAttributeKey.characterEncoding.rawValue: String.Encoding.utf8 as AnyObject
-    ]
-    let attributedString = try! NSAttributedString(data: encodedData, options: attributedOptions, documentAttributes: nil)
+func simpleAlert(_vc:UIViewController,_title:String,_message:String?){
+    print("simpleAlert: \(String(describing: _message))")
+    let alertController = UIAlertController(title: _title, message: _message, preferredStyle: UIAlertControllerStyle.alert)
     
-    let attributedString = try! NSAttributedString(data: encodedData, options: <#T##[NSAttributedString.DocumentReadingOptionKey : Any]#>, documentAttributes: nil)
+    let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+        (result : UIAlertAction) -> Void in
+        print("OK")
+    }
+    alertController.addAction(okAction)
+    _vc.present(alertController, animated: true, completion: nil)
     
-    let decodedString = attributedString.string // The Weeknd ‘King Of The Fall’
-    
-    return decodedString
 }
-*/
+
+
 
 
 func cleanText(_ _text:String!)->String{
@@ -551,45 +596,6 @@ func callPhoneNumber(_ _number:String){
         
         UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(_number))")! as URL, options: [:], completionHandler: nil)
     }
-    
-    
-    
-    /*
-    
-    let alertController: UIAlertController
-    
-     if (cleanPhoneNumber(_number) != "No Number Saved"){
-    
-        alertController = UIAlertController(title: "CALL \(_number)", message: "Confirm Phone Call", preferredStyle: UIAlertControllerStyle.alert) //Replace
-        let DestructiveAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
-            (result : UIAlertAction) -> Void in
-            print("Cancel")
-        }
-        
-        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
-            (result : UIAlertAction) -> Void in
-            print("OK")
-           UIApplication.shared.open(URL(string: "tel://\(_number)")!, options: [:], completionHandler: nil)
-        }
-        
-        alertController.addAction(DestructiveAction)
-        alertController.addAction(okAction)
-     }else{
-        alertController = UIAlertController(title: "No Saved Number", message: "", preferredStyle: UIAlertControllerStyle.alert) //Replace
-        
-        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
-            (result : UIAlertAction) -> Void in
-            print("OK")
-           
-        }
-        
-        alertController.addAction(okAction)
-    }
-      
-    getTopViewController().present(alertController, animated: true, completion: nil)
-    
-    */
-    
 }
 
 func getTopViewController() -> UIViewController{
@@ -607,13 +613,10 @@ func getTopViewController() -> UIViewController{
 }
 
 
-
-
-
 func sendEmail(_ _email:String){
     print("send Email to \(_email)")
     let url = URL(string: "mailto:\(_email)")
-    print("url: \(url)")
+    print("url: \(String(describing: url))")
     UIApplication.shared.open(url!, options: [:], completionHandler: nil)
     
 }
@@ -712,11 +715,6 @@ func getChargeName(_charge:String) -> String {
     
 }
 
-
-
-
-
-
 class SDevIndicator : UIView {
     
     var spinnerParentView : UIView!
@@ -769,15 +767,7 @@ class SDevIndicator : UIView {
                 self.loadingLabel.removeFromSuperview()
         })
         UIApplication.shared.isNetworkActivityIndicatorVisible = false
-
     }
-    
-    
-    
-    
-    
-    
-    
 }
 
 
@@ -802,15 +792,15 @@ extension UIImage {
         switch imageOrientation {
         case UIImageOrientation.down, UIImageOrientation.downMirrored:
             transform = transform.translatedBy(x: size.width, y: size.height)
-            transform = transform.rotated(by: CGFloat(M_PI))
+            transform = transform.rotated(by: CGFloat.pi)
             break
         case UIImageOrientation.left, UIImageOrientation.leftMirrored:
             transform = transform.translatedBy(x: size.width, y: 0)
-            transform = transform.rotated(by: CGFloat(M_PI_2))
+            transform = transform.rotated(by: CGFloat.pi)
             break
         case UIImageOrientation.right, UIImageOrientation.rightMirrored:
             transform = transform.translatedBy(x: 0, y: size.height)
-            transform = transform.rotated(by: CGFloat(-M_PI_2))
+            transform = transform.rotated(by: CGFloat(-Double.pi / 2))
             break
         case UIImageOrientation.up, UIImageOrientation.upMirrored:
             break
@@ -978,15 +968,3 @@ class MonthYearPickerView: UIPickerView, UIPickerViewDelegate, UIPickerViewDataS
     }
     
 }
-
-
-
-
-
-
-
-
-
-
-
-

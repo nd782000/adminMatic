@@ -1,5 +1,5 @@
 //
-//  FieldNote.swift
+//  Attachment.swift
 //  AdminMatic2
 //
 //  Created by Nick on 1/7/17.
@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import SwiftyJSON
 
-class FieldNote {
+class Attachment {
     
     var ID: String!
     var note: String!
