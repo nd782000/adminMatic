@@ -404,6 +404,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         
     }
     
+    
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         
         
@@ -1044,28 +1045,12 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         let updatedJSON = JSON(value)
                         self.indicator.dismissIndicator()
                         
-                        /*
-                        //add appPoints
-                        var points:Int = updatedJSON["scoreAdjust"].intValue
-                        
-                        if(points > 0){
-                            self.appDelegate.showMessage(_message: "earned \(points) App Points!")
-                        }else if(points < 0){
-                            points = points * -1
-                             self.appDelegate.showMessage(_message: "lost \(points) App Points!")
-                            
-                        }
-                        */
-                        
                         
                         let usageCount = updatedJSON["usage"].count
                         let dateFormatter = DateFormatter()
                         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
                         if(_type == "new"){
                             self.usageToLog = []
-                            
-                            
-                            
                             
                             for n in 0 ..< usageCount {
                                
@@ -1110,11 +1095,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         }
                         if(_type == "new" && self.woItem.type == "2"){
                             
-                            /*
-                            //add appPoints
-                            let points:Int = usageCount * 10
-                            self.appDelegate.showMessage(_message: "earned \(points) App Points!")
-                            */
+                           
                             
                             let usage:Usage = Usage(_ID: "0",
                                                     _empID: nil,

@@ -41,6 +41,41 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         layoutViews()
     }
     
+    
+    override func viewWillAppear(_ animated: Bool) {
+        // Do any additional setup after loading the view.
+        
+        print("view will appear")
+       
+        if appDelegate.employeeArray.count == 0{
+            print("internet connection failed")
+            
+            let alertController = UIAlertController(title: "Lost Internet Connection", message: "Try connecting again", preferredStyle: UIAlertControllerStyle.alert) //Replace UIAlertControllerStyle.Alert by UIAlertControllerStyle.alert
+            //let DestructiveAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+                //(result : UIAlertAction) -> Void in
+                //print("Cancel")
+           // }
+            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+                (result : UIAlertAction) -> Void in
+                //print("OK")
+               // _ = self.navigationController?.popViewController(animated: true)
+                
+                self.appDelegate.getEmployeeList()
+            }
+            alertController.addAction(okAction)
+           // alertController.addAction(DestructiveAction)
+            self.present(alertController, animated: true, completion: nil)
+            
+            
+            
+        }
+        
+        
+    }
+    
+    
+    
+    
    
     func layoutViews(){
         

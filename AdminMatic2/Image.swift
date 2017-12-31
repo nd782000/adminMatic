@@ -29,6 +29,7 @@ class Image {
     var albumID: String = "0"
     var leadTaskID: String = "0"
     var taskID: String = "0"
+    var equipmentID: String = "0"
     
     
     var dateAdded: String!
@@ -115,16 +116,70 @@ class Image {
             self.type = ""
         }
         
-       /* if _topImage != nil {
-            self.topImage = _topImage!
-        }else{
-            self.topImage = "1"
-        }
-        */
+
         
        
 
  
         
     }
+    
+    
+    //simple init for fullView viewing only
+    init( _path:String?) {
+        //print(json)
+        if _path != nil {
+            self.rawPath = "https://atlanticlawnandgarden.com/uploads/general/" + _path!
+            self.mediumPath = "https://atlanticlawnandgarden.com/uploads/medium/" + _path!
+            self.thumbPath = "https://atlanticlawnandgarden.com/uploads/thumbs/" + _path!
+        }else{
+            self.rawPath = ""
+            self.mediumPath = ""
+            self.thumbPath = ""
+        }
+        
+    }
+    
+    
+    //init for equipment
+    init(_ID:String?) {
+        //print(json)
+        if _ID != nil{
+            self.ID = _ID
+            self.rawPath = "https://atlanticlawnandgarden.com/uploads/general/Equipment(\(_ID!)).jpeg"
+            self.mediumPath = "https://atlanticlawnandgarden.com/uploads/general/medium/Equipment(\(_ID!)).jpeg"
+            self.thumbPath = "https://atlanticlawnandgarden.com/uploads/general/thumbs/Equipment(\(_ID!)).jpeg"
+        }else{
+            self.ID = ""
+            self.rawPath = ""
+            self.mediumPath = ""
+            self.thumbPath = ""
+        }
+        
+        
+    }
+    
+    //init for equipment w/out pic
+    init(_ID:String?, _noPicPath:String?) {
+        //print(json)
+        if _ID != nil{
+            self.ID = _ID
+        }else{
+            self.ID = ""
+        }
+        if _noPicPath != nil {
+            self.rawPath = _noPicPath!
+            self.mediumPath = _noPicPath!
+            self.thumbPath = _noPicPath!
+        }else{
+            self.rawPath = ""
+            self.mediumPath = ""
+            self.thumbPath = ""
+        }
+        
+    }
+    
+    
+    
+    
 }

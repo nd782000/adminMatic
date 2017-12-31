@@ -21,6 +21,7 @@ class EquipmentTableViewCell: UITableViewCell {
     
     var nameLbl: UILabel!
     var typeLbl: UILabel!
+    var typeValueLbl: UILabel!
     var crewLbl: UILabel!
     
     var statusIcon: UIImageView!
@@ -35,6 +36,10 @@ class EquipmentTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         self.selectionStyle = .none
+        
+        
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
         
         self.equipmentImageView.layer.cornerRadius = 5.0
         self.equipmentImageView.layer.borderWidth = 1
@@ -56,9 +61,15 @@ class EquipmentTableViewCell: UITableViewCell {
         contentView.addSubview(nameLbl)
         
         typeLbl = UILabel()
+        typeLbl.text = "Type:"
         typeLbl.font = layoutVars.extraSmallFont
         typeLbl.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(typeLbl)
+        
+        typeValueLbl = UILabel()
+        typeValueLbl.font = layoutVars.extraSmallFont
+        typeValueLbl.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(typeValueLbl)
         
         crewLbl = UILabel()
         crewLbl.font = layoutVars.extraSmallFont
@@ -76,8 +87,12 @@ class EquipmentTableViewCell: UITableViewCell {
     
     
     func layoutViews(){
+        
+        
+        
+        
         nameLbl.text = ""
-        typeLbl.text = ""
+        typeValueLbl.text = ""
         crewLbl.text = ""
         
         
@@ -91,12 +106,12 @@ class EquipmentTableViewCell: UITableViewCell {
         
         
         
-        let viewsDictionary = ["pic":equipmentImageView,"name":nameLbl,"type":typeLbl,"crew":crewLbl,"status":statusIcon] as [String : Any]
+        let viewsDictionary = ["pic":equipmentImageView,"name":nameLbl,"type":typeLbl,"typeValue":typeValueLbl,"crew":crewLbl,"status":statusIcon] as [String : Any]
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[pic(50)]-[name]-[status(30)]-|", options: [], metrics: nil, views: viewsDictionary))
         
        
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[pic(50)]-[type]-[crew(80)]-[status(30)]-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[pic(50)]-[type(36)][typeValue]-[crew(80)]-[status(30)]-|", options: [], metrics: nil, views: viewsDictionary))
        
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[pic(50)]", options: [], metrics: nil, views: viewsDictionary))
         
@@ -104,6 +119,7 @@ class EquipmentTableViewCell: UITableViewCell {
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-15-[status(30)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[name(30)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[type(30)]|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[typeValue(30)]|", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[crew(30)]|", options: [], metrics: nil, views: viewsDictionary))
         
         
@@ -125,11 +141,13 @@ class EquipmentTableViewCell: UITableViewCell {
     
     
     
+    
+    
     func setStatus(status: String) {
         print("set status status = \(status)")
         switch (status) {
         case "0":
-            let statusImg = UIImage(named:"doneStatus.png")
+            let statusImg = UIImage(named:"onlineIcon.png")
             statusIcon.image = statusImg
             break;
         case "1":

@@ -51,8 +51,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     //details view
     var detailsView:UIView!
-    
-    
     let items = ["Schedule","History","Communication","Images"]
     var customSC:SegmentedControl!
     
@@ -71,7 +69,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     var noResultsLabel:Label = Label();
     
-    
     var totalImages:Int!
     var images: JSON!
     var imageArray:[Image] = []
@@ -84,9 +81,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var imageDetailViewController:ImageDetailViewController!
     var portraitMode:Bool = true
     var refresher:UIRefreshControl!
-    
     var displayImages:Bool?
-    
     var customerListDelegate:CustomerListDelegate!
     
     
@@ -106,7 +101,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         super.init(nibName:nil,bundle:nil)
         
         self.displayImages = true
-        //self.showImages()
     }
     
     
@@ -122,7 +116,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        
         
         //print(currentReachabilityStatus) //true connected
         //print(currentReachabilityStatus != .notReachable) //true connected
@@ -140,10 +133,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
-        
         getCustomerData(_id: self.customerID)
-        
-        
     }
     
     
@@ -172,9 +162,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 self.parseCustomerJSON()
                 
             }
-            
-            
-            
         }
         
     }
@@ -195,25 +182,21 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 //print("case = phone")
                  //print("phone = \(self.customerJSON["customer"]["contacts"][i]["value"].string!)")
                 //print("phone = \(self.customerJSON["customer"]["contacts"][i]["value"].string!)")
-                //if(self.customerJSON["customer"]["contacts"][i]["main"].string == "1"){
                     self.phone = self.customerJSON["customer"]["contacts"][i]["value"].string!
                     if self.customerJSON["customer"]["contacts"][i]["name"] != JSON.null
                     {
                         self.phoneName = " (" + self.customerJSON["customer"]["contacts"][i]["name"].string! + ")"
                         //print("self.phoneName = \(self.phoneName)")
                     }
-                //}
                 break
             //email
             case "2":
                 //print("case = email")
-                //if(self.customerJSON["customer"]["contacts"][i]["main"].string == "1"){
                     self.email = self.customerJSON["customer"]["contacts"][i]["value"].string!
                     if self.customerJSON["customer"]["contacts"][i]["name"] != JSON.null
                     {
                         self.emailName =  " (" + self.customerJSON["customer"]["contacts"][i]["name"].string! + ")"
                     }
-                //}
                 break
                 
             //job site address
@@ -225,11 +208,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 ////print(self.customer.contactID)
                 //print(self.customerJSON["customer"]["contacts"][i])
                 
-                
-                //let street1:String = self.jobSiteAddress = self.customerJSON["customer"]["contacts"][i]["street1"].stringValue
-                //let street2 = self.jobSiteAddress = self.customerJSON["customer"]["contacts"][i]["street2"].stringValue
-                 //let city = self.jobSiteAddress = self.customerJSON["customer"]["contacts"][i]["city"].stringValue
-                 self.jobSiteAddress = self.customerJSON["customer"]["contacts"][i]["fullAddress"].stringValue
+                self.jobSiteAddress = self.customerJSON["customer"]["contacts"][i]["fullAddress"].stringValue
                 self.lat = self.customerJSON["customer"]["contacts"][i]["lat"].stringValue as NSString
                 self.lng = self.customerJSON["customer"]["contacts"][i]["lng"].stringValue as NSString
                 //print(" lat \(self.lat)")
@@ -244,8 +223,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
         }
         
-        
-        //self.layoutViews()
         getCustomerSchedule(_id: self.customerID)
         
     }
@@ -254,13 +231,11 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func getCustomerSchedule(_id:String){
-       // Alamofire.request(EquipmentAPI.Router.WorkOrderList("", _id, "1")).responseJSON() {
         
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
-        //, "cb":timeStamp as AnyObject
         
 
         
@@ -273,25 +248,11 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             //print(response.result)   // result of response serialization
             
             if let json = response.result.value {
-                //print("JSON: \(json)")
-                //self.vendors = JSON(json)
-                // self.parseJSON()
                 self.customerSchedule = JSON(json)
                 self.parseCustomerScheduleJSON()
                 
             }
         }
-        
-        /*
-         
-         if error == nil {
-         self.customerSchedule = JSON(json!)
-         self.parseCustomerScheduleJSON()
-         } else {
-         //print("JSON ERROR: \(json)")
-         }
-         }
-         */
         
     }
     
@@ -310,32 +271,16 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             let workOrder = WorkOrder(_ID: self.customerSchedule["workOrder"][i]["ID"].stringValue, _statusID: self.customerSchedule["workOrder"][i]["statusID"].stringValue, _date: self.customerSchedule["workOrder"][i]["date"].stringValue, _firstItem: self.customerSchedule["workOrder"][i]["firstItem"].stringValue, _statusName: self.customerSchedule["workOrder"][i]["statusName"].stringValue, _customer: self.customerSchedule["workOrder"][i]["customer"].stringValue, _type: self.customerSchedule["workOrder"][i]["type"].stringValue, _progress: self.customerSchedule["workOrder"][i]["progress"].stringValue, _totalPrice: self.customerSchedule["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.customerSchedule["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.customerSchedule["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.customerSchedule["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.customerSchedule["workOrder"][i]["charge"].stringValue)
             self.customerScheduleArray.append(workOrder)
         }
-        
-        
       self.getImages()
-        
-        
     }
     
-    
-    
-    
+
     func getImages() {
         //remove any added views (needed for table refresh
         
         print("get images")
-        //for view in self.view.subviews{
-            //view.removeFromSuperview()
-        //}
-        
         imageArray = []
        
-        
-        
-        //cache buster
-        //let now = Date()
-        //let timeInterval = now.timeIntervalSince1970
-        //let timeStamp = Int(timeInterval)
         
         let parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject, "customer": self.customerID as AnyObject]
         
@@ -387,14 +332,8 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             self.imageArray.append(image)
             
-        }
-       // self.imageCollectionView?.reloadData()
-        
+        }        
         self.layoutViews()
-       // self.layoutImageViews()
-        
-        
-        
     }
     
 
@@ -406,7 +345,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
-        //, "cb":timeStamp as AnyObject
 
         
         Alamofire.request(API.Router.workOrderList(["empID":"" as AnyObject,"custID":_id as AnyObject,"active":"0" as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
@@ -421,25 +359,18 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             if let json = response.result.value {
                 //print("JSON: \(json)")
-                //self.vendors = JSON(json)
-                // self.parseJSON()
                 self.customerHistory = JSON(json)
                 self.parseCustomerHistoryJSON()
                 self.historyLoaded = true
                 
             }
         }
-        
-        
-        
-        
     }
     
     
     
     func parseCustomerHistoryJSON(){
         
-        // self.customerHistoryArray.
         //print("parse customerHistory: \(self.customerHistory)")
         
         //loop through contacts and put them in appropriate places
@@ -453,8 +384,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         // dispatch_async(dispatch_get_main_queue(), { () -> Void in
-        //self.customerDetailsTableView.removeFromSuperview()
-        //self.detailsView.addSubview(customerDetailsTableView)
         
         self.customerDetailsTableView.reloadData()
         
@@ -465,9 +394,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             self.customerDetailsTableView.isHidden = true;
             self.noResultsLabel.isHidden = false;
         }
-        
-        // })
-        
         
     }
     
@@ -490,8 +416,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         self.detailsView = UIView()
         self.detailsView.backgroundColor = layoutVars.backgroundColor
-        //self.detailsView.backgroundColor = UIColor.redColor()
-        
         self.detailsView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.detailsView)
         
@@ -658,8 +582,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         ///////////   Customer Details Section   /////////////
         
-        //let items = ["Schedule","History","Communication","Images"]
-        //let customSC = SegmentedControl(items: items)
+       
         customSC = SegmentedControl(items: items)
         customSC.selectedSegmentIndex = 0
         
@@ -705,13 +628,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.detailsView.addSubview(imageCollectionView!)
         imageCollectionView?.isHidden = true
         
-       // self.automaticallyAdjustsScrollViewInsets = NO
-       // self.automaticallyAdjustsScrollViewInsets = false
-        
-        //self.contentInsetAdjustmentBehavior = .never
-        
-        //self.edgesForExtendedLayout = UIRectEdgeNone;
-        
+       
         self.edgesForExtendedLayout = UIRectEdge.top
         
         let refresher = UIRefreshControl()
@@ -726,7 +643,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         self.addImageBtn.addTarget(self, action: #selector(CustomerViewController.addImage), for: UIControlEvents.touchUpInside)
         
-        //self.addImageBtn.frame = CGRect(x:0, y: self.view.frame.height - 50, width: self.view.frame.width, height: 50)
         self.addImageBtn.translatesAutoresizingMaskIntoConstraints = false
         self.detailsView.addSubview(self.addImageBtn)
         addImageBtn.isHidden = true
@@ -1057,9 +973,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     /////////////// TableView Delegate Methods   ///////////////////////
-    
-    
-    
+
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         
         return 0

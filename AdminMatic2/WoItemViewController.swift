@@ -77,6 +77,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     var imageUploadPrepViewController:ImageUploadPrepViewController!
     
+    
     init(_woID:String,_woItem:WoItem,_empsOnWo:[Employee],_woStatus:String){
         super.init(nibName:nil,bundle:nil)
         self.woID = _woID
@@ -92,7 +93,9 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     override func viewWillAppear(_ animated: Bool) {
         ////print("view will appear")
         if(self.itemView != nil){
-            woDelegate.refreshWo(_refeshWoID: self.woItem.ID, _newWoStatus: self.newWoStatus)
+            if(self.woDelegate != nil){
+                woDelegate.refreshWo(_refeshWoID: self.woItem.ID, _newWoStatus: self.newWoStatus)
+            }
         }
         
         ////print("woItem = \(woItem)")
@@ -696,7 +699,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         }
         done.backgroundColor = layoutVars.buttonColor1
         
-        /*
+        
         let cancel = UITableViewRowAction(style: .normal, title: "Cancel") { action, index in
             //print("cancel button tapped")
             self.tasks[indexPath.row].status = "4"
@@ -707,14 +710,14 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         
         cancel.backgroundColor = UIColor.red
-        */
+        
         
         
         self.woItem.itemStatus = newItemStatus
         
         //return [done, progress, none, cancel]
         
-        return [done, progress, none]
+        return [cancel, done, progress, none]
         
     }
     
@@ -1002,7 +1005,10 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     @objc func goBack(){
         _ = navigationController?.popViewController(animated: true)
-         woDelegate.refreshWo(_refeshWoID: self.woItem.ID, _newWoStatus: self.newWoStatus)
+        if woDelegate != nil{
+            woDelegate.refreshWo(_refeshWoID: self.woItem.ID, _newWoStatus: self.newWoStatus)
+        }
+        
     }
     
     

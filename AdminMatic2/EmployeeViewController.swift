@@ -88,7 +88,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     var keyBoardShown:Bool = false
     
-    
+    var imageFullViewController:ImageFullViewController!
     
     
     
@@ -276,26 +276,24 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
             self.employeeImage?.handle(response: $0, isFromMemoryCache: $1)
             self.activityView.stopAnimating()
             
+            //let image = Image(_rawPath: "https://atlanticlawnandgarden.com/uploads/general/"+self.employee.pic!, _thumbPath: "https://atlanticlawnandgarden.com/uploads/thumbs/"+self.employee.pic!)
+            
+            let image = Image(_path: self.employee.pic)
+            
+            self.imageFullViewController = ImageFullViewController(_image: image)
+            
+            
         }
         
 
         
         
-        /*
-            let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.employee.pic!)
-            
-            
-        if(self.employeeImage.image == nil){
-            DispatchQueue.global().async {
-                let data = try? Data(contentsOf: imgUrl!) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
-                DispatchQueue.main.async {
-                    self.employeeImage.image = UIImage(data: data!)
-                }
-            }
-        }
-        */
-
-       // }
+        self.tapBtn = Button()
+        self.tapBtn.translatesAutoresizingMaskIntoConstraints = false
+        self.tapBtn.addTarget(self, action: #selector(EmployeeViewController.showFullScreenImage), for: UIControlEvents.touchUpInside)
+        self.tapBtn.backgroundColor = UIColor.clear
+        self.tapBtn.setTitle("", for: UIControlState.normal)
+        self.employeeView.addSubview(self.tapBtn)
         
         
         
@@ -372,6 +370,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         //auto layout group
         let employeeViewsDictionary = [
             "view1":self.employeeImage,
+            "tapBtn":self.tapBtn,
             "view2":self.employeeLbl,
             "view3":self.employeePhoneBtn,
             "view4":self.workingStatusIcon,
@@ -380,11 +379,15 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         ] as [String:Any]
         
         self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view1(80)]-10-[view2(210)]", options: [], metrics: nil, views: employeeViewsDictionary))
+        self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[tapBtn(80)]", options: [], metrics: nil, views: employeeViewsDictionary))
+        
         self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-100-[view3(210)]", options: [], metrics: nil, views: employeeViewsDictionary))
         self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-100-[view6(160)]", options: [], metrics: nil, views: employeeViewsDictionary))
 
         self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-220-[view4(15)]-[view5]", options: [], metrics: nil, views: employeeViewsDictionary))
         self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[view1(80)]", options: [], metrics: nil, views: employeeViewsDictionary))
+        self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[tapBtn(80)]", options: [], metrics: nil, views: employeeViewsDictionary))
+        
         self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view2(30)][view3(30)]-[view4(16)]-9-|", options: [], metrics: nil, views: employeeViewsDictionary))
         self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view5(19)]-8-|", options: [], metrics: nil, views: employeeViewsDictionary))
         self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view6(19)]-8-|", options: [], metrics: nil, views: employeeViewsDictionary))
@@ -859,6 +862,13 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         
     }
     
+    
+    @objc func showFullScreenImage(_ sender: UITapGestureRecognizer){
+        
+        print("show full screen")
+        
+        navigationController?.pushViewController(imageFullViewController, animated: false )
+    }
     
     
     

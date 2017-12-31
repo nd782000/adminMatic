@@ -12,12 +12,13 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDelegate, UITextViewDelegate, UIGestureRecognizerDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIScrollViewDelegate {
+class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIScrollViewDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
     //var scrollView: UIScrollView!
     var json:JSON!
+    
     
     var lead:Lead!
     var submitButton:UIBarButtonItem!

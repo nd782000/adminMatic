@@ -19,7 +19,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
     var imageData:Image!
     //var albumID:String = "0"
     var uploadDelegate:ImageUploadProgressDelegate!
-    let saveURLString:String = "https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php"
+    let saveURLString:String = "https://www.atlanticlawnandgarden.com/cp/app/functions/update/image.php"
     var progressLbl: UILabel! = UILabel()
     var progressView:UIProgressView!
     var progressValue:Float!
@@ -44,6 +44,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
         self.selectionStyle = .none
         self.selectedImageView.layer.cornerRadius = 5.0
         self.selectedImageView.clipsToBounds = true
+        self.selectedImageView.contentMode = .scaleAspectFill
         self.selectedImageView.translatesAutoresizingMaskIntoConstraints = false
         self.selectedImageView.image = self.imageData.image
         self.contentView.addSubview(self.selectedImageView)
@@ -113,6 +114,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                     "leadTask":imageData.leadTaskID,
                     "task":imageData.taskID,
                     "woID":imageData.woID,
+                    "equipmentID":imageData.equipmentID,
                     "albumID":imageData.albumID
                 ]
                 print("parameters = \(parameters)")

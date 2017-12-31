@@ -54,6 +54,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     var tasksTableView: TableView!
     var imageUploadPrepViewController:ImageUploadPrepViewController!
     
+    
     init(_lead:Lead){
         super.init(nibName:nil,bundle:nil)
         //print("lead init \(_leadID)")

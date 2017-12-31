@@ -367,42 +367,7 @@ class ImageDetailViewController: UIViewController{
         }
     }
     
-    /*
-    func edit(){
-        print("edit")
-       /*
-        let imageUploadViewController:ImageUploadViewController = ImageUploadViewController(_imageType: "Gallery", _ID: "", _image: self.imageView.image!, _saveURLString: self.saveURLString)
-        
-        //cache buster
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
-        
-        
-            
-            
-        imageUploadViewController.loadLinkList(_linkType: "customers", _loadScript: API.Router.customerList(["cb":timeStamp as AnyObject]))
-        //self.loadLinkList(_linkType: "customers", _loadScript: API.Router.customerList(["cb":timeStamp as AnyObject]))
-        
-        
-        
-        
-        
-        
-        
-       // self.imagePicked = true
-        
-        //imageUploadViewController.delegate = self
-        
-        navigationController?.pushViewController(imageUploadViewController, animated: false )
-*/
-        
-        
-        
-        
-        
-    }
- */
+    
     
     
     
@@ -480,80 +445,7 @@ class ImageDetailViewController: UIViewController{
         
         
         
-        
-        print("votesView 1")
-        //self.votesView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
-
-
-
-        /*let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!)
-        self.likesImageView.layer.opacity = 1.0
-        
-        
-        
-        // let imgURL:URL = URL(string: imgUrl)!
-        Nuke.loadImage(with: imgUrl!, into: self.likesImageView){ [weak likesView] in
-            //print("nuke loadImage")
-            self.likesImageView.handle(response: $0, isFromMemoryCache: $1)
-            //self.activityView.stopAnimating()
-        }
-        */
-        
-                //print("votesView 3")
        
-        
-        
-        /*
-        //self.plusVoteBtn.titleLabel?.text = "+"
-        self.plusVoteBtn.layer.opacity = 1.0
-        self.plusVoteBtn.titleLabel?.textColor = UIColor.white
-        self.votesView.addSubview(plusVoteBtn)
-        
-        //self.minusVoteBtn.titleLabel?.text = "-"
-        self.minusVoteBtn.layer.opacity = 1.0
-        self.minusVoteBtn.titleLabel?.textColor = UIColor.white
-        self.votesView.addSubview(minusVoteBtn)
-        
-        self.myVotesValueLbl.text = "8"
-        self.myVotesValueLbl.layer.opacity = 1.0
-        self.myVotesValueLbl.textColor = UIColor(hex: 0x005100, op: 1.0)
-        self.votesView.addSubview(self.myVotesValueLbl)
-        
-        self.totalVotesLbl.text = "Total Votes"
-        self.totalVotesLbl.layer.opacity = 1.0
-        self.totalVotesLbl.textColor = UIColor(hex: 0x005100, op: 1.0)
-        self.votesView.addSubview(self.totalVotesLbl)
-        
-        self.totalVotesValueLbl.text = "39"
-        self.totalVotesValueLbl.layer.opacity = 1.0
-        self.totalVotesValueLbl.textColor = UIColor(hex: 0x005100, op: 1.0)
-        self.votesView.addSubview(self.totalVotesValueLbl)
-
-        */
-        
-        
-        
-        
-        /*
-        viewsDictionary3 = [
-            "likesImageView":self.likesImageView, "likesLbl":self.likesLbl
-            ] as [String:Any]
-        self.likesView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likesImageView(30)]-[likesLbl]-|", options: [], metrics: nil, views: viewsDictionary3))
-        
-        print("votesView 4")
-        
-        self.likesView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[likesImageView(30)]", options: [], metrics: nil, views: viewsDictionary3))
-        self.likesView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[likesLbl(30)]", options: [], metrics: nil, views: viewsDictionary3))
-        print("votesView 5")
-        
-       */
-        
-        
-
-        
-        
-        
-        
         
 
         
@@ -562,51 +454,30 @@ class ImageDetailViewController: UIViewController{
             //here you can do the logic for the cell size if phone is in landscape
             print("landscape")
             
-           // let navHeight = self.navigationController!.navigationBar.layer.frame.height
-            
-           // let sizeVals2 = ["navHeight":navHeight] as [String : Any]
-
-            //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[votesView(100)]", options: [], metrics: nil, views: viewsDictionary))
-            
-            //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[likesView(80)]", options: [], metrics: sizeVals2, views: viewsDictionary))
+          
             
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(40)]|", options: [], metrics: nil, views: viewsDictionary))
-            
-            
             
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likesBtn(30)][likesLbl(50)]-[customerLbl(250)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
             
             
             
-           // self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|- [likesImageView(30)]-[createdByLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesBtn(30)]", options: [], metrics: nil, views: viewsDictionary2))
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesLbl(30)]", options: [], metrics: nil, views: viewsDictionary2))
-            
-           
-            
-            
-            
-           
-            
             
             
         } else {
             //logic if not landscape
             print("portrait")
             
-           // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[likesView(80)]", options: [], metrics: sizeVals, views: viewsDictionary))
             
-            //self.textView.addSubview(self.customerLbl)
             self.textView.addSubview(self.descriptionLbl)
             
             self.textView.addSubview(self.tagsLbl)
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(150)]|", options: [], metrics: nil, views: viewsDictionary))
             
             
-           // self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likesImageView(30)]-[likesLbl(20)]-|", options: [], metrics: nil, views: viewsDictionary2))
-            //self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesImageView(30)]", options: [], metrics: nil, views: viewsDictionary2))
-           // self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesLbl(30)]", options: [], metrics: nil, views: viewsDictionary2))
-            
+          
             
             
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likesBtn(30)][likesLbl(50)]-[customerLbl(250)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
@@ -614,7 +485,6 @@ class ImageDetailViewController: UIViewController{
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesBtn(30)]-[descriptionLbl]-[tagsLbl(25)]-|", options: [], metrics: nil, views: viewsDictionary2))
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesBtn(30)]-[descriptionLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
 
-            //self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[descriptionLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tagsLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
             
@@ -626,47 +496,20 @@ class ImageDetailViewController: UIViewController{
         
         
         
-        // self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|- [likesImageView(30)]-[createdByLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
         self.likesBtn.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[likesImage(30)]", options: [], metrics: nil, views: viewsDictionary3))
         
         
         
         
         
-        
-        //vote view
-       // if(self.mode == "Top Image"){
-            
-        
-            
-        //}else{
-            //self.votesView.isHidden = true
-       // }
-        
+       
         
         self.blurredEffectView.frame = self.view.bounds
         
     }
     
     
-    
-    /*
-    func handlePlusVote(){
-        print("handle Plus Vote")
-        
-        //self.messageView?.isHidden = true
-        
-    }
-    
-    func handleMinusVote(){
-        print("handle Minus Vote")
-        
-        //self.messageView?.isHidden = true
-        
-    }
-
-    
-    */
+   
     
     
     @objc func handleLike(){
@@ -680,23 +523,7 @@ class ImageDetailViewController: UIViewController{
             self.image.liked = "1"
             self.likesImageView.image = UIImage(named:"liked.png")
             
-           /* Alamofire.request(API.Router.newLike(["empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "imageID":self.image.ID as AnyObject])).responseString() {
-                response in
-                print(response.request ?? "")  // original URL request
-                print(response.response ?? "") // URL response
-                print(response.data ?? "")     // server data
-                print(response.result)   // result of response serialization
-                
-            }
-            */
-           // print("imageID = \(self.image.ID)")
-             //print("empID = \(String(describing: self.appDelegate.loggedInEmployee?.ID))")
-            
-            
-            
-            
-            
-            
+           
             
             
             
@@ -733,29 +560,7 @@ class ImageDetailViewController: UIViewController{
             
             
             
-            /*
-            
-            Alamofire.request(API.Router.newLike(["empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "imageID":self.image.ID as AnyObject])).responseJSON() {
-                response in
-                print(response.request ?? "")  // original URL request
-                print(response.response ?? "") // URL response
-                print(response.data ?? "")     // server data
-                print(response.result)   // result of response serialization
-                
-                if let json = response.result.value {
-                    print("JSON: \(json)")
-                    let returnJSON = JSON(json)
-                    self.image.likes = returnJSON["newLikes"].stringValue
-                    self.likesLbl.text = "x\(self.image.likes)"
-                    self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: returnJSON["newLikes"].stringValue)
-                    
-                }
-               // self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: "100")
-
-                
-                
-            }
-            */
+           
  
             
         }else{
@@ -791,36 +596,13 @@ class ImageDetailViewController: UIViewController{
             
             
             
-            
-            /*
-            Alamofire.request(API.Router.deleteLike(["empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "imageID":self.image.ID as AnyObject])).responseJSON() {
-                response in
-                // //print(response.request ?? "")  // original URL request
-                ////print(response.response ?? "") // URL response
-                ////print(response.data ?? "")     // server data
-                ////print(response.result)   // result of response serialization
-                
-                if let json = response.result.value {
-                    print("JSON: \(json)")
-                    let returnJSON = JSON(json)
-                    self.image.likes = returnJSON["newLikes"].stringValue
-                    self.likesLbl.text = "x\(self.image.likes)"
-                    self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: returnJSON["newLikes"].stringValue)
-                    
-                }
-                
-                
-
-                
-            }
- */
+           
             
             
         }
         
         
         
-        //self.messageView?.isHidden = true
         
     }
     

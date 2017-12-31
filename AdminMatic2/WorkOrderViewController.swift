@@ -23,7 +23,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     var layoutVars:LayoutVars = LayoutVars()
     var editMode:Bool = false
     
-    var scrollView: UIScrollView!
+    //var scrollView: UIScrollView!
     var tapBtn:UIButton!
     
     var scheduleDelegate:ScheduleDelegate!
@@ -647,9 +647,9 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         title =  "Work Order #" + self.workOrderID
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
-        if(self.scrollView != nil){
-            self.scrollView.subviews.forEach({ $0.removeFromSuperview() })
-        }
+        //if(self.scrollView != nil){
+            //self.scrollView.subviews.forEach({ $0.removeFromSuperview() })
+       // }
         
         if(self.infoView != nil){
             self.infoView.subviews.forEach({ $0.removeFromSuperview() })

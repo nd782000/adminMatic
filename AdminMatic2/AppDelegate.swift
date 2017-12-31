@@ -97,17 +97,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         self.messageView = UIView()
         
+        getEmployeeList()
+        
+        
+        return true
+    }
+    
+    func getEmployeeList(){
         
         
         if(defaults.string(forKey: loggedInKeys.loggedInId) != nil){
             print("stored login data detected")
             if(Int(defaults.string(forKey: loggedInKeys.loggedInId)!)! > 0){
                 getLoggedInEmployeeData(_id: defaults.string(forKey: loggedInKeys.loggedInId)!)
-
+                
             }
         }
         
-    
+        
         
         //cache buster
         let now = Date()
@@ -129,10 +136,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 //print("fields json = \(self.fieldsJson)")
             }
         }
-                
         
         
-    //Get employee list
+        self.homeViewController = HomeViewController()
+        
+        
+        self.employeeListViewController = EmployeeListViewController()
+        self.employeeListViewController.delegate = self
+        
+        
+        
+        
+        //Get employee list
         var parameters:[String:String]
         parameters = ["cb":"\(timeStamp)"]
         print("parameters = \(parameters)")
@@ -144,33 +159,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             }
             .responseJSON() {
                 response in
-            if let json = response.result.value {
-                self.employees = JSON(json)
-                //self.employeeListViewController.layoutViews()
-                
-                let jsonCount = self.employees["employees"].count
-                //self.totalItems = jsonCount
-                print("JSONcount: \(jsonCount)")
-                for i in 0 ..< jsonCount {
+                if let json = response.result.value {
+                    self.employees = JSON(json)
+                    //self.employeeListViewController.layoutViews()
                     
+                    let jsonCount = self.employees["employees"].count
+                    //self.totalItems = jsonCount
+                    print("JSONcount: \(jsonCount)")
+                    for i in 0 ..< jsonCount {
+                        
+                        
+                        let employee = Employee(_ID: self.employees["employees"][i]["ID"].stringValue, _name: self.employees["employees"][i]["name"].stringValue, _lname: self.employees["employees"][i]["lname"].stringValue, _fname: self.employees["employees"][i]["fname"].stringValue, _username: self.employees["employees"][i]["username"].stringValue, _pic: self.employees["employees"][i]["pic"].stringValue, _phone: self.employees["employees"][i]["phone"].stringValue, _depID: self.employees["employees"][i]["depID"].stringValue, _payRate: self.employees["employees"][i]["payRate"].stringValue, _appScore: self.employees["employees"][i]["appScore"].stringValue)
+                        
+                        self.employeeArray.append(employee)
+                        
+                    }
                     
-                    let employee = Employee(_ID: self.employees["employees"][i]["ID"].stringValue, _name: self.employees["employees"][i]["name"].stringValue, _lname: self.employees["employees"][i]["lname"].stringValue, _fname: self.employees["employees"][i]["fname"].stringValue, _username: self.employees["employees"][i]["username"].stringValue, _pic: self.employees["employees"][i]["pic"].stringValue, _phone: self.employees["employees"][i]["phone"].stringValue, _depID: self.employees["employees"][i]["depID"].stringValue, _payRate: self.employees["employees"][i]["payRate"].stringValue, _appScore: self.employees["employees"][i]["appScore"].stringValue)
-                    
-                    self.employeeArray.append(employee)
-                    
+                    if self.employeeListViewController.employeeTableView != nil{
+                        self.employeeListViewController.employeeTableView.reloadData()
+                    }
                 }
-                
-            }
         }
         
         print("getEmployeeList JSON = \(self.employees)")
         
         
-        self.homeViewController = HomeViewController()
-        
-        
-        self.employeeListViewController = EmployeeListViewController()
-        self.employeeListViewController.delegate = self
+       
         
         
         
@@ -188,9 +202,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.navigationController?.navigationBar.barTintColor = UIColor.white
         
         /*
-        self.imageCollectionViewController = ImageCollectionViewController()
-        self.imageCollectionViewController.delegate = self
-        */
+         self.imageCollectionViewController = ImageCollectionViewController()
+         self.imageCollectionViewController.delegate = self
+         */
         
         
         self.leadListViewController = LeadListViewController()
@@ -227,7 +241,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         //left right buttons
         UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedStringKey.font: layoutVars.buttonFont, NSAttributedStringKey.foregroundColor: layoutVars.buttonTextColor], for: UIControlState())
         
-        return true
     }
     
     

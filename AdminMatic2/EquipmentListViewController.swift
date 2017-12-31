@@ -11,37 +11,43 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
+import Nuke
 
-protocol EquipmentDelegate{
-    func reDrawEquipmentList(_index:Int, _status:String)
+protocol EquipmentListDelegate{
+    func reDrawEquipmentList()
+    func disableSearch()
 }
 
 
 
-class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating, EquipmentDelegate{
+class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating, EquipmentListDelegate{
     var indicator: SDevIndicator!
     var totalEquipment:Int!
-    //var loadedItems:Int!
-    //var refreshControl:UIRefreshControl!
-    var searchController:UISearchController!
     
+    var searchController:UISearchController!
+    var customSC:SegmentedControl!
     var currentSortMode = "CREW"
     
-    
-    
-    
-    var equipmentTableView:TableView = TableView()
+    var equipmentTableView:TableView!
     
     var countView:UIView = UIView()
     var countLbl:Label = Label()
     
     var layoutVars:LayoutVars = LayoutVars()
     
-   var sections : [(index: Int, length :Int, title: String)] = Array()
+    var sections : [(index: Int, length :Int, title: String)] = Array()
+    var statusNames :[String] = ["Online", "Needs Repair", "Broken", "Winterized"]
+    
     var equipment: JSON!
     var equipmentArray:[Equipment] = []
     var equipmentSearchResults:[Equipment] = []
     var shouldShowSearchResults:Bool = false
+    
+    var refresher:UIRefreshControl!
+    var refreshFromTable:Bool = false
+    
+    var addEquipmentBtn:Button = Button(titleText: "Add Equipment")
+    var editFieldsBtn:Button = Button(titleText: "Edit Fields")
     
     
     override func viewDidLoad() {
@@ -58,6 +64,15 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
             view.removeFromSuperview()
         }
         
+        equipmentTableView = TableView()
+        equipmentArray = []
+        
+        if(refreshFromTable == true){
+            self.refresher.endRefreshing()
+        }
+        refreshFromTable = false
+        
+        
         
         // Show Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -72,10 +87,10 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         print("parameters = \(parameters)")
         
         
-        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/equipment.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/equipmentList.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("equipment response = \(response)")
+                //print("equipment response = \(response)")
             }
             .responseJSON(){
                 response in
@@ -85,7 +100,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
                     self.indicator.dismissIndicator()
                     
                     
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     self.equipment = JSON(json)
                     self.parseJSON()
                 }
@@ -99,23 +114,24 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         for i in 0 ..< jsonCount {
             
             //create an equipment object
-            let equipment = Equipment(_ID: self.equipment["equipment"][i]["equipID"].stringValue, _name: self.equipment["equipment"][i]["eName"].stringValue, _make: self.equipment["equipment"][i]["make"].stringValue, _model: self.equipment["equipment"][i]["model"].stringValue, _serial: self.equipment["equipment"][i]["serial"].stringValue, _crew: self.equipment["equipment"][i]["crewName"].stringValue, _status: self.equipment["equipment"][i]["status"].stringValue, _statusName: self.equipment["equipment"][i]["statusName"].stringValue, _type: self.equipment["equipment"][i]["typeName"].stringValue, _fuelType: self.equipment["equipment"][i]["fuelType"].stringValue, _engineType: self.equipment["equipment"][i]["engineType"].stringValue, _mileage: self.equipment["equipment"][i]["mileage"].stringValue, _pic: self.equipment["equipment"][i]["pic"].stringValue, _dealer: self.equipment["equipment"][i]["dealer"].stringValue, _purchaseDate: self.equipment["equipment"][i]["purchaseDate"].stringValue)
+            let equipment = Equipment(_ID: self.equipment["equipment"][i]["equipID"].stringValue, _name: self.equipment["equipment"][i]["eName"].stringValue, _make: self.equipment["equipment"][i]["make"].stringValue, _model: self.equipment["equipment"][i]["model"].stringValue, _serial: self.equipment["equipment"][i]["serial"].stringValue, _crew: self.equipment["equipment"][i]["crew"].stringValue, _crewName: self.equipment["equipment"][i]["crewName"].stringValue, _status: self.equipment["equipment"][i]["status"].stringValue, _type: self.equipment["equipment"][i]["type"].stringValue, _typeName: self.equipment["equipment"][i]["typeName"].stringValue, _fuelType: self.equipment["equipment"][i]["fuelType"].stringValue, _fuelTypeName: self.equipment["equipment"][i]["fuelName"].stringValue, _engineType: self.equipment["equipment"][i]["engineType"].stringValue, _engineTypeName: self.equipment["equipment"][i]["engineName"].stringValue, _mileage: self.equipment["equipment"][i]["mileage"].stringValue, _dealer: self.equipment["equipment"][i]["vendorID"].stringValue, _dealerName: self.equipment["equipment"][i]["vendorName"].stringValue, _purchaseDate: self.equipment["equipment"][i]["purchaseDate"].stringValue, _description: self.equipment["equipment"][i]["description"].stringValue)
             
-           // let equipment = Equipment( _name: self.items["items"][i]["name"].stringValue, _id: self.items["items"][i]["ID"].stringValue, _type: self.items["items"][i]["type"].stringValue, _price: self.items["items"][i]["price"].stringValue, _units: self.items["items"][i]["unit"].stringValue, _description: self.items["items"][i]["description"].stringValue, _taxable: self.items["items"][i]["taxable"].stringValue)
+            
+            if self.equipment["equipment"][i]["pic"].stringValue == "0"{
+                let image:Image = Image(_ID: "0", _noPicPath: self.equipment["equipment"][i]["picInfo"].stringValue)
+                equipment.image = image
+            }else{
+                let image:Image = Image(_ID: self.equipment["equipment"][i]["pic"].stringValue)
+                equipment.image = image
+                
+                print("pic path = \(equipment.image.thumbPath)")
+            }
+            
             
             self.equipmentArray.append(equipment)
             
         }
-        //let item = Item(_name:"# \(jsonCount) Items", _id: "", _type: "", _price: "", _units: "",_description:"",_taxable:"")
-       // self.itemsArray.append(item)
-        
-        
-        
-        
-        
-        
-        
-        
+       
         createSections()
         
         
@@ -134,8 +150,8 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         
             var index = 0;
             var titleArray:[String] = [" "]
-            for i in 0 ..< self.equipmentArray.sorted(by: { $0.crew < $1.crew }).count {
-                let stringToTest = self.equipmentArray.sorted(by: { $0.crew < $1.crew })[i].crew!
+            for i in 0 ..< self.equipmentArray.sorted(by: { $0.crewName < $1.crewName }).count {
+                let stringToTest = self.equipmentArray.sorted(by: { $0.crewName < $1.crewName })[i].crewName!
                 //let firstCharacter = String(stringToTest[stringToTest.startIndex])
                 if(i == 0){
                     titleArray.append(stringToTest)
@@ -148,7 +164,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
                     sections.append(newSection)
                     index = i;
                 }
-                if(i == self.equipmentArray.sorted(by: { $0.crew < $1.crew }).count - 1){
+                if(i == self.equipmentArray.sorted(by: { $0.crewName < $1.crewName }).count - 1){
                     let title = titleArray[titleArray.count - 1]
                     let newSection = (index: index, length: i - index + 1, title: title)
                     self.sections.append(newSection)
@@ -161,8 +177,8 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
             print("build sections")
             var index = 0;
             var titleArray:[String] = [" "]
-            for i in 0 ..< self.equipmentArray.sorted(by: { $0.type < $1.type }).count {
-                let stringToTest = self.equipmentArray.sorted(by: { $0.type < $1.type })[i].type!
+            for i in 0 ..< self.equipmentArray.sorted(by: { $0.typeName < $1.typeName }).count {
+                let stringToTest = self.equipmentArray.sorted(by: { $0.typeName < $1.typeName })[i].typeName!
                 //let firstCharacter = String(stringToTest[stringToTest.startIndex])
                 if(i == 0){
                     titleArray.append(stringToTest)
@@ -175,7 +191,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
                     sections.append(newSection)
                     index = i;
                 }
-                if(i == self.equipmentArray.sorted(by: { $0.type < $1.type }).count - 1){
+                if(i == self.equipmentArray.sorted(by: { $0.typeName < $1.typeName }).count - 1){
                     let title = titleArray[titleArray.count - 1]
                     let newSection = (index: index, length: i - index + 1, title: title)
                     self.sections.append(newSection)
@@ -188,8 +204,8 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
             print("build sections")
             var index = 0;
             var titleArray:[String] = [" "]
-            for i in 0 ..< self.equipmentArray.sorted(by: { $0.statusName < $1.statusName }).count {
-                let stringToTest = self.equipmentArray.sorted(by: { $0.statusName < $1.statusName })[i].statusName!
+            for i in 0 ..< self.equipmentArray.sorted(by: { $0.status < $1.status }).count {
+                let stringToTest = self.statusNames[Int(self.equipmentArray.sorted(by: { $0.status < $1.status })[i].status!)!]
                 //let firstCharacter = String(stringToTest[stringToTest.startIndex])
                 if(i == 0){
                     titleArray.append(stringToTest)
@@ -202,7 +218,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
                     sections.append(newSection)
                     index = i;
                 }
-                if(i == self.equipmentArray.sorted(by: { $0.statusName < $1.statusName }).count - 1){
+                if(i == self.equipmentArray.sorted(by: { $0.status < $1.status }).count - 1){
                     let title = titleArray[titleArray.count - 1]
                     let newSection = (index: index, length: i - index + 1, title: title)
                     self.sections.append(newSection)
@@ -217,8 +233,8 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
             print("build sections")
             var index = 0;
             var titleArray:[String] = [" "]
-            for i in 0 ..< self.equipmentArray.sorted(by: { $0.crew < $1.crew }).count {
-                let stringToTest = self.equipmentArray.sorted(by: { $0.crew < $1.crew })[i].crew!
+            for i in 0 ..< self.equipmentArray.sorted(by: { $0.crewName < $1.crewName }).count {
+                let stringToTest = self.equipmentArray.sorted(by: { $0.crewName < $1.crewName })[i].crewName!
                 //let firstCharacter = String(stringToTest[stringToTest.startIndex])
                 if(i == 0){
                     titleArray.append(stringToTest)
@@ -231,7 +247,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
                     sections.append(newSection)
                     index = i;
                 }
-                if(i == self.equipmentArray.sorted(by: { $0.crew < $1.crew }).count - 1){
+                if(i == self.equipmentArray.sorted(by: { $0.crewName < $1.crewName }).count - 1){
                     let title = titleArray[titleArray.count - 1]
                     let newSection = (index: index, length: i - index + 1, title: title)
                     self.sections.append(newSection)
@@ -272,12 +288,35 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         
         
         let items = ["Crew","Type","Status"]
-        let customSC = SegmentedControl(items: items)
+         customSC = SegmentedControl(items: items)
         
         
         
         customSC.addTarget(self, action: #selector(self.changeSort(sender:)), for: .valueChanged)
+        
+        switch currentSortMode {
+        case "CREW":
+            //equipmentArray.sorted(by: { $0.crewName > $1.crewName })
+            customSC.selectedSegmentIndex = 0
+            break
+        case "TYPE":
+            //equipmentArray.sorted(by: { $0.type > $1.type })
+            customSC.selectedSegmentIndex = 1
+            break
+        case "STATUS":
+            //equipmentArray.sorted(by: { $0.type > $1.type })
+            customSC.selectedSegmentIndex = 2
+            break
+        default:
+            //equipmentArray.sorted(by: { $0.status > $1.status })
+            customSC.selectedSegmentIndex = 0
+            break
+        }
+        
+        
         self.view.addSubview(customSC)
+        
+        
         
         self.equipmentTableView.delegate  =  self
         self.equipmentTableView.dataSource = self
@@ -285,6 +324,14 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         self.equipmentTableView.register(EquipmentTableViewCell.self, forCellReuseIdentifier: "cell")
         
         self.view.addSubview(self.equipmentTableView)
+        
+        refresher = UIRefreshControl()
+        refresher.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        
+        equipmentTableView.addSubview(refresher)
+        
+        refresher.addTarget(self, action: #selector(self.refresh(_:)), for: UIControlEvents.valueChanged)
+        
         
         self.countView = UIView()
         self.countView.backgroundColor = layoutVars.backgroundColor
@@ -297,20 +344,33 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         self.countView.addSubview(self.countLbl)
         
         
+        self.addEquipmentBtn.addTarget(self, action: #selector(EquipmentListViewController.addEquipment), for: UIControlEvents.touchUpInside)
+        self.view.addSubview(self.addEquipmentBtn)
+        
+        self.editFieldsBtn.addTarget(self, action: #selector(EquipmentListViewController.editFields), for: UIControlEvents.touchUpInside)
+        self.view.addSubview(self.editFieldsBtn)
+        
+        
+        
         
         //auto layout group
         let viewsDictionary = [
             "view1":customSC,
             "view2":self.equipmentTableView,
-            "view3":self.countView
+            "view3":self.countView,
+            "view4":self.addEquipmentBtn,
+            "view5":self.editFieldsBtn
             ] as [String : Any]
         
-        let sizeVals = ["fullWidth": layoutVars.fullWidth,"width": layoutVars.fullWidth - 30,"navBottom":layoutVars.navAndStatusBarHeight,"height": self.view.frame.size.height - layoutVars.navAndStatusBarHeight] as [String : Any]
+        let sizeVals = ["halfWidth": layoutVars.halfWidth, "fullWidth": layoutVars.fullWidth,"width": layoutVars.fullWidth - 30,"navBottom":layoutVars.navAndStatusBarHeight,"height": self.view.frame.size.height - layoutVars.navAndStatusBarHeight] as [String : Any]
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view3(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[view1(30)][view2][view3(30)]|", options:[], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view4(halfWidth)]-5-[view5(halfWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[view1(40)][view2][view3(30)][view4(40)]-10-|", options:[], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view5(40)]-10-|", options:[], metrics: sizeVals, views: viewsDictionary))
         
         let viewsDictionary2 = [
             
@@ -328,27 +388,42 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
     }
     
     
+    @objc func refresh(_ sender: AnyObject){
+        //print("refresh")
+        refreshFromTable = true
+        getEquipmentList()
+    }
+    
+    
+    
+    
     /////////////// Search Methods   ///////////////////////
     
     @objc func changeSort(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
-            //equipmentArray.sorted(by: { $0.crew > $1.crew })
             currentSortMode = "CREW"
             break
         case 1:
-            //equipmentArray.sorted(by: { $0.type > $1.type })
             currentSortMode = "TYPE"
             break
         default:
-            //equipmentArray.sorted(by: { $0.status > $1.status })
             currentSortMode = "STATUS"
             break
         }
         createSections()
         equipmentTableView.reloadData()
         equipmentTableView.reloadSectionIndexTitles()
-       // filterSearchResults()
+        
+        scrollToTop()
+       
+    }
+    
+    func scrollToTop() {
+        if (self.equipmentTableView.numberOfSections > 0 ) {
+            let top = NSIndexPath(row: Foundation.NSNotFound, section: 0)
+            self.equipmentTableView.scrollToRow(at: top as IndexPath, at: .top, animated: true);
+        }
     }
     
     
@@ -360,7 +435,15 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
     
     func filterSearchResults(){
         self.equipmentSearchResults = self.equipmentArray.filter({( aEquipment: Equipment) -> Bool in
-            return (aEquipment.name!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)            })
+            
+            //return typeName
+           // return (aEquipment.typeName!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
+            
+            
+            //return type name or name
+            return (aEquipment.name!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil  || aEquipment.typeName!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
+
+        })
         self.equipmentTableView.reloadData()
     }
     
@@ -368,13 +451,17 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         //print("searchBarTextDidBeginEditing")
         shouldShowSearchResults = true
+        searchBar.setShowsCancelButton(true, animated: true)
+        customSC.isEnabled = false
         self.equipmentTableView.reloadData()
     }
     
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        //print("searchBarCancelButtonClicked")
+        print("searchBarCancelButtonClicked")
         shouldShowSearchResults = false
+        searchBar.setShowsCancelButton(false, animated: true)
+        customSC.isEnabled = true
         self.equipmentTableView.reloadData()
     }
     
@@ -382,6 +469,8 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         //print("searchBarSearchButtonClicked")
         if !shouldShowSearchResults {
             shouldShowSearchResults = true
+            searchBar.setShowsCancelButton(true, animated: true)
+            customSC.isEnabled = false
             self.equipmentTableView.reloadData()
         }
         
@@ -390,7 +479,9 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         //print("searchBarTextDidEndEditing")
-        shouldShowSearchResults = false;
+        shouldShowSearchResults = false
+        searchBar.setShowsCancelButton(false, animated: true)
+        customSC.isEnabled = true
     }
     
     func willPresentSearchController(_ searchController: UISearchController){
@@ -473,28 +564,28 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         cell.layoutViews()
         // cell.textLabel?.text = array[sections[indexPath.section].index + indexPath.row]
         
-        //print("self.itemsArray!.count = \(self.itemsArray.count)")
+        
         
         if shouldShowSearchResults{
             print("cell should show search results")
             
             switch self.currentSortMode {
             case "CREW":
-                //equipmentArray.sorted(by: { $0.crew > $1.crew })
-                cell.equipment = self.equipmentSearchResults.sorted(by: { $0.crew < $1.crew })[indexPath.row]
+                //equipmentArray.sorted(by: { $0.crewName > $1.crewName })
+                cell.equipment = self.equipmentSearchResults.sorted(by: { $0.crewName < $1.crewName })[indexPath.row]
                 break
             case "TYPE":
                 //equipmentArray.sorted(by: { $0.type > $1.type })
-                cell.equipment = self.equipmentSearchResults.sorted(by: { $0.type < $1.type })[indexPath.row]
+                cell.equipment = self.equipmentSearchResults.sorted(by: { $0.typeName < $1.typeName })[indexPath.row]
                 break
             case "STATUS":
                 //equipmentArray.sorted(by: { $0.type > $1.type })
-                cell.equipment = self.equipmentSearchResults.sorted(by: { $0.statusName < $1.statusName })[indexPath.row]
+                cell.equipment = self.equipmentSearchResults.sorted(by: { $0.status < $1.status })[indexPath.row]
                 break
             default:
                 //CREW
                 //equipmentArray.sorted(by: { $0.status > $1.status })
-                cell.equipment = self.equipmentSearchResults.sorted(by: { $0.crew < $1.crew })[indexPath.row]
+                cell.equipment = self.equipmentSearchResults.sorted(by: { $0.crewName < $1.crewName })[indexPath.row]
                 
                 break
             }
@@ -502,85 +593,107 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
             
             let searchString = self.searchController.searchBar.text!.lowercased()
             
-            // if(currentSearchMode == .name){
+           
             
-            //text highlighting
-            let baseString:NSString = cell.equipment.name as NSString
-            let highlightedText = NSMutableAttributedString(string: cell.equipment.name!)
-            var error: NSError?
-            let regex: NSRegularExpression?
+            let baseString1:NSString = cell.equipment.typeName as NSString
+            let highlightedText1 = NSMutableAttributedString(string: cell.equipment.typeName!)
+            var error1: NSError?
+            let regex1: NSRegularExpression?
             do {
-                regex = try NSRegularExpression(pattern: searchString, options: .caseInsensitive)
-            } catch let error1 as NSError {
-                error = error1
-                regex = nil
+                regex1 = try NSRegularExpression(pattern: searchString, options: .caseInsensitive)
+            } catch let error1a as NSError {
+                error1 = error1a
+                regex1 = nil
             }
-            
-            if let regexError = error {
-                //print("Oh no! \(regexError)")
+            if let regexError1 = error1 {
+                print("Oh no! \(regexError1)")
             } else {
-                for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                for match in (regex1?.matches(in: baseString1 as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString1.length)))! as [NSTextCheckingResult] {
+                    highlightedText1.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
                 
             }
-            cell.nameLbl.attributedText = highlightedText
-            //cell.addressLbl.text = cell.item.address
+            //cell.nameLbl.attributedText = highlightedText
+            cell.typeValueLbl.attributedText = highlightedText1
+            
+            
+            
+            let baseString2:NSString = cell.equipment.name as NSString
+            let highlightedText2 = NSMutableAttributedString(string: cell.equipment.name!)
+            var error2: NSError?
+            let regex2: NSRegularExpression?
+            do {
+                regex2 = try NSRegularExpression(pattern: searchString, options: .caseInsensitive)
+            } catch let error2a as NSError {
+                error2 = error2a
+                regex2 = nil
+            }
+            if let regexError2 = error2 {
+                print("Oh no! \(regexError2)")
+            } else {
+                for match in (regex2?.matches(in: baseString2 as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString2.length)))! as [NSTextCheckingResult] {
+                    highlightedText2.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                }
+                
+            }
+            //cell.nameLbl.attributedText = highlightedText
+            cell.nameLbl.attributedText = highlightedText2
+            
+            
             
             
             
         } else {
             print("cell should not show search results")
             print("cell name = \(self.equipmentArray[indexPath.row].name)")
-            //cell.equipment = self.equipmentArray[indexPath.row]
             
             switch self.currentSortMode {
             case "CREW":
-                //equipmentArray.sorted(by: { $0.crew > $1.crew })
-                //cell.textLabel?.text = array[sections[indexPath.section].index + indexPath.row]
-                //cell.id = self.ids[sections[indexPath.section].index + indexPath.row]
                 
                 
-                //cell.equipment = self.equipmentArray.sorted(by: { $0.crew > $1.crew })[indexPath.row]
-                
-                cell.equipment = self.equipmentArray.sorted(by: { $0.crew < $1.crew })[sections[indexPath.section].index + indexPath.row]
+                cell.equipment = self.equipmentArray.sorted(by: { $0.crewName < $1.crewName })[sections[indexPath.section].index + indexPath.row]
                 
                 
                 break
             case "TYPE":
-                //equipmentArray.sorted(by: { $0.type > $1.type })
-                //cell.equipment = self.equipmentArray.sorted(by: { $0.type > $1.type })[indexPath.row]
                 
-                cell.equipment = self.equipmentArray.sorted(by: { $0.type < $1.type })[sections[indexPath.section].index + indexPath.row]
+                
+                cell.equipment = self.equipmentArray.sorted(by: { $0.typeName < $1.typeName })[sections[indexPath.section].index + indexPath.row]
                 
                 break
             case "STATUS":
-                //equipmentArray.sorted(by: { $0.type > $1.type })
-               // cell.equipment = self.equipmentArray.sorted(by: { $0.status > $1.status })[indexPath.row]
                 
-                cell.equipment = self.equipmentArray.sorted(by: { $0.statusName < $1.statusName })[sections[indexPath.section].index + indexPath.row]
+                
+                cell.equipment = self.equipmentArray.sorted(by: { $0.status < $1.status })[sections[indexPath.section].index + indexPath.row]
                 break
             default:
                 //CREW
-                //equipmentArray.sorted(by: { $0.status > $1.status })
-                //cell.equipment = self.equipmentArray.sorted(by: { $0.crew > $1.crew })[indexPath.row]
                 
-                cell.equipment = self.equipmentArray.sorted(by: { $0.crew < $1.crew })[sections[indexPath.section].index + indexPath.row]
+                
+                cell.equipment = self.equipmentArray.sorted(by: { $0.crewName < $1.crewName })[sections[indexPath.section].index + indexPath.row]
                 
                 break
             }
             
             
             
-            cell.nameLbl.text = cell.equipment.name!
+            
+            cell.typeValueLbl.text = cell.equipment.typeName!
         }
         
-        
         cell.activityView.startAnimating()
-        cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+cell.equipment.pic!)
-        cell.typeLbl.text = "Type: \(cell.equipment.type!)"
-        cell.crewLbl.text = "Crew: \(cell.equipment.crew!)"
+        
+       // cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+cell.equipment.pic!)
+        cell.setImageUrl(_url: cell.equipment.image.thumbPath!)
+        
+        
+        cell.nameLbl.text = cell.equipment.name!
+        cell.crewLbl.text = "Crew: \(cell.equipment.crewName!)"
+        cell.statusIcon.image = nil
         cell.setStatus(status: cell.equipment.status)
+        
+        //print("cell status name = \(cell.equipment.statusName)")
+        
         return cell
     }
     
@@ -592,30 +705,52 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         
         let currentCell = tableView.cellForRow(at: indexPath!) as! EquipmentTableViewCell;
         
-        //if(currentCell.item != nil && currentCell.item.ID != ""){
         
-        //searchController.isActive = false
         let equipmentViewController = EquipmentViewController(_equipment: currentCell.equipment)
         navigationController?.pushViewController(equipmentViewController, animated: false )
         equipmentViewController.equipmentDelegate = self
         equipmentViewController.equipmentIndex = indexPath?.row
         
         tableView.deselectRow(at: indexPath!, animated: true)
-        //}
+    }
+    
+    
+    @objc func addEquipment(){
+        print("Add Equipment")
         
+        self.disableSearch()
+        
+        let newEquipmentViewController = NewEditEquipmentViewController()
+        newEquipmentViewController.delegate = self
+        navigationController?.pushViewController(newEquipmentViewController, animated: false )
+    }
+    
+    @objc func editFields(){
+        print("Edit Fields")
+        let equipmentFieldsListViewController = EquipmentFieldsListViewController()
+        equipmentFieldsListViewController.equipmentListDelegate = self
+        navigationController?.pushViewController(equipmentFieldsListViewController, animated: false )
     }
     
     
     
-    func reDrawEquipmentList(_index:Int, _status:String){
-        //print("reDraw Schedule")
-        if(shouldShowSearchResults == true){
-            equipmentSearchResults[_index].status = _status
-            
-        }else{
-            equipmentArray[_index].status = _status
+    func disableSearch(){
+        if(self.searchController != nil){
+            self.searchController.isActive = false
+            shouldShowSearchResults = false
+            customSC.isEnabled = true
+            equipmentTableView.reloadData()
         }
-        self.equipmentTableView.reloadData()
+    }
+    
+    
+    
+    func reDrawEquipmentList(){
+        print("reDraw Equipment List")
+       
+            
+            getEquipmentList()
+            
         
         
     }

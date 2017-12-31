@@ -34,6 +34,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     var layoutVars:LayoutVars = LayoutVars()
     var delegate:ImageViewDelegate!  // refreshing the list
     var attachmentDelegate:AttachmentDelegate!  // refreshing the list
+    var equipmentImageDelegate:UpdateEquipmentImageDelegate!
     var indicator: SDevIndicator!
     var backButton:UIButton!
     
@@ -93,6 +94,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     var taskStatus:String = ""
     var albumID:String = ""
     var customerID:String = ""
+    var equipmentID:String = ""
     
     //data items
     var imageType:String! //example: task, fieldnote, custImage, equipmentImage
@@ -153,7 +155,6 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.leadTaskID = _leadTaskID
         self.customerID = _customerID
         self.images = _images
-        //self.saveURLString = _saveURLString
     }
     
     //init for customer
@@ -164,7 +165,6 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.customerID = _customerID
         self.images = _images
         self.imagesAdded = _images
-        //self.linkType = _linkType
     }
     
     //init for gallery
@@ -175,6 +175,16 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.linkType = _linkType
         self.images = _images
         self.imagesAdded = _images
+    }
+    
+    //init for equipment
+    init(_imageType:String, _equipmentID:String){
+        super.init(nibName:nil,bundle:nil)
+        print("ImageUploadPrep init for equipment")
+        self.imageType = _imageType
+        self.equipmentID = _equipmentID
+        
+        
     }
     
     
@@ -192,7 +202,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         
         // Do any additional setup after loading the view.
         
-        print("ImmageUploadPrep viewDidLoad imageType = \(self.imageType)")
+        print("ImageUploadPrep viewDidLoad imageType = \(self.imageType)")
         
        
         
@@ -211,6 +221,9 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             break
         case "Lead Task":
                 title = "Add/Update Lead Task"
+            break
+        case "Equipment":
+            title = "Add Equipment Image"
             break
         
             
@@ -307,16 +320,16 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.imageCollectionView.alwaysBounceVertical = true
         self.imageCollectionView.backgroundColor = UIColor.darkGray
         
-       
-        self.groupNameView.backgroundColor = UIColor.lightGray
-        self.groupNameView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.groupNameView)
+        if imageType != "Equipment"{
+            self.groupNameView.backgroundColor = UIColor.lightGray
+            self.groupNameView.translatesAutoresizingMaskIntoConstraints = false
+            self.view.addSubview(self.groupNameView)
+            groupSwitch.isOn = groupImages
+            groupSwitch.translatesAutoresizingMaskIntoConstraints = false
+            groupSwitch.addTarget(self, action: #selector(ImageUploadPrepViewController.switchValueDidChange(sender:)), for: .valueChanged)
+            self.groupNameView.addSubview(groupSwitch)
+        }
         
-        
-        groupSwitch.isOn = groupImages
-        groupSwitch.translatesAutoresizingMaskIntoConstraints = false
-        groupSwitch.addTarget(self, action: #selector(ImageUploadPrepViewController.switchValueDidChange(sender:)), for: .valueChanged)
-        self.groupNameView.addSubview(groupSwitch)
         
         
         
@@ -375,6 +388,21 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             self.submitBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.pickImageUploadSize), for: UIControlEvents.touchUpInside)
             self.view.addSubview(self.submitBtn)
+            
+        }else if imageType == "Equipment"{
+            print("equipment")
+            
+            self.addImageBtn.titleLabel?.text = "Add Equipment Image"
+            self.addImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.addImages), for: UIControlEvents.touchUpInside)
+            self.view.addSubview(self.addImageBtn)
+            
+            
+            
+            self.submitBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.pickImageUploadSize), for: UIControlEvents.touchUpInside)
+            self.view.addSubview(self.submitBtn)
+            print("end")
+            
+            
             
         }else{
             print("attachment / task / lead task / customer")
@@ -513,7 +541,20 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
                 
                 
-         }else{
+        }else if self.imageType == "Equipment"{
+            let viewsDictionary = [
+                 "imageCollection":self.imageCollectionView, "addImageBtn":self.addImageBtn, "submitBtn":self.submitBtn
+                ] as [String:Any]
+            
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[imageCollection]-|", options: [], metrics: nil, views: viewsDictionary))
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[addImageBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+            
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[imageCollection]-[addImageBtn]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+            
+            
+            
+        }else{
             //field notes and tasks
             //auto layout group
             let viewsDictionary = [
@@ -758,6 +799,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             }
             break
             
+        case "Equipment":
+            
+            break
+            
         default://home
             print("add images 3")
             break
@@ -786,7 +831,9 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         multiPicker.showsCancelButton = true
         multiPicker.assetType = .allPhotos
         
-       
+        if(imageType == "Equipment"){
+            multiPicker.maxSelectableCount = 1
+        }
         
         self.present(multiPicker, animated: true) {}
         
@@ -854,6 +901,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             delegate.refreshImages(_images: _images, _scoreAdjust: _scoreAdjust)
         }else if(self.imageType == "Task" || self.imageType == "Lead Task"){
             attachmentDelegate.updateTable(_points: (_scoreAdjust + points))
+        }else if self.imageType == "Equipment"{
+            //let image = Image(_path: self.equipment.pic!)
+            
+            equipmentImageDelegate.updateImage(_image: _images[0])
+            
         }else{//attachments
             attachmentDelegate.updateTable(_points: (_scoreAdjust + points))
         }
@@ -1074,7 +1126,12 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     @objc func pickImageUploadSize(){
         
         if(imagesAdded.count == 0){
-            self.saveData()
+            if imageType == "Equipment"{
+                simpleAlert(_vc: self, _title: "No Images Picked", _message: "")
+            }else{
+                self.saveData()
+            }
+            
         }else{
             let actionSheet = UIAlertController(title: "Pick an Image Size", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
             actionSheet.view.backgroundColor = UIColor.white
@@ -1463,6 +1520,25 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             
           
+            }else if(self.imageType == "Equipment"){
+                
+                for image in self.imagesAdded{
+                   
+                    image.equipmentID = self.equipmentID
+                }
+                
+                if(self.imagesAdded.count > 0){
+                    let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                    imageUploadProgressViewController.uploadPrepDelegate = self
+                    self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
+                }else{
+                    
+                    self.imageAdded = false
+                    self.textEdited = false
+                    self.goBack()
+                }
+                
+                
             }else{
                 //Customer
                 

@@ -37,7 +37,7 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        view.backgroundColor = UIColor.darkGray
+        view.backgroundColor = layoutVars.backgroundColor
        
         
         let backButton:UIButton = UIButton(type: UIButtonType.custom)
@@ -114,23 +114,30 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
     
     @objc func swiped(_ gesture: UIGestureRecognizer){
         print("swiped")
-        if(scrollView.zoomScale == 1){
-            
-            imageView.image = nil
-            
-            if let swipeGesture = gesture as? UISwipeGestureRecognizer{
-                switch swipeGesture.direction {
-                case UISwipeGestureRecognizerDirection.right:
-                    print("right swipe")
-                    
-                    _ = delegate.getPrevNextImage(_next: false)
-                case UISwipeGestureRecognizerDirection.left:
-                    print("left swipe")
-                   
-                    
-                    _ = delegate.getPrevNextImage(_next: true)
-                default:
-                    print("other swipe")
+        
+        if delegate != nil{
+            if(scrollView.zoomScale == 1){
+                
+                imageView.image = nil
+                
+                if let swipeGesture = gesture as? UISwipeGestureRecognizer{
+                    switch swipeGesture.direction {
+                    case UISwipeGestureRecognizerDirection.right:
+                        print("right swipe")
+                        
+                        
+                            _ = delegate.getPrevNextImage(_next: false)
+                        
+                        
+                    case UISwipeGestureRecognizerDirection.left:
+                        print("left swipe")
+                       
+                        
+                            _ = delegate.getPrevNextImage(_next: true)
+                        
+                    default:
+                        print("other swipe")
+                    }
                 }
             }
         }

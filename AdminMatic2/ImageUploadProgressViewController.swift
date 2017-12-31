@@ -229,7 +229,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
     @objc func cancel(){
         
         
-        let alertController = UIAlertController(title: "All upload didn't Finish", message: "Leave this page?", preferredStyle: UIAlertControllerStyle.alert)
+        let alertController = UIAlertController(title: "All uploads didn't Finish", message: "Leave this page?", preferredStyle: UIAlertControllerStyle.alert)
         
         let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
             (result : UIAlertAction) -> Void in
