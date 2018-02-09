@@ -183,63 +183,6 @@ class LeadListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     
-    //cell swipe action
-  /*
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        
-        let currentCell = tableView.cellForRow(at: indexPath as IndexPath) as! EmployeeTableViewCell;
-        let call = UITableViewRowAction(style: .normal, title: "Call") { action, index in
-            if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
-                
-                UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: [:], completionHandler: nil)
-            }
-            
-            tableView.setEditing(false, animated: true)
-        }
-        
-        call.backgroundColor = self.layoutVars.buttonColor1
-        let text = UITableViewRowAction(style: .normal, title: "Text") { action, index in
-            if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
-                
-                
-                if (MFMessageComposeViewController.canSendText()) {
-                    self.controller = MFMessageComposeViewController()
-                    
-                    self.controller.recipients = [currentCell.employee.phone]
-                    self.controller.messageComposeDelegate = self
-                    
-                    self.controller.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-                    self.controller.navigationBar.shadowImage = UIImage()
-                    self.controller.navigationBar.isTranslucent = true
-                  
-                    self.controller.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(EmployeeListViewController.dismissMessage))
-                    self.controller.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.blue]
-                    self.present(self.controller, animated: true, completion: nil)
-                    
-                    tableView.setEditing(false, animated: true)
-                }
-                
-            }
-        }
-        
-        
-        text.backgroundColor = UIColor.orange
-        return [call,text]
-       
-    }
-     
-     
-     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-     // the cells you would like the actions to appear needs to be editable
-     return true
-     }
-     
-     
-     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-     // you need to implement this method too or you can't swipe to display the actions
-     }
-    
-    */
     
     @objc func refresh(_ sender: AnyObject){
         //print("refresh")

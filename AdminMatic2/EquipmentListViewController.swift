@@ -90,7 +90,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/equipmentList.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                //print("equipment response = \(response)")
+                print("equipment response = \(response)")
             }
             .responseJSON(){
                 response in
@@ -713,6 +713,60 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         
         tableView.deselectRow(at: indexPath!, animated: true)
     }
+    
+    
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let ID:String!
+        if shouldShowSearchResults{
+            ID = self.equipmentSearchResults[indexPath.row].ID
+        }else{
+            ID = self.equipmentArray[indexPath.row].ID
+        }
+        
+        //indexPath
+        let deActivate = UITableViewRowAction(style: .normal, title: "deactivate") { action, index in
+            //print("none button tapped")
+            self.deActivateEquipment(_ID:ID!)
+        }
+        deActivate.backgroundColor = UIColor.red
+        return [deActivate]
+    }
+    
+    func deActivateEquipment(_ID:String){
+        print("deActivate Equipment \(_ID)")
+        let parameters = ["equipmentID": _ID as AnyObject]
+        print("parameters = \(parameters)")
+        
+        // Show Indicator
+        indicator = SDevIndicator.generate(self.view)!
+        
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/equipmentActive.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                //print("equipment response = \(response)")
+            }
+            .responseJSON(){
+                response in
+               // self.shouldShowSearchResults = false
+                //self.searchController.isActive = false
+                self.getEquipmentList()
+                
+        }
+        
+        
+    }
+    
+    
+    
+    
+    
     
     
     @objc func addEquipment(){

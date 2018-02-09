@@ -31,7 +31,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     var statusIcon:UIImageView = UIImageView()
     var statusTxtField:PaddedTextField!
     var statusPicker: Picker!
-    var statusArray = ["Un-Done","In Progress","Done","Cancel","Waiting"]
+    var statusArray = ["In Progress","Done","Cancel","Waiting"]
     var statusValue: String!
     var statusValueToUpdate: String!
     var customerBtn: Button!
@@ -169,13 +169,13 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
         //picker
         self.statusPicker = Picker()
         print("statusValue : \(lead.statusId)")
-        print("set picker position : \(Int(lead.statusId)! - 1)")
+        print("set picker position : \(Int(lead.statusId)!)")
         
         self.statusPicker.delegate = self
         
         //self.statusPicker.selectRow(Int(lead.statusId)! - 1, inComponent: 0, animated: false)
         
-        self.statusPicker.selectRow(Int(lead.statusId)! - 1, inComponent: 0, animated: false)
+        self.statusPicker.selectRow(Int(lead.statusId)!, inComponent: 0, animated: false)
       
         self.statusTxtField = PaddedTextField(placeholder: "")
         self.statusTxtField.textAlignment = NSTextAlignment.center
@@ -421,18 +421,15 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
         rowString = statusArray[row]
         switch row {
         case 0:
-            myImageView.image = UIImage(named:"unDoneStatus.png")
-            break
-        case 1:
             myImageView.image = UIImage(named:"inProgressStatus.png")
             break
-        case 2:
+        case 1:
             myImageView.image = UIImage(named:"doneStatus.png")
             break
-        case 3:
+        case 2:
             myImageView.image = UIImage(named:"cancelStatus.png")
             break
-        case 4:
+        case 3:
             myImageView.image = UIImage(named:"waitingStatus.png")
             break
         default:
@@ -448,7 +445,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
     {
-        self.statusValueToUpdate = "\(row + 1)"
+        self.statusValueToUpdate = "\(row)"
     }
     
     func cancelPicker(){
@@ -459,16 +456,20 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     func handleStatusChange(){
         self.statusTxtField.resignFirstResponder()
         var parameters:[String:String]
+        
+       
+        
+        
          parameters = [
          "leadID":self.lead.ID,
-         "status":"\(self.statusPicker.selectedRow(inComponent: 0))",
-         "empID":(self.appDelegate.loggedInEmployee?.ID)!
+         "status":"\(self.statusPicker.selectedRow(inComponent: 0))"
          ]
         print("parameters = \(parameters)")
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/leadStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
             response in
             print(response.request ?? "")  // original URL request
             print(response.result)   // result of response serialization
+            self.editsMade = true
             self.statusValue = self.statusValueToUpdate
             self.setStatus(status: self.statusValue)
             self.lead.statusId = self.statusValue
@@ -553,19 +554,6 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
                     tasksTableView.reloadData()
                     
                     
-                    
-                    
-                    /*
-                    usageToLog[indexPath.row].del = "1"
-                    usageToLogJSON = []
-                    let JSONString = usageToLog[indexPath.row].toJSONString(prettyPrint: true)
-                    usageToLogJSON.append(JSON(JSONString ?? ""))
-                    print("usage JSONString = \(String(describing: JSONString))")
-                    callAlamoFire(_type: "delete")
-                    usageToLog.remove(at: indexPath.row)
-                    usageTableView.reloadData()
- */
-                    
                 }
             }else{
                 simpleAlert(_vc: self,_title: "Can't delete lead tasks you didn't create.", _message: "")
@@ -589,25 +577,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
          self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
     }
     
-    /*
-    func handleDatePicker()
-    {
-        ////print("DATE: \(dateFormatter.stringFromDate(datePickerView.date))")
-        // self.dateTxtField.text =  dateFormatter.string(from: datePickerView.date)
-    }
-    
-    
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        //let offset = (textField.frame.origin.y - 150)
-        //let scrollPoint : CGPoint = CGPoint(x: 0, y: offset)
-        //self.scrollView.setContentOffset(scrollPoint, animated: true)
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        // self.scrollView.setContentOffset(CGPoint.zero, animated: true)
-    }
-    */
+   
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -663,28 +633,24 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     func setStatus(status: String) {
         print("set status \(status)")
         switch (status) {
-        case "1":
-            let statusImg = UIImage(named:"unDoneStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "2":
+        case "0":
             let statusImg = UIImage(named:"inProgressStatus.png")
             statusIcon.image = statusImg
             break;
-        case "3":
+        case "1":
             let statusImg = UIImage(named:"doneStatus.png")
             statusIcon.image = statusImg
             break;
-        case "4":
+        case "2":
             let statusImg = UIImage(named:"cancelStatus.png")
             statusIcon.image = statusImg
             break;
-        case "5":
+        case "3":
             let statusImg = UIImage(named:"waitingStatus.png")
             statusIcon.image = statusImg
             break;
         default:
-            let statusImg = UIImage(named:"unDoneStatus.png")
+            let statusImg = UIImage(named:"inProgressStatus.png")
             statusIcon.image = statusImg
             break;
         }

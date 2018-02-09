@@ -18,7 +18,7 @@ protocol EditEquipmentDelegate{
 }
 
 
-class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollViewDelegate, UIPickerViewDelegate, UITableViewDelegate, UITableViewDataSource, EditEquipmentDelegate {
+class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, EditEquipmentDelegate {
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
     
@@ -53,6 +53,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
     
     var typeLbl:GreyLabel!
     var makeModelLbl:GreyLabel!
+    var descriptionView:UITextView!
     var serialLbl:GreyLabel!
     var crewLbl:GreyLabel!
     var fuelLbl:GreyLabel!
@@ -60,27 +61,16 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
     var dealerLbl:GreyLabel!
     var dealerValueBtn:Button!
     var purchaseDateLbl:GreyLabel!
+    var serviceBtn:Button!
     
-    var descriptionView:UITextView!
     
-    
-    var serviceLbl:GreyLabel!
-    
-    let items = ["History","Up-Coming"]
-    var serviceSC:SegmentedControl!
-    
-    var serviceTableView:TableView = TableView()
-    var tableViewMode:String = "HISTORY"
     
    
     
     var keyBoardShown:Bool = false
     
-    var serviceHistoryArray:[EquipmentService] = []
-    var serviceHistory:JSON!
     
-    var serviceUpcomingArray:[EquipmentService] = []
-    var serviceUpcoming:JSON!
+    
     
     
     var imageFullViewController:ImageFullViewController!
@@ -121,61 +111,16 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
-        getEquipmentServiceHistory()
-        
+        layoutViews()
     }
     
-    func getEquipmentServiceHistory(){
-        
-        
-         indicator = SDevIndicator.generate(self.view)!
-        
-        
-        self.serviceHistoryArray = []
-        
-        //cache buster
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
-        
-        //Get lead list
-        var parameters:[String:String]
-        parameters = ["cb":"\(timeStamp)",
-        "equipmentID":"\(equipment.ID!)"]
-        print("parameters = \(parameters)")
-        
-        self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/equipment.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
-            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
-            .responseString { response in
-                print("equipment service response = \(response)")
-            }
-            .responseJSON() {
-                response in
-                if let json = response.result.value {
-                    self.serviceHistory = JSON(json)
-                    
-                    let jsonCount = self.serviceHistory["serviceHistory"].count
-                    print("JSONcount: \(jsonCount)")
-                    for i in 0 ..< jsonCount {
-                        
-                        let equipmentService = EquipmentService(_ID: self.serviceHistory["serviceHistory"][i]["ID"].stringValue, _name: self.serviceHistory["serviceHistory"][i]["name"].stringValue, _type: self.serviceHistory["serviceHistory"][i]["type"].stringValue, _frequency: self.serviceHistory["serviceHistory"][i]["frequency"].stringValue, _instruction: self.serviceHistory["serviceHistory"][i]["instruction"].stringValue, _completionDate: self.serviceHistory["serviceHistory"][i]["completionDate"].stringValue, _completionMileage: self.serviceHistory["serviceHistory"][i]["completionMileage"].stringValue, _completedBy: self.serviceHistory["serviceHistory"][i]["completedBy"].stringValue, _notes: self.serviceHistory["serviceHistory"][i]["notes"].stringValue, _status: self.serviceHistory["serviceHistory"][i]["status"].stringValue)
-                        
-                        self.serviceHistoryArray.append(equipmentService)
-                    }
-                    
-                    self.indicator.dismissIndicator()
-                    self.layoutViews()
-                }
-        }
- 
-    }
+   
     
     
     
     func layoutViews(){
         
         print("layoutViews")
-        // indicator.dismissIndicator()
         
         
         
@@ -183,42 +128,25 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
         editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(EquipmentViewController.displayEditView))
         navigationItem.rightBarButtonItem = editButton
         
-        ///////////   employee section   /////////////
         //image
         self.equipmentImage = UIImageView()
+    
+        activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        activityView.center = CGPoint(x: self.equipmentImage.frame.size.width / 2, y: self.equipmentImage.frame.size.height / 2)
+        equipmentImage.addSubview(activityView)
+        activityView.startAnimating()
         
+        let imgURL:URL = URL(string: self.equipment.image.thumbPath!)!
+    
+        print("imgURL = \(imgURL)")
         
-        
-            activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
-            activityView.center = CGPoint(x: self.equipmentImage.frame.size.width / 2, y: self.equipmentImage.frame.size.height / 2)
-            equipmentImage.addSubview(activityView)
-            activityView.startAnimating()
+        Nuke.loadImage(with: imgURL, into: self.equipmentImage!){
+            print("nuke loadImage")
+            self.equipmentImage?.handle(response: $0, isFromMemoryCache: $1)
+            self.activityView.stopAnimating()
             
-            //let imgURL:URL = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.equipment.pic!)!
-        
-            let imgURL:URL = URL(string: self.equipment.image.thumbPath!)!
-        
-            print("imgURL = \(imgURL)")
-            
-            
-            Nuke.loadImage(with: imgURL, into: self.equipmentImage!){
-                print("nuke loadImage")
-                self.equipmentImage?.handle(response: $0, isFromMemoryCache: $1)
-                self.activityView.stopAnimating()
-                
-                //let image = Image(_path: self.equipment.pic!)
-                
-                
-                
-                //self.imageFullViewController = ImageFullViewController(_image: image)
-                self.imageFullViewController = ImageFullViewController(_image: self.equipment.image)
-            }
-            
-        
-        
-        
-        
-        
+            self.imageFullViewController = ImageFullViewController(_image: self.equipment.image)
+        }
         
         self.equipmentImage.layer.cornerRadius = 5.0
         self.equipmentImage.layer.borderWidth = 2
@@ -228,17 +156,14 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
         self.view.addSubview(self.equipmentImage)
         
         
-            self.tapBtn = Button()
-            self.tapBtn.translatesAutoresizingMaskIntoConstraints = false
-        //if equipment.pic != "" {
+        self.tapBtn = Button()
+        self.tapBtn.translatesAutoresizingMaskIntoConstraints = false
         if equipment.image.ID != "0" {
             self.tapBtn.addTarget(self, action: #selector(EquipmentViewController.showFullScreenImage), for: UIControlEvents.touchUpInside)
         }
-            self.tapBtn.backgroundColor = UIColor.clear
-            self.tapBtn.setTitle("", for: UIControlState.normal)
-            self.view.addSubview(self.tapBtn)
-        
-        
+        self.tapBtn.backgroundColor = UIColor.clear
+        self.tapBtn.setTitle("", for: UIControlState.normal)
+        self.view.addSubview(self.tapBtn)
         
         //name
         self.nameLbl = GreyLabel()
@@ -246,7 +171,6 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
         self.nameLbl.font = layoutVars.largeFont
         self.view.addSubview(self.nameLbl)
         
-    
         //status
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
@@ -379,7 +303,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
             self.descriptionView.text = self.equipment.description
         }
         
-        self.descriptionView.font = layoutVars.textFieldFont
+        self.descriptionView.font = layoutVars.smallFont
         self.descriptionView.backgroundColor = UIColor.clear
         self.descriptionView.isEditable = false
         self.descriptionView.translatesAutoresizingMaskIntoConstraints = false
@@ -387,25 +311,16 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
         
         
         
-        //service lbl
-        self.serviceLbl = GreyLabel()
-        self.serviceLbl.text = "Service:"
-        self.serviceLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.serviceLbl)
+        //service btn
+        
+        //dealer value (vendor btn)
+        self.serviceBtn = Button(titleText: "Service")
+        self.serviceBtn.translatesAutoresizingMaskIntoConstraints = false
+        self.serviceBtn.addTarget(self, action: #selector(EquipmentViewController.showServiceListView), for: UIControlEvents.touchUpInside)
+        self.view.addSubview(self.serviceBtn)
         
         
-        //service
-        serviceSC = SegmentedControl(items: items)
-        serviceSC.selectedSegmentIndex = 0
         
-        serviceSC.addTarget(self, action: #selector(self.changeServiceView(sender:)), for: .valueChanged)
-        self.view.addSubview(serviceSC)
-        
-        self.serviceTableView.delegate  =  self
-        self.serviceTableView.dataSource = self
-        self.serviceTableView.rowHeight = 50.0
-        self.serviceTableView.register(EquipmentServiceTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(serviceTableView)
         
         
         
@@ -429,9 +344,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
             "dealer":self.dealerLbl,
             "dealerValue":self.dealerValueBtn,
             "purchaseDate":self.purchaseDateLbl,
-            "service":self.serviceLbl,
-            "serviceSegmentedControl":self.serviceSC,
-            "serviceTable":self.serviceTableView
+            "serviceBtn":self.serviceBtn
             ] as [String:Any]
         
         
@@ -441,7 +354,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[name]-[statusTxtField(40)]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[makeModel]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[description]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[description]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[type]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serial]-[crew(140)]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
         
@@ -450,8 +363,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[dealer(80)][dealerValue]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[purchaseDate]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[service(80)][serviceSegmentedControl]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceTable]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceBtn]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
         
         
         
@@ -459,7 +371,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tapBtn(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusIcon(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusTxtField(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][makeModel(30)][description(20)][type(30)][serial(30)][fuel(30)][engine(30)][dealer(30)][purchaseDate(30)][service(30)]-[serviceTable]-10-|", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][makeModel(40)]-[description(40)][type(30)][serial(30)][fuel(30)][engine(30)][dealer(30)][purchaseDate(30)][serviceBtn(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
         
         
         
@@ -494,26 +406,17 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
         navigationController?.pushViewController(vendorViewController, animated: false )
     }
     
-    
-    
-    
-    @objc func changeServiceView(sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
-            
-        case 0://history
-            self.tableViewMode = "HISTORY"
-            
-            break
-        case 1://up-coming
-            
-            break
-        
-        default:
-            
-            break
-        }
-        
+    @objc func showServiceListView(){
+        print("show service list view")
+        let serviceListViewController = EquipmentServiceListViewController(_equipment: self.equipment)
+        serviceListViewController.editEquipmentDelegate = self
+        navigationController?.pushViewController(serviceListViewController, animated: false )
     }
+    
+    
+    
+    
+    
     
     
     @objc func keyboardWillShow(notification: NSNotification) {
@@ -682,61 +585,6 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIScrollVi
     
     
     
-    /////////////// TableView Delegate Methods   ///////////////////////
-    
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var count:Int!
-        switch self.tableViewMode{
-        case "HISTORY":
-            count = self.serviceHistoryArray.count
-            break
-        case "HISTORY":
-            count = self.serviceUpcomingArray.count
-            break
-       
-        default:
-            count = self.serviceHistoryArray.count
-            break
-        }
-        
-        return count
-    }
-    
-    
-    internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = serviceTableView.dequeueReusableCell(withIdentifier: "cell") as! EquipmentServiceTableViewCell
-        switch self.tableViewMode{
-        case "SCHEDULE":
-            
-            cell.equipmentService = self.serviceHistoryArray[indexPath.row]
-            cell.layoutViews()
-            break
-        case "HISTORY":
-            
-            cell.equipmentService = self.serviceUpcomingArray[indexPath.row]
-            cell.layoutViews()
-        default:
-            
-            break
-        }
-        
-        return cell
-        
-    }
-    
-    
-    
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //print("You selected cell #\(indexPath.row)!")
-    
-        let indexPath = tableView.indexPathForSelectedRow;
-        let currentCell = tableView.cellForRow(at: indexPath!) as! EquipmentServiceTableViewCell;
-        
-        tableView.deselectRow(at: indexPath!, animated: true)
-        
-    }
     
 
     func updateEquipment(_equipment: Equipment){

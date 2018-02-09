@@ -60,14 +60,12 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     var groupSearchResults:[String] = []
     
     
-    
-    
-    
     let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
     var imageCollectionView: UICollectionView!
     
     
     var addImageBtn:Button = Button(titleText: "Add Image(s)")
+    var changeImageBtn:Button = Button(titleText: "Change Image")
     var submitBtn:Button = Button(titleText: "Submit")
     
     var loadingView:UIView!
@@ -386,15 +384,24 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             self.view.addSubview(self.addImageBtn)
             
             
+            
+            
             self.submitBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.pickImageUploadSize), for: UIControlEvents.touchUpInside)
             self.view.addSubview(self.submitBtn)
             
         }else if imageType == "Equipment"{
             print("equipment")
             
+            
+            
+            self.changeImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.changeImage), for: UIControlEvents.touchUpInside)
+            self.view.addSubview(self.changeImageBtn)
+            
+            /*
             self.addImageBtn.titleLabel?.text = "Add Equipment Image"
             self.addImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.addImages), for: UIControlEvents.touchUpInside)
             self.view.addSubview(self.addImageBtn)
+            */
             
             
             
@@ -543,14 +550,14 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
         }else if self.imageType == "Equipment"{
             let viewsDictionary = [
-                 "imageCollection":self.imageCollectionView, "addImageBtn":self.addImageBtn, "submitBtn":self.submitBtn
+                 "imageCollection":self.imageCollectionView, "changeImageBtn":self.changeImageBtn, "submitBtn":self.submitBtn
                 ] as [String:Any]
             
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[imageCollection]-|", options: [], metrics: nil, views: viewsDictionary))
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[addImageBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[changeImageBtn]-|", options: [], metrics: nil, views: viewsDictionary))
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[imageCollection]-[addImageBtn]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[imageCollection]-[changeImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
             
             
             
@@ -575,7 +582,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 if(self.imageType != "Customer"){
                     self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]-[imageCollection]-[addImageBtn]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                 }else{
-                     self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[imageCollection]-[addImageBtn]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                     self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                 }
                 
                
@@ -583,11 +590,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 if(self.imageType != "Customer"){
 
                     self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]", options: [], metrics: sizeVals, views: viewsDictionary))
-                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:"V:|-130-[imageCollection]-[addImageBtn]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:"V:|-130-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                 }else{
                     
                     //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]", options: [], metrics: sizeVals, views: viewsDictionary))
-                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:"V:|-90-[imageCollection]-[addImageBtn]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:"V:|-90-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                     
                 }
                 
@@ -654,7 +661,6 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath as IndexPath) as! ImageUploadPrepCollectionViewCell
         
         cell.backgroundColor = UIColor.lightGray
-       // if(self.images.count > 0){
             cell.imageData = images[indexPath.row]
             
             print("cell image = \(cell.imageData.thumbPath)")
@@ -662,15 +668,6 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             cell.delegate = self
             cell.indexPath = indexPath
             cell.setText()
-            //cell.activityView.startAnimating()
-            
-       /* }else{
-            
-            if(self.ID == "0"){
-                //self.addImagesLbl.isHidden = true
-                cell.layoutViewsAdd()
-            }
-        }*/
         
     
         return cell
@@ -878,6 +875,86 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
         }
     }
+    
+    
+    
+    
+    //change image function used for equipment where only one image can be uploaded
+    @objc func changeImage(){
+        print("change image")
+        
+        self.images = []
+        self.imagesAdded = []
+        
+        let multiPicker = DKImagePickerController()
+        
+        multiPicker.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        
+        
+        print("add images 4")
+        
+        var selectedAssets = [DKAsset]()
+        //var selectedImages:[Image] = [Image]()
+        
+        
+        multiPicker.showsCancelButton = true
+        multiPicker.assetType = .allPhotos
+        
+       
+        multiPicker.maxSelectableCount = 1
+       
+        
+        self.present(multiPicker, animated: true) {}
+        
+        
+        
+        multiPicker.didSelectAssets = { (assets: [DKAsset]) in
+            print("didSelectAssets")
+            print(assets)
+            
+            self.imageAdded = true
+            
+            for i in 0..<assets.count
+            {
+                print("looping images")
+                selectedAssets.append(assets[i])
+                //print(self.selectedAssets)
+                
+                assets[i].fetchOriginalImage(true, completeBlock: { image, info in
+                    
+                    
+                    print("making image")
+                    
+                    let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
+                    
+                    imageToAdd.image = image
+                    
+                    
+                    self.images.append(imageToAdd)
+                    self.imagesAdded.append(imageToAdd)
+                    
+                })
+            }
+            
+            self.imageCollectionView.reloadData()
+            
+            
+            let lastItem = self.collectionView(self.imageCollectionView, numberOfItemsInSection: 0) - 1
+            let indexPath: NSIndexPath = NSIndexPath.init(item: lastItem, section: 0)
+            
+            self.imageCollectionView.scrollToItem(at: indexPath as IndexPath, at: .top, animated: true)
+            
+            
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
 
     
     func scrollToCell(_indexPath:IndexPath) {

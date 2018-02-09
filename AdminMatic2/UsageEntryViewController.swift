@@ -940,15 +940,16 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         print("setQty")
         //loop thru usage array and edit qty if has both start and stop
         for usage in usageToLog {
-            
+            print("looping")
             if(usage.start == nil && usage.stop == nil){
                 print("blank row")
             }else{
                 
                 if(usage.start == nil || usage.stop == nil){
+                    print("start or stop is nil")
                     usage.qty = "0.0"
                     usageTableView.reloadData()
-                   // return
+                    return
                 }
                 
                 if(usage.start != nil && usage.stop != nil){
@@ -976,13 +977,19 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         //loop thru usage array and build JSON array
         self.editsMade = false //resets edit checker
         for (index, usage) in usageToLog.enumerated() {
-            let usageQty = Double(usage.qty!)
+            var usageQty = 0.0
+            print("usage.qty = \(String(describing: usage.qty))")
+            if(usage.qty != nil && usage.qty != "0.0" && usage.qty != ""){
+                print("set usage.qty to 0.0")
+                usageQty = Double(usage.qty!)!
+            }
+            
             if(usage.locked == false){
                 if(usage.type == "1"){
                     if(usage.start == nil){
                         simpleAlert(_vc: self, _title: "Time Error", _message: "\(usage.empName!)'s break time can not be equal or greater then their shift time.")
                     }else{
-                        if(usageQty! > 0.0){
+                        if(usageQty > 0.0){
                             if(Int(appDelegate.loggedInEmployee!.ID!)! > 0 &&  appDelegate.loggedInEmployee!.ID! == usage.addedBy){
                             }else{
                                 self.usageToLog[index].locked = true
@@ -994,7 +1001,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         print("usage JSONString = \(String(describing: JSONString))")
                     }
                 }else{
-                    if(usageQty! > 0.0){
+                    if(usageQty > 0.0){
                         if(Int(appDelegate.loggedInEmployee!.ID!)! > 0 &&  appDelegate.loggedInEmployee!.ID! == usage.addedBy){
             
                         }else{

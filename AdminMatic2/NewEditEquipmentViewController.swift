@@ -17,6 +17,7 @@ protocol UpdateEquipmentImageDelegate{
 }
 
 
+
 class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UITextViewDelegate, UpdateEquipmentImageDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
@@ -721,6 +722,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
                 imageUploadPrepViewController.layoutViews()
                 imageUploadPrepViewController.equipmentImageDelegate = self
                 self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+                imageUploadPrepViewController.addImages()
             }else{
                 print("already has a pic")
                 
@@ -730,11 +732,12 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
                 actionSheet.view.backgroundColor = UIColor.white
                 actionSheet.view.layer.cornerRadius = 5;
                 
-                actionSheet.addAction(UIAlertAction(title: "Add New Image", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+                actionSheet.addAction(UIAlertAction(title: "Change Image", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
                     self.imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Equipment", _equipmentID: self.equipment.ID)
                     self.imageUploadPrepViewController.layoutViews()
                     self.imageUploadPrepViewController.equipmentImageDelegate = self
                     self.navigationController?.pushViewController(self.imageUploadPrepViewController, animated: false )
+                    self.imageUploadPrepViewController.addImages()
                     
                 }))
                 
@@ -1481,11 +1484,6 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
     }
     
     
-    /*
-    func updateTable(_points:Int){
-        print("updateTable")
-        //getLead()
-    }
- */
+    
 }
 

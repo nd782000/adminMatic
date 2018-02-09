@@ -10,14 +10,16 @@ import UIKit
 import MessageUI
 
 
-class GroupMessageViewController: ViewControllerWithMenu, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, MFMessageComposeViewControllerDelegate{
+class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, MFMessageComposeViewControllerDelegate{
     
     var layoutVars:LayoutVars = LayoutVars()
     /////////////////////////////////
     //number of texts to send at once
     let textBatchQty:Int = 7
     /////////////////////////////////
-    var messageTxt: PaddedTextField = PaddedTextField()
+    //var messageTxt: PaddedTextField = PaddedTextField()
+    
+    var messageTxt:UITextView!
     var messagePlaceHolder:String!
     var selectNoneBtn:Button = Button(titleText: "Select None")
     var selectAllBtn:Button = Button(titleText: "Select All")
@@ -56,20 +58,29 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextFieldDelegate, U
     
     func layoutViews(){
         
+       
+        
         
         messagePlaceHolder = "Message..."
-        self.messageTxt.text = messagePlaceHolder
+        
+        
+        
+        self.messageTxt = UITextView()
         self.messageTxt.textColor = UIColor.lightGray
-        
-        self.messageTxt.translatesAutoresizingMaskIntoConstraints = false
-        self.messageTxt.delegate = self
-        self.messageTxt.font = layoutVars.smallFont
-        self.messageTxt.returnKeyType = UIReturnKeyType.done
         self.messageTxt.layer.cornerRadius = 4
-        
-        self.messageTxt.clipsToBounds = true
-        self.messageTxt.backgroundColor = layoutVars.backgroundLight
+        self.messageTxt.layer.borderColor = layoutVars.buttonColor1.cgColor
+        self.messageTxt.layer.borderWidth = 1.0
+        self.messageTxt.returnKeyType = .done
+        self.messageTxt.text = messagePlaceHolder
+        self.messageTxt.font = layoutVars.smallFont
+        self.messageTxt.isEditable = true
+        self.messageTxt.delegate = self
+        self.messageTxt.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.messageTxt)
+        
+       
+        
+        
         
         self.selectNoneBtn.addTarget(self, action: #selector(GroupMessageViewController.handleSelectNone), for: UIControlEvents.touchUpInside)
         self.view.addSubview(self.selectNoneBtn)
@@ -103,8 +114,8 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextFieldDelegate, U
          self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[selectNoneBtn(halfWidth)]-5-[selectAllBtn(halfWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[empTable]-|", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[sendMessageBtn]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[messageTxt(90)]-[selectNoneBtn(40)]-[empTable]-[sendMessageBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[messageTxt(90)]-[selectAllBtn(40)]-[empTable]-[sendMessageBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[messageTxt(90)]-[selectNoneBtn(40)]-[empTable]-[sendMessageBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[messageTxt(90)]-[selectAllBtn(40)]-[empTable]-[sendMessageBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
     }
     
@@ -161,34 +172,42 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextFieldDelegate, U
             
         }
     }
- 
-    func textField(_ textField: UITextField, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if(text == "\n") {
-            messageTxt.resignFirstResponder()
-            return false
+    
+    
+    
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        print("shouldChangeTextInRange")
+        if (text == "\n") {
+            textView.resignFirstResponder()
         }
         return true
     }
-
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
+    
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        print("textFieldDidBeginEditing")
+        
         if self.messageTxt.textColor == UIColor.lightGray {
             self.messageTxt.text = nil
             self.messageTxt.textColor = UIColor.black
         }
+        
     }
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
+    func textViewDidEndEditing(_ textView: UITextView) {
+        print("textFieldDidEndEditing")
         if (self.messageTxt.text?.isEmpty)! {
             self.messageTxt.text = messagePlaceHolder
             self.messageTxt.textColor = UIColor.lightGray
         }
     }
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        self.view.endEditing(true)
-        return false
-    }
+    
+    
+    
+   
 
     
     @objc func handleSelectNone(){

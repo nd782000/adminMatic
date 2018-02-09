@@ -33,7 +33,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     var statusIcon:UIImageView = UIImageView()
     var statusTxtField:PaddedTextField!
     var statusPicker: Picker!
-    var statusArray = ["Un-Done","In Progress","Done","Cancel","Waiting"]
+    var statusArray = ["In Progress","Done","Cancel","Waiting"]
     
     
     
@@ -113,7 +113,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     init(_customer:String,_customerName:String){
         super.init(nibName:nil,bundle:nil)
         
-         self.lead =  Lead(_ID: "0", _statusID: "1",_scheduleType: "", _date: "", _time: "", _statusName: "", _customer: _customer, _customerName: _customerName, _urgent: "0", _description: "", _rep: "", _repName: "", _deadline: "", _requestedByCust: "0", _createdBy: appDelegate.loggedInEmployee?.ID)
+         self.lead =  Lead(_ID: "0", _statusID: "0",_scheduleType: "", _date: "", _time: "", _statusName: "", _customer: _customer, _customerName: _customerName, _urgent: "0", _description: "", _rep: "", _repName: "", _deadline: "", _requestedByCust: "0", _createdBy: appDelegate.loggedInEmployee?.ID)
         
     }
     
@@ -214,7 +214,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
             //let timeFormatter = DateFormatter()
             //timeFormatter.dateFormat = "HH:MM"
             
-            self.lead =  Lead(_ID: "0", _statusID: "1",_scheduleType: "", _date: "", _time: "", _statusName: "", _customer: "", _customerName: "", _urgent: "0", _description: "", _rep: "", _repName: "", _deadline: "", _requestedByCust: "0", _createdBy: appDelegate.loggedInEmployee?.ID)
+            self.lead =  Lead(_ID: "0", _statusID: "0",_scheduleType: "", _date: "", _time: "", _statusName: "", _customer: "", _customerName: "", _urgent: "0", _description: "", _rep: "", _repName: "", _deadline: "", _requestedByCust: "0", _createdBy: appDelegate.loggedInEmployee?.ID)
         }else{
             if(self.lead.ID == "0"){
                 //coming from customer page
@@ -240,7 +240,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         self.statusPicker.tag = 1
         self.statusPicker.delegate = self
         //set status
-        self.statusPicker.selectRow(Int(lead.statusId)! - 1, inComponent: 0, animated: false)
+        self.statusPicker.selectRow(Int(lead.statusId)!, inComponent: 0, animated: false)
         self.statusTxtField = PaddedTextField(placeholder: "")
         self.statusTxtField.textAlignment = NSTextAlignment.center
         self.statusTxtField.translatesAutoresizingMaskIntoConstraints = false
@@ -339,12 +339,6 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         }
         
         
-        //aptDateFormatter.dateFormat = "MM-dd-yy"
-        //aptTimeFormatter.dateFormat = "HH:MM a"
-        //let now = Date()
-        //aptDate = aptDateFormatter.string(from: now)
-        //aptTime = aptTimeFormatter.string(from: now)
-        
         
         //apointment date and time
         self.aptLbl = GreyLabel()
@@ -416,12 +410,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
             print("lead.date = \(lead.date)")
             //print("lead.dateRaw = \(lead.dateRaw)")
             if(lead.date != "" && lead.date != "null"){
-                //let date = dateFormatter.date(from: lead.date!)
-                //self.aptDateTxtField.text = dateFormatter.string(from: date!)
-                
+               
                 self.aptDateTxtField.text = lead.date!
                 
-               // aptDatePickerView.minimumDate = currentDate
                 
             }
             
@@ -716,7 +707,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     func textViewDidBeginEditing(_ textView: UITextView) {        print("textFieldDidBeginEditing")
         
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                self.view.frame.origin.y -= self.descriptionView.frame.height
+                self.view.frame.origin.y -= 250
             
             
             }, completion: { finished in
@@ -729,7 +720,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         print("textFieldDidEndEditing")
          if(self.view.frame.origin.y < 0){
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                self.view.frame.origin.y += self.descriptionView.frame.height
+                self.view.frame.origin.y += 250
                 
                 
             }, completion: { finished in
@@ -777,18 +768,15 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
             rowString = statusArray[row]
             switch row {
             case 0:
-                myImageView.image = UIImage(named:"unDoneStatus.png")
-                break
-            case 1:
                 myImageView.image = UIImage(named:"inProgressStatus.png")
                 break
-            case 2:
+            case 1:
                 myImageView.image = UIImage(named:"doneStatus.png")
                 break
-            case 3:
+            case 2:
                 myImageView.image = UIImage(named:"cancelStatus.png")
                 break
-            case 4:
+            case 3:
                 myImageView.image = UIImage(named:"waitingStatus.png")
                 break
             default:
@@ -821,7 +809,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         print("pickerview tag: \(pickerView.tag)")
         if(pickerView.tag == 1){
             //self.statusValueToUpdate = "\(row + 1)"
-            lead.statusId = "\(row + 1)"
+            lead.statusId = "\(row)"
             
         }else{
             //self.scheduleTypeValueToUpdate = "\(row + 1)"
@@ -858,7 +846,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     
     @objc func handleStatusChange(){
         self.statusTxtField.resignFirstResponder()
-        lead.statusId = "\(self.statusPicker.selectedRow(inComponent: 0) + 1)"
+        lead.statusId = "\(self.statusPicker.selectedRow(inComponent: 0))"
         //self.statusValue = "\(self.statusPicker.selectedRow(inComponent: 0))"
         setStatus(status: lead.statusId)
         editsMade = true
@@ -867,28 +855,24 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     func setStatus(status: String) {
         print("set status \(status)")
         switch (status) {
-        case "1":
-            let statusImg = UIImage(named:"unDoneStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "2":
+        case "0":
             let statusImg = UIImage(named:"inProgressStatus.png")
             statusIcon.image = statusImg
             break;
-        case "3":
+        case "1":
             let statusImg = UIImage(named:"doneStatus.png")
             statusIcon.image = statusImg
             break;
-        case "4":
+        case "2":
             let statusImg = UIImage(named:"cancelStatus.png")
             statusIcon.image = statusImg
             break;
-        case "5":
+        case "3":
             let statusImg = UIImage(named:"waitingStatus.png")
             statusIcon.image = statusImg
             break;
         default:
-            let statusImg = UIImage(named:"unDoneStatus.png")
+            let statusImg = UIImage(named:"inProgressStatus.png")
             statusIcon.image = statusImg
             break;
         }

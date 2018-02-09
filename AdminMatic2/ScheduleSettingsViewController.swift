@@ -230,24 +230,19 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         self.plowDepthPicker = Picker()
         self.plowDepthPicker.tag = 1
         self.plowDepthPicker.delegate = self
-        //set status
         self.plowDepthPicker.selectRow(Int(plowDepth)!, inComponent: 0, animated: false)
-        self.plowDepthTxtField = PaddedTextField(placeholder: "Plow Depth")
+        self.plowDepthTxtField = PaddedTextField()
         self.plowDepthTxtField.textAlignment = NSTextAlignment.center
         self.plowDepthTxtField.translatesAutoresizingMaskIntoConstraints = false
-        //self.statusTxtField.tag = 1
         self.plowDepthTxtField.delegate = self
-        //self.plowDepthTxtField.tintColor = UIColor.clear
-       // self.plowDepthTxtField.backgroundColor = UIColor.clear
+        
         self.plowDepthTxtField.inputView = plowDepthPicker
-        //self.plowDepthTxtField.layer.borderWidth = 0
         self.view.addSubview(self.plowDepthTxtField)
         let plowDepthToolBar = UIToolbar()
         plowDepthToolBar.barStyle = UIBarStyle.default
         plowDepthToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         plowDepthToolBar.sizeToFit()
         let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ScheduleSettingsViewController.cancelPlowDepthInput))
-        //let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
         let setPlowDepthButton = UIBarButtonItem(title: "Set Plow Depth", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ScheduleSettingsViewController.handlePlowDepthChange))
         plowDepthToolBar.setItems([closeButton, spaceButton, setPlowDepthButton], animated: false)
         plowDepthToolBar.isUserInteractionEnabled = true
@@ -263,7 +258,8 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
             plowDepthTxtField.alpha = 0.0
             
         }
-        
+        self.plowDepthTxtField.text = self.plowDepthArray[Int(plowDepth)!]
+
         
         
         

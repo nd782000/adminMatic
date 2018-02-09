@@ -345,8 +345,6 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         //print("profitBarWidth = \(profitBarWidth)")
         //print("costBarOffset = \(costBarOffset)")
         
-        
-        
         self.costLabel = Label()
         self.costLabel.text = "Cost: "
         self.profitView.addSubview(self.costLabel)
@@ -356,9 +354,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         self.costValueLabel.text = "$\(self.woItem.totalCost!)"
         self.profitView.addSubview(self.costValueLabel)
 
-        
-        
-        
+    
         self.profitLabel = Label()
         self.profitLabel.text = "Profit: "
         self.profitView.addSubview(self.profitLabel)
@@ -368,9 +364,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         self.profitValueLabel.text = "$\(String(format: "%.2f", income! - cost!))"
         self.profitView.addSubview(self.profitValueLabel)
         
-        
-        
-        
+    
         self.profitBarView = UIView()
         self.profitBarView.backgroundColor = UIColor.gray
         self.profitBarView.layer.borderColor = layoutVars.borderColor
@@ -442,10 +436,8 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         
         let usageViewsDictionary = [
-            
             "usageBtn":self.usageBtn
         ]  as [String:AnyObject]
-        
         
         
         self.usageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[usageBtn]-10-|", options: [], metrics: sizeVals, views: usageViewsDictionary))
@@ -582,87 +574,11 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     
     
-    /*
-    
-    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let ID = self.tasks[indexPath.row].ID
-        var newItemStatus:String?
-        
-        //indexPath
-        let none = UITableViewRowAction(style: .normal, title: "None") { action, index in
-            //print("none button tapped")
-            self.tasks[indexPath.row].status = "1"
-            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "1", _row: indexPath.row)
-            
-        }
-        none.backgroundColor = UIColor.gray
-        let progress = UITableViewRowAction(style: .normal, title: "Prog.") { action, index in
-            //print("progress button tapped")
-            
-            
-            
-            self.tasks[indexPath.row].status = "2"
-            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "2", _row: indexPath.row)
-            
-            self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
-        }
-        progress.backgroundColor = UIColor.orange
-        
-        let done = UITableViewRowAction(style: .normal, title: "Done") { action, index in
-            //print("done button tapped")
-            self.tasks[indexPath.row].status = "3"
-            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "3", _row: indexPath.row)
-            
-            
-            
-            self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
-        }
-        done.backgroundColor = layoutVars.buttonColor1
-        
-        let cancel = UITableViewRowAction(style: .normal, title: "Cancel") { action, index in
-            //print("cancel button tapped")
-            self.tasks[indexPath.row].status = "4"
-            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "4", _row: indexPath.row)
-            
-        }
-        
-        
-        
-        cancel.backgroundColor = UIColor.red
-        
-        
-        self.woItem.itemStatus = newItemStatus
-        
-        return [done, progress, none, cancel]
-    }
- 
- 
- */
-    
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     
-    /*
-    @nonobjc func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
- */
-    
-    /*
-     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .delete {
-            objects.removeObjectAtIndex(indexPath.row)
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        } else if editingStyle == .Insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-        }
-    }
- */
+  
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let ID = self.tasks[indexPath.row].ID
@@ -678,12 +594,8 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         none.backgroundColor = UIColor.gray
         let progress = UITableViewRowAction(style: .normal, title: "Prog.") { action, index in
             //print("progress button tapped")
-            
-            
-            
             self.tasks[indexPath.row].status = "2"
             newItemStatus = self.setTaskStatus(_ID: ID!, _status: "2", _row: indexPath.row)
-            
             self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
         }
         progress.backgroundColor = UIColor.orange
@@ -692,93 +604,22 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             //print("done button tapped")
             self.tasks[indexPath.row].status = "3"
             newItemStatus = self.setTaskStatus(_ID: ID!, _status: "3", _row: indexPath.row)
-            
-            
-            
             self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
         }
         done.backgroundColor = layoutVars.buttonColor1
-        
         
         let cancel = UITableViewRowAction(style: .normal, title: "Cancel") { action, index in
             //print("cancel button tapped")
             self.tasks[indexPath.row].status = "4"
             newItemStatus = self.setTaskStatus(_ID: ID!, _status: "4", _row: indexPath.row)
-            
         }
-        
-        
-        
         cancel.backgroundColor = UIColor.red
         
-        
-        
         self.woItem.itemStatus = newItemStatus
-        
-        //return [done, progress, none, cancel]
-        
         return [cancel, done, progress, none]
-        
     }
     
-    /*
-    @nonobjc func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
-        
-        let ID = self.tasks[indexPath.row].ID
-        var newItemStatus:String?
-        
-        //indexPath
-        let none = UITableViewRowAction(style: .normal, title: "None") { action, index in
-            //print("none button tapped")
-            self.tasks[indexPath.row].status = "1"
-            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "1", _row: indexPath.row)
-            
-        }
-        none.backgroundColor = UIColor.gray
-        let progress = UITableViewRowAction(style: .normal, title: "Prog.") { action, index in
-            //print("progress button tapped")
-            
-            
-            
-            self.tasks[indexPath.row].status = "2"
-            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "2", _row: indexPath.row)
-            
-            self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
-        }
-        progress.backgroundColor = UIColor.orange
-        
-        let done = UITableViewRowAction(style: .normal, title: "Done") { action, index in
-            //print("done button tapped")
-            self.tasks[indexPath.row].status = "3"
-            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "3", _row: indexPath.row)
-            
-            
-            
-            self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
-        }
-        done.backgroundColor = layoutVars.buttonColor1
-        
-        let cancel = UITableViewRowAction(style: .normal, title: "Cancel") { action, index in
-            //print("cancel button tapped")
-            self.tasks[indexPath.row].status = "4"
-            newItemStatus = self.setTaskStatus(_ID: ID!, _status: "4", _row: indexPath.row)
-            
-        }
-        
-        
-        
-        cancel.backgroundColor = UIColor.red
-        
-        
-        self.woItem.itemStatus = newItemStatus
-        
-        return [done, progress, none, cancel]
-    }
- 
- */
-    
-    
-    
+   
     
     
     

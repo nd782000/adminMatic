@@ -27,6 +27,18 @@ class LeadTableViewCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        
+        
+        
+        
+    }
+    
+    
+    func layoutViews(_scheduleMode:String){
+        
+        
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
         self.selectionStyle = .none
         
         statusIcon = UIImageView()
@@ -52,14 +64,11 @@ class LeadTableViewCell: UITableViewCell {
         contentView.addSubview(descriptionLbl)
         
         
-    }
-    
-    
-    func layoutViews(_scheduleMode:String){
+        
         titleLbl.text = ""
         urgentLbl.text = ""
         descriptionLbl.text = ""
-        setStatus(status: "")
+        setStatus(status: lead.statusId)
         
         
         titleLbl.text = "Lead #\(lead.ID!) for \(lead.customerName!)"
@@ -91,29 +100,26 @@ class LeadTableViewCell: UITableViewCell {
     }
     
     func setStatus(status: String) {
+        print("set status \(status)")
         switch (status) {
-        case "1":
-            let statusImg = UIImage(named:"unDoneStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "2":
+        case "0":
             let statusImg = UIImage(named:"inProgressStatus.png")
             statusIcon.image = statusImg
             break;
-        case "3":
+        case "1":
             let statusImg = UIImage(named:"doneStatus.png")
             statusIcon.image = statusImg
             break;
-        case "4":
+        case "2":
             let statusImg = UIImage(named:"cancelStatus.png")
             statusIcon.image = statusImg
             break;
-        case "5":
+        case "3":
             let statusImg = UIImage(named:"waitingStatus.png")
             statusIcon.image = statusImg
             break;
         default:
-            let statusImg = UIImage(named:"unDoneStatus.png")
+            let statusImg = UIImage(named:"inProgressStatus.png")
             statusIcon.image = statusImg
             break;
         }

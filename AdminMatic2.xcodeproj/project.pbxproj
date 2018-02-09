@@ -46,6 +46,8 @@
 		015EB5511FF695ED000CA2A7 /* EquipmentFieldsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015EB5501FF695ED000CA2A7 /* EquipmentFieldsListViewController.swift */; };
 		015EB55A1FF6D6D0000CA2A7 /* EquipmentFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015EB5591FF6D6D0000CA2A7 /* EquipmentFieldTableViewCell.swift */; };
 		015EB55C1FF6E639000CA2A7 /* NewEditEquipmentFieldViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015EB55B1FF6E639000CA2A7 /* NewEditEquipmentFieldViewController.swift */; };
+		015EB55E1FF9611B000CA2A7 /* EquipmentServiceListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015EB55D1FF9611B000CA2A7 /* EquipmentServiceListViewController.swift */; };
+		015EB5602002E31F000CA2A7 /* EquipmentServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015EB55F2002E31F000CA2A7 /* EquipmentServiceViewController.swift */; };
 		0160A1B21E873F3D00C2AB4A /* ImageSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0160A1B11E873F3D00C2AB4A /* ImageSettingsViewController.swift */; };
 		0160A1B41E89BD2D00C2AB4A /* BugsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0160A1B31E89BD2C00C2AB4A /* BugsListViewController.swift */; };
 		0160A1B61E89EA8400C2AB4A /* Bug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0160A1B51E89EA8400C2AB4A /* Bug.swift */; };
@@ -77,6 +79,7 @@
 		01A9DDE31FE430C90075AC72 /* EquipmentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A9DDE21FE430C90075AC72 /* EquipmentService.swift */; };
 		01A9DDE51FE715E20075AC72 /* EquipmentServiceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A9DDE41FE715E20075AC72 /* EquipmentServiceTableViewCell.swift */; };
 		01A9DDE71FE9868F0075AC72 /* NewEditEquipmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A9DDE61FE9868F0075AC72 /* NewEditEquipmentViewController.swift */; };
+		01C43C572027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */; };
 		01C8B9741FB26ED800ADF284 /* LeadListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C8B9731FB26ED800ADF284 /* LeadListViewController.swift */; };
 		01C8B97D1FB2755200ADF284 /* LeadTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C8B97C1FB2755200ADF284 /* LeadTableViewCell.swift */; };
 		01C8B97F1FB278AA00ADF284 /* Lead.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C8B97E1FB278AA00ADF284 /* Lead.swift */; };
@@ -208,6 +211,8 @@
 		015EB5501FF695ED000CA2A7 /* EquipmentFieldsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentFieldsListViewController.swift; sourceTree = "<group>"; };
 		015EB5591FF6D6D0000CA2A7 /* EquipmentFieldTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentFieldTableViewCell.swift; sourceTree = "<group>"; };
 		015EB55B1FF6E639000CA2A7 /* NewEditEquipmentFieldViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditEquipmentFieldViewController.swift; sourceTree = "<group>"; };
+		015EB55D1FF9611B000CA2A7 /* EquipmentServiceListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentServiceListViewController.swift; sourceTree = "<group>"; };
+		015EB55F2002E31F000CA2A7 /* EquipmentServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentServiceViewController.swift; sourceTree = "<group>"; };
 		0160A1B11E873F3D00C2AB4A /* ImageSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSettingsViewController.swift; sourceTree = "<group>"; };
 		0160A1B31E89BD2C00C2AB4A /* BugsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BugsListViewController.swift; sourceTree = "<group>"; };
 		0160A1B51E89EA8400C2AB4A /* Bug.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bug.swift; sourceTree = "<group>"; };
@@ -246,6 +251,7 @@
 		01A9DDE21FE430C90075AC72 /* EquipmentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentService.swift; sourceTree = "<group>"; };
 		01A9DDE41FE715E20075AC72 /* EquipmentServiceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentServiceTableViewCell.swift; sourceTree = "<group>"; };
 		01A9DDE61FE9868F0075AC72 /* NewEditEquipmentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditEquipmentViewController.swift; sourceTree = "<group>"; };
+		01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditEquipmentServiceViewController.swift; sourceTree = "<group>"; };
 		01C8B9731FB26ED800ADF284 /* LeadListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadListViewController.swift; sourceTree = "<group>"; };
 		01C8B97C1FB2755200ADF284 /* LeadTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadTableViewCell.swift; sourceTree = "<group>"; };
 		01C8B97E1FB278AA00ADF284 /* Lead.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lead.swift; sourceTree = "<group>"; };
@@ -404,6 +410,9 @@
 				015EB5501FF695ED000CA2A7 /* EquipmentFieldsListViewController.swift */,
 				015EB55B1FF6E639000CA2A7 /* NewEditEquipmentFieldViewController.swift */,
 				01A9DDE01FE409A80075AC72 /* EquipmentViewController.swift */,
+				015EB55D1FF9611B000CA2A7 /* EquipmentServiceListViewController.swift */,
+				015EB55F2002E31F000CA2A7 /* EquipmentServiceViewController.swift */,
+				01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */,
 				01A9DDE61FE9868F0075AC72 /* NewEditEquipmentViewController.swift */,
 				014CC8E31E539EB100D48A26 /* ImageCollectionViewController.swift */,
 				0160A1B11E873F3D00C2AB4A /* ImageSettingsViewController.swift */,
@@ -572,7 +581,7 @@
 				TargetAttributes = {
 					01A1F2DA1E0704FF00DCCB39 = {
 						CreatedOnToolsVersion = 8.2;
-						DevelopmentTeam = 63U3Y52697;
+						DevelopmentTeam = Q78B4XEVQ4;
 						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 					};
@@ -774,6 +783,7 @@
 				01A81E5A1E92FC090089B55F /* GroupMessageViewController.swift in Sources */,
 				016634221E340F6D002F7763 /* Item.swift in Sources */,
 				019B24641EB8BEC0008D4475 /* ScheduleSettingsViewController.swift in Sources */,
+				015EB5602002E31F000CA2A7 /* EquipmentServiceViewController.swift in Sources */,
 				014B029E1E215DB5002A41DE /* CustomerTableViewCell.swift in Sources */,
 				0125B6D91E26B10E00BAC949 /* ImageDrawingViewController.swift in Sources */,
 				0125B6D41E26AE2500BAC949 /* NetData.swift in Sources */,
@@ -790,6 +800,7 @@
 				01E01C2F1E7E05F400385B86 /* ImageUploadPrepCollectionViewCell.swift in Sources */,
 				01EC4E751E1EF8BC009CE261 /* HomeViewController.swift in Sources */,
 				01A9DDE51FE715E20075AC72 /* EquipmentServiceTableViewCell.swift in Sources */,
+				015EB55E1FF9611B000CA2A7 /* EquipmentServiceListViewController.swift in Sources */,
 				016634281E3415FE002F7763 /* VendorListViewController.swift in Sources */,
 				01D9AD971E6DD14900BD35AE /* UnderConstructionViewController.swift in Sources */,
 				015EB5511FF695ED000CA2A7 /* EquipmentFieldsListViewController.swift in Sources */,
@@ -821,6 +832,7 @@
 				016634201E340F5A002F7763 /* ItemViewController.swift in Sources */,
 				01DC79401E2805590022566C /* UsageEntryTableViewCell.swift in Sources */,
 				015231AC1E1A982F009949BD /* EmployeeListViewController.swift in Sources */,
+				01C43C572027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift in Sources */,
 				01A9DDDF1FE0D4480075AC72 /* EquipmentTableViewCell.swift in Sources */,
 				0121DF001FBD147800AD6039 /* NewEditLeadViewController.swift in Sources */,
 				015B9AF01E27D4C50020FB58 /* TaskTableViewCell.swift in Sources */,
@@ -989,7 +1001,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 63U3Y52697;
+				DEVELOPMENT_TEAM = Q78B4XEVQ4;
 				INFOPLIST_FILE = AdminMatic2/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1010,7 +1022,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 63U3Y52697;
+				DEVELOPMENT_TEAM = Q78B4XEVQ4;
 				INFOPLIST_FILE = AdminMatic2/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

@@ -15,29 +15,22 @@ class EquipmentServiceTableViewCell: UITableViewCell {
     
     var layoutVars:LayoutVars = LayoutVars()
     var equipmentService:EquipmentService!
-    
-    /*
-    var dateLbl: UILabel!
-    var customerLbl: UILabel!
-    var firstItemLbl: UILabel!
-    var chargeLbl: UILabel!
-    var priceLbl: UILabel!
-    
-    var priorityLbl: UILabel!
-    var depthLbl: UILabel!
-    var monitoringLbl: UILabel!
+    var serviceMode:String = "CURRENT"
     
     var statusIcon: UIImageView!
     
-    var remainingQtyLbl: UILabel!
+    var nameLbl: UILabel!
     
+    var dueByLbl: UILabel!
+    var dueByValueLbl: UILabel!
     
+    var frequencyLbl: UILabel!
     
-    var profitBarView:UIView!
-    var incomeView:UIView!
-    var costView:UIView!
+    var completedByLbl: UILabel!
+    var completionDateLbl: UILabel!
     
-    */
+    let dateFormatter = DateFormatter()
+    
     
     
     required init?(coder aDecoder: NSCoder) {
@@ -46,180 +39,149 @@ class EquipmentServiceTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        
-        
     }
     
-    
-    
     func layoutViews(){
-        
-        
         self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
-        
         self.selectionStyle = .none
         
+        if equipmentService.status == "0" || equipmentService.status == "1" {
+            serviceMode = "CURRENT"
+        }else{
+            serviceMode = "HISTORY"
+        }
         
-        /*
-        dateLbl = UILabel()
-        customerLbl = UILabel()
-        firstItemLbl = UILabel()
+        dateFormatter.dateFormat = "MM/dd/yy"
+        
+        
         statusIcon = UIImageView()
-        chargeLbl = UILabel()
-        priceLbl = UILabel()
-        priorityLbl = UILabel()
-        depthLbl = UILabel()
-        monitoringLbl = UILabel()
-        remainingQtyLbl = UILabel()
-        
-        customerLbl.font = layoutVars.smallFont
-        firstItemLbl.font = layoutVars.smallFont
-        
-        chargeLbl.font = layoutVars.textFieldFont
-        chargeLbl.textAlignment = .center
-        priceLbl.font = layoutVars.textFieldFont
-        
-        remainingQtyLbl.font = layoutVars.textFieldFont
-        
-        
-        //statusIcon = UIImageView()
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
         contentView.addSubview(statusIcon)
         
+        setStatus(status: equipmentService.status)
+        
+        nameLbl = UILabel()
+        nameLbl.font = layoutVars.smallFont
+        nameLbl.translatesAutoresizingMaskIntoConstraints = false
+        nameLbl.text = equipmentService.name!
+        contentView.addSubview(nameLbl)
+        
+        dueByLbl = UILabel()
+        dueByLbl.font = layoutVars.textFieldFont
+        dueByLbl.text = "Due:"
+        dueByLbl.translatesAutoresizingMaskIntoConstraints = false
         
         
+        dueByValueLbl = UILabel()
+        dueByValueLbl.font = layoutVars.textFieldFont
         
-        dateLbl.text = ""
-        firstItemLbl.text = ""
-        customerLbl.text = ""
-        chargeLbl.text = ""
-        priceLbl.text = ""
-        priorityLbl.text = ""
-        depthLbl.text = ""
-        monitoringLbl.text = ""
-        remainingQtyLbl.text = ""
-        
-        setStatus(status: "")
-        
-        dateLbl.translatesAutoresizingMaskIntoConstraints = false
-        firstItemLbl.translatesAutoresizingMaskIntoConstraints = false
-        customerLbl.translatesAutoresizingMaskIntoConstraints = false
-        statusIcon.translatesAutoresizingMaskIntoConstraints = false
-        chargeLbl.translatesAutoresizingMaskIntoConstraints = false
-        priceLbl.translatesAutoresizingMaskIntoConstraints = false
-        priorityLbl.translatesAutoresizingMaskIntoConstraints = false
-        depthLbl.translatesAutoresizingMaskIntoConstraints = false
-        monitoringLbl.translatesAutoresizingMaskIntoConstraints = false
-        remainingQtyLbl.translatesAutoresizingMaskIntoConstraints = false
-        
-        print("layout views 2")
-        
-        self.profitBarView = UIView()
-        self.profitBarView.backgroundColor = UIColor.gray
-        self.profitBarView.layer.borderColor = layoutVars.borderColor
-        self.profitBarView.layer.borderWidth = 1.0
-        self.profitBarView.translatesAutoresizingMaskIntoConstraints = false
-        self.contentView.addSubview(self.profitBarView)
+        frequencyLbl = UILabel()
+        frequencyLbl.font = layoutVars.textFieldFont
+        frequencyLbl.textAlignment = .right
+        frequencyLbl.translatesAutoresizingMaskIntoConstraints = false
         
         
-        print("layout views 3")
-        let viewsDictionary = ["dateLbl":dateLbl,"customerLbl":customerLbl,"firstItemLbl":firstItemLbl,"statusIcon":statusIcon, "chargeLbl":self.chargeLbl, "profitBarView":self.profitBarView, "priceLbl":self.priceLbl, "priorityLbl":self.priorityLbl, "depthLbl":self.depthLbl, "monitoringLbl":self.monitoringLbl, "remainingQtyLbl":self.remainingQtyLbl] as [String : Any]
-        
-        
-        print("layout views 4")
-        switch (_scheduleMode){
-        case "CUSTOMER":
+        switch equipmentService.type {
+        case "0":
+            dueByValueLbl.text = "Now"
+            dueByValueLbl.textColor = UIColor.red
+            frequencyLbl.text = "One Time Service"
+            break
+        case "1":
+            let date = dateFormatter.date(from: determineUpcomingDate())
             
-            contentView.addSubview(dateLbl)
-            contentView.addSubview(customerLbl)
-            contentView.addSubview(firstItemLbl)
-            contentView.addSubview(chargeLbl)
-            contentView.addSubview(priceLbl)
-            //contentView.addSubview(priorityLbl)
-            //contentView.addSubview(depthLbl)
-            // contentView.addSubview(monitoringLbl)
-            // contentView.addSubview(remainingQtyLbl)
+            let dateFormatter2 = DateFormatter()
+            dateFormatter2.dateFormat = "MM/dd/yy"
+            let date2 = dateFormatter2.string(from: date!)
             
+            print("date = \(date2)")
+            dueByValueLbl.text = date2
+            if date! < Date()  {
+                print("date1 is earlier than Now")
+                
+                dueByValueLbl.textColor = UIColor.red
+            }else{
+                //dueByValueLbl.text = date2
+                dueByValueLbl.textColor = UIColor.black
+            }
             
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[dateLbl]-[firstItemLbl]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-42-[chargeLbl(25)]-[profitBarView(100)]-[priceLbl]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[dateLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[firstItemLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[chargeLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[profitBarView(6)]-4-|", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[priceLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
+            frequencyLbl.text = "Every \(equipmentService.frequency!) Days"
             
             break
-        case "ITEM":
-            print("layout views 4a")
-            contentView.addSubview(dateLbl)
-            contentView.addSubview(customerLbl)
-            contentView.addSubview(firstItemLbl)
-            contentView.addSubview(chargeLbl)
-            contentView.addSubview(priceLbl)
-            //contentView.addSubview(priorityLbl)
-            //contentView.addSubview(depthLbl)
-            //contentView.addSubview(monitoringLbl)
-            contentView.addSubview(remainingQtyLbl)
-            print("layout views 4b")
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[customerLbl]-|", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-60-[remainingQtyLbl]-|", options: [], metrics: nil, views: viewsDictionary))
-            print("layout views 4c")
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerLbl(22)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[remainingQtyLbl(15)]-4-|", options: [], metrics: nil, views: viewsDictionary))
-            print("layout views 4d")
-            
+        case "2":
+            dueByValueLbl.text = "\(equipmentService.nextValue!)"
+            if self.equipmentService.serviceDue {
+                dueByValueLbl.textColor = UIColor.red
+            }else{
+                dueByValueLbl.textColor = UIColor.black
+            }
+            frequencyLbl.text = "Every \(equipmentService.frequency!) Mi./Km."
             break
-        case "SCHEDULE":
-            
-            contentView.addSubview(dateLbl)
-            contentView.addSubview(customerLbl)
-            contentView.addSubview(firstItemLbl)
-            contentView.addSubview(chargeLbl)
-            contentView.addSubview(priceLbl)
-            //contentView.addSubview(priorityLbl)
-            //contentView.addSubview(depthLbl)
-            //contentView.addSubview(monitoringLbl)
-            //contentView.addSubview(remainingQtyLbl)
-            print("layout views 5")
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[customerLbl]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-42-[chargeLbl(25)]-[profitBarView(100)]-[priceLbl]", options: [], metrics: nil, views: viewsDictionary))
-            print("layout views 5a")
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[customerLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[chargeLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
-            print("layout views 5b")
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[profitBarView(6)]-4-|", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[priceLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
-            
+        case "3":
+            dueByValueLbl.text = "\(equipmentService.nextValue!)"
+            if self.equipmentService.serviceDue {
+                dueByValueLbl.textColor = UIColor.red
+            }else{
+                dueByValueLbl.textColor = UIColor.black
+            }
+            frequencyLbl.text = "Every \(equipmentService.frequency!) Hours"
             break
-        case "PLOWING":
-            print("layout views 6")
+        default:
+            dueByValueLbl.text = "Now"
+            dueByValueLbl.textColor = UIColor.red
+            frequencyLbl.text = "One Time Service"
+        }
+        
+        
+        
+        
+        dueByValueLbl.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        completedByLbl = UILabel()
+        completedByLbl.font = layoutVars.textFieldFont
+        completedByLbl.text = "By: \(equipmentService.completedBy!)"
+        completedByLbl.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        completionDateLbl = UILabel()
+        completionDateLbl.font = layoutVars.textFieldFont
+        completionDateLbl.text = "On: \(equipmentService.completionDate!)"
+        completionDateLbl.translatesAutoresizingMaskIntoConstraints = false
+        
+
+        let viewsDictionary = ["statusIcon":statusIcon,"nameLbl":nameLbl,"completedByLbl":completedByLbl,"completionDateLbl":completionDateLbl, "dueByLbl":self.dueByLbl, "dueByValueLbl":self.dueByValueLbl, "frequencyLbl":self.frequencyLbl] as [String : Any]
+        
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusIcon(30)]-[nameLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-15-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
+        
+        
+        switch (self.serviceMode){
+        case "CURRENT":
             
-            contentView.addSubview(dateLbl)
-            contentView.addSubview(customerLbl)
-            contentView.addSubview(firstItemLbl)
-            //contentView.addSubview(chargeLbl)
-            //contentView.addSubview(priceLbl)
-            contentView.addSubview(priorityLbl)
-            contentView.addSubview(depthLbl)
-            contentView.addSubview(monitoringLbl)
-            //contentView.addSubview(remainingQtyLbl)
+           contentView.addSubview(dueByLbl)
+           contentView.addSubview(dueByValueLbl)
+           contentView.addSubview(frequencyLbl)
+           
+           contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusIcon(30)]-[dueByLbl(30)][dueByValueLbl]", options: [], metrics: nil, views: viewsDictionary))
+           contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[frequencyLbl(150)]-|", options: [], metrics: nil, views: viewsDictionary))
+           contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameLbl(30)][dueByLbl(20)]", options: [], metrics: nil, views: viewsDictionary))
+           contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameLbl(30)][dueByValueLbl(20)]", options: [], metrics: nil, views: viewsDictionary))
+           contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameLbl(30)][frequencyLbl(20)]", options: [], metrics: nil, views: viewsDictionary))
+            break
+        case "HISTORY":
             
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[customerLbl]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[priorityLbl(80)]-[depthLbl(20)]-[monitoringLbl(100)]-[profitBarView(100)]", options: [], metrics: nil, views: viewsDictionary))
+            contentView.addSubview(completedByLbl)
+            contentView.addSubview(completionDateLbl)
             
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[customerLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[priorityLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[depthLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[monitoringLbl(15)]|", options: [], metrics: nil, views: viewsDictionary))
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[profitBarView(6)]-4-|", options: [], metrics: nil, views: viewsDictionary))
+            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusIcon(30)]-[completedByLbl]", options: [], metrics: nil, views: viewsDictionary))
+            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[completionDateLbl(80)]-|", options: [], metrics: nil, views: viewsDictionary))
+            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameLbl(30)][completedByLbl(20)]", options: [], metrics: nil, views: viewsDictionary))
+            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameLbl(30)][completionDateLbl(20)]", options: [], metrics: nil, views: viewsDictionary))
             
             break
         default:
@@ -227,53 +189,26 @@ class EquipmentServiceTableViewCell: UITableViewCell {
             
         }
         
-        
-        
-        
-        
-        print("layout views 7")
-        
-        
-        incomeView = UIView()
-        incomeView.layer.cornerRadius = 3
-        incomeView.layer.masksToBounds = true
-        incomeView.backgroundColor = layoutVars.buttonColor1
-        incomeView.translatesAutoresizingMaskIntoConstraints = false
-        self.profitBarView.addSubview(self.incomeView)
-        
-        costView = UIView()
-        costView.layer.cornerRadius = 3
-        costView.layer.masksToBounds = true
-        costView.backgroundColor = UIColor.red
-        costView.translatesAutoresizingMaskIntoConstraints = false
-        self.profitBarView.addSubview(self.costView)
- 
- */
-        
     }
     
     
-    /*
+    
     func setStatus(status: String) {
         switch (status) {
-        case "1":
+        case "0":
             let statusImg = UIImage(named:"unDoneStatus.png")
             statusIcon.image = statusImg
             break;
-        case "2":
+        case "1":
             let statusImg = UIImage(named:"inProgressStatus.png")
             statusIcon.image = statusImg
             break;
-        case "3":
+        case "2":
             let statusImg = UIImage(named:"doneStatus.png")
             statusIcon.image = statusImg
             break;
-        case "4":
+        case "3":
             let statusImg = UIImage(named:"cancelStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "5":
-            let statusImg = UIImage(named:"waitingStatus.png")
             statusIcon.image = statusImg
             break;
         default:
@@ -284,65 +219,33 @@ class EquipmentServiceTableViewCell: UITableViewCell {
     }
     
     
-    func setProfitBar(_price:String, _cost:String){
-        //Profit Info
-        //print("setProfitBar")
-        //print("_price = \(_price)")
-        //print("_cost \(_cost)")
-        // profit bar vars
-        let profitBarWidth = Float(100.00)
+   
+    func determineUpcomingDate()->String{
+        print("determineUpcomingDate")
         
         
-        let income = Float(_price)
-        let cost = Float(_cost)
+        //var dateString = "2014-07-15" // change to your date format
         
-        //print("income = \(income)")
-        //print("cost = \(cost)")
+        let dbDateFormatter = DateFormatter()
+        dbDateFormatter.dateFormat = "MM/dd/yy"
         
-        // print("101")
-        var scaleFactor = Float(0.00)
-        var costWidth = Float(0.00)
-        
-        //print("102")
-        if(Float(income!) > 0.0){
-            //print("greater")
-            scaleFactor = Float(Float(profitBarWidth) / Float(income!))
-            costWidth = cost! * scaleFactor
-            if(costWidth > profitBarWidth){
-                costWidth = profitBarWidth
-            }
-        }else{
-            costWidth = profitBarWidth
-        }
+        let dbDate = dbDateFormatter.date(from: equipmentService.creationDate)
+        print("equipmentService.nextValue = \(equipmentService.nextValue)")
+         print("equipmentService.creationDate = \(equipmentService.creationDate)")
+        print("dbDate = \(dbDate)")
         
         
-        let costBarOffset = profitBarWidth - costWidth
         
-        //print("income = \(income)")
-        //print("cost = \(cost)")
-        //print("scaleFactor = \(scaleFactor)")
-        //print("costWidth = \(costWidth)")
-        //print("profitBarWidth = \(profitBarWidth)")
-        //print("costBarOffset = \(costBarOffset)")
+        let daysToAdd = Int(equipmentService.nextValue)!
+        let futureDate = Calendar.current.date(byAdding:
+            .day, // updated this params to add hours
+            value: daysToAdd,
+            to: dbDate!)
         
+        print(dateFormatter.string(from: futureDate!))
+        return dateFormatter.string(from: futureDate!)
         
-        let profitBarViewsDictionary = [
-            
-            "incomeView":self.incomeView,
-            "costView":self.costView
-            ]  as [String:AnyObject]
-        
-        let profitBarSizeVals = ["profitBarWidth":profitBarWidth as AnyObject,"costWidth":costWidth as AnyObject,"costBarOffset":costBarOffset as AnyObject]  as [String:AnyObject]
-        
-        
-        self.profitBarView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[incomeView(profitBarWidth)]|", options: [], metrics: profitBarSizeVals, views: profitBarViewsDictionary))
-        self.profitBarView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[costView(costWidth)]-costBarOffset-|", options: [], metrics: profitBarSizeVals, views: profitBarViewsDictionary))
-        
-        self.profitBarView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[incomeView(6)]", options: [], metrics: profitBarSizeVals, views: profitBarViewsDictionary))
-        self.profitBarView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[costView(6)]", options: [], metrics: profitBarSizeVals, views: profitBarViewsDictionary))
     }
-    
-    */
     
     
     

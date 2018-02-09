@@ -51,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.3.0"
+    var appVersion:String = "1.3.2"
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
     var employeeListViewController:EmployeeListViewController!
@@ -69,7 +69,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     
     var underConstructionViewController:UnderConstructionViewController!
 
-    //var equipmentListViewController:EquipmentListViewController!
     
     var fieldsJson:JSON!
     
@@ -144,7 +143,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.employeeListViewController = EmployeeListViewController()
         self.employeeListViewController.delegate = self
         
-        
+        self.employeeArray = []
         
         
         //Get employee list
