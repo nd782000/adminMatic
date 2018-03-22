@@ -90,7 +90,7 @@ class EquipmentServiceTableViewCell: UITableViewCell {
             frequencyLbl.text = "One Time Service"
             break
         case "1":
-            let date = dateFormatter.date(from: determineUpcomingDate())
+            let date = dateFormatter.date(from: layoutVars.determineUpcomingDate(_equipmentService: equipmentService))
             
             let dateFormatter2 = DateFormatter()
             dateFormatter2.dateFormat = "MM/dd/yy"
@@ -219,7 +219,7 @@ class EquipmentServiceTableViewCell: UITableViewCell {
     }
     
     
-   
+   /*
     func determineUpcomingDate()->String{
         print("determineUpcomingDate")
         
@@ -246,6 +246,7 @@ class EquipmentServiceTableViewCell: UITableViewCell {
         return dateFormatter.string(from: futureDate!)
         
     }
+ */
     
     
     

@@ -25,8 +25,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     var indicator: SDevIndicator!
 
     var empID:String!
-   // var units:String!
-    //var total:String!
+   
     var screenHeaderLbl: Label!
     var toLbl: Label!
     var startTxtField: PaddedTextField!
@@ -66,8 +65,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     init(_empID:String){
         super.init(nibName:nil,bundle:nil)
         self.empID = _empID
-        //self.units = _units
-        //self.total = _total
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -273,7 +271,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         
         
         self.screenHeaderLbl = Label()
-        self.screenHeaderLbl.text = "Your Usage from:"
+        self.screenHeaderLbl.text = "Your usage from:"
         self.screenHeaderLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.screenHeaderLbl.textAlignment = NSTextAlignment.left
         self.view.addSubview(self.screenHeaderLbl)
@@ -421,7 +419,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         
         
         self.screenHeaderLbl = Label()
-        self.screenHeaderLbl.text = "Your Usage from:"
+        self.screenHeaderLbl.text = "Your usage from:"
         self.screenHeaderLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.screenHeaderLbl.textAlignment = NSTextAlignment.left
         self.view.addSubview(self.screenHeaderLbl)
@@ -653,51 +651,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     
     
     
-    /*
-    func keyboardWillShow(sender: NSNotification) {
-        //print("keyboard will show")
-        
-        if(self.locked == false){
-            if(Double(qtyTxtField.text!) != nil){
-                
-                let qty = Double(qtyTxtField.text!)
-                // print("call delegate \(self.row)  \(qty)")
-                self.delegate.editQty(row: self.row, qty: qty!)
-            }
-            if(Double(costTxtField.text!) != nil){
-                
-                let cost = Double(costTxtField.text!)
-                //print("call delegate \(self.row)  \(cost)")
-                self.delegate.editCost(row: self.row, cost: cost!)
-            }
-        }
-        
-    }
-    */
-    
-    //picker view delegate methods
-    /*
-    func pickerView(pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
-        
-        return self.vendorList.count
-        
-    }
-    
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        
-        return self.vendorList[row].name
-    }
-    
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
-    {
-        
-        self.vendorValue = self.vendorList[row].name
-        
-    }
-    
-    */
+   
     
     
     

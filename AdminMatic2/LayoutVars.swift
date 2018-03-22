@@ -28,7 +28,57 @@ extension UIColor {
         
     }
     
+    
+    
 }
+
+extension UIColor {
+    convenience init(red: Int, green: Int, blue: Int) {
+        assert(red >= 0 && red <= 255, "Invalid red component")
+        assert(green >= 0 && green <= 255, "Invalid green component")
+        assert(blue >= 0 && blue <= 255, "Invalid blue component")
+        
+        self.init(red: CGFloat(red) / 255.0, green: CGFloat(green) / 255.0, blue: CGFloat(blue) / 255.0, alpha: 1.0)
+    }
+    
+    convenience init(rgb: Int) {
+        self.init(
+            red: (rgb >> 16) & 0xFF,
+            green: (rgb >> 8) & 0xFF,
+            blue: rgb & 0xFF
+        )
+    }
+    
+    
+    convenience init(red: Int, green: Int, blue: Int, a: CGFloat = 1.0) {
+        self.init(
+            red: CGFloat(red) / 255.0,
+            green: CGFloat(green) / 255.0,
+            blue: CGFloat(blue) / 255.0,
+            alpha: a
+        )
+    }
+    
+    convenience init(rgb: Int, a: CGFloat = 1.0) {
+        self.init(
+            red: (rgb >> 16) & 0xFF,
+            green: (rgb >> 8) & 0xFF,
+            blue: rgb & 0xFF,
+            a: a
+        )
+    }
+    
+    
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -54,7 +104,11 @@ extension String {
         }
         return ""
     }
+    
+    
 }
+
+
 
 
 //used to color map pins
@@ -73,6 +127,7 @@ extension MKPinAnnotationView {
 
 class LayoutVars: UIViewController {
     
+    //let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var fullWidth:CGFloat! = UIScreen.main.bounds.width
     var halfWidth:CGFloat! = (UIScreen.main.bounds.width - 25)/2
     var fullHeight:CGFloat! = UIScreen.main.bounds.height
@@ -107,24 +162,112 @@ class LayoutVars: UIViewController {
     let thumbBase : String = "https://www.atlanticlawnandgarden.com/uploads/general/thumbs/"
     
     
-    let manager: Alamofire.SessionManager = {
+    var manager: Alamofire.SessionManager = {
         let serverTrustPolicies: [String: ServerTrustPolicy] = [
             "www.atlanticlawnandgarden.com": .disableEvaluation
         ]
         
         let configuration = URLSessionConfiguration.default
         configuration.httpAdditionalHeaders = Alamofire.SessionManager.defaultHTTPHeaders
-        configuration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        //configuration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
         
         return Alamofire.SessionManager(
             configuration: configuration,
             serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies)
         )
     }()
+ 
     
-
+   
     
-     
+    
+    
+   
+    
+    
+    func grantAccess(_level:Int,_view:UIViewController)->Bool{
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        
+        if (appDelegate.loggedInEmployee?.userLevel)! <= _level{
+        
+            simpleAlert(_vc: _view, _title: "Access Denied", _message: "Your user level (\(appDelegate.loggedInEmployee!.userLevelName!)) does not allow access to this feature.")
+            return true
+        }else{
+            return false
+        }
+        
+    }
+    
+    
+    func hexStringToUIColor (hex:String) -> UIColor {
+        var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        
+        if (cString.hasPrefix("#")) {
+            cString.remove(at: cString.startIndex)
+        }
+        
+        if ((cString.count) != 6) {
+            return UIColor.gray
+        }
+        
+        var rgbValue:UInt32 = 0
+        Scanner(string: cString).scanHexInt32(&rgbValue)
+        
+        return UIColor(
+            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+            alpha: CGFloat(1.0)
+        )
+    }
+    
+    
+    //method used for equipment service date forcasting
+    func determineUpcomingDate(_equipmentService:EquipmentService)->String{
+        print("determineUpcomingDate")
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM/dd/yy"
+        
+        //var dateString = "2014-07-15" // change to your date format
+        
+        let dbDateFormatter = DateFormatter()
+        dbDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        //dbDateFormatter.locale = NSLocale.current
+        dbDateFormatter.timeZone = TimeZone.current
+        
+        let dbDate = dbDateFormatter.date(from: _equipmentService.creationDate)
+        
+        
+        
+        print("equipmentService.nextValue = \(_equipmentService.nextValue)")
+        print("equipmentService.creationDate = \(_equipmentService.creationDate)")
+        print("dbDate = \(String(describing: dbDate))")
+        
+        
+        
+        let daysToAdd = Int(_equipmentService.nextValue)!
+        let futureDate = Calendar.current.date(byAdding:
+            .day, // updated this params to add hours
+            value: daysToAdd,
+            to: dbDate!)
+        
+        print(dateFormatter.string(from: futureDate!))
+        return dateFormatter.string(from: futureDate!)
+        
+    }
+    
+    
+    func getDayOfWeek(_ today:String) -> Int? {
+        // sunday = 0, saturday = 6
+        let formatter  = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        guard let todayDate = formatter.date(from: today) else { return nil }
+        let myCalendar = Calendar(identifier: .gregorian)
+        let weekDay = myCalendar.component(.weekday, from: todayDate)
+        return weekDay - 1
+    }
 }
 
 
@@ -470,6 +613,100 @@ class Button:UIButton{
     }
 }
 
+
+
+/*
+class IconButton:UIButton{
+    
+    
+    //var iconBgView:UIView!
+    var icon:UIImageView!
+    //var label:UILabel!
+    var layoutVars:LayoutVars = LayoutVars()
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        
+        
+        
+        
+        //self.iconBgView = UIView()
+        //self.label = UILabel()
+        
+        
+        
+        
+        
+        //iconBgView.translatesAutoresizingMaskIntoConstraints = true
+        //iconBgView.backgroundColor = layoutVars.backgroundColor
+        //self.addSubview(iconBgView)
+        
+        /*
+        label.translatesAutoresizingMaskIntoConstraints = true
+        label.backgroundColor = UIColor.clear
+        label.font = UIFont(name: "Helvetica Neue", size: 16)!
+        label.textColor = UIColor.white
+        self.addSubview(label)
+ */
+        
+        
+        self.backgroundColor = UIColor(hex:0x005100, op: 1.0)
+        self.titleLabel!.font = UIFont(name: "Helvetica Neue", size: 16)!
+        self.setTitleColor(UIColor.white, for: UIControlState())
+        
+        self.layer.cornerRadius = 5.0
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
+        
+    }
+    
+    convenience init(titleText:String!,iconName:String!) {
+        self.init()
+        print("title = \(titleText)")
+        self.setTitle(titleText!, for: UIControlState())
+        //label.text = titleText
+        
+        icon = UIImageView()
+        icon.backgroundColor = UIColor.clear
+        icon.contentMode = .scaleAspectFill
+        
+        let img = UIImage(named:iconName)
+        icon.image = img
+        self.addSubview(icon)
+        
+        
+    }
+    
+    override func layoutSubviews() {
+        print("layoutSubviews")
+        print("button width = \(self.frame.width) height = \(self.frame.height)")
+        //iconBgView.frame =  CGRect(x: 0, y: 0, width: self.frame.height, height: self.frame.height)
+        //label.frame =  CGRect(x: 0, y: 0, width: self.frame.width - 34, height: self.frame.height)
+        icon.frame = CGRect(x: 1.0, y: 1.0, width: self.frame.height - 2.0, height: self.frame.height - 2.0)
+        //self.titleEdgeInsets = UIEdgeInsetsMake(0.0, self.frame.height + 4, 0.0, 0.0)
+    }
+    
+    
+    
+    
+    
+}
+
+*/
+
+
+
+
+
+
+
+
+
 class Cell:UITableViewCell {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -577,6 +814,87 @@ func cleanPhoneNumber(_ _number:String!)->String{
     let cleanPhone = stringArray.joined(separator: "")
     print("cleanPhone \(cleanPhone)")
     return cleanPhone
+}
+
+
+//phone number formatting
+
+
+
+func format(phoneNumber sourcePhoneNumber: String) -> String? {
+    
+    // Remove any character that is not a number
+    let numbersOnly = sourcePhoneNumber.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+    let length = numbersOnly.count
+    let hasLeadingOne = numbersOnly.hasPrefix("1")
+    
+    // Check for supported phone number length
+    guard length == 7 || length == 10 || (length == 11 && hasLeadingOne) else {
+        return nil
+    }
+    
+    let hasAreaCode = (length >= 10)
+    var sourceIndex = 0
+    
+    // Leading 1
+    var leadingOne = ""
+    if hasLeadingOne {
+        leadingOne = "1 "
+        sourceIndex += 1
+    }
+    
+    // Area code
+    var areaCode = ""
+    if hasAreaCode {
+        let areaCodeLength = 3
+        guard let areaCodeSubstring = numbersOnly.substring(start: sourceIndex, offsetBy: areaCodeLength) else {
+            return nil
+        }
+        areaCode = String(format: "(%@) ", areaCodeSubstring)
+        sourceIndex += areaCodeLength
+    }
+    
+    // Prefix, 3 characters
+    let prefixLength = 3
+    guard let prefix = numbersOnly.substring(start: sourceIndex, offsetBy: prefixLength) else {
+        return nil
+    }
+    sourceIndex += prefixLength
+    
+    // Suffix, 4 characters
+    let suffixLength = 4
+    guard let suffix = numbersOnly.substring(start: sourceIndex, offsetBy: suffixLength) else {
+        return nil
+    }
+    
+    return leadingOne + areaCode + prefix + "-" + suffix
+}
+
+
+func testFormat(sourcePhoneNumber: String) -> String {
+    if let formattedPhoneNumber = format(phoneNumber: sourcePhoneNumber) {
+        return formattedPhoneNumber
+    }
+    else {
+        return "Format Error"
+    }
+}
+
+
+
+extension String {
+    /// This method makes it easier extract a substring by character index where a character is viewed as a human-readable character (grapheme cluster).
+    internal func substring(start: Int, offsetBy: Int) -> String? {
+        guard let substringStartIndex = self.index(startIndex, offsetBy: start, limitedBy: endIndex) else {
+            return nil
+        }
+        
+        guard let substringEndIndex = self.index(startIndex, offsetBy: start + offsetBy, limitedBy: endIndex) else {
+            return nil
+        }
+        
+        return String(self[substringStartIndex ..< substringEndIndex])
+    }
 }
 
 
@@ -968,3 +1286,140 @@ class MonthYearPickerView: UIPickerView, UIPickerViewDelegate, UIPickerViewDataS
     }
     
 }
+
+
+
+/*
+extension Date {
+    
+    static func today() -> Date {
+        return Date()
+    }
+    
+    func next(_ weekday: Weekday, considerToday: Bool = false) -> Date {
+        return get(.Next,
+                   weekday,
+                   considerToday: considerToday)
+    }
+    
+    func previous(_ weekday: Weekday, considerToday: Bool = false) -> Date {
+        return get(.Previous,
+                   weekday,
+                   considerToday: considerToday)
+    }
+    
+    func get(_ direction: SearchDirection,
+             _ weekDay: Weekday,
+             considerToday consider: Bool = false) -> Date {
+        
+        let dayName = weekDay.rawValue
+        
+        let weekdaysName = getWeekDaysInEnglish().map { $0.lowercased() }
+        
+        assert(weekdaysName.contains(dayName), "weekday symbol should be in form \(weekdaysName)")
+        
+        let searchWeekdayIndex = weekdaysName.index(of: dayName)! + 1
+        
+        let calendar = Calendar(identifier: .gregorian)
+        
+        if consider && calendar.component(.weekday, from: self) == searchWeekdayIndex {
+            return self
+        }
+        
+        var nextDateComponent = DateComponents()
+        nextDateComponent.weekday = searchWeekdayIndex
+        
+        
+        let date = calendar.nextDate(after: self,
+                                     matching: nextDateComponent,
+                                     matchingPolicy: .nextTime,
+                                     direction: direction.calendarSearchDirection)
+        
+        return date!
+    }
+    
+}
+ 
+ */
+
+
+extension Date {
+
+    var startOfWeek: Date {
+        let date = Calendar.current.date(from: Calendar.current.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self))!
+        let dslTimeOffset = NSTimeZone.local.daylightSavingTimeOffset(for: date)
+        return date.addingTimeInterval(dslTimeOffset)
+    }
+    
+    var endOfWeek: Date {
+        return Calendar.current.date(byAdding: .day, value: 6, to: self.startOfWeek)!
+        
+    }
+    
+    
+    var startOfNextWeek: Date {
+        let date = Calendar.current.date(from: Calendar.current.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self))!
+        let dslTimeOffset = NSTimeZone.local.daylightSavingTimeOffset(for: date)
+        let startOfWeek = date.addingTimeInterval(dslTimeOffset)
+        return Calendar.current.date(byAdding: .day, value: 7, to: startOfWeek)!
+    }
+    
+    var endOfNextWeek: Date {
+        let endOfWeek = Calendar.current.date(byAdding: .day, value: 6, to: self.startOfWeek)!
+        return Calendar.current.date(byAdding: .day, value: 7, to: endOfWeek)!
+    }
+    
+    
+    var startOfLastWeek: Date {
+        let date = Calendar.current.date(from: Calendar.current.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self))!
+        let dslTimeOffset = NSTimeZone.local.daylightSavingTimeOffset(for: date)
+        let startOfWeek = date.addingTimeInterval(dslTimeOffset)
+        return Calendar.current.date(byAdding: .day, value: -7, to: startOfWeek)!
+    }
+    
+    var endOfLastWeek: Date {
+        let endOfWeek = Calendar.current.date(byAdding: .second, value: 604799, to: self.startOfWeek)!
+        return Calendar.current.date(byAdding: .day, value: -7, to: endOfWeek)!
+    }
+    
+    
+    
+    
+    func addNumberOfDaysToDate(_numberOfDays: Int) -> Date {
+        return Calendar.current.date(byAdding: .day, value: _numberOfDays, to: self)!
+    }
+    
+    
+    
+    
+}
+
+
+internal extension DateComponents {
+    mutating func to12am() {
+        self.hour = 0
+        self.minute = 0
+        self.second = 0
+    }
+    
+    mutating func to12pm(){
+        self.hour = 23
+        self.minute = 59
+        self.second = 59
+    }
+}
+
+
+
+
+/*
+extension Calendar {
+    static let gregorian = Calendar(identifier: .gregorian)
+}
+extension Date {
+    var startOfWeek: Date? {
+        return Calendar.gregorian.date(from: Calendar.gregorian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self))
+    }
+}
+ */
+

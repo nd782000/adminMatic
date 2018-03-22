@@ -42,20 +42,16 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
     var statusValueToUpdate: String!
     
     var typeLbl:GreyLabel!
+    var dueLbl:GreyLabel!
     var frequencyLbl:GreyLabel!
     
     var creationOnByLbl:GreyLabel!
     
     var instructionsLbl:GreyLabel!
-    var instructionsView:UITextView!
+    var instructionsView:UITextView = UITextView()
     
     var currentLbl:GreyLabel!
     var currentTxtField:PaddedTextField!
-    
-    //var currentDatePicker: DatePicker!
-    //var currentDate:String = ""
-    
-    
     
     var nextLbl:GreyLabel!
     var nextTxtField:PaddedTextField!
@@ -63,7 +59,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
     var nextDatePicker: DatePicker!
 
     var completionNotesLbl:GreyLabel!
-    var completionNotesView:UITextView!
+    var completionNotesView:UITextView = UITextView()
     
     var statusLbl:GreyLabel!
     var statusIcon2:UIImageView = UIImageView()
@@ -73,6 +69,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
     var keyBoardShown:Bool = false
     
     let dateFormatter = DateFormatter()
+    let dateFormatterDB = DateFormatter()
     
     
     
@@ -102,7 +99,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         
         
         view.backgroundColor = layoutVars.backgroundColor
-        title = "Equipment"
+        title = "Service"
         
         //custom back button
         let backButton:UIButton = UIButton(type: UIButtonType.custom)
@@ -114,6 +111,19 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         navigationItem.leftBarButtonItem  = backButtonItem
         
         layoutViews()
+        
+        
+        DispatchQueue.main.async {
+            self.instructionsView.contentOffset = CGPoint.zero
+            self.instructionsView.scrollRangeToVisible(NSRange(location:0, length:0))
+            
+            self.completionNotesView.contentOffset = CGPoint.zero
+            self.completionNotesView.scrollRangeToVisible(NSRange(location:0, length:0))
+        }
+        
+        
+        
+        
     }
     
     
@@ -124,12 +134,17 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         
         print("layoutViews")
         
+        print("self.equipmentService.frequency = \(self.equipmentService.frequency)")
+        print("self.equipmentService.currentValue = \(self.equipmentService.currentValue)")
+        print("self.equipmentService.nextValue = \(self.equipmentService.nextValue)")
+        
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(EquipmentViewController.displayEditView))
         navigationItem.rightBarButtonItem = editButton
         
         dateFormatter.dateFormat = "MM/dd/yy"
+        dateFormatterDB.dateFormat = "yyyy-MM-dd HH:mm:ss"
        
         //name
         self.nameLbl = GreyLabel()
@@ -177,27 +192,23 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.typeLbl.font = layoutVars.smallFont
         self.view.addSubview(self.typeLbl)
         
-        //frequency
-        self.frequencyLbl = GreyLabel()
-        switch self.equipmentService.type {
-        case "0":
-            self.frequencyLbl.text = "Frequency: N/A"
-        case "1":
-            self.frequencyLbl.text = "Frequency: \(self.equipmentService.frequency!) Days"
-        case "2":
-            self.frequencyLbl.text = "Frequency: \(self.equipmentService.frequency!) Miles/Km."
-        case "3":
-            self.frequencyLbl.text = "Frequency: \(self.equipmentService.frequency!) Engine Hours"
-        default:
-            self.frequencyLbl.text = "Frequency: N/A"
-        }
+        //due
+        self.dueLbl = GreyLabel()
+        self.dueLbl.font = layoutVars.smallFont
+        self.view.addSubview(self.dueLbl)
         
+        
+        self.frequencyLbl = GreyLabel()
         self.frequencyLbl.font = layoutVars.smallFont
         self.view.addSubview(self.frequencyLbl)
         
+        let creationDateFormatter:DateFormatter = DateFormatter()
+        creationDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let creationDate = creationDateFormatter.date(from: self.equipmentService.creationDate!)
+        print("creation date = \(creationDate)")
         //created on/by
         self.creationOnByLbl = GreyLabel()
-        self.creationOnByLbl.text = "By: \(self.equipmentService.createdBy!) \(self.equipmentService.creationDate!)"
+        self.creationOnByLbl.text = "By: \(self.equipmentService.createdBy!) on \(self.dateFormatter.string(from: creationDate!))"
         self.creationOnByLbl.font = layoutVars.smallFont
         self.view.addSubview(self.creationOnByLbl)
         
@@ -209,7 +220,11 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.instructionsLbl.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.instructionsLbl)
         
-        self.instructionsView = UITextView()
+        //self.instructionsView = UITextView()
+        self.instructionsView.layer.borderWidth = 1
+        self.instructionsView.layer.borderColor = UIColor(hex:0x005100, op: 0.2).cgColor
+        self.instructionsView.layer.cornerRadius = 4.0
+        
         self.instructionsView.backgroundColor = UIColor.clear
         self.instructionsView.text = self.equipmentService.instruction
         self.instructionsView.font = layoutVars.smallFont
@@ -220,37 +235,8 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         //current
         self.currentLbl = GreyLabel()
         self.currentLbl.textAlignment = .left
-        self.currentLbl.text = "Current:"
         self.currentLbl.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(currentLbl)
-        
-        
-        
-        if self.equipmentService.type == "1"{
-            //treat current as a date
-            
-            
-            self.currentTxtField = PaddedTextField()
-            self.currentTxtField.text = dateFormatter.string(from: Date())
-            self.currentTxtField.isEnabled = false
-            
-        }else{
-            if self.equipmentService.currentValue == "0"{
-                self.currentTxtField = PaddedTextField(placeholder: "Current")
-            }else{
-                self.currentTxtField = PaddedTextField()
-                self.currentTxtField.text = equipmentService.currentValue!
-            }
-            self.currentTxtField.keyboardType = UIKeyboardType.numberPad
-            self.currentTxtField.delegate = self
-            self.currentTxtField.tag = 10
-        }
-        
-        
-        self.currentTxtField.translatesAutoresizingMaskIntoConstraints = false
-        
-        self.view.addSubview(self.currentTxtField)
-        
         
         
         
@@ -263,11 +249,14 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         
         currentToolBar.setItems([closeCurrentButton,spaceButton,setCurrentButton], animated: false)
         currentToolBar.isUserInteractionEnabled = true
-        self.currentTxtField.inputAccessoryView = currentToolBar
+        
+        
         
         
         
         //next
+        
+    
         self.nextLbl = GreyLabel()
         self.nextLbl.text = "Next:"
         self.nextLbl.textAlignment = .left
@@ -275,38 +264,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.view.addSubview(nextLbl)
         
         
-        
-        if self.equipmentService.type == "1"{
-            //treat current as a date
-            
-            
-            nextDatePicker = DatePicker()
-            nextDatePicker.datePickerMode = UIDatePickerMode.date
-            self.nextTxtField = PaddedTextField()
-            self.nextTxtField.inputView = self.nextDatePicker
-            self.nextTxtField.text = self.determineUpcomingDate()
-            
-            let date = dateFormatter.date(from: self.nextTxtField.text!)
-            
-            nextDatePicker.date = date!
-            nextDatePicker.minimumDate = Date()
-            
-            
-        }else{
-            if self.equipmentService.nextValue == "0"{
-                self.nextTxtField = PaddedTextField(placeholder: "Next")
-            }else{
-                self.nextTxtField = PaddedTextField()
-                self.nextTxtField.text = equipmentService.nextValue!
-            }
-            self.nextTxtField.keyboardType = UIKeyboardType.numberPad
-            self.nextTxtField.delegate = self
-            self.nextTxtField.tag = 11
-        }
-        
-        
        
-        self.view.addSubview(self.nextTxtField)
         
         let nextToolBar = UIToolbar()
         nextToolBar.barStyle = UIBarStyle.default
@@ -316,18 +274,8 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         let setNextButton = UIBarButtonItem(title: "Set", style: UIBarButtonItemStyle.plain, target: self, action: #selector(EquipmentServiceViewController.handleNextChange))
         nextToolBar.setItems([closeNextButton,spaceButton,setNextButton], animated: false)
         nextToolBar.isUserInteractionEnabled = true
-        self.nextTxtField.inputAccessoryView = nextToolBar
         
-        
-        
-        
-        
-        
-       // editInputLabels()
-        
-        
-        
-        
+       
         
         //completion notes
         self.completionNotesLbl = GreyLabel()
@@ -336,7 +284,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.completionNotesLbl.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.completionNotesLbl)
         
-        self.completionNotesView = UITextView()
+        //self.completionNotesView = UITextView()
         self.completionNotesView.layer.borderWidth = 1
         self.completionNotesView.layer.borderColor = UIColor(hex:0x005100, op: 0.2).cgColor
         self.completionNotesView.layer.cornerRadius = 4.0
@@ -393,7 +341,192 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         
         setStatus(status: equipmentService.status)
         
-    
+        
+        
+        switch equipmentService.type {
+        case "0":
+            dueLbl.text = "Due: Now"
+            dueLbl.textColor = UIColor.red
+            
+            self.frequencyLbl.text = "Frequency: N/A"
+            
+            self.currentLbl.text = "Current  Mi, Km, or Hrs:"
+            
+            if self.equipmentService.currentValue == "0"{
+                self.currentTxtField = PaddedTextField(placeholder: "Current")
+            }else{
+                self.currentTxtField = PaddedTextField()
+                self.currentTxtField.text = equipmentService.currentValue!
+            }
+            self.currentTxtField.keyboardType = UIKeyboardType.numberPad
+            self.currentTxtField.delegate = self
+            self.currentTxtField.tag = 10
+            
+            self.view.addSubview(self.currentTxtField)
+            self.currentTxtField.inputAccessoryView = currentToolBar
+            
+            if self.equipmentService.nextValue == "0"{
+                self.nextTxtField = PaddedTextField(placeholder: "Next")
+            }else{
+                self.nextTxtField = PaddedTextField()
+                self.nextTxtField.text = equipmentService.nextValue!
+            }
+           
+            self.nextTxtField.keyboardType = UIKeyboardType.numberPad
+            self.nextTxtField.delegate = self
+            self.nextTxtField.tag = 11
+            self.view.addSubview(self.nextTxtField)
+            
+            nextLbl.isHidden = true
+            nextTxtField.isHidden = true
+            
+            
+            break
+        case "1":
+            let date = dateFormatter.date(from: layoutVars.determineUpcomingDate(_equipmentService: equipmentService))
+            
+            let date2 = dateFormatter.string(from: date!)
+            
+            print("date = \(date2)")
+            dueLbl.text = "Due: \(date2)"
+            if date! < Date()  {
+                print("date1 is earlier than Now")
+                
+                dueLbl.textColor = UIColor.red
+            }else{
+                dueLbl.textColor = UIColor.black
+            }
+            
+            self.frequencyLbl.text = "Frequency: \(self.equipmentService.frequency!) Days"
+            
+            self.currentLbl.text = "Current Date:"
+            self.currentTxtField = PaddedTextField()
+            self.view.addSubview(self.currentTxtField)
+            
+            self.currentTxtField.text = dateFormatter.string(from: Date())
+            self.currentTxtField.isEnabled = false
+            
+            nextDatePicker = DatePicker()
+            nextDatePicker.datePickerMode = UIDatePickerMode.date
+            
+            self.nextTxtField = PaddedTextField()
+            self.view.addSubview(self.nextTxtField)
+            
+            self.nextTxtField.inputView = self.nextDatePicker
+            self.nextTxtField.text = layoutVars.determineUpcomingDate(_equipmentService: equipmentService)
+            
+            nextDatePicker.date = date!
+            nextDatePicker.minimumDate = Date()
+            
+            break
+        case "2":
+            dueLbl.text = "Due: \(equipmentService.nextValue!) Mi./Km."
+            if self.equipmentService.serviceDue {
+                dueLbl.textColor = UIColor.red
+            }else{
+                dueLbl.textColor = UIColor.black
+            }
+            
+            self.frequencyLbl.text = "Frequency: \(self.equipmentService.frequency!) Miles/Km."
+            
+            self.currentLbl.text = "Current Mi./Km.:"
+            
+            if self.equipmentService.currentValue == "0"{
+                self.currentTxtField = PaddedTextField(placeholder: "Current")
+            }else{
+                self.currentTxtField = PaddedTextField()
+                self.currentTxtField.text = equipmentService.currentValue!
+            }
+            
+            self.currentTxtField.keyboardType = UIKeyboardType.numberPad
+            self.currentTxtField.delegate = self
+            self.currentTxtField.tag = 10
+            
+            self.view.addSubview(self.currentTxtField)
+            
+            if self.equipmentService.nextValue == "0"{
+                self.nextTxtField = PaddedTextField(placeholder: "Next")
+            }else{
+                self.nextTxtField = PaddedTextField()
+                self.nextTxtField.text = equipmentService.nextValue!
+            }
+            self.nextTxtField.keyboardType = UIKeyboardType.numberPad
+            self.nextTxtField.delegate = self
+            self.nextTxtField.tag = 11
+            
+            self.view.addSubview(self.nextTxtField)
+            
+            break
+        case "3":
+            dueLbl.text = "Due: \(equipmentService.nextValue!) Hours"
+            if self.equipmentService.serviceDue {
+                dueLbl.textColor = UIColor.red
+            }else{
+                dueLbl.textColor = UIColor.black
+            }
+            
+            self.frequencyLbl.text = "Frequency: \(self.equipmentService.frequency!) Engine Hours"
+            
+            self.currentLbl.text = "Current Hours.:"
+            
+            if self.equipmentService.currentValue == "0"{
+                self.currentTxtField = PaddedTextField(placeholder: "Current")
+            }else{
+                self.currentTxtField = PaddedTextField()
+                self.currentTxtField.text = equipmentService.currentValue!
+            }
+            
+            self.currentTxtField.keyboardType = UIKeyboardType.numberPad
+            self.currentTxtField.delegate = self
+            self.currentTxtField.tag = 10
+            self.view.addSubview(self.currentTxtField)
+            
+            if self.equipmentService.nextValue == "0"{
+                self.nextTxtField = PaddedTextField(placeholder: "Next")
+            }else{
+                self.nextTxtField = PaddedTextField()
+                self.nextTxtField.text = equipmentService.nextValue!
+            }
+            self.nextTxtField.keyboardType = UIKeyboardType.numberPad
+            self.nextTxtField.delegate = self
+            self.nextTxtField.tag = 11
+            
+            self.view.addSubview(self.nextTxtField)
+            
+            break
+        default:
+            dueLbl.text = "Due: Now"
+            dueLbl.textColor = UIColor.red
+            
+            self.frequencyLbl.text = "Frequency: N/A"
+            
+            if self.equipmentService.currentValue == "0"{
+                self.currentTxtField = PaddedTextField(placeholder: "Current")
+            }else{
+                self.currentTxtField = PaddedTextField()
+                self.currentTxtField.text = equipmentService.currentValue!
+            }
+            
+            self.currentTxtField.keyboardType = UIKeyboardType.numberPad
+            self.currentTxtField.delegate = self
+            self.currentTxtField.tag = 10
+            
+            self.view.addSubview(self.currentTxtField)
+            
+            if self.equipmentService.nextValue == "0"{
+                self.nextTxtField = PaddedTextField(placeholder: "Next")
+            }else{
+                self.nextTxtField = PaddedTextField()
+                self.nextTxtField.text = equipmentService.nextValue!
+            }
+            self.nextTxtField.keyboardType = UIKeyboardType.numberPad
+            self.nextTxtField.delegate = self
+            self.nextTxtField.tag = 11
+            
+            self.view.addSubview(self.nextTxtField)
+        }
+        
+        
         
         let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30, "halfWidth": layoutVars.halfWidth, "nameWidth": layoutVars.fullWidth - 150, "navBottom":layoutVars.navAndStatusBarHeight + 8] as [String:Any]
         
@@ -404,6 +537,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             "statusIcon":self.statusIcon,
             "statusTxt":self.statusTxtField,
             "typeLbl":self.typeLbl,
+            "dueLbl":self.dueLbl,
             "frequencyLbl":self.frequencyLbl,
             "creationOnByLbl":self.creationOnByLbl,
             "instructionLbl":self.instructionsLbl,
@@ -420,10 +554,10 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             
             ] as [String:Any]
         
-        
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[name]-[statusIcon(40)]-|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[name]-[statusTxt(40)]-|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[typeLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[dueLbl]-|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[frequencyLbl]-|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[creationOnByLbl]-|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[instructionLbl]-|", options: [], metrics: nil, views: viewsDictionary))
@@ -437,17 +571,22 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusTxt2]-|", options: [], metrics: nil, views: viewsDictionary))
         
         
-        
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusTxt(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][typeLbl(30)][frequencyLbl(30)][creationOnByLbl(30)][instructionLbl(30)][instructionView(60)]-[currentLbl(30)][currentTxt(30)]-[completionNotesLbl(30)][completionNotesView]-[statusLbl(30)][statusIcon2(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][typeLbl(30)][frequencyLbl(30)][creationOnByLbl(30)][instructionLbl(30)][instructionView(60)]-[nextLbl(30)][nextTxt(30)]-[completionNotesLbl(30)][completionNotesView]-[statusLbl(30)][statusTxt2(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][typeLbl(30)][dueLbl(30)][frequencyLbl(30)][creationOnByLbl(30)][instructionLbl(30)][instructionView(120)]-[currentLbl(30)][currentTxt(30)]-[completionNotesLbl(30)][completionNotesView]-[statusLbl(30)][statusIcon2(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][typeLbl(30)][dueLbl(30)][frequencyLbl(30)][creationOnByLbl(30)][instructionLbl(30)][instructionView(120)]-[nextLbl(30)][nextTxt(30)]-[completionNotesLbl(30)][completionNotesView]-[statusLbl(30)][statusTxt2(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
     }
     
     @objc func displayEditView(){
         print("display Edit View")
+        
+        
+        //need userLevel greater then 1 to access this
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }
         
         //self.equipmentDelegate.disableSearch()
         let editEquipmentServiceViewController = NewEditEquipmentServiceViewController(_equipmentService: self.equipmentService)
@@ -491,7 +630,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             
             
             
-            let date = dateFormatter.date(from: equipmentService.creationDate)
+            let date = dateFormatterDB.date(from: equipmentService.creationDate)
         
             self.nextTxtField.text = dateFormatter.string(from: nextDatePicker.date)
             
@@ -849,7 +988,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
                         print("no alert necessary")
                         break
                     case "1":
-                        simpleAlert(_vc: self, _title: "New Service Added", _message: "A new \(self.equipmentService.typeName!) service has been added to be done on \(self.determineUpcomingDate()).")
+                        simpleAlert(_vc: self, _title: "New Service Added", _message: "A new \(self.equipmentService.typeName!) service has been added to be done on \(self.layoutVars.determineUpcomingDate(_equipmentService: self.equipmentService)).")
                         break
                     case "2":
                         simpleAlert(_vc: self, _title: "New Service Added", _message: "A new \(self.equipmentService.typeName!) service has been added to be done at \(self.equipmentService.nextValue!) Miles/Km..")
@@ -915,7 +1054,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         
     }
     
-    
+    /*
     func determineUpcomingDate()->String{
         print("determineUpcomingDate")
         print("creationDate = \(equipmentService.creationDate)")
@@ -931,8 +1070,37 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         
         print(dateFormatter.string(from: futureDate!))
         return dateFormatter.string(from: futureDate!)
+    }
+ */
+    /*
+    func determineUpcomingDate()->String{
+        print("determineUpcomingDate")
+        
+        
+        //var dateString = "2014-07-15" // change to your date format
+        
+        let dbDateFormatter = DateFormatter()
+        dbDateFormatter.dateFormat = "MM/dd/yy"
+        
+        let dbDate = dbDateFormatter.date(from: equipmentService.creationDate)
+        print("equipmentService.nextValue = \(equipmentService.nextValue)")
+        print("equipmentService.creationDate = \(equipmentService.creationDate)")
+        print("dbDate = \(dbDate)")
+        
+        
+        
+        let daysToAdd = Int(equipmentService.nextValue)!
+        let futureDate = Calendar.current.date(byAdding:
+            .day, // updated this params to add hours
+            value: daysToAdd,
+            to: dbDate!)
+        
+        print(dateFormatter.string(from: futureDate!))
+        return dateFormatter.string(from: futureDate!)
         
     }
+ */
+    
     
     
    

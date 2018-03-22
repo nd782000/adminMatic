@@ -376,7 +376,9 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                 let empDepID = self.json["crews"][p]["emps"][m]["dep"].stringValue
                 let empPayRate = self.json["crews"][p]["emps"][m]["payRate"].stringValue
                 let empAppScore = self.json["crews"][p]["emps"][m]["appScore"].stringValue
-                let empObject = Employee(_ID: empID, _name: empName, _lname: empLName, _fname: empFName, _username: empUserName, _pic: empPic, _phone: empPhone, _depID: empDepID, _payRate: empPayRate, _appScore: empAppScore )
+                let level = self.json["crews"][p]["emps"][m]["level"].intValue
+                let levelName = self.json["crews"][p]["emps"][m]["levelName"].stringValue
+                let empObject = Employee(_ID: empID, _name: empName, _lname: empLName, _fname: empFName, _username: empUserName, _pic: empPic, _phone: empPhone, _depID: empDepID, _payRate: empPayRate, _appScore: empAppScore, _userLevel: level, _userLevelName: levelName )
                 
                 empsOnWo.append(empObject)
             }

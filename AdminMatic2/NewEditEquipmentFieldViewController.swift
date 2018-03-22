@@ -41,6 +41,8 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
     var nameLbl:GreyLabel!
     var nameTxtField:PaddedTextField!
     
+    
+    /*
     //code
     var code:String = ""
     var codeLbl:GreyLabel!
@@ -48,7 +50,7 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
     
     var codeDescriptionView:UITextView!
     
-    
+    */
     
     
     
@@ -65,19 +67,19 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         //print("lead init \(_leadID)")
         //for an empty lead to start things off
         self.field = _field
-        print("new field name: \(name) ID: \(ID) code: \(code) field: \(field)")
+        print("new field name: \(name) ID: \(ID) field: \(field)")
     }
     
     
     //init for edit
-    init(_name:String,_ID:String,_code:String,_field:String){
+    init(_name:String,_ID:String,_field:String){
         super.init(nibName:nil,bundle:nil)
         
         self.name = _name
-        self.code = _code
+        //self.code = _code
         self.ID = _ID
         self.field = _field
-        print("edit field name: \(name) ID: \(ID) code: \(code) field: \(field)")
+        print("edit field name: \(name) ID: \(ID)  field: \(field)")
         
     }
     
@@ -91,7 +93,7 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
         let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(LeadViewController.goBack), for: UIControlEvents.touchUpInside)
+        backButton.addTarget(self, action: #selector(NewEditEquipmentFieldViewController.goBack), for: UIControlEvents.touchUpInside)
         backButton.setTitle("Back", for: UIControlState.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
@@ -173,9 +175,11 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         self.nameTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.nameTxtField.returnKeyType = .done
         self.nameTxtField.delegate = self
+        self.nameTxtField.tag = 10
         self.view.addSubview(self.nameTxtField)
         
         
+        /*
         //code
         
         self.codeLbl = GreyLabel()
@@ -195,6 +199,7 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         self.codeTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.codeTxtField.returnKeyType = .done
         self.codeTxtField.delegate = self
+        self.codeTxtField.tag = 20
         self.view.addSubview(self.codeTxtField)
         
         
@@ -208,7 +213,7 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         self.codeDescriptionView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(codeDescriptionView)
         
-        
+        */
         
         self.submitButtonBottom.addTarget(self, action: #selector(NewEditEquipmentFieldViewController.submit), for: UIControlEvents.touchUpInside)
         self.view.addSubview(self.submitButtonBottom)
@@ -225,34 +230,27 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         let equipmentViewsDictionary = [
             "nameLbl":self.nameLbl,
             "nameTxt":self.nameTxtField,
-            "codeLbl":self.codeLbl,
-            "codeTxt":self.codeTxtField,
-            "codeDescription":self.codeDescriptionView,
+            
             "submitBtn":self.submitButtonBottom
             ] as [String:AnyObject]
         
         
        
-       // print("1")
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[nameLbl]-15-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[nameTxt]-15-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[submitBtn]-15-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         
         
        
-       // print("2")
        
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[nameLbl(30)][nameTxt(30)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-       // print("3")
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[submitBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         
         if self.field == "TYPE"{
-          // print("4")
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[codeLbl]-15-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[codeTxt]-15-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[codeDescription]-15-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[nameLbl(30)][nameTxt(30)]-[codeLbl(30)][codeTxt(30)]-[codeDescription(50)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-           // print("5")
+          
+            
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[nameLbl(30)][nameTxt(30)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+            
         }
         
         
@@ -264,6 +262,13 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         print("textFieldShouldReturn")
         
         textField.resignFirstResponder()
+        if textField.tag == 10{
+            textField.text = textField.text?.capitalized
+        }
+        if textField.tag == 20{
+            textField.text = textField.text?.uppercased()
+        }
+        editsMade = true
         return true
     }
     
@@ -278,10 +283,6 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         if nameTxtField.text != nameTxtField.placeHolder{
             name = nameTxtField.text!
         }
-        if codeTxtField.text != codeTxtField.placeHolder{
-            code = codeTxtField.text!
-        }
-        
         
         
         
@@ -293,16 +294,7 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
             return false
         }
         
-        if field == "TYPE"{
-            //code check
-            if(code == ""){
-                print("provide a code")
-                simpleAlert(_vc: self, _title: "Incomplete Field", _message: "Provide a Code")
-                return false
-            }
-        }
        
-        
         
         
         return true
@@ -333,7 +325,10 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         
         
         
-        let parameters = ["fieldID": self.ID as AnyObject, "addedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "fieldName": self.name as AnyObject, "code": self.code as AnyObject,"field": self.field as AnyObject] as [String : Any]
+        //let parameters = ["fieldID": self.ID as AnyObject, "addedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "fieldName": self.name as AnyObject, "code": self.code as AnyObject,"field": self.field as AnyObject] as [String : Any]
+        
+        
+        let parameters = ["fieldID": self.ID as AnyObject, "addedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "fieldName": self.name as AnyObject, "field": self.field as AnyObject] as [String : Any]
         
         
         

@@ -16,7 +16,7 @@ import Nuke
 
 
 
-class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScrollViewDelegate, TimeEntryDelegate  {
+class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScrollViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImageViewDelegate, ImageLikeDelegate  {
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
     
@@ -28,7 +28,6 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     var tapBtn:UIButton!
     
     //employee info
-    var employeeView:UIView!
     var employeeImage:UIImageView!
     var activityView:UIActivityIndicatorView!
 
@@ -36,59 +35,52 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     var employeePhoneBtn:UIButton!
     var phoneNumberClean:String!
     
-    var appScoreLbl:InfoLabel!
+    var email: String = "No Email Found"
+    var emailName: String = ""
+    
+    var emailBtn:Button!
+    
+    var departmentsBtn:Button!
+    var crewsBtn:Button!
+    var shiftsBtn:Button!
+    var payrollBtn:Button!
     
     
-    var workingStatusIcon:UIView!
-    var workingLbl:InfoLabel!
+    //employee images
+    var totalImages:Int!
+    var images: JSON!
+    var imageArray:[Image] = []
     
-    //todays info, crew, crew leader, helpers, truck
-    var todaysDetailsView:UIView!
-    var todaysDetailsLbl:InfoLabel!
-    var crewLbl:InfoLabel!
-    var crewLeaderLbl:InfoLabel!
-    var helperLbl:InfoLabel!
-    var truckLbl:InfoLabel!
+    var noImagesLbl:Label = Label()
     
-    //sign in / out buttons
-    var signInOutView:UIView!
+    
+    let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+    var imageCollectionView: UICollectionView?
+    
+    var currentImageIndex:Int = 0
+    var imageDetailViewController:ImageDetailViewController!
+    var portraitMode:Bool = true
+    
+    var order:String = "ID DESC"
+    
+    
+    var lazyLoad = 0
+    var limit = 100
+    var offset = 0
+    var batch = 0
+    
+    var userTxt:PaddedTextField!
+    var passTxt:PaddedTextField!
     
     var logInOutBtn:Button!
-    
-    
-    
-    //var newShift:Bool!
-    var shiftID:String!
-    var startTime:String!
-    var workTimer:Timer!
-    var totalShiftTime:String!
-    
-    
-     /*
-     var signInBtn:Button!
-     var signOutBtn:Button!
-     
-     var startTimeLbl:InfoLabel!
-     // var startTimeEditBtn:Button!
-     var startTimeEditTxt:UITextField!
-     
-     var stopTimeLbl:InfoLabel!
-     //var stopTimeEditBtn:Button!
-     var stopTimeEditTxt:UITextField!
-     */
-    
-    
-    
-    
-    var logInView:LogInView!
-    var activeTextField:PaddedTextField?
-    
-    var timeEntryView:TimeEntryView!
-    
-    
+
     var keyBoardShown:Bool = false
-    
+
     var imageFullViewController:ImageFullViewController!
+    var departmentListViewController:DepartmentListViewController!
+    var crewListViewController:CrewListViewController!
+    var shiftsViewController:ShiftsViewController!
+    var payrollEntryViewController:PayrollEntryViewController!
     
     
     
@@ -96,12 +88,6 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         super.init(nibName:nil,bundle:nil)
         print("init _employeeID = \(_employee.ID)")
         self.employee = _employee
-        
-        
-       
-        
-        
-        
         
     }
     
@@ -113,8 +99,9 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         super.viewDidLoad()
         
         
+        self.indicator = SDevIndicator.generate(self.view)!
         
-        
+        getEmployeeData(_id:self.employee.ID!)
         
     }
     
@@ -123,7 +110,6 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         // Do any additional setup after loading the view.
         
         print("view will appear")
-        self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
 
         
@@ -140,25 +126,21 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
-        
-        self.layoutViews()
-         self.getCurrentShift()
-        if(self.employee.ID != "1"){
-                getEmployeeData(_id:self.employee.ID!)
-            }
+    
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)),
+                                               name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)),
+                                               name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
     
     func getEmployeeData(_id:String){
-        
-        
-       // indicator = SDevIndicator.generate(self.view)!
-        
         
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
-        //, "cb":timeStamp as AnyObject
+        
+        
         
         Alamofire.request(API.Router.employee(["empID":_id as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
             response in
@@ -170,326 +152,322 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
             if let json = response.result.value {
                 print("JSON: \(json)")
                 self.employeeJSON = JSON(json)
+                
                 self.parseEmployeeJSON()
                 
+                
             }
-            
-            
-            
         }
-
-        
-        
-        
-        
     }
     
     func parseEmployeeJSON(){
         
         print("parseEmployeeJSON")
         
-        self.employee = Employee(_ID: self.employeeJSON["employees"][0]["ID"].stringValue, _name: self.employeeJSON["employees"][0]["name"].stringValue, _lname: self.employeeJSON["employees"][0]["lname"].stringValue, _fname: self.employeeJSON["employees"][0]["fname"].stringValue, _username: self.employeeJSON["employees"][0]["username"].stringValue, _pic: self.employeeJSON["employees"][0]["pic"].stringValue, _phone: self.employeeJSON["employees"][0]["phone"].stringValue, _depID: self.employeeJSON["employees"][0]["depID"].stringValue, _payRate: self.employeeJSON["employees"][0]["payRate"].stringValue, _appScore: self.employeeJSON["employees"][0]["appScore"].stringValue)
+        self.employee = Employee(_ID: self.employeeJSON["employees"][0]["ID"].stringValue, _name: self.employeeJSON["employees"][0]["name"].stringValue, _lname: self.employeeJSON["employees"][0]["lname"].stringValue, _fname: self.employeeJSON["employees"][0]["fname"].stringValue, _username: self.employeeJSON["employees"][0]["username"].stringValue, _pic: self.employeeJSON["employees"][0]["pic"].stringValue, _phone: self.employeeJSON["employees"][0]["phone"].stringValue, _depID: self.employeeJSON["employees"][0]["depID"].stringValue, _payRate: self.employeeJSON["employees"][0]["payRate"].stringValue, _appScore: self.employeeJSON["employees"][0]["appScore"].stringValue, _userLevel: self.employeeJSON["employees"][0]["level"].intValue, _userLevelName: self.employeeJSON["employees"][0]["levelName"].stringValue)
         
         
-        layoutViews()
-    } 
+        self.email = self.employeeJSON["employees"][0]["email"].stringValue
+        
+        print("email = \(self.employeeJSON["employees"][0]["email"].stringValue)")
+        
+        self.getImages()
+    }
+    
+    
+    func getImages(){
+        print("get images")
+        
+        
+        let parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject,"limit": "\(self.limit)" as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject,"uploadedBy": self.employee.ID as AnyObject]
+        
+       // print("parameters = \(parameters)")
+        
+        self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/images.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                //print("images response = \(response)")
+            }
+            
+            .responseJSON(){
+                response in
+                
+                if let json = response.result.value {
+                   // print("JSON: \(json)")
+                    self.images = JSON(json)
+                    //self.parseJSON()
+                    self.parseEmployeeImagesJSON()
+                    
+                    self.indicator.dismissIndicator()
+                }
+                
+                
+        }
+    }
+    
+    
+    func parseEmployeeImagesJSON(){
+        let jsonCount = self.images["images"].count
+        self.totalImages = jsonCount
+        print("Employee image count: \(jsonCount)")
+        
+        let thumbBase:String = self.images["thumbBase"].stringValue
+        let mediumBase:String = self.images["mediumBase"].stringValue
+        let rawBase:String = self.images["rawBase"].stringValue
+        
+        for i in 0 ..< jsonCount {
+            
+            let thumbPath:String = "\(thumbBase)\(self.images["images"][i]["fileName"].stringValue)"
+            let mediumPath:String = "\(mediumBase)\(self.images["images"][i]["fileName"].stringValue)"
+            let rawPath:String = "\(rawBase)\(self.images["images"][i]["fileName"].stringValue)"
+            
+            //create a item object
+            //print("create an image object \(i)")
+            
+            let image = Image(_id: self.images["images"][i]["ID"].stringValue,_thumbPath: thumbPath, _mediumPath: mediumPath,_rawPath: rawPath,_name: self.images["images"][i]["name"].stringValue,_width: self.images["images"][i]["width"].stringValue,_height: self.images["images"][i]["height"].stringValue,_description: self.images["images"][i]["description"].stringValue,_dateAdded: self.images["images"][i]["dateAdded"].stringValue,_createdBy: self.images["images"][i]["createdByName"].stringValue,_type: self.images["images"][i]["type"].stringValue)
+            
+            image.customer = self.images["images"][i]["customer"].stringValue
+            image.customerName = self.images["images"][i]["customerName"].stringValue
+            image.tags = self.images["images"][i]["tags"].stringValue
+            image.liked = self.images["images"][i]["liked"].stringValue
+            image.likes = self.images["images"][i]["likes"].stringValue
+            image.index = i
+            
+            self.imageArray.append(image)
+            
+        }
+        
+        if(lazyLoad == 0){
+            self.layoutViews()
+        }else{
+            lazyLoad = 0
+            self.imageCollectionView?.reloadData()
+        }
+        
+        if self.imageArray.count == 0{
+            self.noImagesLbl.isHidden = false
+        }else{
+            self.noImagesLbl.isHidden = true
+        }
+    }
+    
+    
     
     func layoutViews(){
         
+        self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        self.indicator.dismissIndicator()
+        
+        
         print("layoutViews")
-       // indicator.dismissIndicator()
-        
-        //////////   containers for different sections
-        self.employeeView = UIView()
-        self.employeeView.backgroundColor = layoutVars.backgroundColor
-        self.employeeView.layer.borderColor = layoutVars.borderColor
-        self.employeeView.layer.borderWidth = 1.0
-        self.employeeView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.employeeView)
-        
-        
-        self.todaysDetailsView = UIView()
-        self.todaysDetailsView.alpha = 0.1
-        self.todaysDetailsView.backgroundColor = layoutVars.backgroundColor
-        self.todaysDetailsView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.todaysDetailsView)
-        
-        self.signInOutView = UIView()
-        self.signInOutView.backgroundColor = layoutVars.backgroundColor
-        self.signInOutView.layer.borderColor = layoutVars.borderColor
-        self.signInOutView.layer.borderWidth = 1.0
-        self.signInOutView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.signInOutView)
-        
-        //auto layout group
-        let viewsDictionary = [
-            "view1":self.employeeView,
-            "view2":self.todaysDetailsView,
-            "view3":self.signInOutView
-            
-        ] as [String:Any]
-        
-        let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": (layoutVars.fullWidth/2)-15, "height": 24,"fullHeight":layoutVars.fullHeight - 344] as [String:Any]
-        
-        //////////////   auto layout position constraints   /////////////////////////////
-        
-        
-        
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view3(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[view1(100)][view2(180)][view3(fullHeight)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        
-        
-        
-        print("step2")
-        
-        
-        
-        ///////////   employee section   /////////////
-        //image
+       
         self.employeeImage = UIImageView()
         
-       // if(self.employee.ID == "1"){
-           // self.employeeImage.image = UIImage(named: "cMurphy.png")
-       // }else{
-        
-        
+       
         activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
         activityView.center = CGPoint(x: self.employeeImage.frame.size.width / 2, y: self.employeeImage.frame.size.height / 2)
         employeeImage.addSubview(activityView)
         activityView.startAnimating()
         
-        
-        
         let imgURL:URL = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.employee.pic!)!
-        
-        print("imgURL = \(imgURL)")
-        
-        
-        
+    
         Nuke.loadImage(with: imgURL, into: self.employeeImage!){ 
             print("nuke loadImage")
             self.employeeImage?.handle(response: $0, isFromMemoryCache: $1)
             self.activityView.stopAnimating()
             
-            //let image = Image(_rawPath: "https://atlanticlawnandgarden.com/uploads/general/"+self.employee.pic!, _thumbPath: "https://atlanticlawnandgarden.com/uploads/thumbs/"+self.employee.pic!)
-            
             let image = Image(_path: self.employee.pic)
             
             self.imageFullViewController = ImageFullViewController(_image: image)
             
-            
         }
-        
-
-        
         
         self.tapBtn = Button()
         self.tapBtn.translatesAutoresizingMaskIntoConstraints = false
         self.tapBtn.addTarget(self, action: #selector(EmployeeViewController.showFullScreenImage), for: UIControlEvents.touchUpInside)
         self.tapBtn.backgroundColor = UIColor.clear
         self.tapBtn.setTitle("", for: UIControlState.normal)
-        self.employeeView.addSubview(self.tapBtn)
-        
-        
-        
+        self.view.addSubview(self.tapBtn)
         
         self.employeeImage.layer.cornerRadius = 5.0
         self.employeeImage.layer.borderWidth = 2
         self.employeeImage.layer.borderColor = layoutVars.borderColor
         self.employeeImage.clipsToBounds = true
         self.employeeImage.translatesAutoresizingMaskIntoConstraints = false
-        self.employeeView.addSubview(self.employeeImage)
+        self.view.addSubview(self.employeeImage)
         
         //name
         self.employeeLbl = GreyLabel()
         self.employeeLbl.text = self.employee.name
         self.employeeLbl.font = layoutVars.labelFont
-        self.employeeView.addSubview(self.employeeLbl)
+        self.view.addSubview(self.employeeLbl)
         
         //phone
-        
-        
-        
         self.phoneNumberClean = cleanPhoneNumber(self.employee.phone)
         
-        
         self.employeePhoneBtn = Button()
-        self.employeePhoneBtn.translatesAutoresizingMaskIntoConstraints = false
         self.employeePhoneBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
-        self.employeePhoneBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 35.0, 0.0, 0.0)
+        self.employeePhoneBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 36.0, 0.0, 0.0)
         
         
-        self.employeePhoneBtn.setTitle(self.phoneNumberClean, for: UIControlState.normal)
+        self.employeePhoneBtn.setTitle(testFormat(sourcePhoneNumber: self.employee.phone), for: UIControlState.normal)
         self.employeePhoneBtn.addTarget(self, action: #selector(EmployeeViewController.handlePhone), for: UIControlEvents.touchUpInside)
         
         let phoneIcon:UIImageView = UIImageView()
         phoneIcon.backgroundColor = UIColor.clear
-        phoneIcon.contentMode = .scaleAspectFill
-        phoneIcon.frame = CGRect(x: -36, y: -6, width: 32, height: 32)
+        phoneIcon.frame = CGRect(x: -35, y: -4, width: 28, height: 28)
         let phoneImg = UIImage(named:"phoneIcon.png")
         phoneIcon.image = phoneImg
         self.employeePhoneBtn.titleLabel?.addSubview(phoneIcon)
         
-        
-        self.employeeView.addSubview(self.employeePhoneBtn)
-        
-        
-        self.appScoreLbl = InfoLabel()
-        self.appScoreLbl.text = "\(self.employee.appScore!) App Pts."
-        self.employeeView.addSubview(self.appScoreLbl)
-        
-        
-        
-        
-        
-        
-        //working status
-        self.workingStatusIcon = UIView()
-        self.workingStatusIcon.layer.cornerRadius = 10
-        self.workingStatusIcon.layer.masksToBounds = true
-        self.workingStatusIcon.backgroundColor = UIColor.red
-        self.workingStatusIcon.translatesAutoresizingMaskIntoConstraints = false
-        self.employeeView.addSubview(self.workingStatusIcon)
-        
-        self.workingLbl = InfoLabel()
-        
-        self.workingLbl.text = "Not Working"
-        self.employeeView.addSubview(self.workingLbl)
-        
-        self.workingStatusIcon.alpha = 0
-        self.workingLbl.alpha = 0
-        
-        
-        
-        
-        //auto layout group
-        let employeeViewsDictionary = [
-            "view1":self.employeeImage,
-            "tapBtn":self.tapBtn,
-            "view2":self.employeeLbl,
-            "view3":self.employeePhoneBtn,
-            "view4":self.workingStatusIcon,
-            "view5":self.workingLbl,
-            "view6":self.appScoreLbl
-        ] as [String:Any]
-        
-        self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view1(80)]-10-[view2(210)]", options: [], metrics: nil, views: employeeViewsDictionary))
-        self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[tapBtn(80)]", options: [], metrics: nil, views: employeeViewsDictionary))
-        
-        self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-100-[view3(210)]", options: [], metrics: nil, views: employeeViewsDictionary))
-        self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-100-[view6(160)]", options: [], metrics: nil, views: employeeViewsDictionary))
+        self.view.addSubview(self.employeePhoneBtn)
 
-        self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-220-[view4(15)]-[view5]", options: [], metrics: nil, views: employeeViewsDictionary))
-        self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[view1(80)]", options: [], metrics: nil, views: employeeViewsDictionary))
-        self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[tapBtn(80)]", options: [], metrics: nil, views: employeeViewsDictionary))
-        
-        self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view2(30)][view3(30)]-[view4(16)]-9-|", options: [], metrics: nil, views: employeeViewsDictionary))
-        self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view5(19)]-8-|", options: [], metrics: nil, views: employeeViewsDictionary))
-        self.employeeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view6(19)]-8-|", options: [], metrics: nil, views: employeeViewsDictionary))
-
+        self.emailBtn = Button()
+        self.emailBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
+        self.emailBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 36.0, 0.0, 0.0)
         
         
+        self.emailBtn.setTitle(self.email, for: UIControlState.normal)
+        if self.email != "No Email Found" {
+            self.emailBtn.addTarget(self, action: #selector(CustomerViewController.emailHandler), for: UIControlEvents.touchUpInside)
+        }
         
-        ///////////   Today's Info   /////////////
-        
-        self.todaysDetailsLbl = InfoLabel()
-        self.todaysDetailsLbl.text = "Today's Details:"
-        self.todaysDetailsView.addSubview(self.todaysDetailsLbl)
-        
-        let crewFont:UIFont = UIFont(name: "HelveticaNeue-Bold", size: 30)!
-        
-        
-        
-        self.crewLbl = InfoLabel()
-        
-        self.crewLbl.text = "LM1"
-        self.crewLbl.font = crewFont
-        self.crewLbl.textColor = UIColor.white
-        self.crewLbl.textAlignment = NSTextAlignment.center;
-        self.crewLbl.backgroundColor = UIColor.red
-        self.crewLbl.layer.cornerRadius = 5.0
-        self.todaysDetailsView.addSubview(self.crewLbl)
-        
-        self.crewLeaderLbl = InfoLabel()
-        self.crewLeaderLbl.text = "Crew Leader: Nick DiGiando"
-        self.todaysDetailsView.addSubview(self.crewLeaderLbl)
+        let emailIcon:UIImageView = UIImageView()
+        emailIcon.backgroundColor = UIColor.clear
+        emailIcon.contentMode = .scaleAspectFill
+        emailIcon.frame = CGRect(x: -35, y: -4, width: 28, height: 28)
+        let emailImg = UIImage(named:"emailIcon.png")
+        emailIcon.image = emailImg
+        self.emailBtn.titleLabel?.addSubview(emailIcon)
         
         
-        
-        self.truckLbl = InfoLabel()
-        self.truckLbl.text = "Truck: Bone Crusher"
-        self.todaysDetailsView.addSubview(self.truckLbl)
-        
-        self.helperLbl = InfoLabel()
-        
-        self.helperLbl.text = "Helpers: Braulio Ramirez, Jose Ramirez, Josh Brown"
-        self.todaysDetailsView.addSubview(self.helperLbl)
-        
-        //auto layout group
-        let todaysViewsDictionary = [
-            "view1":self.todaysDetailsLbl,
-            "view2":self.crewLbl,
-            "view3":self.crewLeaderLbl,
-            "view4":self.truckLbl,
-            "view5":self.helperLbl
-        ] as [String:Any]
-        
-        self.todaysDetailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view1(200)]", options: [], metrics: nil, views: todaysViewsDictionary))
-        self.todaysDetailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view2(120)]", options: [], metrics: nil, views: todaysViewsDictionary))
-        self.todaysDetailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view3(300)]", options: [], metrics: nil, views: todaysViewsDictionary))
-        self.todaysDetailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view4(300)]", options: [], metrics: nil, views: todaysViewsDictionary))
-        self.todaysDetailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view5(300)]", options: [], metrics: nil, views: todaysViewsDictionary))
-        self.todaysDetailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[view1(20)]-[view2(50)]-[view3(20)][view4(20)][view5(20)]", options: [], metrics: nil, views: todaysViewsDictionary))
+        self.view.addSubview(self.emailBtn)
         
         
-    
-        ///////////   Sign In / Out   /////////////
-        self.logInView = LogInView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
-        self.logInView.translatesAutoresizingMaskIntoConstraints = false//for autolayout
-        self.logInView.userTxt.delegate = self
-        self.logInView.userTxt.text = self.employee.username
-        self.logInView.passTxt.delegate = self
+        self.departmentsBtn = Button()
+        self.departmentsBtn.setTitle("Departments", for: UIControlState.normal)
+        self.departmentsBtn.addTarget(self, action: #selector(self.showDepartments), for: UIControlEvents.touchUpInside)
+        self.view.addSubview(self.departmentsBtn)
+        
+        self.crewsBtn = Button()
+        self.crewsBtn.setTitle("Crews", for: UIControlState.normal)
+        self.crewsBtn.addTarget(self, action: #selector(self.showCrews), for: UIControlEvents.touchUpInside)
+        self.view.addSubview(self.crewsBtn)
+        
+        self.shiftsBtn = Button()
+        self.shiftsBtn.setTitle("Shifts", for: UIControlState.normal)
+        self.shiftsBtn.addTarget(self, action: #selector(self.showShifts), for: UIControlEvents.touchUpInside)
+        self.view.addSubview(self.shiftsBtn)
+        
+        self.payrollBtn = Button()
+        self.payrollBtn.setTitle("Payroll", for: UIControlState.normal)
+        self.payrollBtn.addTarget(self, action: #selector(self.showPayroll), for: UIControlEvents.touchUpInside)
+        self.view.addSubview(self.payrollBtn)
         
         
         
-        self.timeEntryView = TimeEntryView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
-        self.timeEntryView.translatesAutoresizingMaskIntoConstraints = false//for autolayout
-        self.timeEntryView.delegate = self
+        //Images
+        imageCollectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height - 50), collectionViewLayout: layout)
+        imageCollectionView?.layer.cornerRadius = 4.0
         
-  
+        self.imageCollectionView?.translatesAutoresizingMaskIntoConstraints = false
+        
+        imageCollectionView?.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
+        
+        imageCollectionView?.dataSource = self
+        imageCollectionView?.delegate = self
+        imageCollectionView?.register(ImageCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+        imageCollectionView?.backgroundColor = UIColor.darkGray
+        self.view.addSubview(imageCollectionView!)
+        
+        self.edgesForExtendedLayout = UIRectEdge.top
+        
+        self.noImagesLbl.text = "No Images Uploaded"
+        self.noImagesLbl.textColor = UIColor.white
+        self.noImagesLbl.textAlignment = .center
+        self.noImagesLbl.font = layoutVars.largeFont
+        self.view.addSubview(self.noImagesLbl)
+        
+        self.userTxt = PaddedTextField(placeholder: "User Name")
+        self.userTxt.tag = 1
+        self.userTxt.text = self.employee.username
+        self.userTxt.delegate = self
+        self.view.addSubview(self.userTxt)
+        self.userTxt.autocorrectionType = UITextAutocorrectionType.no
+        
+        
+        self.passTxt = PaddedTextField(placeholder: "Password")
+        self.passTxt.tag = 2
+        self.passTxt.returnKeyType = .done
+        self.passTxt.delegate = self
+        self.passTxt.isSecureTextEntry = true
+        self.view.addSubview(self.passTxt)
+        
+        
         self.logInOutBtn = Button()
-        self.logInOutBtn.translatesAutoresizingMaskIntoConstraints = false
-        //self.logInOutBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.Left
-        self.logInOutBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 35.0, 0.0, 0.0)
         
-        ////print("appDelegate.loggedInUser = " + appDelegate.loggedInUser)
-        
-        //if(appDelegate.loggedInEmployee?.ID == self.employee.ID){
-            //logged in
         if(appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) == self.employee.ID){
-            
-           // appDelegate.defaults = defaults
-            
             self.logInOutBtn.setTitle("Log Out (\(self.employee.fname!))", for: UIControlState.normal)
             self.logInOutBtn.addTarget(self, action: #selector(self.logOut), for: UIControlEvents.touchUpInside)
-            
-            displayTimeEntryView()
-            
-            
         }else{
             //not logged in
-            
             self.logInOutBtn.setTitle("Log In (\(self.employee.fname!))", for: UIControlState.normal)
             self.logInOutBtn.addTarget(self, action: #selector(EmployeeViewController.attemptLogIn), for: UIControlEvents.touchUpInside)
+        }
+        self.view.addSubview(self.logInOutBtn)
+        
+        let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30, "halfWidth": layoutVars.halfWidth, "nameWidth": layoutVars.fullWidth - 150, "navBottom":layoutVars.navAndStatusBarHeight + 8] as [String:Any]
+        
+        //auto layout group
+        let viewsDictionary = [
+            "image":self.employeeImage,
+            "tapBtn":self.tapBtn,
+            "name":self.employeeLbl,
+            "phone":self.employeePhoneBtn,
+            "email":self.emailBtn,
+            "departmentsBtn":self.departmentsBtn,
+            "crewsBtn":self.crewsBtn,
+            "shiftsBtn":self.shiftsBtn,
+            "payrollBtn":self.payrollBtn,
+            "imageCollection":self.imageCollectionView!,
+            "noImagesLbl":self.noImagesLbl,
+            "userTxt":self.userTxt,
+            "passTxt":self.passTxt,
+            "logInBtn":logInOutBtn
             
-            displayLogInView()
-            
-            
+            ] as [String:Any]
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[name]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[tapBtn(100)]", options: [], metrics: nil, views: viewsDictionary))
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[phone]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[email]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[departmentsBtn(halfWidth)]-5-[crewsBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[shiftsBtn(halfWidth)]-5-[payrollBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[imageCollection]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[noImagesLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[userTxt(halfWidth)]-5-[passTxt]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[logInBtn]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[image(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[tapBtn(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(30)][phone(30)]-10-[email(30)]-[departmentsBtn(30)]-[shiftsBtn(30)]-[imageCollection]-[userTxt(30)]-[logInBtn(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(30)][phone(30)]-10-[email(30)]-[crewsBtn(30)]-[payrollBtn(30)]-[imageCollection]-[passTxt(30)]-[logInBtn(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(30)][phone(30)]-10-[email(30)]-[crewsBtn(30)]-[payrollBtn(30)]-20-[noImagesLbl(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        
+    }
+    
+    
+    @objc func showDepartments(){
+        print("show departments")
+        
+        if(appDelegate.loggedInEmployee != nil){
+            self.departmentListViewController = DepartmentListViewController(_empID: self.employee.ID, _empFirstName: self.employee.fname)
+            navigationController?.pushViewController(self.departmentListViewController, animated: false )
+        }else{
+            appDelegate.requireLogIn(_destination: "departments", _vc:self)
         }
         
         
@@ -497,28 +475,217 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         
         
         
+    }
+    
+    @objc func showCrews(){
+        print("show crews")
+        if(appDelegate.loggedInEmployee != nil){
+            self.crewListViewController = CrewListViewController(_empID: self.employee.ID, _empFirstName: self.employee.fname)
+            navigationController?.pushViewController(self.crewListViewController, animated: false )
+        }else{
+            appDelegate.requireLogIn(_destination: "crews", _vc:self)
+        }
+    }
+    
+    @objc func showShifts(){
+        print("show shifts")
+        if(appDelegate.loggedInEmployee != nil){
+            self.shiftsViewController = ShiftsViewController(_empID: self.employee.ID, _empFirstName: self.employee.fname)
+            navigationController?.pushViewController(self.shiftsViewController, animated: false )
+        }else{
+            appDelegate.requireLogIn(_destination: "shifts", _vc:self)
+        }
+    }
+    
+    @objc func showPayroll(){
+        print("show payroll")
+        if(appDelegate.loggedInEmployee != nil){
+            self.payrollEntryViewController = PayrollEntryViewController(_employee: self.employee)
+            navigationController?.pushViewController(self.payrollEntryViewController, animated: false )
+        }else{
+            appDelegate.requireLogIn(_destination: "payroll", _vc:self)
+        }
+    }
+    
+    
+    //image methods
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        self.signInOutView.addSubview(self.logInOutBtn)
+        
+            let totalHeight: CGFloat = ((self.view.frame.width - 20) / 3 - 1)
+            let totalWidth: CGFloat = ((self.view.frame.width - 20) / 3 - 1)
+            return CGSize(width: ceil(totalWidth), height: ceil(totalHeight))
         
         
-        //auto layout group
-        let signInOutViewsDictionary = [
-            "logInOutBtn":self.logInOutBtn
-        ] as [String:Any]
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets{
+        return UIEdgeInsets.zero
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat{
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat{
+        return 0
+    }
+    
+    
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.imageArray.count
         
-        self.signInOutView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[logInOutBtn]-10-|", options: [], metrics: nil, views: signInOutViewsDictionary))
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        //print("making cells")
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath as IndexPath) as! ImageCollectionViewCell
+        cell.backgroundColor = UIColor.darkGray
+        cell.activityView.startAnimating()
+        cell.imageView.image = nil
         
-        self.signInOutView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[logInOutBtn(40)]-|", options: [], metrics: nil, views: signInOutViewsDictionary))
+        //print("name = \(self.imageArray)")
+        
+       // print("name = \(self.imageArray[indexPath.row].name!)")
+        cell.textLabel.text = " \(self.imageArray[indexPath.row].customerName)"
+        cell.image = self.imageArray[indexPath.row]
+        cell.activityView.startAnimating()
+        
+        //print("thumb = \(self.imageArray[indexPath.row].thumbPath!)")
+        
+        let imgURL:URL = URL(string: self.imageArray[indexPath.row].thumbPath!)!
+        
+        //print("imgURL = \(imgURL)")
         
         
         
+        Nuke.loadImage(with: imgURL, into: cell.imageView){
+            //print("nuke loadImage")
+            cell.imageView?.handle(response: $0, isFromMemoryCache: $1)
+            cell.activityView.stopAnimating()
+            
+        }
+        
+        //print("view width = \(imageCollectionView?.frame.width)")
+        //print("cell width = \(cell.frame.width)")
+        
+        return cell
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let currentCell = imageCollectionView?.cellForItem(at: indexPath) as! ImageCollectionViewCell
+        
+        //print("name = \(currentCell.image.name)")
+        
+        imageDetailViewController = ImageDetailViewController(_image: currentCell.image, _ID: currentCell.image.ID)
+        imageDetailViewController.imageFullViewController.delegate = self
+        imageCollectionView?.deselectItem(at: indexPath, animated: true)
+        navigationController?.pushViewController(imageDetailViewController, animated: false )
+        imageDetailViewController.delegate = self
+        imageDetailViewController.imageLikeDelegate = self
+        
+        
+        currentImageIndex = indexPath.row
+        
+        
+    }
+    
+    func getPrevNextImage(_next:Bool){
+        if(_next == true){
+            if(currentImageIndex + 1) > (self.imageArray.count - 1){
+                currentImageIndex = 0
+                imageDetailViewController.image = self.imageArray[currentImageIndex]
+                imageDetailViewController.layoutViews()
+                imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                imageDetailViewController.imageFullViewController.layoutViews()
+                
+                
+            }else{
+                currentImageIndex = currentImageIndex + 1
+                imageDetailViewController.image = self.imageArray[currentImageIndex]
+                imageDetailViewController.layoutViews()
+                imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                imageDetailViewController.imageFullViewController.layoutViews()
+            }
+            
+        }else{
+            if(currentImageIndex - 1) < 0{
+                currentImageIndex = self.imageArray.count - 1
+                imageDetailViewController.image = self.imageArray[currentImageIndex]
+                imageDetailViewController.layoutViews()
+                imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                imageDetailViewController.imageFullViewController.layoutViews()
+            }else{
+                currentImageIndex = currentImageIndex - 1
+                imageDetailViewController.image = self.imageArray[currentImageIndex]
+                imageDetailViewController.layoutViews()
+                imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                imageDetailViewController.imageFullViewController.layoutViews()
+            }
+        }
+        
+        imageCollectionView?.scrollToItem(at: IndexPath(row: currentImageIndex, section: 0),
+                                          at: .top,
+                                          animated: false)
         
         
         
-       
+    }
+
+    
+    func refreshImages(_images:[Image], _scoreAdjust:Int){
+        print("refreshImages")
+        
+        for insertImage in _images{
+            
+            imageArray.insert(insertImage, at: 0)
+        }
+        
+        
+        
+        imageCollectionView?.reloadData()
+        
+        imageCollectionView?.scrollToItem(at: IndexPath(row: 0, section: 0),
+                                          at: .top,
+                                          animated: true)
+    }
+    
+    
+    func updateLikes(_index:Int, _liked:String, _likes:String){
+        print("update likes _liked: \(_liked)  _likes\(_likes)")
+        imageArray[_index].liked = _liked
+        imageArray[_index].likes = _likes
+        
+    }
+    
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if (scrollView.bounds.maxY == scrollView.contentSize.height) {
+            print("scrolled to bottom")
+            lazyLoad = 1
+            batch += 1
+            offset = batch * limit
+            self.indicator = SDevIndicator.generate(self.view)!
+            
+            getImages()
+        }
+    }
+    
+    
+    
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        print("textFieldDidBeginEditing")
+        
+        self.passTxt.reset()
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
+        
+       // print("keyboard will show")
         
         if let keyboardFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as AnyObject).cgRectValue {
             // tableView.contentInset.bottom = keyboardFrame.height
@@ -539,18 +706,20 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     }
 
     
-    @objc func keyboardDidHide(notification: NSNotification) {
-        keyBoardShown = false
-        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-            // var fabricTopFrame = self.fabricTop.frame
-            self.view.frame.origin.y = 0
-            
-            
-        }, completion: { finished in
-            ////print("Napkins opened!")
-        })
+    @objc func keyboardWillHide(notification: NSNotification) {
         
+        if(keyBoardShown){
+            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+                self.view.frame.origin.y = 0
+            
+            }, completion: { finished in
+            ////print("Napkins opened!")
+            })
+        }
+        keyBoardShown = false
     }
+    
+    
     func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
@@ -562,25 +731,23 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     @objc func attemptLogIn(){
         
         //print("setLoginStatus")
-        self.logInView.passTxt.reset()
+        self.passTxt.reset()
         
         
         
-        if(!self.logInView.userTxt.text!.isEmpty && !self.logInView.passTxt.text!.isEmpty){
+        if(!self.userTxt.text!.isEmpty && !self.passTxt.text!.isEmpty){
             
             indicator = SDevIndicator.generate(self.view)!
             
             
-           // Alamofire.request(API.Router.logIn(self.logInView.userTxt.text!,self.logInView.passTxt.text!)).responseJSON(){
             
             //cache buster
             let now = Date()
             let timeInterval = now.timeIntervalSince1970
             let timeStamp = Int(timeInterval)
-            //, "cb":timeStamp as AnyObject
             
             
-            Alamofire.request(API.Router.logIn(["user":self.logInView.userTxt.text! as AnyObject,"pass":self.logInView.passTxt.text! as AnyObject, "cb":timeStamp as AnyObject])).responseJSON(){
+            Alamofire.request(API.Router.logIn(["user":self.userTxt.text! as AnyObject,"pass":self.passTxt.text! as AnyObject, "cb":timeStamp as AnyObject])).responseJSON(){
                 
             response in
                 
@@ -589,62 +756,38 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
                 //print(response.data ?? "")     // server data
                 //print(response.result)   // result of response serialization
                 
-                ////print("JSON 1 \(json)")
                 if let json = response.result.value {
-                    //print("Log In Json = \(json)")
+                    print("Log In Json = \(json)")
                     let LogInJson = JSON(json)
                     
                     let loggedIn = LogInJson["loggedIn"].stringValue
                     
                     if(loggedIn == "true"){
                         self.logInOutBtn.setTitle("Log Out (\(self.employee.name!))", for: UIControlState.normal)
-                        //print("Login Success")
+                        print("Login Success")
                         self.appDelegate.loggedInEmployee = self.employee
-                        
-                        
-                        
                         self.appDelegate.scheduleViewController.personalScheduleArray.removeAll()
                         self.appDelegate.scheduleViewController.personalHistoryArray.removeAll()
                         self.appDelegate.scheduleViewController.personalHistoryLoaded = false
                         self.appDelegate.scheduleViewController.personalScheduleLoaded = false
-                       // self.appDelegate.scheduleViewController.personalMode = false
-                        
-                        
-                        
-                        
-                        self.displayTimeEntryView()
-                        
                         
                         self.logInOutBtn.removeTarget(nil, action: nil, for: UIControlEvents.allEvents)
                         self.logInOutBtn.addTarget(self, action: #selector(self.logOut), for: UIControlEvents.touchUpInside)
                         
-                        self.logInView.userTxt.resignFirstResponder()
-                        self.logInView.passTxt.resignFirstResponder()
-                        
-                        
-                        
+                        self.userTxt.resignFirstResponder()
+                        self.passTxt.resignFirstResponder()
+                        self.passTxt.text = ""
                         
                         print("set values for appDelegate id = \(self.employee.ID)")
-                        //print("set values for appDelegate name = \(self.employee.name)")
-                        //print("set values for appDelegate pic = \(self.employee.pic)")
+                        
                         
                         self.appDelegate.defaults = UserDefaults.standard
                         self.appDelegate.defaults.setValue(self.employee.ID, forKey: loggedInKeys.loggedInId)
-                       // self.appDelegate.defaults.setValue(self.employee.name, forKey: loggedInKeys.loggedInName)
-                       // self.appDelegate.defaults.setValue(self.employee.pic, forKey: loggedInKeys.loggedInPic)
                         self.appDelegate.defaults.synchronize()
-                        //self.appDelegate.defaults = defaults
-                        
-                        
-                        
-                        
-                        
-                        
                         
                     }else{
-                        //print("Login Fail")
-                        // self.logInView.userTxt.error()
-                        self.logInView.passTxt.error()
+                        
+                        self.passTxt.error()
                     }
                 }
                 
@@ -652,59 +795,11 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
                 
             }
         }else{
-            //print("Invalid Login Credentials")
-            //self.logInView.userTxt.error()
-            self.logInView.passTxt.error()
+            self.passTxt.error()
         }
-        
-        
-        
-        
-        
-        
     }
     
-    
-    func displayLogInView(){
-        //print("displayLogInView")
-        
-        //clear all subviews
-        for view in signInOutView.subviews{
-            view.removeFromSuperview()
-        }
-        
-        
-        
-        self.signInOutView.addSubview(self.logInView)
-        self.signInOutView.addSubview(self.logInOutBtn)
-        
-        let logInViewsDictionary = [
-            "logInView":self.logInView,
-            "logInOutBtn":self.logInOutBtn
-        ] as [String : Any]
-        
-        let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": (layoutVars.fullWidth/2)-15, "height": 24,"fullHeight":layoutVars.fullHeight - 344] as [String:Any]
-        
-        
-        
-        self.signInOutView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[logInView(width)]", options: [], metrics: sizeVals, views: logInViewsDictionary))
-        self.signInOutView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[logInOutBtn]-10-|", options: [], metrics: sizeVals, views: logInViewsDictionary))
-        
-        self.signInOutView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[logInView]-[logInOutBtn(40)]-|", options: [], metrics: nil, views: logInViewsDictionary))
-        
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardDidHide(notification:)), name: NSNotification.Name.UIKeyboardDidHide, object: nil)
-        
-    }
-    
-    
-    
-    
-    
-    
-    
-    
+  
    
     @objc func logOut() {
         
@@ -713,54 +808,37 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         self.logInOutBtn.setTitle("Log In (\(self.employee.name!))", for: UIControlState.normal)
         
         self.appDelegate.loggedInEmployee = nil
-        //self.appDelegate.loggedInUserFName = ""
-        //self.appDelegate.loggedInUserPic = ""
         
         
         self.appDelegate.scheduleViewController.personalScheduleArray.removeAll()
         self.appDelegate.scheduleViewController.personalHistoryArray.removeAll()
         self.appDelegate.scheduleViewController.personalHistoryLoaded = false
         self.appDelegate.scheduleViewController.personalScheduleLoaded = false
-        //self.appDelegate.scheduleViewController.personalMode = false
         
-        displayLogInView()
         
         self.logInOutBtn.removeTarget(nil, action: nil, for: UIControlEvents.allEvents)
         self.logInOutBtn.addTarget(self, action: #selector(EmployeeViewController.attemptLogIn), for: UIControlEvents.touchUpInside)
         
-        self.logInView.passTxt.text = ""
+        self.passTxt.text = ""
         
         
         self.appDelegate.defaults = UserDefaults.standard
         self.appDelegate.defaults.setValue("0", forKey: loggedInKeys.loggedInId)
-        //self.appDelegate.defaults.setValue("", forKey: loggedInKeys.loggedInName)
-       // self.appDelegate.defaults.setValue("", forKey: loggedInKeys.loggedInPic)
         self.appDelegate.defaults.synchronize()
-        
-        //self.appDelegate.defaults = defaults
-
+    
     }
     
  
     
-    
-    
-    
-    
-    /*
-    
-    
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
         //print("NEXT")
         switch (textField.tag) {
-        case logInView.userTxt.tag:
-            logInView.passTxt.becomeFirstResponder()
+        case userTxt.tag:
+            passTxt.becomeFirstResponder()
             break;
-        case logInView.passTxt.tag:
-            //logInView.passTxt.becomeFirstResponder()
-            self.logInView.endEditing(true)
-            
+        case passTxt.tag:
+            textField.resignFirstResponder()
             break;
         default:
             break;
@@ -768,99 +846,6 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         return true
     }
     
-    func DismissKeyboard(){
-        //Causes the view (or one of its embedded text fields) to resign the first responder status.
-        self.logInView.endEditing(true)
-    }
-    
-    
-   */
-    
-    
-    
-    
-    
-    
-    ////////////    Payroll Methods    ///////////////////////
-    
-    
-    
-    
-    
-   
-    
-    func getCurrentShift(){
-        //print("getCurrentShift")
-        //["user":self.logInView.userTxt.text! as AnyObject
-        //Alamofire.request(API.Router.CurrentShiftByEmployee(self.employeeID)).responseJSON(){
-        
-        //cache buster
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
-        //, "cb":timeStamp as AnyObject
-        
-        
-         Alamofire.request(API.Router.currentShiftByEmployee(["empID":self.employee.ID! as AnyObject, "cb":timeStamp as AnyObject])).responseJSON(){
-            
-            response in
-            
-            //print(response.request ?? "")  // original URL request
-            //print(response.response  ?? "") // URL response
-            //print(response.data  ?? "")     // server data
-            //print(response.result  )   // result of response serialization
-            
-            ////print("JSON 1 \(json)")
-            if let json = response.result.value {
-                //if error == nil {
-                
-                self.setTimeBtnsAndLbls(_json: JSON(json))
-                
-                // } else {
-                ////print("JSON ERROR: \(error)")
-                
-                //}
-            }
-            
-        }
-        
-    }
-    
-    
-    func displayTimeEntryView(){
-        //print("displayTimeEntryView")
-        
-        //clear all subviews
-        for view in signInOutView.subviews{
-            view.removeFromSuperview()
-        }
-        
-       
-        
-       // self.signInOutView.addSubview(self.timeEntryView)
-        self.signInOutView.addSubview(self.logInOutBtn)
-        
-        let timeEntryViewsDictionary = [
-            "timeEntryView":self.timeEntryView,
-            "logInOutBtn":self.logInOutBtn
-        ] as [String : Any]
-        
-        let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": (layoutVars.fullWidth/2)-15, "height": 24,"fullHeight":layoutVars.fullHeight - 344] as [String:Any]
-        
-        
-        
-       // self.signInOutView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[timeEntryView(width)]", options: [], metrics: sizeVals, views: timeEntryViewsDictionary))
-        self.signInOutView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[logInOutBtn]-10-|", options: [], metrics: sizeVals, views: timeEntryViewsDictionary))
-        
-        //self.signInOutView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[timeEntryView]-[logInOutBtn(40)]-|", options: [], metrics: nil, views: timeEntryViewsDictionary))
-        
-         self.signInOutView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[logInOutBtn(40)]-|", options: [], metrics: nil, views: timeEntryViewsDictionary))
-        
-        
-        
-        
-        
-    }
     
     
     @objc func showFullScreenImage(_ sender: UITapGestureRecognizer){
@@ -872,425 +857,31 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     
     
-    
-    
-    
-    func editStartTime(){
-        //print("editStartTime")
-        signIn()
-    }
-    
-    
-    func editStopTime(){
-        //print("editStopTime")
-        signOut()
-        
-    }
-
-    
-    
-    
-    func signIn(){
-        
-        //print("signIn")
-        
-        self.timeEntryView.signInBtn.isEnabled = false
-        self.timeEntryView.signInBtn.alpha = 0.5
-        self.timeEntryView.signOutBtn.isEnabled = true
-        self.timeEntryView.signOutBtn.alpha = 1.0
-        
-        let start = Date()
-        //print("startTime = \(start)")
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(identifier: "US/Eastern")
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        let formattedStartTime = dateFormatter.string(from: start)
-        //print("formattedStartTime = \(formattedStartTime)")
-        
-        
-        let startDate = Date()
-        ////print("startTime = \(start)")
-        let dateFormatter2 = DateFormatter()
-        dateFormatter2.timeZone = TimeZone(identifier: "US/Eastern")
-        //dateFormatter2.timeZone = TimeZone(name: "US/Eastern")
-        dateFormatter2.dateFormat = "yyyy-MM-dd"
-        let formattedStartDate = dateFormatter2.string(from: startDate)
-        //print("formattedStartDate = \(formattedStartDate)")
-        
-        //cache buster
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
-        //, "cb":timeStamp as AnyObject
-        
-        
-        //request without json return
-        Alamofire.request(API.Router.workShiftStart(["empID" :self.employee.ID  as AnyObject, "startTime" : formattedStartTime as AnyObject, "startDate" :formattedStartDate  as AnyObject, "cb":timeStamp as AnyObject])).responseJSON(){
-            response in
-            
-            //print(response.request ?? "")  // original URL request
-            //print(response.response ?? "") // URL response
-            //print(response.data ?? "")     // server data
-            //print(response.result)   // result of response serialization
-            
-            if let json = response.result.value {
-                self.setTimeBtnsAndLbls(_json: JSON(json))
-            }
-            
-            
-        }
-    }
-    
-     
-    
-    
-    func signOut(){
-        //print("signOut \(self.startTime)")
-        
-        self.timeEntryView.signOutBtn.isEnabled = false
-        self.timeEntryView.signOutBtn.alpha = 0.5
-        self.timeEntryView.signInBtn.isEnabled = true
-        self.timeEntryView.signInBtn.alpha = 1.0
-        
-        
-        
-        let stopTime = Date()
-        //print("stopTime = \(stopTime)")
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(identifier: "US/Eastern")
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        
-        let formattedStopTime = dateFormatter.string(from: stopTime)
-        
-        self.totalShiftTime = dateDiff(date1: self.startTime,date2: formattedStopTime)
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        //cache buster
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
-        //, "cb":timeStamp as AnyObject
-        
-        
-        //request without json return
-        //print("shiftID = \(shiftID)")
-        Alamofire.request(API.Router.workShiftStop(["ID" : shiftID  as AnyObject, "startTime" : startTime  as AnyObject,  "stopTime" : formattedStopTime  as AnyObject, "total" : totalShiftTime  as AnyObject, "cb":timeStamp as AnyObject])).responseJSON(){
-            response in
-            
-            //print(response.request ?? "")  // original URL request
-            //print(response.response  ?? "") // URL response
-            //print(response.data  ?? "")     // server data
-            //print(response.result)   // result of response serialization
-            
-            if let json = response.result.value {
-                self.setTimeBtnsAndLbls(_json: JSON(json))
-            }
-            
-        }
-    }
-    
-    
-    
-    func dateDiff(date1:String,date2:String) -> String {
-        //print("dateDiff")
-        let f:DateFormatter = DateFormatter()
-        f.timeZone = NSTimeZone(name: "US/Eastern") as TimeZone!
-        f.dateFormat = "yyyy-M-dd'T'HH:mm:ss"
-        
-        
-        let startDate = f.date(from: date1)
-        let endDate = f.date(from: date2)
-        //print("startDate \(startDate)")
-        //print("endDate \(endDate)")
-        let calendar: NSCalendar = NSCalendar.current as NSCalendar
-        
-        let flags = NSCalendar.Unit.minute
-        let components = calendar.components(flags, from: startDate!, to: endDate!, options: [])
-        
-        
-        let minutes = components.minute
-        //print("minutes \(Float(minutes!)/60)")
-        
-        
-        
-        
-        
-        let hours = Float(minutes!) / 60
-        //print("hours \(hours)")
-        
-        let formattedHours = String(format: "%0.2f", hours)
-        //print("formattedHours \(formattedHours)")
-        return formattedHours;
-    }
-    
-    
-    
-    
-    
-    func editBreakTime(){
-        //print("editBreakTime")
-        
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    func setTimeBtnsAndLbls(_json:JSON){
-        //reset time labels
-        //print("setTimeBtnsAndLbls : \(_json)")
-        self.timeEntryView.startTimeLbl.alpha = 0
-        self.timeEntryView.startTimeValueLbl.alpha = 0
-        self.timeEntryView.stopTimeLbl.alpha = 0
-        self.timeEntryView.stopTimeValueLbl.alpha = 0
-        self.timeEntryView.startTimeValueLbl.text = ""
-        self.timeEntryView.stopTimeValueLbl.text = ""
-        
-        
-        var json:JSON = _json
-        /////////  Detrmine working status   ///////////////////////
-        //set start and stop times
-        
-        //print("self.json[0] \(json[0])")
-        if(json[0]["ID"] != JSON.null){
-            //print(json[0]["ID"].string ?? "")
-            shiftID = json[0]["ID"].string
-        }
-        
-        if(json[0]["startTime"] == JSON.null){                                        //not started working
-            //print("2")
-            //show start btn
-            //hide stop btn
-            self.timeEntryView.signOutBtn.isEnabled = false
-            self.timeEntryView.signOutBtn.alpha = 0.5
-            
-            self.timeEntryView.startTimeLbl.alpha = 0
-            self.timeEntryView.startTimeValueLbl.alpha = 0
-            self.timeEntryView.stopTimeLbl.alpha = 0
-            self.timeEntryView.stopTimeValueLbl.alpha = 0
-            
-            self.workingStatusIcon.backgroundColor = UIColor.red
-            self.workingLbl.text = "Not Working"
-            self.workingStatusIcon.alpha = 1.0
-            self.workingLbl.alpha = 1.0
-            
-            if(self.workTimer != nil){
-                self.workTimer.invalidate()
-                self.workTimer = nil
-            }
-            
-        }else if(json[0]["startTime"] != JSON.null && json[0]["stopTime"] == JSON.null){    //started but not stopped
-            //print("3")
-            
-            let dateFormatter = DateFormatter()
-            
-            dateFormatter.timeZone = NSTimeZone(name: "US/Eastern") as TimeZone!
-            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-            
-            self.startTime = json[0]["startTime"].string!
-            //print("startTime = \(startTime)")
-            //hide start btn
-            //show stop btn
-            workTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(EmployeeViewController.displayWorkingTime), userInfo: nil, repeats: true)
-            self.workingStatusIcon.backgroundColor = UIColor.green
-            self.workingLbl.text = "Working for:"
-            self.workingStatusIcon.alpha = 1.0
-            self.workingLbl.alpha = 1.0
-            
-            self.timeEntryView.signOutBtn.isEnabled = true
-            self.timeEntryView.signOutBtn.alpha = 1.0
-            self.timeEntryView.signInBtn.isEnabled = false
-            self.timeEntryView.signInBtn.alpha = 0.5
-            
-            let startDateDb = json[0]["startTime"].string!
-            //print("startTime from database = \(startDateDb)")
-            
-            
-            self.timeEntryView.startTimeLbl.alpha = 1
-            self.timeEntryView.startTimeLbl.text = "Signed In: "
-            self.timeEntryView.startTimeValueLbl.alpha = 1
-            self.timeEntryView.startTimeValueLbl.text = "\(startDateDb)"
-            
-        }else{                                                              //started and stopped, start new shift
-            //print("4")
-            
-            let startDateDb = json[0]["startTime"].string!
-            //print("startTime from database = \(startDateDb)")
-            let stopDateDb = json[0]["stopTime"].string!
-            //print("stopTime from database = \(stopDateDb)")
-            
-            //show start btn
-            //hide stop btn
-            
-            self.timeEntryView.signInBtn.isEnabled = true
-            self.timeEntryView.signInBtn.alpha = 1.0
-            self.timeEntryView.signOutBtn.isEnabled = false
-            self.timeEntryView.signOutBtn.alpha = 0.5
-            
-            self.timeEntryView.startTimeLbl.alpha = 1
-            self.timeEntryView.startTimeLbl.text = "Signed In: "
-            self.timeEntryView.startTimeValueLbl.alpha = 1
-            self.timeEntryView.startTimeValueLbl.text = "\(startDateDb)"
-            
-            self.timeEntryView.stopTimeLbl.text = "Signed Out: "
-            self.timeEntryView.stopTimeLbl.alpha = 1.0
-            self.timeEntryView.stopTimeValueLbl.text = "\(stopDateDb)"
-            self.timeEntryView.stopTimeValueLbl.alpha = 1
-            
-            
-            self.workingStatusIcon.backgroundColor = UIColor.red
-            self.workingLbl.text = "Not Working"
-            self.workingStatusIcon.alpha = 1.0
-            self.workingLbl.alpha = 1.0
-            if(self.workTimer != nil){
-                self.workTimer.invalidate()
-                self.workTimer = nil
-            }
-            
-        }
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    @objc func displayWorkingTime() {
-        
-        
-        let now = NSDate()
-        // let start = NSDate()
-        let dateFormatter:DateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        let dateFromString = dateFormatter.date(from: self.startTime!)
-        
-        
-        
-        
-        
-        
-        
-        
-               
-        
-        //let workingTime = now.offsetFrom(dateFromString!)
-        let workingTime = now.compare(dateFromString!)
-        ////println("workingTime = \(workingTime)")
-        self.workingLbl.text = "Working for: \(workingTime)"
-        self.workingStatusIcon.backgroundColor = UIColor.green
-    }
-    
-    
-    
-    
- 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     @objc func handlePhone(){
         
         callPhoneNumber(self.phoneNumberClean)
         
-        /*
-        
-        if (self.phoneNumberClean != "No Number Saved"){
-            
-            let alertController = UIAlertController(title: "CALL \(self.employee.name!)", message: "Confirm Phone Call", preferredStyle: UIAlertControllerStyle.alert) //Replace UIAlertControllerStyle.Alert by UIAlertControllerStyle.alert
-            let DestructiveAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
-                (result : UIAlertAction) -> Void in
-                //print("Cancel")
-            }
-            
-            // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
-                (result : UIAlertAction) -> Void in
-                //print("OK")
-                
-                print("self.phoneNumberClean = \(self.phoneNumberClean)")
-                
-                
-                UIApplication.shared.open(NSURL(string: "tel://\(self.phoneNumberClean)")! as URL, options: [:], completionHandler: nil)
-            }
-            
-            alertController.addAction(DestructiveAction)
-            alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
-            
-            
-            /*
-            
-            let alert = UIAlertController(title: "CALL \(self.employeeName!)", message: "Confirm Phone Call", preferredStyle: UIAlertControllerStyle.alert)
-            
-            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
-                
-                //UIApplication.shared.openURL(NSURL(string: "tel://\(self.phoneNumberClean)")! as URL)
-                UIApplication.shared.open(NSURL(string: "tel://\(self.phoneNumberClean)")! as URL, options: [:], completionHandler: nil)
-            }))
-            
-            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (action: UIAlertAction) in
-                self.dismiss(animated: false, completion: nil)
-            }))
-            self.present(alert, animated: true, completion: nil)
- */
-        }
- */
         
     }
     
+    @objc func emailHandler(){
+        sendEmail(self.email)
+    }
     
     
+   
     
     
     
     @objc func goBack(){
         _ = navigationController?.popViewController(animated: false)
-        //print("Test")
-        if(self.workTimer != nil){
-            self.workTimer.invalidate()
-            self.workTimer = nil
-        }
+        
     }
     
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-        //print("Test")
     }
     
 }

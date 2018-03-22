@@ -15,7 +15,7 @@ class EquipmentFieldTableViewCell: UITableViewCell {
     var titleLbl: UILabel!
     var name: String = ""
     var ID: String = "0"
-    var code: String = ""
+   // var code: String = ""
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)

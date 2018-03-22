@@ -180,6 +180,7 @@ struct API {
             case .workShiftStop:
                 return ("/functions/update/workShiftStop.php")
             case .logIn:
+                print("api trying to log in")
                 return "/functions/other/logIn.php"
             case .currentShiftByEmployee:
                 return "/functions/get/currentShiftByEmployee.php"

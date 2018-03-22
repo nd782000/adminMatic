@@ -719,12 +719,11 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     
     
     
+   
+    
     
     
     func editStop(row:Int,stop:Date){
-        
-        
-        
         print("edit stop \(stop.description)")
         if(usageToLog[row].start == nil){
             //no start time
@@ -815,10 +814,6 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         
                         
                         self.usageToLog[n].lunch = String(_break)
-                        
-                        
-                         
-                        
                         self.setQty()
                     }
                 }

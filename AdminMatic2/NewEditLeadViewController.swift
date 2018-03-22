@@ -49,7 +49,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     var scheduleTypeLbl:GreyLabel!
     var scheduleTypeTxtField:PaddedTextField!
     var scheduleTypePicker: Picker!
-    var scheduleTypeArray = ["ASAP (No Appointment)","FIRM (Appointment)"]
+    var scheduleTypeArray = ["ASAP (No Appointment)","FIRM (Appointment)"] 
    
     
     let dateFormatter = DateFormatter()

@@ -7,7 +7,7 @@
 //
 
 
-
+/*
 import Foundation
 import UIKit
 import Alamofire
@@ -123,3 +123,5 @@ class UnderConstructionViewController: ViewControllerWithMenu  {
     }
     
 }
+ */
+

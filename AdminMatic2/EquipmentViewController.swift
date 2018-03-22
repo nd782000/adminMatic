@@ -19,6 +19,7 @@ protocol EditEquipmentDelegate{
 
 
 class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, EditEquipmentDelegate {
+    
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
     
@@ -53,7 +54,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     
     var typeLbl:GreyLabel!
     var makeModelLbl:GreyLabel!
-    var descriptionView:UITextView!
+    var descriptionView:UITextView = UITextView()
     var serialLbl:GreyLabel!
     var crewLbl:GreyLabel!
     var fuelLbl:GreyLabel!
@@ -112,6 +113,13 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         navigationItem.leftBarButtonItem  = backButtonItem
         
         layoutViews()
+        
+        DispatchQueue.main.async {
+            self.descriptionView.contentOffset = CGPoint.zero
+            self.descriptionView.scrollRangeToVisible(NSRange(location:0, length:0))
+        }
+        
+        
     }
     
    
@@ -296,7 +304,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         
         //description
         
-        self.descriptionView = UITextView()
+        //self.descriptionView = UITextView()
         if self.equipment.description == ""{
             self.descriptionView.text = "No Description Provided"
         }else{
@@ -314,7 +322,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         //service btn
         
         //dealer value (vendor btn)
-        self.serviceBtn = Button(titleText: "Service")
+        self.serviceBtn = Button(titleText: "View Service Lists")
         self.serviceBtn.translatesAutoresizingMaskIntoConstraints = false
         self.serviceBtn.addTarget(self, action: #selector(EquipmentViewController.showServiceListView), for: UIControlEvents.touchUpInside)
         self.view.addSubview(self.serviceBtn)
@@ -356,7 +364,8 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[makeModel]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[description]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[type]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serial]-[crew(140)]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serial]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[crew]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[fuel]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[engine]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
@@ -371,7 +380,8 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tapBtn(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusIcon(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusTxtField(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][makeModel(40)]-[description(40)][type(30)][serial(30)][fuel(30)][engine(30)][dealer(30)][purchaseDate(30)][serviceBtn(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][makeModel(40)]-[description(40)][type(30)][serial(30)][crew(30)][fuel(30)][engine(30)][dealer(30)][purchaseDate(30)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[serviceBtn(40)]-16-|", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
         
         
         
@@ -381,6 +391,13 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     
     @objc func displayEditView(){
         print("display Edit View")
+        
+        //need userLevel greater then 1 to access this
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }
+        
+        
         self.equipmentDelegate.disableSearch()
         let editEquipmentViewController = NewEditEquipmentViewController(_equipment: self.equipment)
         editEquipmentViewController.editDelegate = self
@@ -511,6 +528,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     {
         
         self.statusValueToUpdate = "\(row)"
+        self.equipment.status = "\(row)"
     }
     
     @objc func cancelPicker(){
@@ -518,6 +536,8 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     }
     
     @objc func handleStatusChange(){
+        
+        print("handle status change")
         
         self.statusTxtField.resignFirstResponder()
         
@@ -591,8 +611,11 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         print("update Equipment")
         editsMade = true
         self.equipment = _equipment
+        
+        statusValueToUpdate = equipment.status
+        handleStatusChange()
         self.layoutViews()
-        self.equipmentDelegate.reDrawEquipmentList()
+        //self.equipmentDelegate.reDrawEquipmentList()
         
     }
     

@@ -43,7 +43,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
     //crew
     var crewLbl:GreyLabel!
     var crewTxtField:PaddedTextField!
-    var crewPicker: Picker!
+    var crewPicker: Picker! 
     var crewNameArray:[String] = []
     var crewIDArray:[String] = []
     var crewSelectedID:String = ""
@@ -103,7 +103,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
     
     //description textview
     var descriptionLbl:GreyLabel!
-    var descriptionView:UITextView!
+    var descriptionView:UITextView = UITextView()
     
     
     
@@ -155,6 +155,13 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         navigationItem.leftBarButtonItem  = backButtonItem
         
         showLoadingScreen()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        DispatchQueue.main.async {
+            self.descriptionView.contentOffset = CGPoint.zero
+            self.descriptionView.scrollRangeToVisible(NSRange(location:0, length:0))
+        }
     }
     
     
@@ -250,7 +257,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
             self.equipment.image = image
         }else{
            
-            title =  "Edit Equipment #" + self.equipment.ID
+            title =  "Edit Equipment"
             submitButton = UIBarButtonItem(title: "Update", style: .plain, target: self, action: #selector(NewEditEquipmentViewController.submit))
         }
         navigationItem.rightBarButtonItem = submitButton
@@ -594,7 +601,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         
         print("purchased = \(equipment.purchaseDate)")
         if(equipment.purchaseDate != "" && equipment.purchaseDate != "null"){
-            self.purchasedTxtField.text = equipment.purchaseDate
+            self.purchasedTxtField.text = dateFormatter.string(from: dateFormatterDB.date(from: equipment.purchaseDate)!)
+            self.purchasedPicker.date = dateFormatterDB.date(from: equipment.purchaseDate)!
         }
         
         
@@ -605,8 +613,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         self.descriptionLbl.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.descriptionLbl)
         
-        self.descriptionView = UITextView()
-        self.descriptionView.returnKeyType = .done
+        //self.descriptionView = UITextView()
+        //self.descriptionView.returnKeyType = .done
         self.descriptionView.text = self.equipment.description
         self.descriptionView.font = layoutVars.smallFont
         self.descriptionView.isEditable = true
@@ -619,8 +627,9 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         descriptionToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         descriptionToolBar.sizeToFit()
         let closeDescriptionButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelDescriptionInput))
+        let setDescriptionButton = UIBarButtonItem(title: "Set", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelDescriptionInput))
         
-        descriptionToolBar.setItems([closeDescriptionButton], animated: false)
+        descriptionToolBar.setItems([closeDescriptionButton,spaceButton,setDescriptionButton], animated: false)
         descriptionToolBar.isUserInteractionEnabled = true
         self.descriptionView.inputAccessoryView = descriptionToolBar
         
@@ -898,6 +907,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         textField.resignFirstResponder()
         return true
     }
+ 
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         print("textFieldDidBeginEditing")
@@ -921,6 +931,16 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         if textField.tag > 6{
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.frame.origin.y -= 200
+                
+                
+            }, completion: { finished in
+                // //print("Napkins opened!")
+            })
+        }
+        
+        if textField.tag > 8{
+            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+                self.view.frame.origin.y -= 50
                 
                 
             }, completion: { finished in
@@ -955,13 +975,17 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
     func textFieldDidEndEditing(_ textField: UITextField) {
         print("textFieldDidEndEditing")
         print("textField.tag = \(textField.tag)")
+        if textField.tag == 1 || textField.tag == 3 || textField.tag == 4{
+            textField.text = textField.text?.capitalized
+        }
+        
         if textField.tag == 9{
             
             
             self.vendorResultsTableView.reloadData()
         }
         
-        if textField.tag > 4{
+        if textField.tag > 6{
             if(self.view.frame.origin.y < 0){
                 UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                     self.view.frame.origin.y += 200
@@ -971,20 +995,34 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
                 })
             }
         }
+        if textField.tag > 8{
+            if(self.view.frame.origin.y < 0){
+                UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+                    self.view.frame.origin.y += 50
+                    
+                    
+                }, completion: { finished in
+                })
+            }
+        }
+        editsMade = true
         
     }
     
     
     
-    
+    /*
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         print("shouldChangeTextInRange")
+        /*
         if (text == "\n") {
             textView.resignFirstResponder()
         }
+ */
+        
         return true
     }
-    
+    */
     
     
     func textViewDidBeginEditing(_ textView: UITextView) {

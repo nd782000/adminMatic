@@ -27,7 +27,6 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
     
     var equipmentJSON: JSON!
     
-    
     var equipment:Equipment!
     
     var keyBoardShown:Bool = false
@@ -40,7 +39,10 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
     var serviceHistoryArray:[EquipmentService] = []
     var serviceHistory:JSON!
     
+    var equipmentImage:UIImageView!
+    var activityView:UIActivityIndicatorView!
     
+    var tapBtn:Button!
     
     var mileageLbl:GreyLabel!
     var mileageTxtField:PaddedTextField!
@@ -57,9 +59,12 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
     
     let dateFormatter = DateFormatter()
     
+    var imageFullViewController:ImageFullViewController!
+    
     init(_equipment:Equipment){
         super.init(nibName:nil,bundle:nil)
         print("init Service List with equipmentID = \(_equipment.ID)")
+        print("init Service List with equipment status = \(_equipment.status)")
         self.equipment = _equipment
         
         
@@ -164,6 +169,47 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         print("layoutViews")
         
         
+        
+        //image
+        self.equipmentImage = UIImageView()
+        
+        activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        activityView.center = CGPoint(x: self.equipmentImage.frame.size.width / 2, y: self.equipmentImage.frame.size.height / 2)
+        equipmentImage.addSubview(activityView)
+        activityView.startAnimating()
+        
+        let imgURL:URL = URL(string: self.equipment.image.thumbPath!)!
+        
+        print("imgURL = \(imgURL)")
+        
+        Nuke.loadImage(with: imgURL, into: self.equipmentImage!){
+            print("nuke loadImage")
+            self.equipmentImage?.handle(response: $0, isFromMemoryCache: $1)
+            self.activityView.stopAnimating()
+            
+            self.imageFullViewController = ImageFullViewController(_image: self.equipment.image)
+        }
+        
+        self.equipmentImage.layer.cornerRadius = 5.0
+        self.equipmentImage.layer.borderWidth = 2
+        self.equipmentImage.layer.borderColor = layoutVars.borderColor
+        self.equipmentImage.clipsToBounds = true
+        self.equipmentImage.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(self.equipmentImage)
+        
+        
+        self.tapBtn = Button()
+        self.tapBtn.translatesAutoresizingMaskIntoConstraints = false
+        if equipment.image.ID != "0" {
+            self.tapBtn.addTarget(self, action: #selector(EquipmentServiceListViewController.showFullScreenImage), for: UIControlEvents.touchUpInside)
+        }
+        self.tapBtn.backgroundColor = UIColor.clear
+        self.tapBtn.setTitle("", for: UIControlState.normal)
+        self.view.addSubview(self.tapBtn)
+        
+        
+        
+        
         //serviceLbl
         self.mileageLbl = GreyLabel()
         self.mileageLbl.text = "Current Mileage/Hours"
@@ -176,6 +222,23 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         self.mileageTxtField.keyboardType = UIKeyboardType.numberPad
         self.mileageTxtField.returnKeyType = .done
         self.view.addSubview(self.mileageTxtField)
+        
+        
+        
+        
+        let mileageToolBar = UIToolbar()
+        mileageToolBar.barStyle = UIBarStyle.default
+        mileageToolBar.barTintColor = UIColor(hex:0x005100, op:1)
+        mileageToolBar.sizeToFit()
+        
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let setMileageButton = UIBarButtonItem(title: "Set Mileage", style: UIBarButtonItemStyle.plain, target: self, action: #selector(EquipmentServiceListViewController.handleSetMileage))
+        mileageToolBar.setItems([spaceButton, setMileageButton], animated: false)
+        mileageToolBar.isUserInteractionEnabled = true
+        mileageTxtField.inputAccessoryView = mileageToolBar
+        
+        
+        
         
         self.mileageButton.addTarget(self, action: #selector(EquipmentServiceListViewController.checkForServices), for: UIControlEvents.touchUpInside)
         self.view.addSubview(self.mileageButton)
@@ -208,6 +271,8 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         
         //auto layout group
         let viewsDictionary = [
+            "image":self.equipmentImage,
+            "tapBtn":self.tapBtn,
             "mileageLbl":self.mileageLbl,
             "mileageTxt":self.mileageTxtField,
             "mileageBtn":self.mileageButton,
@@ -217,7 +282,8 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
             ] as [String:Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[mileageLbl]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(40)]-[mileageLbl]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapBtn(40)]", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[mileageTxt]-[mileageBtn(80)]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceSegmentedControl]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
@@ -225,10 +291,23 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[addServiceBtn]-|", options: [], metrics: nil, views: viewsDictionary))
         
         
-        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[image(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[tapBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[mileageLbl(40)]-[mileageTxt(40)]-20-[serviceSegmentedControl(40)]-[serviceTable]-[addServiceBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[mileageLbl(40)]-[mileageBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
+    }
+    
+    @objc func showFullScreenImage(_ sender: UITapGestureRecognizer){
+        
+        print("show full screen")
+        
+        navigationController?.pushViewController(imageFullViewController, animated: false )
+    }
+    
+    @objc func handleSetMileage(){
+        self.mileageTxtField.resignFirstResponder()
+    
     }
     
     
@@ -252,8 +331,8 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
             }
             
             if serviceCurrentArray[i].type == "1"{
-                let date = dateFormatter.date(from: determineUpcomingDate(_equipmentService: serviceCurrentArray[i]))
-                
+                //let date = dateFormatter.date(from: determineUpcomingDate(_equipmentService: serviceCurrentArray[i]))
+                let date = dateFormatter.date(from:layoutVars.determineUpcomingDate(_equipmentService: serviceCurrentArray[i]))
                 let dateFormatter2 = DateFormatter()
                 dateFormatter2.dateFormat = "MM/dd/yy"
                 let date2 = dateFormatter2.string(from: date!)
@@ -286,7 +365,37 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         
         switch n {
         case let x where x == 0:
-            simpleAlert(_vc: self, _title: "No Services Due Now", _message: "")
+            //simpleAlert(_vc: self, _title: "No Services Due Now", _message: "")
+            
+            
+            if self.equipment.status == "1" || self.equipment.status == "2"{
+                print("update equipment status")
+                
+                let alertController = UIAlertController(title: "No Services Due Now", message: "\(self.equipment.name!) looks good, would you like to update its status to \"Online\"?", preferredStyle: UIAlertControllerStyle.alert)
+                let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                    (result : UIAlertAction) -> Void in
+                    print("No")
+                }
+                
+                let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                    (result : UIAlertAction) -> Void in
+                    print("Yes")
+                    self.equipment.status = "0"
+                    self.editEquipmentDelegate.updateEquipment(_equipment: self.equipment)
+                }
+                
+                alertController.addAction(cancelAction)
+                alertController.addAction(okAction)
+                self.present(alertController, animated: true, completion: nil)
+                
+            }else{
+                simpleAlert(_vc: self, _title: "No Services Due Now", _message: "")
+            }
+            
+            
+            
+            
+            
             break
         case let x where x == 1:
             
@@ -348,6 +457,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
             }
             self.serviceSC.selectedSegmentIndex = 0
             self.tableViewMode = "CURRENT"
+            self.serviceTableView.reloadData()
             
             //need to set equipment status to Needs Repair/Service
             break
@@ -381,7 +491,11 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
             return
         }
  */
-        
+        if self.mileageTxtField.text == ""{
+            self.currentValue = "0"
+        }else{
+            self.currentValue = self.mileageTxtField.text!
+        }
         
         let newEditEquipmentServiceViewController = NewEditEquipmentServiceViewController(_equipmentID: self.equipment.ID,_currentValue:self.currentValue)
         navigationController?.pushViewController(newEditEquipmentServiceViewController, animated: false )
@@ -511,9 +625,12 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
             currentCell.equipmentService.currentValue = self.mileageTxtField.text
         }
         
-        if(currentCell.equipmentService.frequency != "" && currentCell.equipmentService.currentValue != ""){
+        
+        if(currentCell.equipmentService.frequency != "0" && currentCell.equipmentService.currentValue != "0" && Int(currentCell.equipmentService.type)! > 1){
             currentCell.equipmentService.nextValue = "\(Int(currentCell.equipmentService.frequency)! + Int(currentCell.equipmentService.currentValue)!)"
+            print("next value = \(currentCell.equipmentService.nextValue)")
         }
+ 
         
         let equipmentServiceViewController = EquipmentServiceViewController(_equipmentService: currentCell.equipmentService)
         navigationController?.pushViewController(equipmentServiceViewController, animated: false )
@@ -525,7 +642,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         
     }
     
-    
+    /*
     func determineUpcomingDate(_equipmentService:EquipmentService)->String{
         print("determineUpcomingDate")
         
@@ -552,7 +669,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         return dateFormatter.string(from: futureDate!)
         
     }
-    
+    */
     
     
     

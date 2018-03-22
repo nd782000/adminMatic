@@ -204,8 +204,8 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
             print("build sections")
             var index = 0;
             var titleArray:[String] = [" "]
-            for i in 0 ..< self.equipmentArray.sorted(by: { $0.status < $1.status }).count {
-                let stringToTest = self.statusNames[Int(self.equipmentArray.sorted(by: { $0.status < $1.status })[i].status!)!]
+            for i in 0 ..< self.equipmentArray.sorted(by: { $0.status > $1.status }).count {
+                let stringToTest = self.statusNames[Int(self.equipmentArray.sorted(by: { $0.status > $1.status })[i].status!)!]
                 //let firstCharacter = String(stringToTest[stringToTest.startIndex])
                 if(i == 0){
                     titleArray.append(stringToTest)
@@ -218,7 +218,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
                     sections.append(newSection)
                     index = i;
                 }
-                if(i == self.equipmentArray.sorted(by: { $0.status < $1.status }).count - 1){
+                if(i == self.equipmentArray.sorted(by: { $0.status > $1.status }).count - 1){
                     let title = titleArray[titleArray.count - 1]
                     let newSection = (index: index, length: i - index + 1, title: title)
                     self.sections.append(newSection)
@@ -580,7 +580,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
                 break
             case "STATUS":
                 //equipmentArray.sorted(by: { $0.type > $1.type })
-                cell.equipment = self.equipmentSearchResults.sorted(by: { $0.status < $1.status })[indexPath.row]
+                cell.equipment = self.equipmentSearchResults.sorted(by: { $0.status > $1.status })[indexPath.row]
                 break
             default:
                 //CREW
@@ -664,7 +664,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
             case "STATUS":
                 
                 
-                cell.equipment = self.equipmentArray.sorted(by: { $0.status < $1.status })[sections[indexPath.section].index + indexPath.row]
+                cell.equipment = self.equipmentArray.sorted(by: { $0.status > $1.status })[sections[indexPath.section].index + indexPath.row]
                 break
             default:
                 //CREW
@@ -724,15 +724,60 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let ID:String!
+        
+        
         if shouldShowSearchResults{
-            ID = self.equipmentSearchResults[indexPath.row].ID
+           // ID = self.equipmentSearchResults[indexPath.row].ID
+            
+            switch self.currentSortMode {
+            case "CREW":
+                //equipmentArray.sorted(by: { $0.crewName > $1.crewName })
+                ID = self.equipmentSearchResults.sorted(by: { $0.crewName < $1.crewName })[indexPath.row].ID
+                break
+            case "TYPE":
+                //equipmentArray.sorted(by: { $0.type > $1.type })
+                ID = self.equipmentSearchResults.sorted(by: { $0.typeName < $1.typeName })[indexPath.row].ID
+                break
+            case "STATUS":
+                //equipmentArray.sorted(by: { $0.type > $1.type })
+                ID = self.equipmentSearchResults.sorted(by: { $0.status > $1.status })[indexPath.row].ID
+                break
+            default:
+                //CREW
+                //equipmentArray.sorted(by: { $0.status > $1.status })
+                ID = self.equipmentSearchResults.sorted(by: { $0.crewName < $1.crewName })[indexPath.row].ID
+                
+                break
+            }
+            
+            
         }else{
-            ID = self.equipmentArray[indexPath.row].ID
+            //ID = self.equipmentArray[indexPath.row].ID
+            switch self.currentSortMode {
+            case "CREW":
+                ID = self.equipmentArray.sorted(by: { $0.crewName < $1.crewName })[sections[indexPath.section].index + indexPath.row].ID
+                break
+            case "TYPE":
+                ID = self.equipmentArray.sorted(by: { $0.typeName < $1.typeName })[sections[indexPath.section].index + indexPath.row].ID
+                break
+            case "STATUS":
+                ID = self.equipmentArray.sorted(by: { $0.status > $1.status })[sections[indexPath.section].index + indexPath.row].ID
+                break
+            default:
+                //CREW
+                ID = self.equipmentArray.sorted(by: { $0.crewName < $1.crewName })[sections[indexPath.section].index + indexPath.row].ID
+                break
+            }
         }
+        
+        print("row = \(indexPath.row)")
+        print("ID = \(ID)")
         
         //indexPath
         let deActivate = UITableViewRowAction(style: .normal, title: "deactivate") { action, index in
             //print("none button tapped")
+            //need user level greater then 1 to access this
+            
             self.deActivateEquipment(_ID:ID!)
         }
         deActivate.backgroundColor = UIColor.red
@@ -741,24 +786,51 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
     
     func deActivateEquipment(_ID:String){
         print("deActivate Equipment \(_ID)")
-        let parameters = ["equipmentID": _ID as AnyObject]
-        print("parameters = \(parameters)")
         
-        // Show Indicator
-        indicator = SDevIndicator.generate(self.view)!
-        
-        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/equipmentActive.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
-            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
-            .responseString { response in
-                //print("equipment response = \(response)")
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }else{
+            
+            
+            let alertController = UIAlertController(title: "De-Activate Equipment?", message: "Are you sure you want to de-activate this equipment?", preferredStyle: UIAlertControllerStyle.alert)
+            let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                (result : UIAlertAction) -> Void in
+                print("No")
+                return
             }
-            .responseJSON(){
-                response in
-               // self.shouldShowSearchResults = false
-                //self.searchController.isActive = false
-                self.getEquipmentList()
+            
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                (result : UIAlertAction) -> Void in
+                print("Yes")
                 
+                let parameters = ["equipmentID": _ID as AnyObject]
+                print("parameters = \(parameters)")
+                
+                // Show Indicator
+                self.indicator = SDevIndicator.generate(self.view)!
+                
+                self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/equipmentActive.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                    .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+                    .responseString { response in
+                        //print("equipment response = \(response)")
+                    }
+                    .responseJSON(){
+                        response in
+                        // self.shouldShowSearchResults = false
+                        //self.searchController.isActive = false
+                        self.getEquipmentList()
+                        
+                }
+                
+                
+            }
+            
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            self.present(alertController, animated: true, completion: nil)
         }
+        
+        
         
         
     }

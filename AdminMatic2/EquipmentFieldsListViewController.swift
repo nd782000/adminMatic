@@ -39,7 +39,7 @@ class EquipmentFieldsListViewController: ViewControllerWithMenu, UITableViewDele
     
     var typeNameArray:[String] = []
     var typeIDArray:[String] = []
-    var typeCodeArray:[String] = []
+    //var typeCodeArray:[String] = []
     
     var fuelNameArray:[String] = []
     var fuelIDArray:[String] = []
@@ -95,7 +95,7 @@ class EquipmentFieldsListViewController: ViewControllerWithMenu, UITableViewDele
         
          typeNameArray = []
          typeIDArray = []
-         typeCodeArray = []
+         //typeCodeArray = []
         
          fuelNameArray = []
          fuelIDArray = []
@@ -128,7 +128,7 @@ class EquipmentFieldsListViewController: ViewControllerWithMenu, UITableViewDele
                 for i in 0 ..< typesCount {
                     self.typeIDArray.append(JSON(json)["types"][i]["ID"].stringValue)
                     self.typeNameArray.append(JSON(json)["types"][i]["name"].stringValue)
-                    self.typeCodeArray.append(JSON(json)["types"][i]["code"].stringValue)
+                    //self.typeCodeArray.append(JSON(json)["types"][i]["code"].stringValue)
                 }
                 
                 let fuelTypesCount = JSON(json)["fuelTypes"].count
@@ -303,7 +303,7 @@ class EquipmentFieldsListViewController: ViewControllerWithMenu, UITableViewDele
         switch viewMode {
         case "TYPE":
             cell.layoutViews(_name: self.typeNameArray[indexPath.row], _ID: self.typeIDArray[indexPath.row])
-            cell.code = self.typeCodeArray[indexPath.row]
+            //cell.code = self.typeCodeArray[indexPath.row]
             break
         case "FUEL":
             cell.layoutViews(_name: self.fuelNameArray[indexPath.row], _ID: self.fuelIDArray[indexPath.row])
@@ -328,7 +328,10 @@ class EquipmentFieldsListViewController: ViewControllerWithMenu, UITableViewDele
         let currentCell = tableView.cellForRow(at: indexPath!) as! EquipmentFieldTableViewCell
         
         
-        let newEquipmentFieldViewController = NewEditEquipmentFieldViewController(_name: currentCell.name, _ID: currentCell.ID, _code: currentCell.code, _field: self.viewMode)
+        //let newEquipmentFieldViewController = NewEditEquipmentFieldViewController(_name: currentCell.name, _ID: currentCell.ID, _code: currentCell.code, _field: self.viewMode)
+        
+        let newEquipmentFieldViewController = NewEditEquipmentFieldViewController(_name: currentCell.name, _ID: currentCell.ID, _field: self.viewMode)
+        
         navigationController?.pushViewController(newEquipmentFieldViewController, animated: false )
         newEquipmentFieldViewController.delegate = self
         
@@ -366,7 +369,7 @@ class EquipmentFieldsListViewController: ViewControllerWithMenu, UITableViewDele
                 case "TYPE":
                     self.typeNameArray.remove(at: indexPath.row)
                     self.typeIDArray.remove(at: indexPath.row)
-                    self.typeCodeArray.remove(at: indexPath.row)
+                    //self.typeCodeArray.remove(at: indexPath.row)
                     break
                 case "FUEL":
                     self.fuelNameArray.remove(at: indexPath.row)
@@ -379,7 +382,7 @@ class EquipmentFieldsListViewController: ViewControllerWithMenu, UITableViewDele
                 default:
                     self.typeNameArray.remove(at: indexPath.row)
                     self.typeIDArray.remove(at: indexPath.row)
-                    self.typeCodeArray.remove(at: indexPath.row)
+                   // self.typeCodeArray.remove(at: indexPath.row)
                     break
                 }
                 self.equipmentFieldsTableView.reloadData()
@@ -444,6 +447,9 @@ class EquipmentFieldsListViewController: ViewControllerWithMenu, UITableViewDele
     
     @objc func addField(){
         print("Add Field")
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }
         
         let newEquipmentFieldViewController = NewEditEquipmentFieldViewController(_field: viewMode)
         newEquipmentFieldViewController.delegate = self

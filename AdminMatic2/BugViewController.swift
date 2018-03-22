@@ -6,7 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
-
+/*
 
 import Foundation
 import UIKit
@@ -357,7 +357,4 @@ class BugViewController: UIViewController, UITextViewDelegate{
     
 }
 
-
-
-
-
+*/

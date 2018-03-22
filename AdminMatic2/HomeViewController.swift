@@ -28,7 +28,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         super.init(nibName:nil,bundle:nil)
         
         title = "Home v \(self.appDelegate.appVersion)"
-        homeBtnData = [("customersIcon","Customers"),("employeesIcon","Employees"),("vendorsIcon","Vendors"),("itemsIcon","Items"),("scheduleIcon","Schedule"),("performanceIcon","Performance"),("imagesIcon","Images"),("equipmentIcon","Equipment"),("leadsIcon","Leads"),("bugIcon","Bugs")]
+        homeBtnData = [("customersIcon","Customers"),("employeesIcon","Employees"),("vendorsIcon","Vendors"),("itemsIcon","Items"),("scheduleIcon","Schedule"),("performanceIcon","Performance"),("imagesIcon","Images"),("equipmentIcon","Equipment"),("leadsIcon","Leads"),("contractsIcon","Contracts")]
         self.view.backgroundColor = layoutVars.backgroundColor
     }
     
@@ -198,7 +198,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             appDelegate.menuChange(8)
             break
         case 9:
-            //bugs
+            //contracts
             appDelegate.menuChange(9)
             break
         default:

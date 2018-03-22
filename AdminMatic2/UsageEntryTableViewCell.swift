@@ -124,17 +124,7 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         
         
         
-        /*
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat =  "HH:mm"
-        
-        
-        
-        let date = dateFormatter.date(from: "17:00")
-        
-        startPickerView.date = date!
-        */
-        
+       
         
         
         
@@ -470,9 +460,8 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     @objc func handleBreakTime()
     {
         self.breakTxtField.resignFirstResponder()
-        if(Int(breakTxtField.text!) == nil){
-            
-        }else{
+        
+        if Int(breakTxtField.text!) != nil{
             let breakTime = Int(breakTxtField.text!)
             //print("call delegate \(self.row)  \(breakTime)")
             self.delegate.editBreak(row: self.row, lunch: breakTime!)

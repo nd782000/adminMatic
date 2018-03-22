@@ -23,7 +23,6 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     var currentValue:String = "0"
     var equipmentService:EquipmentService!
     var submitButton:UIBarButtonItem!
-   // var delegate:EquipmentListDelegate!
     
     var serviceListDelegate:ServiceListDelegate!
     var editDelegate:EditEquipmentServiceDelegate!
@@ -58,11 +57,13 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     
     //instructions
     var instructionsLbl:GreyLabel!
-    var instructionsView:UITextView!
+    var instructionsView:UITextView = UITextView()
 
     var submitButtonBottom:Button = Button(titleText: "Submit")
     
     let dateFormatter = DateFormatter()
+    let dateFormatterDB = DateFormatter()
+    
 
     //init for new
     init(_equipmentID:String,_currentValue:String){
@@ -111,6 +112,14 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     
     
     
+     override func viewWillAppear(_ animated: Bool) {
+        DispatchQueue.main.async {
+            self.instructionsView.contentOffset = CGPoint.zero
+            self.instructionsView.scrollRangeToVisible(NSRange(location:0, length:0))
+        }
+    }
+    
+    
     
     func layoutViews(){
         
@@ -129,6 +138,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         navigationItem.rightBarButtonItem = submitButton
         
         dateFormatter.dateFormat = "MM/dd/yy"
+        dateFormatterDB.dateFormat = "yyyy-MM-dd HH:mm:ss"
        
         
         
@@ -292,7 +302,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             nextDatePicker.datePickerMode = UIDatePickerMode.date
             self.nextTxtField = PaddedTextField()
             self.nextTxtField.inputView = self.nextDatePicker
-            self.nextTxtField.text = self.determineUpcomingDate()
+            self.nextTxtField.text = layoutVars.determineUpcomingDate(_equipmentService: equipmentService)
             let date = dateFormatter.date(from: self.nextTxtField.text!)
             nextDatePicker.date = date!
             nextDatePicker.minimumDate = Date()
@@ -341,11 +351,11 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         self.instructionsLbl.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.instructionsLbl)
         
-        self.instructionsView = UITextView()
+       // self.instructionsView = UITextView()
         self.instructionsView.layer.borderWidth = 1
         self.instructionsView.layer.borderColor = UIColor(hex:0x005100, op: 0.2).cgColor
         self.instructionsView.layer.cornerRadius = 4.0
-        self.instructionsView.returnKeyType = .done
+        //self.instructionsView.returnKeyType = .done
         self.instructionsView.text = self.equipmentService.instruction
         self.instructionsView.font = layoutVars.smallFont
         self.instructionsView.isEditable = true
@@ -447,7 +457,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             nextDatePicker.datePickerMode = UIDatePickerMode.date
             //self.nextTxtField = PaddedTextField()
             self.nextTxtField.inputView = self.nextDatePicker
-            self.nextTxtField.text = self.determineUpcomingDate()
+            self.nextTxtField.text = layoutVars.determineUpcomingDate(_equipmentService: equipmentService)
             nextDatePicker.minimumDate = Date()
             let date = dateFormatter.date(from: self.nextTxtField.text!)
             nextDatePicker.date = date!
@@ -489,16 +499,27 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         equipmentService.type = "\(self.typePicker.selectedRow(inComponent: 0))"
         equipmentService.typeName = typeArray[self.typePicker.selectedRow(inComponent: 0)]
         
-        self.typeTxtField.text = equipmentService.typeName
         
+        //let dateFormatterDB = DateFormatter()
+        //dateFormatterDB.dateFormat = "yyyy-MM-dd"
+        
+        //equipmentService.creationDate = "\(dateFormatterDB.string(from: Date())) 00:00:00"
+        equipmentService.creationDate = dateFormatterDB.string(from: Date())
+
+        
+        self.typeTxtField.text = equipmentService.typeName
         print("type = \(equipmentService.type)")
         print("typeName = \(equipmentService.typeName)")
         
-        editsMade = true
+       
+            editsMade = true
+            editInputLabels()
+            setCurrentText()
+            setNextText()
+       
         
-        editInputLabels()
-        setCurrentText()
-        setNextText()
+        
+        
     }
     
     
@@ -547,9 +568,10 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         if self.equipmentService.type == "1"{
             
             
-           
+           // let dateFormatterDB = DateFormatter()
+            //dateFormatterDB.dateFormat = "yyyy-MM-dd HH:mm:ss"
             
-            let date = dateFormatter.date(from: equipmentService.creationDate)
+            let date = dateFormatterDB.date(from: equipmentService.creationDate)
             
             self.nextTxtField.text = dateFormatter.string(from: nextDatePicker.date)
             
@@ -596,7 +618,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         if equipmentService.type == "1"{
             if(self.equipmentService.frequency != "0"){
                 self.equipmentService.nextValue = "\(Int(self.equipmentService.frequency)!)"
-                self.nextTxtField.text = self.determineUpcomingDate()
+                self.nextTxtField.text = layoutVars.determineUpcomingDate(_equipmentService: equipmentService)
                 let date = dateFormatter.date(from: self.nextTxtField.text!)
                 nextDatePicker.date = date!
                 
@@ -674,6 +696,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     func textFieldDidEndEditing(_ textField: UITextField) {
         print("textFieldDidEndEditing")
         print("textField.tag = \(textField.tag)")
+        textField.text = textField.text?.capitalized
         if(textField.tag == 10){
             if(frequencyTxtField.text != ""){
                 self.equipmentService.frequency = frequencyTxtField.text
@@ -698,15 +721,15 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     
     
     
-    
+    /*
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         print("shouldChangeTextInRange")
-        if (text == "\n") {
-            textView.resignFirstResponder()
-        }
+        //if (text == "\n") {
+            //textView.resignFirstResponder()
+        //}
         return true
     }
-    
+    */
     
     
     func textViewDidBeginEditing(_ textView: UITextView) {
@@ -887,11 +910,6 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         }
         
         
-        /*
-        if nextTxtField.isEnabled == true && nextTxtField.text != nextTxtField.placeHolder{
-            equipmentService.nextValue = nextTxtField.text!
-        }
-        */
         
         print("frequency = \(equipmentService.frequency)")
         print("current = \(equipmentService.currentValue)")
@@ -966,10 +984,11 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         
         
         
-        if(!validateFields()){
-            print("didn't pass validation")
-            return
-        }
+            if(!validateFields()){
+                print("didn't pass validation")
+                return
+            }
+       
         
         //validate all fields
         
@@ -1000,8 +1019,12 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
                     }
                     
                     let newEquipmentServiceID = self.json["serviceID"].stringValue
+                    //let creationDate = self.json["creationDate"].stringValue
                     
                     print("new service id = \(newEquipmentServiceID)")
+                    //print("creationDate = \(creationDate)")
+                    //self.equipmentService.creationDate = creationDate
+                    
                     self.editsMade = false
                     
                     if(self.serviceListDelegate != nil){
@@ -1011,7 +1034,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
                         self.editDelegate.updateEquipmentService(_equipmentService: self.equipmentService)
                     }
                     
-                    
+                   
+                self.goBack()
                     
                     
                 }
@@ -1021,44 +1045,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         
     }
     
-    /*
-    func determineUpcomingDate()->String{
-        print("determineUpcomingDate")
-        
-        let daysToAdd = Int(equipmentService.frequency)!
-        let futureDate = Calendar.current.date(byAdding:
-            .day, // updated this params to add hours
-            value: daysToAdd,
-            to: Date())
-        
-        print(dateFormatter.string(from: futureDate!))
-        return dateFormatter.string(from: futureDate!)
-        
-    }
- */
-    
-    func determineUpcomingDate()->String{
-        print("determineUpcomingDate")
-        print("creationDate = \(equipmentService.creationDate)")
-        print("nextValue = \(equipmentService.nextValue)")
-        
-        if equipmentService.creationDate == ""{
-            equipmentService.creationDate = dateFormatter.string(from: Date())
-        }
-        print("creation date = \(equipmentService.creationDate)")
-        
-        let date = dateFormatter.date(from: equipmentService.creationDate)
-        
-        let daysToAdd = Int(equipmentService.nextValue)!
-        let futureDate = Calendar.current.date(byAdding:
-            .day, // updated this params to add hours
-            value: daysToAdd,
-            to: date!)
-        
-        print(dateFormatter.string(from: futureDate!))
-        return dateFormatter.string(from: futureDate!)
-        
-    }
+   
     
     
     
@@ -1086,9 +1073,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             alertController.addAction(okAction)
             self.present(alertController, animated: true, completion: nil)
         }else{
-            if self.editDelegate != nil{
-                self.editDelegate.updateEquipmentService(_equipmentService: self.equipmentService)
-            }
+            
             _ = navigationController?.popViewController(animated: true)
         }
         

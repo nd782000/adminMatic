@@ -24,9 +24,19 @@ class Employee {
     var depID: String!
     var payRate: String!
     var appScore: String!
+    var userLevel: Int!
+    var userLevelName: String!
+    
+    var deptName: String!
+    var deptColor: String!
+    
+    var crewName: String!
+    var crewColor: String!
+    //var crewColor2: String!
     
     
-    required init(_ID:String?, _name: String?, _lname:String?, _fname:String?, _username:String?, _pic:String?, _phone:String?, _depID:String?, _payRate:String?, _appScore:String?) {
+    
+    required init(_ID:String?, _name: String?, _lname:String?, _fname:String?, _username:String?, _pic:String?, _phone:String?, _depID:String?, _payRate:String?, _appScore:String?, _userLevel:Int?, _userLevelName:String?) {
         //print(json)
         if _ID != nil {
             self.ID = _ID
@@ -82,6 +92,17 @@ class Employee {
             self.appScore = _appScore
         }else{
             self.appScore = ""
+        }
+        if _userLevel != nil {
+            self.userLevel = _userLevel
+        }else{
+            self.userLevel = 1
+        }
+        
+        if _userLevelName != nil {
+            self.userLevelName = _userLevelName
+        }else{
+            self.userLevelName = ""
         }
         
         

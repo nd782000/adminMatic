@@ -51,7 +51,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     //details view
     var detailsView:UIView!
-    let items = ["Schedule","History","Communication","Images"]
+    let items = ["Schedule","History","Images"]
     var customSC:SegmentedControl!
     
     
@@ -65,9 +65,10 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var customerHistory: JSON!
     var customerHistoryArray:[WorkOrder] = []
     
-    var customerCommunication: JSON!
+    //var customerCommunication: JSON!
     
-    var noResultsLabel:Label = Label();
+    var noScheduleLabel:Label = Label()
+    var noHistoryLabel:Label = Label()
     
     var totalImages:Int!
     var images: JSON!
@@ -83,6 +84,17 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var refresher:UIRefreshControl!
     var displayImages:Bool?
     var customerListDelegate:CustomerListDelegate!
+    
+    var noImagesLbl:Label = Label()
+    
+    
+    var order:String = "ID DESC"
+    
+    
+    var lazyLoad = 0
+    var limit = 100
+    var offset = 0
+    var batch = 0
     
     
     
@@ -279,10 +291,13 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //remove any added views (needed for table refresh
         
         print("get images")
-        imageArray = []
+       // imageArray = []
        
         
-        let parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject, "customer": self.customerID as AnyObject]
+        //let parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject, "customer": self.customerID as AnyObject]
+        
+        let parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject,"limit": "\(self.limit)" as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject, "customer": self.customerID as AnyObject]
+        
         
         print("parameters = \(parameters)")
         
@@ -312,6 +327,8 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.totalImages = jsonCount
         print("JSONcount: \(jsonCount)")
         
+        
+        
         let thumbBase:String = self.images["thumbBase"].stringValue
         let mediumBase:String = self.images["mediumBase"].stringValue
         let rawBase:String = self.images["rawBase"].stringValue
@@ -328,12 +345,26 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             let image = Image(_id: self.images["images"][i]["ID"].stringValue,_thumbPath: thumbPath, _mediumPath: mediumPath,_rawPath: rawPath,_name: self.images["images"][i]["name"].stringValue,_width: self.images["images"][i]["width"].stringValue,_height: self.images["images"][i]["height"].stringValue,_description: self.images["images"][i]["description"].stringValue,_dateAdded: self.images["images"][i]["dateAdded"].stringValue,_createdBy: self.images["images"][i]["createdByName"].stringValue,_type: self.images["images"][i]["type"].stringValue)
             
             image.customer = self.images["images"][i]["customer"].stringValue
+            image.customerName = self.images["images"][i]["customerName"].stringValue
             image.tags = self.images["images"][i]["tags"].stringValue
+            image.liked = self.images["images"][i]["liked"].stringValue
+            image.likes = self.images["images"][i]["likes"].stringValue
+            image.index = i
             
             self.imageArray.append(image)
             
         }        
-        self.layoutViews()
+        //self.layoutViews()
+        
+        if(lazyLoad == 0){
+            self.layoutViews()
+        }else{
+            lazyLoad = 0
+            self.imageCollectionView?.reloadData()
+        }
+        
+        
+        
     }
     
 
@@ -383,16 +414,17 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         }
         
         
-        // dispatch_async(dispatch_get_main_queue(), { () -> Void in
         
         self.customerDetailsTableView.reloadData()
         
         if self.customerHistoryArray.count > 0 {
-            self.customerDetailsTableView.isHidden = false;
-            self.noResultsLabel.isHidden = true;
+            //self.customerDetailsTableView.isHidden = false;
+            self.customerDetailsTableView.alpha = 1.0
+            self.noHistoryLabel.isHidden = true
         } else {
-            self.customerDetailsTableView.isHidden = true;
-            self.noResultsLabel.isHidden = false;
+            //self.customerDetailsTableView.isHidden = true;
+            self.customerDetailsTableView.alpha = 0.5
+            self.noHistoryLabel.isHidden = false
         }
         
     }
@@ -461,7 +493,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //print("phoneName = \(self.phoneName)")
         //print("phone clean = \(self.phoneNumberClean)")
         self.customerPhoneBtn.setTitle(self.phone + self.phoneName, for: UIControlState.normal)
-        //self.customerPhoneBtn.setTitle(self.phoneNumberClean! + self.phoneName, for: UIControlState.normal)
         if self.phone != "No Phone Found" {
             self.customerPhoneBtn.addTarget(self, action: #selector(CustomerViewController.phoneHandler), for: UIControlEvents.touchUpInside)
         }
@@ -585,6 +616,9 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
        
         customSC = SegmentedControl(items: items)
         customSC.selectedSegmentIndex = 0
+        customSC.layer.cornerRadius = 0.0
+        
+        
         
         customSC.addTarget(self, action: #selector(self.changeSearchOptions(sender:)), for: .valueChanged)
         self.detailsView.addSubview(customSC)
@@ -597,17 +631,25 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
        
         
-        noResultsLabel.text = "No Work on Schedule"
-        noResultsLabel.textAlignment = NSTextAlignment.center
-        noResultsLabel.font = UIFont(name: "Avenir Next", size: 24)
-        self.detailsView.addSubview(self.noResultsLabel);
+        noScheduleLabel.text = "No Work on Schedule"
+        noScheduleLabel.textAlignment = NSTextAlignment.center
+        noScheduleLabel.font = layoutVars.largeFont
+        self.detailsView.addSubview(self.noScheduleLabel)
+        
+        noHistoryLabel.text = "No Work History"
+        noHistoryLabel.textAlignment = NSTextAlignment.center
+        noHistoryLabel.font = layoutVars.largeFont
+        self.detailsView.addSubview(self.noHistoryLabel);
+        noHistoryLabel.isHidden = true
         
         if self.customerScheduleArray.count > 0 {
-            self.customerDetailsTableView.isHidden = false;
-            self.noResultsLabel.isHidden = true;
+            //self.customerDetailsTableView.isHidden = false;
+            self.customerDetailsTableView.alpha = 1.0
+            self.noScheduleLabel.isHidden = true
         } else {
-            self.customerDetailsTableView.isHidden = true;
-            self.noResultsLabel.isHidden = false;
+            //self.customerDetailsTableView.isHidden = true;
+            self.customerDetailsTableView.alpha = 0.5
+            self.noScheduleLabel.isHidden = false
         }
         
         
@@ -640,10 +682,31 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         
+        //self.noImagesLbl = GreyLabel()
+        self.noImagesLbl.text = "No Images Uploaded"
+        self.noImagesLbl.textColor = UIColor.white
+        self.noImagesLbl.textAlignment = .center
+        self.noImagesLbl.font = layoutVars.largeFont
+        self.detailsView.addSubview(self.noImagesLbl)
+        self.noImagesLbl.isHidden = true
+        
+        
+        /*
+        print("imageArray.count = \(imageArray.count)")
+        if self.imageArray.count == 0{
+            self.noImagesLbl.isHidden = true
+        }else{
+            self.noImagesLbl.isHidden = false
+        }
+        */
+        
+        
+        
         
         self.addImageBtn.addTarget(self, action: #selector(CustomerViewController.addImage), for: UIControlEvents.touchUpInside)
         
-        self.addImageBtn.translatesAutoresizingMaskIntoConstraints = false
+        //self.addImageBtn.translatesAutoresizingMaskIntoConstraints = false
+        self.addImageBtn.layer.cornerRadius = 0.0
         self.detailsView.addSubview(self.addImageBtn)
         addImageBtn.isHidden = true
         
@@ -660,7 +723,9 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             "view2":customerDetailsTableView,
             "view3":imageCollectionView!,
             "view4":addImageBtn,
-            "view5":self.noResultsLabel
+            "view5":self.noScheduleLabel,
+            "view6":self.noHistoryLabel,
+            "view7":self.noImagesLbl
         ] as [String : Any]
         
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
@@ -668,10 +733,15 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view3(width)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view4(width)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view5(width)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view6(width)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view7(width)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(35)][view2]|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-35-[view3]-40-|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view4(40)]|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(35)]-[view5(40)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(35)]-[view6(40)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(35)]-[view7(40)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         
         if (self.displayImages == true){
             self.showImages()
@@ -721,16 +791,21 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         case 0://schedule
             self.tableViewMode = "SCHEDULE"
             self.customerDetailsTableView.reloadData()
-            noResultsLabel.text = "No Work on Schedule"
+            //noResultsLabel.text = "No Work on Schedule"
             if self.customerScheduleArray.count > 0 {
-                self.customerDetailsTableView.isHidden = false;
-                self.noResultsLabel.isHidden = true;
+                self.customerDetailsTableView.isHidden = false
+                self.customerDetailsTableView.alpha = 1.0
+                self.noScheduleLabel.isHidden = true
             } else {
-                self.customerDetailsTableView.isHidden = true;
-                self.noResultsLabel.isHidden = false;
+                //self.customerDetailsTableView.isHidden = true
+                self.customerDetailsTableView.alpha = 0.5
+                self.noScheduleLabel.isHidden = false
             }
             
+            self.noHistoryLabel.isHidden = true
+            
             imageCollectionView?.isHidden = true
+            self.noImagesLbl.isHidden = true
             addImageBtn.isHidden = true
 
             
@@ -741,21 +816,26 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 getCustomerHistory(_id: self.customerID)
             }else{
                 self.customerDetailsTableView.reloadData()
-                noResultsLabel.text = "No Work in History"
+                //noResultsLabel.text = "No Work in History"
                 if self.customerHistoryArray.count > 0 {
-                    self.customerDetailsTableView.isHidden = false;
-                    self.noResultsLabel.isHidden = true;
+                    self.customerDetailsTableView.isHidden = false
+                    self.customerDetailsTableView.alpha = 1.0
+                    self.noHistoryLabel.isHidden = true
                 } else {
-                    self.customerDetailsTableView.isHidden = true;
-                    self.noResultsLabel.isHidden = false;
+                    //self.customerDetailsTableView.isHidden = true
+                    self.customerDetailsTableView.alpha = 0.5
+                    self.noHistoryLabel.isHidden = false
                 }
                 
             }
+            self.noScheduleLabel.isHidden = true
             
             imageCollectionView?.isHidden = true
+            self.noImagesLbl.isHidden = true
             addImageBtn.isHidden = true
 
             break
+            /*
         case 2://communication
             self.tableViewMode = "COMMUNICATION"
             
@@ -764,7 +844,8 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
 
             
             break
-        case 3://images
+ */
+        case 2://images
             
             showImages()
             
@@ -780,11 +861,25 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         print("show images")
         self.customerDetailsTableView.isHidden = true
         
-        self.noResultsLabel.isHidden = true
+        self.noScheduleLabel.isHidden = true
+        self.noHistoryLabel.isHidden = true
+        
+        
+        print("imageArray.count = \(imageArray.count)")
+        
+        
+        if self.imageArray.count > 0 {
+            self.noImagesLbl.isHidden = true
+        } else {
+            self.noImagesLbl.isHidden = false
+        }
+        
+        
+        
         
         imageCollectionView?.isHidden = false
         addImageBtn.isHidden = false
-        customSC.selectedSegmentIndex = 3
+        customSC.selectedSegmentIndex = 2
     }
     
     
@@ -799,6 +894,27 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     func stopRefresher()
     {   print("stopRefresher")
     }
+    
+    
+    func updateLikes(_index:Int, _liked:String, _likes:String){
+        print("update likes _liked: \(_liked)  _likes\(_likes)")
+        imageArray[_index].liked = _liked
+        imageArray[_index].likes = _likes
+        
+    }
+    
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if (scrollView.bounds.maxY == scrollView.contentSize.height) {
+            print("scrolled to bottom")
+            lazyLoad = 1
+            batch += 1
+            offset = batch * limit
+            getImages()
+        }
+    }
+    
+    
     
     
     
@@ -1003,8 +1119,10 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             //print("history count = \(count)", terminator: "")
             
             break
+            /*
         case "COMMUNICATION":
             break
+ */
         case "IMAGES":
             break
         default:
@@ -1133,16 +1251,16 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
             if(self.tableViewMode == "SCHEDULE"){
                 
-                    customerScheduleArray[_index].statusId = _status
+                customerScheduleArray[_index].statusId = _status
                 customerScheduleArray[_index].totalPrice = _price
                 customerScheduleArray[_index].totalCost = _cost
                 customerScheduleArray[_index].totalPriceRaw = _priceRaw
                 customerScheduleArray[_index].totalCostRaw = _costRaw
             }else{//HISTORY
                
-                    customerHistoryArray[_index].statusId = _status
-                    customerHistoryArray[_index].totalPrice = _price
-                    customerHistoryArray[_index].totalCost = _cost
+                customerHistoryArray[_index].statusId = _status
+                customerHistoryArray[_index].totalPrice = _price
+                customerHistoryArray[_index].totalCost = _cost
                 customerHistoryArray[_index].totalPriceRaw = _priceRaw
                 customerHistoryArray[_index].totalCostRaw = _costRaw
             }
@@ -1205,6 +1323,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     func refreshImages(_images:[Image], _scoreAdjust:Int){
         print("refreshImages")
         
+        self.noImagesLbl.isHidden = true
         for insertImage in _images{
             
             imageArray.insert(insertImage, at: 0)
@@ -1220,14 +1339,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     
-    func updateLikes(_index:Int, _liked:String, _likes:String){
-        print("update likes _liked: \(_liked)  _likes\(_likes)")
-        imageArray[_index].liked = _liked
-        imageArray[_index].likes = _likes
-        
-    }
-     
-  
+   
     
     
     

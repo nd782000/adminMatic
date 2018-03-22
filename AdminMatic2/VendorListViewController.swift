@@ -111,37 +111,7 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
                 print("Error deserializing JSON: \(error)")
             }
             
-            /*
-            // build sections based on first letter(json is already sorted alphabetically)
-            var index = 0;
-            var firstCharacterArray:[String] = [" "]
-            for i in 0 ..< self.names.count {
-                if(self.names[i] != ""){
-                print("stringToTest = \(self.names[i].uppercased())")
-                
-                
-                let stringToTest = self.names[i].uppercased()
-                let firstCharacter = String(stringToTest[stringToTest.startIndex])
-                
-                if(i == 0){
-                    firstCharacterArray.append(firstCharacter)
-                }
-                if !firstCharacterArray.contains(firstCharacter) {
-                    let title = firstCharacterArray[firstCharacterArray.count - 1]
-                    firstCharacterArray.append(firstCharacter)
-                    let newSection = (index: index, length: i - index, title: title)
-                    self.sections.append(newSection)
-                    index = i;
-                }
-                
-                }
-                if(i == self.names.count - 1){
-                    let title = firstCharacterArray[firstCharacterArray.count - 1]
-                    let newSection = (index: index, length: i - index + 1, title: title)
-                    self.sections.append(newSection)
-                }
-            }
- */
+            
             
             
             
@@ -213,17 +183,6 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
         let searchBarContainer = SearchBarContainerView(customSearchBar: searchController.searchBar)
         searchBarContainer.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 44)
         navigationItem.titleView = searchBarContainer
-        
-        
-        /*
-        searchController.searchBar.backgroundColor = UIColor.white
-        if #available(iOS 11.0, *) {
-            navigationItem.searchController = searchController
-        } else {
-            // Fallback on earlier versions
-            navigationItem.titleView = searchController?.searchBar
-        }
- */
         
         
         

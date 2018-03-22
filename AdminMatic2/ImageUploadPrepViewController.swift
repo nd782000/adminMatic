@@ -707,9 +707,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                self.draw(_indexPath: indexPath, _image: self.images[indexPath.row].image!)
             }))
             
-            actionSheet.addAction(UIAlertAction(title: "Cropping", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+           /* actionSheet.addAction(UIAlertAction(title: "Cropping", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
                 self.crop(_indexPath: indexPath, _image: self.images[indexPath.row].image!)
             }))
+ */
             
             actionSheet.addAction(UIAlertAction(title: "Remove", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
                 self.close(_indexPath: indexPath)
@@ -1545,7 +1546,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
  
                 
                     print("parameters = \(parameters)")
-                    layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/leadTask.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/leadTask.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
                         .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
                         .responseString { response in
                             print("new task response = \(response)")
@@ -1787,13 +1788,14 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         imageEdit = true;
     }
     
+    /*
     func crop(_indexPath:IndexPath,_image:UIImage){
         let imageCroppingViewController = ImageCroppingViewController(_indexPath:_indexPath, _image:_image)
         imageCroppingViewController.delegate = self
         navigationController?.pushViewController(imageCroppingViewController, animated: false )
         imageEdit = true;
     }
-    
+    */
     
     func close(_indexPath:IndexPath){
         

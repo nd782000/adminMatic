@@ -487,7 +487,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         
         print("parameters : \(parameters)")
                 
-                layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/new/workOrderItem.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/new/workOrderItem.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
                     .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
                     .responseString { response in
                         print("new item response = \(response)")

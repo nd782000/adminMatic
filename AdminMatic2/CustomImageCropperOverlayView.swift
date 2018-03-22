@@ -6,6 +6,7 @@
 //  Created by Artem Krachulov on 11/28/16.
 //  Copyright © 2016 Artem Krachulov. All rights reserved.
 //
+/*
 import Foundation
 import AKImageCropperView
 
@@ -53,3 +54,5 @@ final class CustomImageCropperOverlayView: AKImageCropperOverlayView {
         drawCycleInCornerView(view, inTouchView: touchView, forState: state)
     }
 }
+ */
+

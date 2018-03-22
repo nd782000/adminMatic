@@ -6,6 +6,9 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+
+
+/*
 import UIKit
 import AKImageCropperView
 
@@ -167,7 +170,7 @@ extension ImageCroppingViewController: AKImageCropperViewDelegate {
     
 }
 
-
+*/
 
 
 

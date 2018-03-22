@@ -51,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.3.2"
+    var appVersion:String = "1.3.5"
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
     var employeeListViewController:EmployeeListViewController!
@@ -64,10 +64,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var equipmentListViewController:EquipmentListViewController!
     var performanceViewController:PerformanceViewController!
     var leadListViewController:LeadListViewController!
-    var bugsListViewController:BugsListViewController!
+    var contractListViewController:ContractListViewController!
+    //var bugsListViewController:BugsListViewController!
     
     
-    var underConstructionViewController:UnderConstructionViewController!
+    //var underConstructionViewController:UnderConstructionViewController!
 
     
     var fieldsJson:JSON!
@@ -168,7 +169,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                     for i in 0 ..< jsonCount {
                         
                         
-                        let employee = Employee(_ID: self.employees["employees"][i]["ID"].stringValue, _name: self.employees["employees"][i]["name"].stringValue, _lname: self.employees["employees"][i]["lname"].stringValue, _fname: self.employees["employees"][i]["fname"].stringValue, _username: self.employees["employees"][i]["username"].stringValue, _pic: self.employees["employees"][i]["pic"].stringValue, _phone: self.employees["employees"][i]["phone"].stringValue, _depID: self.employees["employees"][i]["depID"].stringValue, _payRate: self.employees["employees"][i]["payRate"].stringValue, _appScore: self.employees["employees"][i]["appScore"].stringValue)
+                        let employee = Employee(_ID: self.employees["employees"][i]["ID"].stringValue, _name: self.employees["employees"][i]["name"].stringValue, _lname: self.employees["employees"][i]["lname"].stringValue, _fname: self.employees["employees"][i]["fname"].stringValue, _username: self.employees["employees"][i]["username"].stringValue, _pic: self.employees["employees"][i]["pic"].stringValue, _phone: self.employees["employees"][i]["phone"].stringValue, _depID: self.employees["employees"][i]["depID"].stringValue, _payRate: self.employees["employees"][i]["payRate"].stringValue, _appScore: self.employees["employees"][i]["appScore"].stringValue, _userLevel: self.employees["employees"][i]["level"].intValue, _userLevelName: self.employees["employees"][i]["levelName"].stringValue)
                         
                         self.employeeArray.append(employee)
                         
@@ -212,11 +213,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.equipmentListViewController = EquipmentListViewController()
         self.equipmentListViewController.delegate = self
         
-        self.bugsListViewController = BugsListViewController()
-        self.bugsListViewController.delegate = self
+        //self.bugsListViewController = BugsListViewController()
+        //self.bugsListViewController.delegate = self
         
-        self.underConstructionViewController = UnderConstructionViewController()
-        self.underConstructionViewController.delegate = self
+        self.contractListViewController = ContractListViewController()
+        self.contractListViewController.delegate = self
+        
+        //self.underConstructionViewController = UnderConstructionViewController()
+        //self.underConstructionViewController.delegate = self
         
         
         navigationController = UINavigationController(rootViewController: homeViewController)
@@ -290,7 +294,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             print(response.result)   // result of response serialization
             
             if let json = response.result.value {
-                print("JSON: \(json)")
+                print("Logged In Employee JSON: \(json)")
                 self.loggedInEmployeeJSON = JSON(json)
                 self.parseLoggedInEmployeeJSON()
             }
@@ -300,9 +304,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     
     
     func parseLoggedInEmployeeJSON(){
-        print("parseEmployeeJSON")
+        print("parseLoggedInEmployeeJSON")
         
-        let logInEmployee = Employee(_ID: self.loggedInEmployeeJSON["employees"][0]["ID"].stringValue, _name: self.loggedInEmployeeJSON["employees"][0]["name"].stringValue, _lname: self.loggedInEmployeeJSON["employees"][0]["lname"].stringValue, _fname: self.loggedInEmployeeJSON["employees"][0]["fname"].stringValue, _username: self.loggedInEmployeeJSON["employees"][0]["username"].stringValue, _pic: self.loggedInEmployeeJSON["employees"][0]["pic"].stringValue, _phone: self.loggedInEmployeeJSON["employees"][0]["phone"].stringValue, _depID: self.loggedInEmployeeJSON["employees"][0]["depID"].stringValue, _payRate: self.loggedInEmployeeJSON["employees"][0]["payRate"].stringValue, _appScore: self.loggedInEmployeeJSON["employees"][0]["appScore"].stringValue)
+        let logInEmployee = Employee(_ID: self.loggedInEmployeeJSON["employees"][0]["ID"].stringValue, _name: self.loggedInEmployeeJSON["employees"][0]["name"].stringValue, _lname: self.loggedInEmployeeJSON["employees"][0]["lname"].stringValue, _fname: self.loggedInEmployeeJSON["employees"][0]["fname"].stringValue, _username: self.loggedInEmployeeJSON["employees"][0]["username"].stringValue, _pic: self.loggedInEmployeeJSON["employees"][0]["pic"].stringValue, _phone: self.loggedInEmployeeJSON["employees"][0]["phone"].stringValue, _depID: self.loggedInEmployeeJSON["employees"][0]["depID"].stringValue, _payRate: self.loggedInEmployeeJSON["employees"][0]["payRate"].stringValue, _appScore: self.loggedInEmployeeJSON["employees"][0]["appScore"].stringValue, _userLevel: self.loggedInEmployeeJSON["employees"][0]["level"].intValue, _userLevelName: self.loggedInEmployeeJSON["employees"][0]["levelName"].stringValue)
+        
+        
+        //logInEmployee.userLevel = self.loggedInEmployeeJSON["employees"][0]["level"].intValue
+        //logInEmployee.userLevelName = self.loggedInEmployeeJSON["employees"][0]["levelName"].stringValue
+        
+        print("logInEmployee.userLevelName \(String(describing: logInEmployee.userLevelName))")
+        
         self.loggedInEmployee = logInEmployee
         self.homeViewController.layoutViews()
         
@@ -320,7 +331,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 window?.rootViewController = navigationController
                 window?.makeKeyAndVisible()
             }else{
-                requireLogIn(_destination: "customers")
+                requireLogIn(_destination: "customers", _vc:homeViewController)
             }
             
             break;
@@ -337,7 +348,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 window?.rootViewController = navigationController
                 window?.makeKeyAndVisible()
             }else{
-                requireLogIn(_destination: "vendors")
+                requireLogIn(_destination: "vendors", _vc:homeViewController)
             }
             break;
         case 3:
@@ -347,7 +358,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 window?.rootViewController = navigationController
                 window?.makeKeyAndVisible()
             }else{
-                requireLogIn(_destination: "items")
+                requireLogIn(_destination: "items", _vc:homeViewController)
             }
             break;
         case 4:
@@ -357,7 +368,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 window?.rootViewController = navigationController
                 window?.makeKeyAndVisible()
             }else{
-               requireLogIn(_destination: "schedule")
+               requireLogIn(_destination: "schedule", _vc:homeViewController)
            }
             break;
         case 5:
@@ -368,7 +379,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 window?.rootViewController = navigationController
                 window?.makeKeyAndVisible()
             }else{
-                requireLogIn(_destination: "performance")
+                requireLogIn(_destination: "performance", _vc:homeViewController)
             }
             break;
         case 6:
@@ -386,7 +397,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 window?.rootViewController = navigationController
                 window?.makeKeyAndVisible()
             }else{
-                requireLogIn(_destination: "images")
+                requireLogIn(_destination: "images", _vc:homeViewController)
             }
             break;
         case 7:
@@ -396,7 +407,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 window?.rootViewController = navigationController
                 window?.makeKeyAndVisible()
             }else{
-                requireLogIn(_destination: "equipment")
+                requireLogIn(_destination: "equipment", _vc:homeViewController)
             }
 
             
@@ -409,20 +420,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 window?.rootViewController = navigationController
                 window?.makeKeyAndVisible()
             }else{
-                requireLogIn(_destination: "leads")
+                requireLogIn(_destination: "leads", _vc:homeViewController)
             }
             
             
             break;
             
         case 9:
-            //print("Show  Bug List")
+            //print("Show  Contract List")
             if(loggedInEmployee != nil){
-                navigationController = UINavigationController(rootViewController: self.bugsListViewController)
+                navigationController = UINavigationController(rootViewController: self.contractListViewController)
                 window?.rootViewController = navigationController
                 window?.makeKeyAndVisible()
             }else{
-                requireLogIn(_destination: "bugs")
+                requireLogIn(_destination: "contracts", _vc:homeViewController)
             }
             
             
@@ -565,8 +576,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         return rootViewController
     }
     
-    func requireLogIn(_destination:String){
-        //print("requireLogIn")
+    func requireLogIn(_destination:String, _vc:UIViewController){
+        print("requireLogIn")
         if(loggedInEmployee == nil){
             let alertController = UIAlertController(title: "Log In", message: "You must log in to use \(_destination).", preferredStyle: UIAlertControllerStyle.alert)
             
@@ -575,13 +586,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 //print("OK")
                 //go to employee screen
                 
-                self.navigationController = UINavigationController(rootViewController: self.employeeListViewController)
-                self.window?.rootViewController = self.navigationController
-                self.window?.makeKeyAndVisible()
+                
+                if  _vc is HomeViewController {
+                    self.navigationController = UINavigationController(rootViewController: self.employeeListViewController)
+                    self.window?.rootViewController = self.navigationController
+                    self.window?.makeKeyAndVisible()
+                }
+                
+                
+                
                 
             }
             alertController.addAction(okAction)
-            homeViewController.present(alertController, animated: true, completion: nil)
+            _vc.present(alertController, animated: true, completion: nil)
         }
         
        
