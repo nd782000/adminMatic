@@ -91,7 +91,15 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     var taskID:String = ""
     var taskStatus:String = ""
     var albumID:String = ""
+    var contractID:String = ""
+    var contractItemID:String = ""
+    var contractTaskID:String = ""
+    
+    //var contractTaskSort:String = ""
+    
     var customerID:String = ""
+    var customerName:String = ""
+    
     var equipmentID:String = ""
     
     //data items
@@ -121,6 +129,8 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     var imageDetailViewController:ImageDetailViewController!
     
     var points:Int = 0
+    
+    var editsMade:Bool = false
     
 
     //init for wo attachments
@@ -154,6 +164,22 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.customerID = _customerID
         self.images = _images
     }
+    
+    
+    //init for contract tasks
+    init(_imageType:String,_contractItemID:String,_contractTaskID:String,_customerID:String,_images:[Image]){
+        super.init(nibName:nil,bundle:nil)
+        print("ImageUploadPrep init for contract tasks")
+        self.imageType = _imageType
+        self.contractItemID = _contractItemID
+        self.contractTaskID = _contractTaskID
+        self.customerID = _customerID
+        self.selectedID = _customerID
+        self.images = _images
+    }
+    
+    
+    
     
     //init for customer
     init(_imageType:String,_customerID:String,_images:[Image]){
@@ -219,6 +245,9 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             break
         case "Lead Task":
                 title = "Add/Update Lead Task"
+            break
+        case "Contract Task":
+            title = "Add/Update Contract Task"
             break
         case "Equipment":
             title = "Add Equipment Image"
@@ -397,11 +426,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             self.changeImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.changeImage), for: UIControlEvents.touchUpInside)
             self.view.addSubview(self.changeImageBtn)
             
-            /*
-            self.addImageBtn.titleLabel?.text = "Add Equipment Image"
-            self.addImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.addImages), for: UIControlEvents.touchUpInside)
-            self.view.addSubview(self.addImageBtn)
-            */
+           
             
             
             
@@ -412,7 +437,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             
         }else{
-            print("attachment / task / lead task / customer")
+            print("attachment / task / lead task / contract task / customer")
             
                 groupDescriptionPlaceHolder = "\(imageType!) description..."
             
@@ -431,7 +456,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
                  print("group images")
             
-            if(self.woID != "0" || self.taskID != "0" || self.leadTaskID != "0"){
+            if(self.woID != "0" || self.taskID != "0" || self.leadTaskID != "0" || self.contractTaskID != "0"){
                 self.groupDescriptionTxt.isEditable = true
             }else{
                 self.groupDescriptionTxt.isEditable = false
@@ -452,7 +477,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         
         
         //when to hide or show btns
-        if(self.attachmentID == "0" || self.taskID == "0" || self.leadTaskID == "0" || self.imageType == "Customer" || self.imageType == "Gallery"){
+        if(self.attachmentID == "0" || self.taskID == "0" || self.leadTaskID == "0" || self.imageType == "Customer" || self.imageType == "Gallery" || self.contractTaskID == "0"){
         //if(self.woID != "0" && self.imageType != "Customer"){
             //self.addImageBtn.isHidden = false
             print("new item")
@@ -580,7 +605,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             if(images.count > 0){
                 if(self.imageType != "Customer"){
-                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]-[imageCollection]-[addImageBtn]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                 }else{
                      self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                 }
@@ -645,12 +670,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        //if(self.images.count > 0){
-            return self.images.count
-        /*}else{
-            return 1
-        }*/
-        
+        return self.images.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -685,45 +705,111 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         if(self.images[indexPath.row].ID != "0" && self.images[indexPath.row].ID != ""){
             print("createdBy = \(currentCell.imageData.createdBy)")
             
-            imageDetailViewController = ImageDetailViewController(_image: currentCell.imageData)
-            imageDetailViewController.imageFullViewController.delegate = self
-            imageCollectionView?.deselectItem(at: indexPath, animated: true)
-            navigationController?.pushViewController(imageDetailViewController, animated: false )
-            imageDetailViewController.delegate = self
-            
-            currentImageIndex = indexPath.row
-           return
-        }
-        
-        
             
             
             
-            let actionSheet = UIAlertController(title: "Edit Image Options", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+            
+            var type:String!
+            var taskIDToDelete:String!
+            
+            switch imageType {
+            case "Gallery":
+                //title = "Upload to Gallery"
+                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
+                break
+            case "Customer":
+                //title = "Upload Customer Image"
+                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
+                break
+            case "Attachment":
+                //title = "Add/Update Attachment"
+                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
+                break
+            case "Task":
+                //title = "Add/Update Task"
+                type = "3"
+                taskIDToDelete = self.taskID
+                break
+            case "Lead Task":
+                //title = "Add/Update Lead Task"
+                type = "1"
+                taskIDToDelete = self.leadTaskID
+                break
+            case "Contract Task":
+                //title = "Add/Update Contract Task"
+                type = "2"
+                taskIDToDelete = self.contractTaskID
+                break
+            case "Equipment":
+                //title = "Add Equipment Image"
+                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
+                break
+                
+                
+            case .none:
+                print("bad switch case")
+            case .some(_):
+                print("bad switch case")
+            }
+            
+            
+            
+            
+            
+            
+            
+            
+            let actionSheet = UIAlertController(title: "Image Options", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
             actionSheet.view.backgroundColor = UIColor.white
             actionSheet.view.layer.cornerRadius = 5;
             
-            actionSheet.addAction(UIAlertAction(title: "Drawing", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
-               self.draw(_indexPath: indexPath, _image: self.images[indexPath.row].image!)
+            
+            actionSheet.addAction(UIAlertAction(title: "View Large Image", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+                
+                
+                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
+                
+                /*
+                 self.imageDetailViewController = ImageDetailViewController(_image: currentCell.imageData)
+                 self.imageDetailViewController.imageFullViewController.delegate = self
+                 self.imageCollectionView?.deselectItem(at: indexPath, animated: true)
+                 self.navigationController?.pushViewController(self.imageDetailViewController, animated: false )
+                 self.imageDetailViewController.delegate = self
+                 
+                 self.currentImageIndex = indexPath.row
+                */
+                
+                return
+                
             }))
             
-           /* actionSheet.addAction(UIAlertAction(title: "Cropping", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
-                self.crop(_indexPath: indexPath, _image: self.images[indexPath.row].image!)
+            actionSheet.addAction(UIAlertAction(title: "Delete Image Link", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+                
+                print("delete task image")
+                
+                
+                
+                //self.editsMade = true
+                
+                
+                
+                
+                
+                
+                self.deleteImage(_type: type, _taskID: taskIDToDelete, _imageID: currentCell.imageData.ID,_indexPath: indexPath)
+                
+              
+                
             }))
- */
             
-            actionSheet.addAction(UIAlertAction(title: "Remove", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
-                self.close(_indexPath: indexPath)
-            }))
-            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
-            }))
+            
+            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
             
             
             
             switch UIDevice.current.userInterfaceIdiom {
             case .phone:
                 self.present(actionSheet, animated: true, completion: nil)
-
                 break
             // It's an iPhone
             case .pad:
@@ -745,12 +831,145 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
                 // Uh, oh! What could it be?
             }
+            
+            
+            
+            
+            
+            
+            
+            
+            return
+            
+           
+        }
+        
+        
+            
+            
+            
+            let actionSheet = UIAlertController(title: "Edit Image Options", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+            actionSheet.view.backgroundColor = UIColor.white
+            actionSheet.view.layer.cornerRadius = 5;
+            
+            actionSheet.addAction(UIAlertAction(title: "Drawing", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+               self.draw(_indexPath: indexPath, _image: self.images[indexPath.row].image!)
+            }))
+            
+        
+            
+            actionSheet.addAction(UIAlertAction(title: "Remove", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+                self.close(_indexPath: indexPath)
+            }))
+            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
+            }))
+            
+            
+            
+            switch UIDevice.current.userInterfaceIdiom {
+            case .phone:
+                self.present(actionSheet, animated: true, completion: nil)
 
-            
-            
-            
+                break
+            // It's an iPhone
+            case .pad:
+                let nav = UINavigationController(rootViewController: actionSheet)
+                nav.modalPresentationStyle = UIModalPresentationStyle.popover
+                let popover = nav.popoverPresentationController as UIPopoverPresentationController?
+                actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
+                popover?.sourceView = self.view
+                popover?.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
+                
+                self.present(nav, animated: true, completion: nil)
+                break
+            // It's an iPad
+            case .unspecified:
+                break
+            default:
+                self.present(actionSheet, animated: true, completion: nil)
+                break
+                
+                // Uh, oh! What could it be?
+            }
+
+    }
+    
+    func viewImage(_indexPath:IndexPath,_image:Image){
+        
+        self.imageDetailViewController = ImageDetailViewController(_image: _image)
+        self.imageDetailViewController.imageFullViewController.delegate = self
+        self.imageCollectionView?.deselectItem(at: _indexPath, animated: true)
+        self.navigationController?.pushViewController(self.imageDetailViewController, animated: false )
+        self.imageDetailViewController.delegate = self
+        
+        self.currentImageIndex = _indexPath.row
         
         
+        
+    }
+    
+    func deleteImage(_type:String,_taskID:String,_imageID:String,_indexPath:IndexPath){
+        
+        //need userLevel greater then 1 to access this
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            
+            return
+        }
+        
+        
+        let alertController = UIAlertController(title: "Delete Image Link?", message: "Are you sure you want to delete the link to this image?", preferredStyle: UIAlertControllerStyle.alert)
+        let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+            (result : UIAlertAction) -> Void in
+            print("No")
+            return
+        }
+        
+        let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+            (result : UIAlertAction) -> Void in
+            print("Yes")
+            
+            var parameters:[String:String]
+            parameters = [
+                "type":_type,"ID":_taskID,"imageID":_imageID
+                
+            ]
+            // self.contractItem.tasks.remove(at: _indexPath.row)
+            
+            print("parameters = \(parameters)")
+            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/delete/imageLink.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+                response in
+                print(response.request ?? "")  // original URL request
+                //print(response.response ?? "") // URL response
+                //print(response.data ?? "")     // server data
+                print(response.result)   // result of response serialization
+                if let json = response.result.value {
+                    print("JSON: \(json)")
+                    
+                    //newItemStatus = JSON(json)["newItemStatus"].stringValue
+                    //self.newWoStatus = JSON(json)["newWoStatus"].stringValue
+                    self.images.remove(at: _indexPath.row)
+                    self.imageCollectionView.reloadData()
+                    //self.editsMade = true
+                    
+                    self.attachmentDelegate.updateTable(_points: 0)
+                    //return
+                }
+                }.responseString { response in
+                    //print("response = \(response)")
+            }
+            
+            
+            
+            
+            
+            
+        }
+        
+        
+        
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        self.present(alertController, animated: true, completion: nil)
     }
     
     @objc func addImages(){
@@ -761,8 +980,6 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         let n: Int! = self.navigationController?.viewControllers.count
         print("add images 2")
         switch (self.imageType) {
-            
-       
             
         case "Attachment":
             
@@ -854,8 +1071,17 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     
                     print("making image")
                     
+                    
                     let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
                     
+                    if self.taskID != "" || self.leadTaskID != "" || self.contractTaskID != ""{
+                        imageToAdd.description = self.groupDescriptionTxt.text!
+                        imageToAdd.customer = self.customerID
+                        imageToAdd.customerName = self.customerName
+                    }
+                        
+                        
+                        
                     imageToAdd.image = image
                     
                     
@@ -895,7 +1121,6 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         print("add images 4")
         
         var selectedAssets = [DKAsset]()
-        //var selectedImages:[Image] = [Image]()
         
         
         multiPicker.showsCancelButton = true
@@ -977,7 +1202,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
 
         if(self.imageType == "Gallery" || self.imageType == "Customer"){
             delegate.refreshImages(_images: _images, _scoreAdjust: _scoreAdjust)
-        }else if(self.imageType == "Task" || self.imageType == "Lead Task"){
+        }else if(self.imageType == "Task" || self.imageType == "Lead Task" || self.imageType == "Contract Task"){
             attachmentDelegate.updateTable(_points: (_scoreAdjust + points))
         }else if self.imageType == "Equipment"{
             //let image = Image(_path: self.equipment.pic!)
@@ -1276,10 +1501,16 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     func saveData(){
         print("Save Data")
         
-        
-        for image in imagesAdded{
-            image.name = self.imageType
+        if self.imageType != "Equipment"{
+            for image in imagesAdded{
+                image.name = "\(self.imageType!) Image"
+            }
+        }else{
+            for image in imagesAdded{
+                image.name = self.imageType!
+            }
         }
+        
         
         if(self.imageType == "Gallery"){
         print("Gallery")
@@ -1296,8 +1527,8 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     
                 }
                
-                
-                let parameters = ["name": groupNameString as AnyObject,"description": "" as AnyObject,"createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject]
+                let parameters:[String:String]
+                parameters = ["name": groupNameString,"description": "","createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId)] as! [String:String]
                 
                 layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/new/album.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
                     .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
@@ -1360,11 +1591,8 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
         }else{
             //tasks, lead tasks, wo attachments and customer
-            print("tasks, lead tasks, wo attachments and customer")
+            print("tasks, lead tasks, contract tasks, wo attachments and customer")
             
-            //for image in images{
-               // image.customer = self.selectedID
-            //}
             
             
                 print("grouped")
@@ -1416,7 +1644,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
                 print("parameters = \(parameters)")
                 
-                layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/fieldnote.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/fieldNote.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
                     .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
                     .responseString { response in
                         print("new field note response = \(response)")
@@ -1598,6 +1826,73 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             
           
+            }else if(self.imageType == "Contract Task"){
+                //Lead Task
+                
+                print("Contract Task Upload")
+                var parameters = [String : Any]()
+                
+                if(self.contractTaskID == "0"){
+                    //new leadTask needs to create leadTask ID first
+                    parameters = ["taskID":"0", "contractItemID":self.contractItemID, "taskDescription": groupDescString as AnyObject,"createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject]
+                }else{
+                    parameters = ["taskID":self.contractTaskID, "contractItemID":self.contractItemID, "taskDescription": groupDescString as AnyObject,"createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject]
+                }
+                
+                
+                print("parameters = \(parameters)")
+                layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contractTask.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                    .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+                    .responseString { response in
+                        print("new task response = \(response)")
+                    }
+                    
+                    .responseJSON(){
+                        response in
+                        
+                        ////print("JSON 1 \(json)")
+                        if let json = response.result.value {
+                            print("Task Json = \(json)")
+                            self.tasksJson = JSON(json)
+                            
+                            let newContractTaskID = self.tasksJson?["taskID"].stringValue
+                            
+                            // print("taskID = \(String(describing: taskID) ?? <#default value#>)")
+                            for image in self.imagesAdded{
+                                // image.taskID = taskID!
+                                image.contractTaskID = newContractTaskID!
+                                image.customer = self.customerID
+                                //image.woID = self.woID
+                            }
+                            
+                            //add appPoints
+                            self.points = (self.tasksJson?["scoreAdjust"].intValue)!
+                            //print("points = \(points)")
+                            if(self.points > 0){
+                                // self.appDelegate.showMessage(_message: "earned \(points) App Points!")
+                            }else if(self.points < 0){
+                                self.points = self.points * -1
+                                //self.appDelegate.showMessage(_message: "lost \(points) App Points!")
+                            }
+                        }
+                        if(self.imagesAdded.count > 0){
+                            let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                            imageUploadProgressViewController.uploadPrepDelegate = self
+                            self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
+                        }else{
+                            if((self.attachmentDelegate) != nil){
+                                self.attachmentDelegate.updateTable(_points: self.points)
+                            }
+                            self.imageAdded = false
+                            self.textEdited = false
+                            self.goBack()
+                        }
+                }
+                
+                
+                
+                
+                
             }else if(self.imageType == "Equipment"){
                 
                 for image in self.imagesAdded{
@@ -1639,8 +1934,8 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     let timeStamp = Int(timeInterval)
                     //, "cb":timeStamp as AnyObject
  */
-                    
-                    let parameters = ["name": groupNameString as AnyObject,"description": "" as AnyObject,"createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject]
+                    let parameters:[String:String]
+                    parameters = ["name": groupNameString,"description": "","createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId)] as! [String:String]
                     
                     layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/new/album.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
                         .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
@@ -1767,7 +2062,39 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             self.groupDescriptionTxt.text = groupDescriptionPlaceHolder
             self.groupDescriptionTxt.textColor = UIColor.lightGray
             self.textEdited = false
+        }else{
+            
+            if images.count > 0{
+                let alertController = UIAlertController(title: "Update Image Captions", message: "", preferredStyle: UIAlertControllerStyle.alert)
+                let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                    (result : UIAlertAction) -> Void in
+                    print("No")
+                }
+                
+                let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                    (result : UIAlertAction) -> Void in
+                    print("Yes")
+                    
+                   // self.addTask()
+                    
+                    //loop through images and add captions
+                    for image in self.images{
+                        image.description = self.groupDescriptionTxt.text
+                    }
+                    self.imageCollectionView.reloadData()
+                    
+                }
+                
+                alertController.addAction(cancelAction)
+                alertController.addAction(okAction)
+                self.present(alertController, animated: true, completion: nil)
+            }
+            
+            
+            
+            
         }
+        
     }
     
     
@@ -1882,6 +2209,14 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         
         
     }
+    
+    func showCustomerImages(_customer:String){
+        print("show customer images cust: \(_customer)")
+        
+       
+        
+    }
+    
     
     
     override func didReceiveMemoryWarning() {

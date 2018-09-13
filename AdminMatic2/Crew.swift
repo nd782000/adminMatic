@@ -24,7 +24,7 @@ class Crew {
     var color: String!
     var crewHead: String!
     
-    //var employeeArray:[Employee] = []
+    var employeeArray:[Employee] = []
     
     
     required init(_ID:String?, _name: String?, _status:String?,  _color:String?, _crewHead:String?) {
@@ -58,6 +58,26 @@ class Crew {
         
         
     }
+    
+    
+    init(_ID:String?, _name: String?) {
+        //print(json)
+        if _ID != nil {
+            self.ID = _ID
+        }else{
+            self.ID = ""
+        }
+        if _name != nil {
+            self.name = _name
+        }else{
+            self.name = ""
+        }
+        
+        
+        
+    }
+    
+    
 }
 
 

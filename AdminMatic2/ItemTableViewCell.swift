@@ -29,6 +29,15 @@ class ItemTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
        
         
+        
+        
+    }
+    
+    func layoutViews(){
+        
+        
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
         self.selectionStyle = .none
         
         nameLbl.translatesAutoresizingMaskIntoConstraints = false
@@ -49,11 +58,20 @@ class ItemTableViewCell: UITableViewCell {
         let viewsDictionary = ["name":nameLbl,"type":typeLbl,"price":priceLbl] as [String : Any]
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(14)]-5-[type]", options: [], metrics: nil, views: viewsDictionary))
-       
+        
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[type(150)][price(120)]-20-|", options: NSLayoutFormatOptions.alignAllTop, metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[name(250)]", options: [], metrics: nil, views: viewsDictionary))
         
+        
+        nameLbl.text = ""
+        typeLbl.text = ""
+        priceLbl.text = ""
+        
+        typeLbl.text = "\(item.type!) Type"
+        priceLbl.text = "$\(item.price!)/\(item.units!)"
+        nameLbl.text = item.name!
     }
+    
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

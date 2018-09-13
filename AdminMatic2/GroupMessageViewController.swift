@@ -33,11 +33,47 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     var batchOfTexts:[String] = [String]()
     var i = 0
     
+    
+    var employees:[Employee] = []
+    var mode:String?  //used for title to display "dept" or "crew"
+    
+    
+    
+    
+    
+    init(){
+        super.init(nibName:nil,bundle:nil)
+        //print("lead init \(_leadID)")
+    }
+    
+    //new from dept or crew view
+    init(_employees:[Employee],_mode:String){
+        super.init(nibName:nil,bundle:nil)
+        self.employees = _employees
+        self.mode = _mode
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         print("view did load")
         view.backgroundColor = layoutVars.backgroundColor
-        title = "Group Text"
+        
+        if employees.count > 0{
+            title = "\(self.mode!) Text"
+            //handleSelectVarious()
+        }else{
+            title = "Group Text"
+        }
+        
         
         //custom back button
         let backButton:UIButton = UIButton(type: UIButtonType.custom)
@@ -94,6 +130,13 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         self.employeeTableView.tableHeaderView = nil;
         self.employeeTableView.register(EmployeeTableViewCell.self, forCellReuseIdentifier: "cell")
         self.view.addSubview(self.employeeTableView)
+        
+        
+        
+        if employees.count > 0{
+            handleSelectVarious()
+        }
+        
         
         self.sendMessageBtn.addTarget(self, action: #selector(GroupMessageViewController.buildRecipientList), for: UIControlEvents.touchUpInside)
         self.view.addSubview(self.sendMessageBtn)
@@ -159,6 +202,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("You selected cell #\(indexPath.row)!")
+        
         if let cell = tableView.cellForRow(at: indexPath) {
             if(self.selectedStates[indexPath.row] == true){
                 cell.accessoryType = .none
@@ -169,8 +213,8 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
                 cell.isSelected = true
                 self.selectedStates[indexPath.row] = true
             }
-            
         }
+        
     }
     
     
@@ -205,7 +249,47 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     }
     
     
-    
+    func handleSelectVarious(){
+        for index in 0 ..< selectedStates.count {
+            selectedStates[index] = false
+        }
+        
+        for i in 0 ..<  self.employees.count{
+            for n in 0 ..<  self.appDelegate.employeeArray.count{
+                if appDelegate.employeeArray[n].ID == self.employees[i].ID {
+                    selectedStates[n] = true
+                }
+            }
+            
+        }
+        
+        /*
+            if self.employees[index] == nil{
+                selectedStates[index] = false
+            }else{
+                if appDelegate.employeeArray[index].ID == self.employees[index].ID {
+                    selectedStates[index] = true
+                }else{
+                    selectedStates[index] = false
+                }
+            }
+            
+        }
+        */
+        
+         self.employeeTableView.reloadData()
+        
+        /*
+        for index in 0 ..< selectedStates.count {
+            
+            
+            selectedStates[index] = false
+        }
+       
+ */
+        
+        
+    }
     
    
 

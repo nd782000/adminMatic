@@ -14,7 +14,7 @@ import SwiftyJSON
 import Nuke
 
 
-class ImageDetailViewController: UIViewController{
+class ImageDetailViewController: UIViewController, UIDocumentInteractionControllerDelegate{
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var delegate:ImageViewDelegate!
     var imageLikeDelegate:ImageLikeDelegate!
@@ -31,9 +31,9 @@ class ImageDetailViewController: UIViewController{
     
     var textView:UIView!
     
-    var likesBtn:Button = Button(titleText: "")
+    var likeBtn:Button = Button(titleText: "")
     var likesImageView:UIImageView = UIImageView()
-    var likesLbl:Label = Label()
+    var likesBtn:Button!
     
    // var liked = "0
     //var likes = 0
@@ -74,6 +74,8 @@ class ImageDetailViewController: UIViewController{
     var totalVotesLbl:Label = Label()
     var totalVotesValueLbl:Label = Label()
     */
+    
+    var documentController: UIDocumentInteractionController!
     
     
     init(_image:Image, _ID:String = "0"){
@@ -167,25 +169,6 @@ class ImageDetailViewController: UIViewController{
         
         activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
         activityView.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
-        //self.view.addSubview(activityView)
-        
-        
-        /*
-        self.likesView = UIView()
-        self.likesView.translatesAutoresizingMaskIntoConstraints = false
-        self.likesView.backgroundColor = layoutVars.backgroundColor
-        self.likesView.layer.opacity = 0.9
-        */
-        
-        //if(self.mode != "Top Image"){
-           // self.votesView.isHidden = true
-       // }
-        
-       // self.plusVoteBtn.addTarget(self, action: #selector(ImageDetailViewController.handlePlusVote), for: UIControlEvents.touchUpInside)
-        
-        //self.minusVoteBtn.addTarget(self, action: #selector(ImageDetailViewController.handleMinusVote), for: UIControlEvents.touchUpInside)
-        
-        
         
         
         
@@ -193,8 +176,8 @@ class ImageDetailViewController: UIViewController{
         self.textView.translatesAutoresizingMaskIntoConstraints = false
         self.textView.backgroundColor = UIColor(hex: 0x005100, op: 0.6)
         
-        self.likesBtn = Button(titleText: "")
-        self.likesBtn.backgroundColor = UIColor.clear
+        self.likeBtn = Button(titleText: "")
+        self.likeBtn.backgroundColor = UIColor.clear
         
         if(self.image.liked == "0"){
             self.likesImageView.image = UIImage(named:"unLiked.png")
@@ -204,28 +187,37 @@ class ImageDetailViewController: UIViewController{
         
         likesImageView.contentMode = .scaleAspectFill
         likesImageView.translatesAutoresizingMaskIntoConstraints = false
-        self.likesBtn.addTarget(self, action: #selector(ImageDetailViewController.handleLike), for: UIControlEvents.touchUpInside)
+        self.likeBtn.addTarget(self, action: #selector(ImageDetailViewController.handleLike), for: UIControlEvents.touchUpInside)
         
-        //self.textView.addSubview(self.likesImageView)
-        
-        self.likesLbl.text = "x\(self.image.likes)"
-        self.likesLbl.layer.opacity = 1.0
-        self.likesLbl.textColor = UIColor(hex: 0xffffff, op: 1.0)
-        //self.textView.addSubview(self.likesLbl)
-        
-
-        
-        
-       
-       // self.createdByLbl = Label(text: "\(self.image.createdBy!)")
-       // self.createdByLbl.textColor = UIColor.white
-        //self.createdByLbl.textAlignment = NSTextAlignment.right
-        
+      
         /*
-        self.customerLbl = Label(text: "\(self.image.customerName)")
-        self.customerLbl.textColor = UIColor.white
-        self.customerLbl.textAlignment = NSTextAlignment.right
+        self.likesBtn.text = "x\(self.image.likes)"
+        self.likesBtn.layer.opacity = 1.0
+        self.likesBtn.textColor = UIColor(hex: 0xffffff, op: 1.0)
         */
+        
+        self.likesBtn = Button()
+        self.likesBtn.translatesAutoresizingMaskIntoConstraints = false
+        self.likesBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
+        self.likesBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+        self.likesBtn.backgroundColor = UIColor.clear
+        self.likesBtn.titleLabel?.textColor = UIColor.white
+        
+        //self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControlState.normal)
+        
+        if self.image.likes == "1"{
+            self.likesBtn.setTitle("x\(self.image.likes) Like", for: UIControlState.normal)
+        }else{
+            self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControlState.normal)
+        }
+        
+        self.likesBtn.addTarget(self, action: #selector(ImageDetailViewController.showLikesList), for: UIControlEvents.touchUpInside)
+        
+        if self.image.likes == "0"{
+            self.likesBtn.isEnabled = false
+        }
+        
+        
         
         self.customerBtn = Button()
         self.customerBtn.translatesAutoresizingMaskIntoConstraints = false
@@ -309,7 +301,7 @@ class ImageDetailViewController: UIViewController{
             "backgroundImageView":self.backgroundImageView, "imageView":self.imageView, "textView":self.textView
             ] as [String:Any]
         
-        viewsDictionary2 = ["likesBtn":self.likesBtn, "likesLbl":self.likesLbl, "customerLbl":self.customerBtn, "descriptionLbl":self.descriptionLbl, "tagsLbl":self.tagsLbl
+        viewsDictionary2 = ["likeBtn":self.likeBtn, "likesBtn":self.likesBtn, "customerLbl":self.customerBtn, "descriptionLbl":self.descriptionLbl, "tagsLbl":self.tagsLbl
             ] as [String:Any]
         viewsDictionary3 = ["likesImage":self.likesImageView] as [String:Any]
         
@@ -320,15 +312,87 @@ class ImageDetailViewController: UIViewController{
     
     @objc func showCustomerView(){
         print("customer = \(image.customer)")
-        if(image.customer != "0"){
-            let customerViewController = CustomerViewController(_customerID: image.customer, _customerName: image.customerName, _imageView: true)
-            //let customerViewController = CustomerViewController(_customerID: image.customer,_customerName: image.customerName)
-            navigationController?.pushViewController(customerViewController, animated: false )
-            //customerViewController.showImages()
+        
+        
+        
+        let actionSheet = UIAlertController(title: "Customer Option", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        actionSheet.view.backgroundColor = UIColor.white
+        actionSheet.view.layer.cornerRadius = 5;
+        
+        
+        actionSheet.addAction(UIAlertAction(title: "Customer View", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            //print("show cam 1")
+            
+            if(self.image.customer != "0"){
+                let customerViewController = CustomerViewController(_customerID: self.image.customer, _customerName: self.image.customerName, _imageView: true)
+                //let customerViewController = CustomerViewController(_customerID: image.customer,_customerName: image.customerName)
+                self.navigationController?.pushViewController(customerViewController, animated: false )
+                //customerViewController.showImages()
+            }
+            
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "Customer Images", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            
+            self.delegate.showCustomerImages(_customer: self.image.customer)
+            self.goBack()
+          
+        }))
+        
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
+            
+           
+            
+        }))
+        
+        
+        switch UIDevice.current.userInterfaceIdiom {
+        case .phone:
+            self.present(actionSheet, animated: true, completion: nil)
+            break
+        // It's an iPhone
+        case .pad:
+            let nav = UINavigationController(rootViewController: actionSheet)
+            nav.modalPresentationStyle = UIModalPresentationStyle.popover
+            let popover = nav.popoverPresentationController as UIPopoverPresentationController!
+            actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
+            popover?.sourceView = self.view
+            popover?.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
+            
+            self.present(nav, animated: true, completion: nil)
+            break
+        // It's an iPad
+        case .unspecified:
+            break
+        default:
+            self.present(actionSheet, animated: true, completion: nil)
+            break
+            
+            // Uh, oh! What could it be?
         }
         
         
+        
+       
+        
+        
+        
+       
+        
+        
     }
+    
+    
+    @objc func showLikesList(){
+        print("show likes list w/ ID = \(image.ID)")
+        let imageLikesListViewController = ImageEmployeeLikesListViewController(_image: self.image)
+        self.navigationController?.pushViewController(imageLikesListViewController, animated: false )
+    }
+    
+    
+    
+    
     
     @objc func showFullScreenImage(_ sender: UITapGestureRecognizer){
         
@@ -417,15 +481,15 @@ class ImageDetailViewController: UIViewController{
         self.view.addSubview(activityView)
         self.view.addSubview(self.textView)
         
+        self.textView.addSubview(self.likeBtn)
+        
+        
         self.textView.addSubview(self.likesBtn)
-        
-        
-        self.textView.addSubview(self.likesLbl)
        // self.textView.addSubview(self.createdByLbl)
         //self.textView.addSubview(self.customerLbl)
         self.textView.addSubview(self.customerBtn)
         
-        self.likesBtn.addSubview(self.likesImageView)
+        self.likeBtn.addSubview(self.likesImageView)
         
        
 
@@ -458,12 +522,12 @@ class ImageDetailViewController: UIViewController{
             
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(40)]|", options: [], metrics: nil, views: viewsDictionary))
             
-            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likesBtn(30)][likesLbl(50)]-[customerLbl(250)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likeBtn(30)][likesBtn(80)]-[customerLbl]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
             
             
             
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likeBtn(30)]", options: [], metrics: nil, views: viewsDictionary2))
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesBtn(30)]", options: [], metrics: nil, views: viewsDictionary2))
-            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesLbl(30)]", options: [], metrics: nil, views: viewsDictionary2))
             
             
         } else {
@@ -480,10 +544,10 @@ class ImageDetailViewController: UIViewController{
           
             
             
-            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likesBtn(30)][likesLbl(50)]-[customerLbl(250)]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likeBtn(30)][likesBtn(80)]-[customerLbl]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
             
-            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesBtn(30)]-[descriptionLbl]-[tagsLbl(25)]-|", options: [], metrics: nil, views: viewsDictionary2))
-            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likesBtn(30)]-[descriptionLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likeBtn(30)]-[descriptionLbl]-[tagsLbl(25)]-|", options: [], metrics: nil, views: viewsDictionary2))
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likeBtn(30)]-[descriptionLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
 
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[descriptionLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tagsLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
@@ -492,11 +556,11 @@ class ImageDetailViewController: UIViewController{
         }
         
         
-        self.likesBtn.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[likesImage(30)]", options: [], metrics: nil, views: viewsDictionary3))
+        self.likeBtn.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[likesImage(30)]", options: [], metrics: nil, views: viewsDictionary3))
         
         
         
-        self.likesBtn.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[likesImage(30)]", options: [], metrics: nil, views: viewsDictionary3))
+        self.likeBtn.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[likesImage(30)]", options: [], metrics: nil, views: viewsDictionary3))
         
         
         
@@ -516,7 +580,8 @@ class ImageDetailViewController: UIViewController{
         print("handle Like")
         
         indicator = SDevIndicator.generate(self.view)!
-        let parameters = ["empID":self.appDelegate.loggedInEmployee?.ID as AnyObject, "imageID":self.image.ID as AnyObject]
+        let parameters:[String:String]
+        parameters = ["empID":self.appDelegate.loggedInEmployee?.ID, "imageID":self.image.ID] as! [String : String]
         
         
         if(self.image.liked == "0"){
@@ -543,12 +608,23 @@ class ImageDetailViewController: UIViewController{
                         print("JSON: \(json)")
                         let returnJSON = JSON(json)
                         self.image.likes = returnJSON["newLikes"].stringValue
-                        self.likesLbl.text = "x\(self.image.likes)"
+                        //self.likesBtn.text = "x\(self.image.likes)"
+                        if self.image.likes == "1"{
+                            self.likesBtn.setTitle("x\(self.image.likes) Like", for: UIControlState.normal)
+                        }else{
+                            self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControlState.normal)
+                        }
                         self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: returnJSON["newLikes"].stringValue)
                         
                     }
                     
                     self.indicator.dismissIndicator()
+                    
+                    if self.image.likes == "0"{
+                        self.likesBtn.isEnabled = false
+                    }else{
+                        self.likesBtn.isEnabled = true
+                    }
             }
             
             
@@ -584,12 +660,25 @@ class ImageDetailViewController: UIViewController{
                         print("JSON: \(json)")
                         let returnJSON = JSON(json)
                         self.image.likes = returnJSON["newLikes"].stringValue
-                        self.likesLbl.text = "x\(self.image.likes)"
+                        //self.likesBtn.text = "x\(self.image.likes)"
+                        //self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControlState.normal)
+                        if self.image.likes == "1"{
+                            self.likesBtn.setTitle("x\(self.image.likes) Like", for: UIControlState.normal)
+                        }else{
+                            self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControlState.normal)
+                        }
+                        
                         self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: returnJSON["newLikes"].stringValue)
                         
                     }
                     
                     self.indicator.dismissIndicator()
+                    
+                    if self.image.likes == "0"{
+                        self.likesBtn.isEnabled = false
+                    }else{
+                        self.likesBtn.isEnabled = true
+                    }
             }
 
             
@@ -605,6 +694,45 @@ class ImageDetailViewController: UIViewController{
         
         
     }
+    
+    
+    /*
+    //instagram sharing
+    
+    func shareInstagram(_ sender: Any) {
+        
+        DispatchQueue.main.async {
+            
+            //Share To Instagram:
+            let instagramURL = URL(string: "instagram://app")
+            if UIApplication.shared.canOpenURL(instagramURL!) {
+                
+                let imageData = UIImageJPEGRepresentation(self.image.image!, 100)
+                let writePath = (NSTemporaryDirectory() as NSString).appendingPathComponent("instagram.igo")
+                
+                do {
+                    try imageData?.write(to: URL(fileURLWithPath: writePath), options: .atomic)
+                } catch {
+                    print(error)
+                }
+                
+                let fileURL = URL(fileURLWithPath: writePath)
+                self.documentController = UIDocumentInteractionController(url: fileURL)
+                self.documentController.delegate = self
+                self.documentController.uti = "com.instagram.exlusivegram"
+                
+                if UIDevice.current.userInterfaceIdiom == .phone {
+                    self.documentController.presentOpenInMenu(from: self.view.bounds, in: self.view, animated: true)
+                } else {
+                   // self.documentController.presentOpenInMenu(from: self.IGBarButton, animated: true)
+                }
+            } else {
+                print(" Instagram is not installed ")
+            }
+        }
+    }
+
+*/
     
     
     

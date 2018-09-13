@@ -146,8 +146,8 @@ class AttachmentListViewController: ViewControllerWithMenu, UITextFieldDelegate,
         let timeStamp = Int(timeInterval)
         //, "cb":timeStamp as AnyObject
  */
-        
-        let parameters = ["woID": self.workOrderID as AnyObject]
+        let parameters:[String:String]
+        parameters = ["woID": self.workOrderID]
         
         print("parameters = \(parameters)")
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/fieldNotes.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)

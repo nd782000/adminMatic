@@ -13,6 +13,7 @@ import Foundation
 class WoItem {
     
     var ID: String!
+    var name: String!
     var type: String!
     var sort: String!
     var input: String!
@@ -34,6 +35,12 @@ class WoItem {
     
     var vendors: [Vendor] = []
     
+    var woID: String!
+    var woTitle: String!
+    
+    
+    var contractID: String!
+    var contractTitle: String!
     
     
     
@@ -120,4 +127,78 @@ class WoItem {
         
         
     }
+    
+    
+    
+    init(_ID: String?,_name: String?,_woID: String?,_woTitle: String?) {
+        //print(json)
+        if _ID != nil {
+            self.ID = _ID
+        }else{
+            self.ID = ""
+        }
+        
+        if _name != nil {
+            self.name = _name
+        }else{
+            self.name = ""
+        }
+        
+        if _woID != nil {
+            self.woID = _woID
+        }else{
+            self.woID = ""
+        }
+        
+        if _woTitle != nil {
+            self.woTitle = _woTitle
+        }else{
+            self.woTitle = ""
+        }
+        
+        
+        
+        
+    }
+    
+    
+    
+    init(_ID: String?,_name: String?,_contractID: String?,_contractTitle: String?) {
+        //print(json)
+        if _ID != nil {
+            self.ID = _ID
+        }else{
+            self.ID = ""
+        }
+        
+        if _name != nil {
+            self.name = _name
+        }else{
+            self.name = ""
+        }
+        
+        if _contractID != nil {
+            self.contractID = _contractID
+        }else{
+            self.contractID = ""
+        }
+        
+        if _contractTitle != nil {
+            self.contractTitle = _contractTitle
+        }else{
+            self.contractTitle = ""
+        }
+        
+        
+        
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
 }

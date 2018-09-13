@@ -12,6 +12,7 @@ import UIKit
 class ScheduleTableViewCell: UITableViewCell {
     var layoutVars:LayoutVars = LayoutVars()
     var workOrder:WorkOrder!
+    var lead:Lead?
     var dateLbl: UILabel!
     var customerLbl: UILabel!
     var firstItemLbl: UILabel!
@@ -123,6 +124,26 @@ class ScheduleTableViewCell: UITableViewCell {
         
         print("layout views 4")
             switch (_scheduleMode){
+            case "LEAD":
+                
+                contentView.addSubview(dateLbl)
+                contentView.addSubview(customerLbl)
+                contentView.addSubview(firstItemLbl)
+                //contentView.addSubview(chargeLbl)
+                //contentView.addSubview(priceLbl)
+                //contentView.addSubview(priorityLbl)
+                //contentView.addSubview(depthLbl)
+                // contentView.addSubview(monitoringLbl)
+                // contentView.addSubview(remainingQtyLbl)
+                
+                
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[dateLbl]-[firstItemLbl]", options: [], metrics: nil, views: viewsDictionary))
+               // contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-42-[chargeLbl(25)]-[profitBarView(100)]-[priceLbl]", options: [], metrics: nil, views: viewsDictionary))
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[dateLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[firstItemLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
+                
+                break
                 case "CUSTOMER":
                     
                     contentView.addSubview(dateLbl)

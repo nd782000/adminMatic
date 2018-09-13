@@ -16,7 +16,6 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
-    //var scrollView: UIScrollView!
     var json:JSON!
     
     
@@ -25,7 +24,6 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     var delegate:LeadListDelegate!
     var editDelegate:EditLeadDelegate!
     
-    //var infoView: UIView! = UIView() //container view for all upper elements
     
     var tableViewMode:String = ""
     
@@ -33,7 +31,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     var statusIcon:UIImageView = UIImageView()
     var statusTxtField:PaddedTextField!
     var statusPicker: Picker!
-    var statusArray = ["In Progress","Done","Cancel","Waiting"]
+    var statusArray = ["Not Started", "In Progress","Done","Cancel","Waiting"]
     
     
     
@@ -86,8 +84,8 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     var repResultsTableView:TableView = TableView()
     var repSearchResults:[String] = []
     
-    var repIDs = [String]()
-    var repNames = [String]()
+    //var repIDs = [String]()
+    //var repNames = [String]()
     
     //requested by customer switch
     var reqByCustLbl:GreyLabel!
@@ -109,11 +107,14 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         //for an empty lead to start things off
     }
     
+    
+    
+    
     //new from customer page
     init(_customer:String,_customerName:String){
         super.init(nibName:nil,bundle:nil)
         
-         self.lead =  Lead(_ID: "0", _statusID: "0",_scheduleType: "", _date: "", _time: "", _statusName: "", _customer: _customer, _customerName: _customerName, _urgent: "0", _description: "", _rep: "", _repName: "", _deadline: "", _requestedByCust: "0", _createdBy: appDelegate.loggedInEmployee?.ID)
+        self.lead =  Lead(_ID: "0", _statusID: "1",_scheduleType: "", _date: "", _time: "", _statusName: "", _customer: _customer, _customerName: _customerName, _urgent: "0", _description: "", _rep: "", _repName: "", _deadline: "", _requestedByCust: "0", _createdBy: appDelegate.loggedInEmployee?.ID, _daysAged: "0")
         
     }
     
@@ -191,6 +192,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
             }
         }
         
+        /*
         for employee in appDelegate.employeeArray {
             if let id = employee.ID{
                 self.repIDs.append(id)
@@ -199,6 +201,8 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
                 self.repNames.append(name)
             }
         }
+ */
+        
         
     }
     
@@ -208,13 +212,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         if(self.lead == nil){
             title =  "New Lead"
             submitButton = UIBarButtonItem(title: "Submit", style: .plain, target: self, action: #selector(NewEditLeadViewController.submit))
-           // let date = Date()
-            //let formatter = DateFormatter()
-            //formatter.dateFormat = "YYYY-MM-DD"
-            //let timeFormatter = DateFormatter()
-            //timeFormatter.dateFormat = "HH:MM"
+           
             
-            self.lead =  Lead(_ID: "0", _statusID: "0",_scheduleType: "", _date: "", _time: "", _statusName: "", _customer: "", _customerName: "", _urgent: "0", _description: "", _rep: "", _repName: "", _deadline: "", _requestedByCust: "0", _createdBy: appDelegate.loggedInEmployee?.ID)
+            self.lead =  Lead(_ID: "0", _statusID: "1",_scheduleType: "", _date: "", _time: "", _statusName: "", _customer: "", _customerName: "", _urgent: "0", _description: "", _rep: "", _repName: "", _deadline: "", _requestedByCust: "0", _createdBy: appDelegate.loggedInEmployee?.ID, _daysAged: "0")
         }else{
             if(self.lead.ID == "0"){
                 //coming from customer page
@@ -240,11 +240,10 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         self.statusPicker.tag = 1
         self.statusPicker.delegate = self
         //set status
-        self.statusPicker.selectRow(Int(lead.statusId)!, inComponent: 0, animated: false)
+        self.statusPicker.selectRow(Int(lead.statusId)! - 1, inComponent: 0, animated: false)
         self.statusTxtField = PaddedTextField(placeholder: "")
         self.statusTxtField.textAlignment = NSTextAlignment.center
         self.statusTxtField.translatesAutoresizingMaskIntoConstraints = false
-        //self.statusTxtField.tag = 1
         self.statusTxtField.delegate = self
         self.statusTxtField.tintColor = UIColor.clear
         self.statusTxtField.backgroundColor = UIColor.clear
@@ -266,11 +265,18 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         //customer select
         customerSearchBar.placeholder = "Customer..."
         customerSearchBar.translatesAutoresizingMaskIntoConstraints = false
-        customerSearchBar.layer.cornerRadius = 4
+        //customerSearchBar.layer.cornerRadius = 4
+        
+        customerSearchBar.layer.borderWidth = 1
+        customerSearchBar.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
+        customerSearchBar.layer.cornerRadius = 4.0
+        customerSearchBar.inputView?.layer.borderWidth = 0
+        
         customerSearchBar.clipsToBounds = true
-        customerSearchBar.backgroundColor = UIColor.clear
-        customerSearchBar.barTintColor = UIColor.clear
-        customerSearchBar.searchBarStyle = UISearchBarStyle.minimal
+        
+        customerSearchBar.backgroundColor = UIColor.white
+        customerSearchBar.barTintColor = UIColor.white
+        customerSearchBar.searchBarStyle = UISearchBarStyle.default
         customerSearchBar.delegate = self
         customerSearchBar.tag = 1
         self.view.addSubview(customerSearchBar)
@@ -314,11 +320,10 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         self.scheduleTypePicker = Picker()
         self.scheduleTypePicker.delegate = self
         self.scheduleTypePicker.tag = 2
-        self.scheduleTypeTxtField = PaddedTextField(placeholder: "Schedule Type")
+        self.scheduleTypeTxtField = PaddedTextField(placeholder: "Schedule Type...")
         self.scheduleTypeTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.scheduleTypeTxtField.delegate = self
         self.scheduleTypeTxtField.inputView = scheduleTypePicker
-        //self.scheduleTypeTxtField.layer.borderWidth = 0
         self.view.addSubview(self.scheduleTypeTxtField)
         
         
@@ -350,12 +355,12 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         //date
         aptDatePickerView = DatePicker()
         aptDatePickerView.datePickerMode = UIDatePickerMode.date
-        self.aptDateTxtField = PaddedTextField()
+        
+        self.aptDateTxtField = PaddedTextField(placeholder: "Date...")
         self.aptDateTxtField.returnKeyType = UIReturnKeyType.next
         self.aptDateTxtField.delegate = self
         self.aptDateTxtField.tag = 8
         self.aptDateTxtField.inputView = self.aptDatePickerView
-        self.aptDateTxtField.attributedPlaceholder = NSAttributedString(string:aptDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.aptDateTxtField)
         
         let aptDateToolBar = UIToolbar()
@@ -372,14 +377,12 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         //time
         aptTimePickerView = DatePicker()
         aptTimePickerView.datePickerMode = UIDatePickerMode.time
-        //aptTimePickerView.dateFormat = "HH:MM a"
         
-        self.aptTimeTxtField = PaddedTextField()
+        self.aptTimeTxtField = PaddedTextField(placeholder: "Time...")
         self.aptTimeTxtField.returnKeyType = UIReturnKeyType.next
         self.aptTimeTxtField.delegate = self
         self.aptTimeTxtField.tag = 8
         self.aptTimeTxtField.inputView = self.aptTimePickerView
-        self.aptTimeTxtField.attributedPlaceholder = NSAttributedString(string:aptDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.aptTimeTxtField)
         
         let aptTimeToolBar = UIToolbar()
@@ -406,7 +409,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
             self.aptTimeTxtField.alpha = 1.0
             
             
-            let currentDate = Date()  //5 -  get the current date
+            //let currentDate = Date()  //5 -  get the current date
             print("lead.date = \(lead.date)")
             //print("lead.dateRaw = \(lead.dateRaw)")
             if(lead.date != "" && lead.date != "null"){
@@ -419,7 +422,6 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
             
             
             if(lead.time != "" && lead.time != "null"){
-                //let time = timeFormatter.date(from: lead.time!)
                 self.aptTimeTxtField.text = lead.time
                 
 
@@ -449,12 +451,12 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         deadlinePickerView.datePickerMode = UIDatePickerMode.date
         
         
-        self.deadlineTxtField = PaddedTextField()
+        //self.deadlineTxtField = PaddedTextField()
+        self.deadlineTxtField = PaddedTextField(placeholder: "Date...")
         self.deadlineTxtField.returnKeyType = UIReturnKeyType.next
         self.deadlineTxtField.delegate = self
         self.deadlineTxtField.tag = 8
         self.deadlineTxtField.inputView = self.deadlinePickerView
-        self.deadlineTxtField.attributedPlaceholder = NSAttributedString(string:aptDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.deadlineTxtField)
         
         let deadlineToolBar = UIToolbar()
@@ -470,7 +472,6 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         
         print("deadline = \(lead.deadline)")
         if(lead.deadline != "" && lead.deadline != "null"){
-            //let date = dateFormatter.date(from: lead.deadline)
             self.deadlineTxtField.text = lead.deadline
         }
         
@@ -488,6 +489,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
             urgentSwitch.isOn = false
         }
         urgentSwitch.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        
         urgentSwitch.addTarget(self, action: #selector(NewEditLeadViewController.urgentSwitchValueDidChange(sender:)), for: .valueChanged)
         self.view.addSubview(urgentSwitch)
         
@@ -501,11 +505,23 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         
         repSearchBar.placeholder = "Sales Rep..."
         repSearchBar.translatesAutoresizingMaskIntoConstraints = false
-        repSearchBar.layer.cornerRadius = 4
+        
+        
+        
+        
+        
+        repSearchBar.layer.borderWidth = 1
+        repSearchBar.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
+        repSearchBar.layer.cornerRadius = 4.0
+        repSearchBar.inputView?.layer.borderWidth = 0
+        
         repSearchBar.clipsToBounds = true
-        repSearchBar.backgroundColor = UIColor.clear
-        repSearchBar.barTintColor = UIColor.clear
-        repSearchBar.searchBarStyle = UISearchBarStyle.minimal
+        
+        repSearchBar.backgroundColor = UIColor.white
+        repSearchBar.barTintColor = UIColor.white
+        repSearchBar.searchBarStyle = UISearchBarStyle.default
+        
+        
         repSearchBar.delegate = self
         repSearchBar.tag = 2
         self.view.addSubview(repSearchBar)
@@ -521,7 +537,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         repSearchBar.inputAccessoryView = repToolBar
         
 
-        if(self.repIDs.count == 0){
+        if(self.appDelegate.salesRepIDArray.count == 0){
             repSearchBar.isUserInteractionEnabled = false
         }
         
@@ -549,6 +565,8 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         }else{
             reqByCustSwitch.isOn = false
         }
+        
+        
         reqByCustSwitch.translatesAutoresizingMaskIntoConstraints = false
         reqByCustSwitch.addTarget(self, action: #selector(NewEditLeadViewController.reqByCustSwitchValueDidChange(sender:)), for: .valueChanged)
         self.view.addSubview(reqByCustSwitch)
@@ -562,6 +580,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         self.view.addSubview(self.descriptionLbl)
         
         self.descriptionView = UITextView()
+        self.descriptionView.layer.borderWidth = 1
+        self.descriptionView.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
+        self.descriptionView.layer.cornerRadius = 4.0
         self.descriptionView.returnKeyType = .done
         self.descriptionView.text = self.lead.description
         self.descriptionView.font = layoutVars.smallFont
@@ -617,18 +638,18 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
 
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scheduleTypeLbl][scheduleTypeTxtField(208)]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scheduleTypeLbl][scheduleTypeTxtField(208)]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[aptLbl][aptDateTxtField(100)]-[aptTimeTxtField(100)]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[aptLbl][aptDateTxtField(100)]-[aptTimeTxtField(100)]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[deadlineLbl][deadlineTxtField(100)]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[urgentLbl][urgentSwitch]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[deadlineLbl][deadlineTxtField(100)]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[urgentLbl][urgentSwitch]-|", options: [], metrics: metricsDictionary, views: dictionary))
 
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repLbl(80)]-[repSearchBar]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repLbl(80)]-10-[repSearchBar]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[reqByCustLbl][reqByCustSwitch]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[reqByCustLbl][reqByCustSwitch]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[descriptionLbl]-|", options: [], metrics: metricsDictionary, views: dictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[descriptionView]-|", options: [], metrics: metricsDictionary, views: dictionary))
@@ -636,13 +657,17 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-90-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-90-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-90-[customerSearchBar(40)][scheduleTypeLbl(40)][aptLbl(40)][deadlineLbl(40)][urgentLbl(40)][repLbl(40)][reqByCustLbl(40)][descriptionLbl(40)][descriptionView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-10-[scheduleTypeLbl(40)]-[aptLbl(40)]-[deadlineLbl(40)]-[urgentLbl(40)]-[repLbl(40)]-10-[reqByCustLbl(40)]-[descriptionLbl(40)][descriptionView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-90-[customerSearchBar(40)][customerTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-90-[customerSearchBar(40)][scheduleTypeLbl(40)][aptLbl(40)][deadlineLbl(40)][urgentLbl(40)][repLbl(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)][customerTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-10-[scheduleTypeLbl(40)]-[aptLbl(40)]-[deadlineLbl(40)]-[urgentLbl(40)]-[repLbl(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-10-[scheduleTypeTxtField(40)]-[aptDateTxtField(40)]-[deadlineTxtField(40)]-[urgentLbl(40)]-[repLbl(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-10-[scheduleTypeTxtField(40)]-[aptTimeTxtField(40)]-[deadlineTxtField(40)]-[urgentSwitch(40)]-[repSearchBar(40)]-10-[reqByCustSwitch(40)]-[descriptionLbl(40)][descriptionView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         
  
@@ -718,6 +743,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     
      func textViewDidEndEditing(_ textView: UITextView) {
         print("textFieldDidEndEditing")
+        editsMade = true
          if(self.view.frame.origin.y < 0){
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.frame.origin.y += 250
@@ -746,7 +772,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         print("pickerview tag: \(pickerView.tag)")
         var count:Int = 0
         if(pickerView.tag == 1){
-            count = self.statusArray.count - 2
+            count = self.statusArray.count
         }else{
             count = self.scheduleTypeArray.count
         }
@@ -768,15 +794,18 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
             rowString = statusArray[row]
             switch row {
             case 0:
-                myImageView.image = UIImage(named:"inProgressStatus.png")
+                myImageView.image = UIImage(named:"unDoneStatus.png")
                 break
             case 1:
-                myImageView.image = UIImage(named:"doneStatus.png")
+                myImageView.image = UIImage(named:"inProgressStatus.png")
                 break
             case 2:
-                myImageView.image = UIImage(named:"cancelStatus.png")
+                myImageView.image = UIImage(named:"doneStatus.png")
                 break
             case 3:
+                myImageView.image = UIImage(named:"cancelStatus.png")
+                break
+            case 4:
                 myImageView.image = UIImage(named:"waitingStatus.png")
                 break
             default:
@@ -809,7 +838,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         print("pickerview tag: \(pickerView.tag)")
         if(pickerView.tag == 1){
             //self.statusValueToUpdate = "\(row + 1)"
-            lead.statusId = "\(row)"
+            lead.statusId = "\(row + 1)"
             
         }else{
             //self.scheduleTypeValueToUpdate = "\(row + 1)"
@@ -846,7 +875,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     
     @objc func handleStatusChange(){
         self.statusTxtField.resignFirstResponder()
-        lead.statusId = "\(self.statusPicker.selectedRow(inComponent: 0))"
+        lead.statusId = "\(self.statusPicker.selectedRow(inComponent: 0) + 1)"
         //self.statusValue = "\(self.statusPicker.selectedRow(inComponent: 0))"
         setStatus(status: lead.statusId)
         editsMade = true
@@ -855,24 +884,28 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     func setStatus(status: String) {
         print("set status \(status)")
         switch (status) {
-        case "0":
-            let statusImg = UIImage(named:"inProgressStatus.png")
-            statusIcon.image = statusImg
-            break;
         case "1":
-            let statusImg = UIImage(named:"doneStatus.png")
+            let statusImg = UIImage(named:"unDoneStatus.png")
             statusIcon.image = statusImg
             break;
         case "2":
-            let statusImg = UIImage(named:"cancelStatus.png")
+            let statusImg = UIImage(named:"inProgressStatus.png")
             statusIcon.image = statusImg
             break;
         case "3":
+            let statusImg = UIImage(named:"doneStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "4":
+            let statusImg = UIImage(named:"cancelStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "5":
             let statusImg = UIImage(named:"waitingStatus.png")
             statusIcon.image = statusImg
             break;
         default:
-            let statusImg = UIImage(named:"inProgressStatus.png")
+            let statusImg = UIImage(named:"unDoneStatus.png")
             statusIcon.image = statusImg
             break;
         }
@@ -996,7 +1029,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         default://Rep
             print("Rep filter")
             repSearchResults = []
-            self.repSearchResults = self.repNames.filter({( aRep: String ) -> Bool in
+            self.repSearchResults = self.appDelegate.salesRepNameArray.filter({( aRep: String ) -> Bool in
                 return (aRep.lowercased().range(of: repSearchBar.text!.lowercased(), options:.regularExpression) != nil)})
             self.repResultsTableView.reloadData()
             
@@ -1129,15 +1162,15 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
             
             
             return cell
-            break
+            //break
         case "REP":
             let searchString = self.repSearchBar.text!.lowercased()
             let cell:CustomerTableViewCell = repResultsTableView.dequeueReusableCell(withIdentifier: "repCell") as! CustomerTableViewCell
            
             cell.nameLbl.text = self.repSearchResults[indexPath.row]
             cell.name = self.repSearchResults[indexPath.row]
-            if let i = self.repNames.index(of: cell.nameLbl.text!) {
-                cell.id = self.repIDs[i]
+            if let i = self.appDelegate.salesRepNameArray.index(of: cell.nameLbl.text!) {
+                cell.id = self.appDelegate.salesRepIDArray[i]
             } else {
                 cell.id = ""
             }
@@ -1164,7 +1197,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
             
             
             return cell
-            break
+            //break
         
         default://CUSTOMER
             
@@ -1266,6 +1299,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         //customer check
         if(lead.customer == ""){
             print("select a customer")
+            playErrorSound()
             simpleAlert(_vc: self, _title: "Incomplete Lead", _message: "Select a Customer")
             return false
         }
@@ -1273,6 +1307,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         //type check
         if(lead.scheduleType == ""){
             print("select a schedule type")
+            playErrorSound()
             simpleAlert(_vc: self, _title: "Incomplete Lead", _message: "Select a Schedule Type")
             return false
         }
@@ -1280,6 +1315,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         if(lead.scheduleType == "1"){
             if(lead.date == "" || lead.date == "null"){
                 print("select an apt date")
+                playErrorSound()
                 simpleAlert(_vc: self, _title: "Incomplete Lead", _message: "Select an Appointment Date")
                 return false
             }
@@ -1291,6 +1327,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         //rep check
         if(lead.rep == ""){
             print("select a sales rep")
+            playErrorSound()
             simpleAlert(_vc: self, _title: "Incomplete Lead", _message: "Select a Sales Rep.")
             return false
         }
@@ -1299,6 +1336,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         //description check
         if(descriptionView.text.count == 0){
             print("add a description")
+            playErrorSound()
             simpleAlert(_vc: self, _title: "Incomplete Lead", _message: "Provide a General Description")
             return false
         }
@@ -1313,7 +1351,10 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     
     @objc func submit(){
         print("submit lead")
-        
+        var newLead:Bool = false
+        if self.lead.ID == "0"{
+            newLead = true
+        }
         
         if(!validateFields()){
             print("didn't pass validation")
@@ -1326,7 +1367,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
         //reset task array
-        let parameters = ["leadID": self.lead.ID as AnyObject, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "custID": self.lead.customer as AnyObject, "urgent": self.lead.urgent as AnyObject,"repID": self.lead.rep, "requestedByCust": self.lead.requestedByCust as AnyObject, "description": lead.description  as AnyObject, "timeType": self.lead.scheduleType as AnyObject, "date": self.lead.date as AnyObject, "time": self.lead.time as AnyObject, "deadline": self.lead.deadline as AnyObject, "status": self.lead.statusId as AnyObject] as [String : Any]
+        
+        let parameters:[String:String]
+        parameters = ["leadID": self.lead.ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "custID": self.lead.customer, "urgent": self.lead.urgent,"repID": self.lead.rep, "requestedByCust": self.lead.requestedByCust, "description": lead.description , "timeType": self.lead.scheduleType, "date": self.lead.date, "time": self.lead.time, "deadline": self.lead.deadline, "status": self.lead.statusId] as! [String : String]
         print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/lead.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
@@ -1338,19 +1381,36 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
                 response in
                 if let json = response.result.value {
                     print("JSON: \(json)")
+                    playSaveSound()
                     self.json = JSON(json)
                     let newLeadID = self.json["leadID"].stringValue
                     self.lead.ID = newLeadID
                     
+                    
+                    self.editsMade = false // avoids the back without saving check
+                    
                     if(self.title == "New Lead"){
-                        self.delegate.getLeads()
+                        
+                        self.goBack()
+                        self.delegate.getLeads(_openNewLead: true)
                     }else if(self.title == "New Customer Lead"){
                         //no delegate method
+                        
+                        self.goBack()
+                        
+                        self.delegate.getLeads(_openNewLead: true)
+                        
+                        
                     }else{
-                        self.editDelegate.updateLead(_lead: self.lead)
+                        self.editDelegate.updateLead(_lead: self.lead,_newStatusValue:"na")
                     }
-                    self.editsMade = false // avoids the back without saving check
-                    self.goBack()
+                    
+                    /*
+                    if newLead {
+                        simpleAlert(_vc: self, _title: "Add Tasks and Images", _message: "You can now add leat tasks and images to this lead.")
+                    }
+                    */
+                   
                     
                     
                 }

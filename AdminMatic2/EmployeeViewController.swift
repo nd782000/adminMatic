@@ -16,15 +16,20 @@ import Nuke
 
 
 
-class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScrollViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImageViewDelegate, ImageLikeDelegate  {
+class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImageViewDelegate, ImageLikeDelegate  {
+    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
+    
+    
     
     
     var employeeJSON: JSON!
     var employee:Employee!
        
-    
+    var optionsButton:UIBarButtonItem!
     var tapBtn:UIButton!
     
     //employee info
@@ -88,6 +93,8 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         super.init(nibName:nil,bundle:nil)
         print("init _employeeID = \(_employee.ID)")
         self.employee = _employee
+        
+        print("emp view init ID = \(self.employee.ID)")
         
     }
     
@@ -178,8 +185,8 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     func getImages(){
         print("get images")
         
-        
-        let parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject,"limit": "\(self.limit)" as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject,"uploadedBy": self.employee.ID as AnyObject]
+        let parameters:[String:String]
+        parameters = ["loginID": "\(self.appDelegate.loggedInEmployee?.ID)","limit": "\(self.limit)","offset": "\(self.offset)", "order":self.order,"uploadedBy": self.employee.ID] as! [String : String]
         
        // print("parameters = \(parameters)")
         
@@ -257,6 +264,12 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         self.indicator.dismissIndicator()
+        
+        //only show option button to profile of logged in user
+        if self.employee.ID == appDelegate.loggedInEmployee?.ID{
+            optionsButton = UIBarButtonItem(title: "Options", style: .plain, target: self, action: #selector(EmployeeViewController.displayEmployeeOptions))
+            navigationItem.rightBarButtonItem = optionsButton
+        }
         
         
         print("layoutViews")
@@ -437,6 +450,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
             
             ] as [String:Any]
         
+        
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[name]-10-|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[tapBtn(100)]", options: [], metrics: nil, views: viewsDictionary))
         
@@ -458,6 +472,71 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(30)][phone(30)]-10-[email(30)]-[crewsBtn(30)]-[payrollBtn(30)]-20-[noImagesLbl(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
     }
+    
+    
+    @objc func displayEmployeeOptions(){
+        print("display Options")
+        
+        
+        let actionSheet = UIAlertController(title: "Employee Options", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        actionSheet.view.backgroundColor = UIColor.white
+        actionSheet.view.layer.cornerRadius = 5;
+        
+        actionSheet.addAction(UIAlertAction(title: "Change Password", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            print("display Change Password View")
+            
+        }))
+        
+        
+        actionSheet.addAction(UIAlertAction(title: "Upload Signature", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            print("Show Signature View")
+            
+            let signatureViewController:SignatureViewController = SignatureViewController(_employee: self.employee)
+            self.navigationController?.pushViewController(signatureViewController, animated: false )
+            
+            
+           
+        }))
+        
+        
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
+        }))
+        
+        
+        
+        switch UIDevice.current.userInterfaceIdiom {
+        case .phone:
+            self.present(actionSheet, animated: true, completion: nil)
+            
+            break
+        // It's an iPhone
+        case .pad:
+            let nav = UINavigationController(rootViewController: actionSheet)
+            nav.modalPresentationStyle = UIModalPresentationStyle.popover
+            let popover = nav.popoverPresentationController as UIPopoverPresentationController?
+            actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
+            popover?.sourceView = self.view
+            popover?.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
+            
+            self.present(nav, animated: true, completion: nil)
+            break
+        // It's an iPad
+        case .unspecified:
+            break
+        default:
+            self.present(actionSheet, animated: true, completion: nil)
+            break
+            
+            // Uh, oh! What could it be?
+        }
+        
+        
+    }
+    
+    
+    
+    
     
     
     @objc func showDepartments(){
@@ -783,6 +862,7 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
                         
                         self.appDelegate.defaults = UserDefaults.standard
                         self.appDelegate.defaults.setValue(self.employee.ID, forKey: loggedInKeys.loggedInId)
+                       // self.appDelegate.defaults.setValue(self.employee.name, forKey: loggedInKeys.loggedInName)
                         self.appDelegate.defaults.synchronize()
                         
                     }else{
@@ -797,6 +877,8 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
         }else{
             self.passTxt.error()
         }
+        
+        
     }
     
   
@@ -875,6 +957,13 @@ class EmployeeViewController: ViewControllerWithMenu, UITextFieldDelegate, UIScr
     
     @objc func goBack(){
         _ = navigationController?.popViewController(animated: false)
+        
+    }
+    
+    func showCustomerImages(_customer:String){
+        print("show customer images cust: \(_customer)")
+        
+        
         
     }
     

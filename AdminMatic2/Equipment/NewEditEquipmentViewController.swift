@@ -525,7 +525,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         
         
         
-        engineTxtField.text = equipment.fuelTypeName
+        engineTxtField.text = equipment.engineTypeName
         
         
         //dealer
@@ -1357,8 +1357,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
         //reset task array
-        
-        let parameters = ["equipmentID": self.equipment.ID as AnyObject, "addedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "name": self.equipment.name as AnyObject, "make": self.equipment.make as AnyObject,"model": self.equipment.model  as AnyObject, "crew": self.equipment.crew as AnyObject, "vendorID": equipment.dealer  as AnyObject, "fuelType": self.equipment.fuelType as AnyObject, "engineType": self.equipment.engineType as AnyObject, "mileage": self.equipment.mileage as AnyObject, "serial": self.equipment.serial as AnyObject, "status": self.equipment.status as AnyObject, "type": self.equipment.type as AnyObject, "active": "1" as AnyObject, "description": equipment.description as AnyObject, "purchaseDate": equipment.purchaseDate as AnyObject] as [String : Any]
+        let parameters:[String:String]
+        parameters = ["equipmentID": self.equipment.ID, "addedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "name": self.equipment.name, "make": self.equipment.make,"model": self.equipment.model, "crew": self.equipment.crew, "vendorID": equipment.dealer, "fuelType": self.equipment.fuelType, "engineType": self.equipment.engineType, "mileage": self.equipment.mileage, "serial": self.equipment.serial, "status": self.equipment.status, "type": self.equipment.type, "active": "1", "description": equipment.description, "purchaseDate": equipment.purchaseDate] as! [String : String]
         
         print("parameters = \(parameters)")
         

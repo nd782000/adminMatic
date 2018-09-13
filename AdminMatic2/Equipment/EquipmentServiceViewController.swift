@@ -574,9 +574,9 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusTxt(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][typeLbl(30)][dueLbl(30)][frequencyLbl(30)][creationOnByLbl(30)][instructionLbl(30)][instructionView(120)]-[currentLbl(30)][currentTxt(30)]-[completionNotesLbl(30)][completionNotesView]-[statusLbl(30)][statusIcon2(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][typeLbl(30)][dueLbl(30)][frequencyLbl(30)][creationOnByLbl(30)][instructionLbl(30)][instructionView(60)]-[currentLbl(30)][currentTxt(30)]-[completionNotesLbl(30)][completionNotesView]-[statusLbl(30)][statusIcon2(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][typeLbl(30)][dueLbl(30)][frequencyLbl(30)][creationOnByLbl(30)][instructionLbl(30)][instructionView(120)]-[nextLbl(30)][nextTxt(30)]-[completionNotesLbl(30)][completionNotesView]-[statusLbl(30)][statusTxt2(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][typeLbl(30)][dueLbl(30)][frequencyLbl(30)][creationOnByLbl(30)][instructionLbl(30)][instructionView(60)]-[nextLbl(30)][nextTxt(30)]-[completionNotesLbl(30)][completionNotesView]-[statusLbl(30)][statusTxt2(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
     }
     
     @objc func displayEditView(){
@@ -1003,7 +1003,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
                 }
                     
                 
-                
+                playSaveSound()
                 
                 
                 }.responseString() {

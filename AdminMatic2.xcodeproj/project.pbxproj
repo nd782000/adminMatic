@@ -16,6 +16,7 @@
 		0121DF001FBD147800AD6039 /* NewEditLeadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0121DEFF1FBD147800AD6039 /* NewEditLeadViewController.swift */; };
 		0125B6D41E26AE2500BAC949 /* NetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0125B6D31E26AE2500BAC949 /* NetData.swift */; };
 		0125B6D91E26B10E00BAC949 /* ImageDrawingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0125B6D81E26B10E00BAC949 /* ImageDrawingViewController.swift */; };
+		0137DA562080300400A29F4E /* NewEditContractViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0137DA552080300100A29F4E /* NewEditContractViewController.swift */; };
 		014B02951E21577D002A41DE /* CustomerListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02941E21577D002A41DE /* CustomerListViewController.swift */; };
 		014B029C1E21585A002A41DE /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B029B1E21585A002A41DE /* Customer.swift */; };
 		014B029E1E215DB5002A41DE /* CustomerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B029D1E215DB5002A41DE /* CustomerTableViewCell.swift */; };
@@ -53,6 +54,12 @@
 		0160A1B61E89EA8400C2AB4A /* Bug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0160A1B51E89EA8400C2AB4A /* Bug.swift */; };
 		0160A1B81E89F98200C2AB4A /* BugTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0160A1B71E89F98200C2AB4A /* BugTableViewCell.swift */; };
 		0160A1BA1E8A08B900C2AB4A /* BugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0160A1B91E8A08B800C2AB4A /* BugViewController.swift */; };
+		01634B5220811BCD00D22832 /* Contract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01634B5120811BCD00D22832 /* Contract.swift */; };
+		01634B542084F09B00D22832 /* ContractTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01634B532084F09B00D22832 /* ContractTableViewCell.swift */; };
+		01634B562084F52500D22832 /* ContractViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01634B552084F52500D22832 /* ContractViewController.swift */; };
+		01634B582086D13500D22832 /* ContractItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01634B572086D13500D22832 /* ContractItem.swift */; };
+		01634B5A2086E35700D22832 /* ContractItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01634B592086E35700D22832 /* ContractItemTableViewCell.swift */; };
+		01634B5C2088E04F00D22832 /* TagTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01634B5B2088E04F00D22832 /* TagTableViewCell.swift */; };
 		016634171E33F496002F7763 /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016634161E33F496002F7763 /* ContactTableViewCell.swift */; };
 		0166341C1E33F510002F7763 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0166341B1E33F510002F7763 /* Contact.swift */; };
 		0166341E1E340F48002F7763 /* ItemListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0166341D1E340F48002F7763 /* ItemListViewController.swift */; };
@@ -78,6 +85,7 @@
 		01A9DDE31FE430C90075AC72 /* EquipmentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A9DDE21FE430C90075AC72 /* EquipmentService.swift */; };
 		01A9DDE51FE715E20075AC72 /* EquipmentServiceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A9DDE41FE715E20075AC72 /* EquipmentServiceTableViewCell.swift */; };
 		01A9DDE71FE9868F0075AC72 /* NewEditEquipmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A9DDE61FE9868F0075AC72 /* NewEditEquipmentViewController.swift */; };
+		01C340D420718FEC0093545C /* LeadTaskAssignViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C340D320718FEC0093545C /* LeadTaskAssignViewController.swift */; };
 		01C43C572027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */; };
 		01C43C602037251B0068A5E0 /* DepartmentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C5F203725150068A5E0 /* DepartmentListViewController.swift */; };
 		01C43C62203725DD0068A5E0 /* Department.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C61203725DD0068A5E0 /* Department.swift */; };
@@ -97,6 +105,19 @@
 		01C8B97D1FB2755200ADF284 /* LeadTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C8B97C1FB2755200ADF284 /* LeadTableViewCell.swift */; };
 		01C8B97F1FB278AA00ADF284 /* Lead.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C8B97E1FB278AA00ADF284 /* Lead.swift */; };
 		01C8B9811FB27D0400ADF284 /* LeadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C8B9801FB27D0400ADF284 /* LeadViewController.swift */; };
+		01D86706211B3554005379E1 /* YPDrawSignatureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D86705211B3554005379E1 /* YPDrawSignatureView.swift */; };
+		01D86708211B3936005379E1 /* SignatureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D86707211B3936005379E1 /* SignatureViewController.swift */; };
+		01D8670A2121BFF9005379E1 /* TermsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D867092121BFF9005379E1 /* TermsViewController.swift */; };
+		01D8670C21221901005379E1 /* Signature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D8670B21221901005379E1 /* Signature.swift */; };
+		01D8670E21236075005379E1 /* ContractTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D8670D21236075005379E1 /* ContractTask.swift */; };
+		01D867102124959B005379E1 /* NewEditContractItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D8670F2124959B005379E1 /* NewEditContractItemViewController.swift */; };
+		01D86712212AFD2A005379E1 /* ContractItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D86711212AFD29005379E1 /* ContractItemViewController.swift */; };
+		01D86714212B1853005379E1 /* ContractTaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D86713212B1853005379E1 /* ContractTaskTableViewCell.swift */; };
+		01D86716212B68B9005379E1 /* ContractSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D86715212B68B9005379E1 /* ContractSettingsViewController.swift */; };
+		01D86718212C5FDF005379E1 /* ImageEmployeeLikesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D86717212C5FDF005379E1 /* ImageEmployeeLikesListViewController.swift */; };
+		01D8671A212C8C1A005379E1 /* Zone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D86719212C8C1A005379E1 /* Zone.swift */; };
+		01D8671C212CB75A005379E1 /* LeadSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D8671B212CB75A005379E1 /* LeadSettingsViewController.swift */; };
+		01D86764212DF27B005379E1 /* NewEditWoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D86763212DF27B005379E1 /* NewEditWoViewController.swift */; };
 		01D9AD971E6DD14900BD35AE /* UnderConstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */; };
 		01DC79371E2803BB0022566C /* UsageEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DC79361E2803BB0022566C /* UsageEntryViewController.swift */; };
 		01DC793E1E2805200022566C /* UsageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DC793D1E2805200022566C /* UsageTableViewCell.swift */; };
@@ -250,6 +271,7 @@
 		0121DEFF1FBD147800AD6039 /* NewEditLeadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditLeadViewController.swift; sourceTree = "<group>"; };
 		0125B6D31E26AE2500BAC949 /* NetData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetData.swift; sourceTree = "<group>"; };
 		0125B6D81E26B10E00BAC949 /* ImageDrawingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageDrawingViewController.swift; sourceTree = "<group>"; };
+		0137DA552080300100A29F4E /* NewEditContractViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditContractViewController.swift; sourceTree = "<group>"; };
 		014B02941E21577D002A41DE /* CustomerListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomerListViewController.swift; sourceTree = "<group>"; };
 		014B029B1E21585A002A41DE /* Customer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
 		014B029D1E215DB5002A41DE /* CustomerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomerTableViewCell.swift; sourceTree = "<group>"; };
@@ -287,6 +309,12 @@
 		0160A1B51E89EA8400C2AB4A /* Bug.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bug.swift; sourceTree = "<group>"; };
 		0160A1B71E89F98200C2AB4A /* BugTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BugTableViewCell.swift; sourceTree = "<group>"; };
 		0160A1B91E8A08B800C2AB4A /* BugViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BugViewController.swift; sourceTree = "<group>"; };
+		01634B5120811BCD00D22832 /* Contract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contract.swift; sourceTree = "<group>"; };
+		01634B532084F09B00D22832 /* ContractTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractTableViewCell.swift; sourceTree = "<group>"; };
+		01634B552084F52500D22832 /* ContractViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractViewController.swift; sourceTree = "<group>"; };
+		01634B572086D13500D22832 /* ContractItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractItem.swift; sourceTree = "<group>"; };
+		01634B592086E35700D22832 /* ContractItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractItemTableViewCell.swift; sourceTree = "<group>"; };
+		01634B5B2088E04F00D22832 /* TagTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagTableViewCell.swift; sourceTree = "<group>"; };
 		016634161E33F496002F7763 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
 		0166341B1E33F510002F7763 /* Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		0166341D1E340F48002F7763 /* ItemListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemListViewController.swift; sourceTree = "<group>"; };
@@ -319,6 +347,7 @@
 		01A9DDE21FE430C90075AC72 /* EquipmentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentService.swift; sourceTree = "<group>"; };
 		01A9DDE41FE715E20075AC72 /* EquipmentServiceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentServiceTableViewCell.swift; sourceTree = "<group>"; };
 		01A9DDE61FE9868F0075AC72 /* NewEditEquipmentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditEquipmentViewController.swift; sourceTree = "<group>"; };
+		01C340D320718FEC0093545C /* LeadTaskAssignViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadTaskAssignViewController.swift; sourceTree = "<group>"; };
 		01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditEquipmentServiceViewController.swift; sourceTree = "<group>"; };
 		01C43C5F203725150068A5E0 /* DepartmentListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepartmentListViewController.swift; sourceTree = "<group>"; };
 		01C43C61203725DD0068A5E0 /* Department.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Department.swift; sourceTree = "<group>"; };
@@ -338,6 +367,19 @@
 		01C8B97C1FB2755200ADF284 /* LeadTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadTableViewCell.swift; sourceTree = "<group>"; };
 		01C8B97E1FB278AA00ADF284 /* Lead.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lead.swift; sourceTree = "<group>"; };
 		01C8B9801FB27D0400ADF284 /* LeadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadViewController.swift; sourceTree = "<group>"; };
+		01D86705211B3554005379E1 /* YPDrawSignatureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YPDrawSignatureView.swift; sourceTree = "<group>"; };
+		01D86707211B3936005379E1 /* SignatureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureViewController.swift; sourceTree = "<group>"; };
+		01D867092121BFF9005379E1 /* TermsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsViewController.swift; sourceTree = "<group>"; };
+		01D8670B21221901005379E1 /* Signature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Signature.swift; sourceTree = "<group>"; };
+		01D8670D21236075005379E1 /* ContractTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractTask.swift; sourceTree = "<group>"; };
+		01D8670F2124959B005379E1 /* NewEditContractItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditContractItemViewController.swift; sourceTree = "<group>"; };
+		01D86711212AFD29005379E1 /* ContractItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractItemViewController.swift; sourceTree = "<group>"; };
+		01D86713212B1853005379E1 /* ContractTaskTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractTaskTableViewCell.swift; sourceTree = "<group>"; };
+		01D86715212B68B9005379E1 /* ContractSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractSettingsViewController.swift; sourceTree = "<group>"; };
+		01D86717212C5FDF005379E1 /* ImageEmployeeLikesListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEmployeeLikesListViewController.swift; sourceTree = "<group>"; };
+		01D86719212C8C1A005379E1 /* Zone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zone.swift; sourceTree = "<group>"; };
+		01D8671B212CB75A005379E1 /* LeadSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadSettingsViewController.swift; sourceTree = "<group>"; };
+		01D86763212DF27B005379E1 /* NewEditWoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditWoViewController.swift; sourceTree = "<group>"; };
 		01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnderConstructionViewController.swift; sourceTree = "<group>"; };
 		01DC79361E2803BB0022566C /* UsageEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsageEntryViewController.swift; sourceTree = "<group>"; };
 		01DC793D1E2805200022566C /* UsageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsageTableViewCell.swift; sourceTree = "<group>"; };
@@ -479,14 +521,19 @@
 			name = "Old Views";
 			sourceTree = "<group>";
 		};
-		01DDE0601E0715F6002C0F8B /* Views */ = {
+		01D86759212DA8E4005379E1 /* Customer */ = {
 			isa = PBXGroup;
 			children = (
-				01C43C6F203CA4390068A5E0 /* Old Views */,
-				01EC4E741E1EF8BC009CE261 /* HomeViewController.swift */,
 				014B02941E21577D002A41DE /* CustomerListViewController.swift */,
 				014B029F1E2160BF002A41DE /* CustomerViewController.swift */,
 				01DC79481E292CF30022566C /* CustomerContactViewController.swift */,
+			);
+			path = Customer;
+			sourceTree = "<group>";
+		};
+		01D8675A212DA904005379E1 /* Employee */ = {
+			isa = PBXGroup;
+			children = (
 				015231AB1E1A982F009949BD /* EmployeeListViewController.swift */,
 				015231AD1E1A9EFF009949BD /* EmployeeViewController.swift */,
 				01C43C5F203725150068A5E0 /* DepartmentListViewController.swift */,
@@ -494,24 +541,84 @@
 				01C43C692039F04F0068A5E0 /* ShiftsViewController.swift */,
 				01C43C78203DB9D20068A5E0 /* PayrollEntryViewController.swift */,
 				01C43C72203CC88D0068A5E0 /* PayrollSummaryViewController.swift */,
+				01A81E591E92FC090089B55F /* GroupMessageViewController.swift */,
+			);
+			name = Employee;
+			sourceTree = "<group>";
+		};
+		01D8675B212DA932005379E1 /* Contract */ = {
+			isa = PBXGroup;
+			children = (
 				01C43C70203CA52E0068A5E0 /* ContractListViewController.swift */,
+				01634B552084F52500D22832 /* ContractViewController.swift */,
+				01D86715212B68B9005379E1 /* ContractSettingsViewController.swift */,
+				01D86711212AFD29005379E1 /* ContractItemViewController.swift */,
+				0137DA552080300100A29F4E /* NewEditContractViewController.swift */,
+				01D8670F2124959B005379E1 /* NewEditContractItemViewController.swift */,
+				01D86707211B3936005379E1 /* SignatureViewController.swift */,
+				01D867092121BFF9005379E1 /* TermsViewController.swift */,
+			);
+			path = Contract;
+			sourceTree = "<group>";
+		};
+		01D8675C212DA960005379E1 /* Lead */ = {
+			isa = PBXGroup;
+			children = (
 				01C8B9731FB26ED800ADF284 /* LeadListViewController.swift */,
 				01C8B9801FB27D0400ADF284 /* LeadViewController.swift */,
+				01D8671B212CB75A005379E1 /* LeadSettingsViewController.swift */,
+				01C340D320718FEC0093545C /* LeadTaskAssignViewController.swift */,
 				0121DEFF1FBD147800AD6039 /* NewEditLeadViewController.swift */,
-				01A81E591E92FC090089B55F /* GroupMessageViewController.swift */,
-				01DC79361E2803BB0022566C /* UsageEntryViewController.swift */,
-				01DC79411E281C8B0022566C /* UsageListViewController.swift */,
-				016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */,
+			);
+			name = Lead;
+			path = Contract;
+			sourceTree = "<group>";
+		};
+		01D8675D212DA9A7005379E1 /* Work Order */ = {
+			isa = PBXGroup;
+			children = (
 				01EC4E721E1DDBBD009CE261 /* ScheduleViewController.swift */,
 				019B24631EB8BEC0008D4475 /* ScheduleSettingsViewController.swift */,
 				014B02A11E21685A002A41DE /* WorkOrderViewController.swift */,
+				01D86763212DF27B005379E1 /* NewEditWoViewController.swift */,
 				014B02AF1E2169BF002A41DE /* WoItemViewController.swift */,
 				019B24581EB6D1BB008D4475 /* NewWoItemViewController.swift */,
 				014B02B51E269449002A41DE /* AttachmentListViewController.swift */,
+				01DC79361E2803BB0022566C /* UsageEntryViewController.swift */,
+				01DC79411E281C8B0022566C /* UsageListViewController.swift */,
+			);
+			name = "Work Order";
+			sourceTree = "<group>";
+		};
+		01D8675E212DAA7D005379E1 /* Performance */ = {
+			isa = PBXGroup;
+			children = (
+				016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */,
+			);
+			name = Performance;
+			sourceTree = "<group>";
+		};
+		01D8675F212DAA92005379E1 /* Item */ = {
+			isa = PBXGroup;
+			children = (
 				0166341D1E340F48002F7763 /* ItemListViewController.swift */,
 				0166341F1E340F5A002F7763 /* ItemViewController.swift */,
+			);
+			path = Item;
+			sourceTree = "<group>";
+		};
+		01D86760212DAAA8005379E1 /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
 				016634271E3415FE002F7763 /* VendorListViewController.swift */,
 				016634291E341616002F7763 /* VendorViewController.swift */,
+			);
+			name = Vendor;
+			sourceTree = "<group>";
+		};
+		01D86761212DAAC5005379E1 /* Equipment */ = {
+			isa = PBXGroup;
+			children = (
 				01A9DDD31FE0B59C0075AC72 /* EquipmentListViewController.swift */,
 				015EB5501FF695ED000CA2A7 /* EquipmentFieldsListViewController.swift */,
 				015EB55B1FF6E639000CA2A7 /* NewEditEquipmentFieldViewController.swift */,
@@ -520,6 +627,13 @@
 				015EB55F2002E31F000CA2A7 /* EquipmentServiceViewController.swift */,
 				01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */,
 				01A9DDE61FE9868F0075AC72 /* NewEditEquipmentViewController.swift */,
+			);
+			path = Equipment;
+			sourceTree = "<group>";
+		};
+		01D86762212DAAF7005379E1 /* Image */ = {
+			isa = PBXGroup;
+			children = (
 				014CC8E31E539EB100D48A26 /* ImageCollectionViewController.swift */,
 				0160A1B11E873F3D00C2AB4A /* ImageSettingsViewController.swift */,
 				014CC8E71E53E8E900D48A26 /* ImageDetailViewController.swift */,
@@ -527,6 +641,26 @@
 				01E01C191E7DB54C00385B86 /* ImageUploadPrepViewController.swift */,
 				0125B6D81E26B10E00BAC949 /* ImageDrawingViewController.swift */,
 				010937B51E801B91007865FB /* ImageUploadProgressViewController.swift */,
+				01D86717212C5FDF005379E1 /* ImageEmployeeLikesListViewController.swift */,
+			);
+			name = Image;
+			sourceTree = "<group>";
+		};
+		01DDE0601E0715F6002C0F8B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				01C43C6F203CA4390068A5E0 /* Old Views */,
+				01EC4E741E1EF8BC009CE261 /* HomeViewController.swift */,
+				01D86759212DA8E4005379E1 /* Customer */,
+				01D8675A212DA904005379E1 /* Employee */,
+				01D8675C212DA960005379E1 /* Lead */,
+				01D8675B212DA932005379E1 /* Contract */,
+				01D8675D212DA9A7005379E1 /* Work Order */,
+				01D8675E212DAA7D005379E1 /* Performance */,
+				01D8675F212DAA92005379E1 /* Item */,
+				01D86760212DAAA8005379E1 /* Vendor */,
+				01D86761212DAAC5005379E1 /* Equipment */,
+				01D86762212DAAF7005379E1 /* Image */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -538,6 +672,7 @@
 				01DDE0661E0719F7002C0F8B /* LayoutVars.swift */,
 				01DDE0681E071BAC002C0F8B /* ViewControllerWithMenu.swift */,
 				0125B6D31E26AE2500BAC949 /* NetData.swift */,
+				01D86705211B3554005379E1 /* YPDrawSignatureView.swift */,
 			);
 			name = "Helper Classes";
 			sourceTree = "<group>";
@@ -549,6 +684,7 @@
 				015B9AF61E27DDFD0020FB58 /* Date.swift */,
 				01EC4E6B1E1DDA90009CE261 /* WorkOrder.swift */,
 				01C8B97E1FB278AA00ADF284 /* Lead.swift */,
+				01634B5120811BCD00D22832 /* Contract.swift */,
 				01A9DDDC1FE0BAD60075AC72 /* Equipment.swift */,
 				01C43C61203725DD0068A5E0 /* Department.swift */,
 				01C43C672037AFB20068A5E0 /* Crew.swift */,
@@ -557,14 +693,18 @@
 				014B02A31E2168C6002A41DE /* Employee.swift */,
 				014B02A51E2168D3002A41DE /* Attachment.swift */,
 				014B02A71E2168DF002A41DE /* WoItem.swift */,
+				01634B572086D13500D22832 /* ContractItem.swift */,
 				014B02A91E216939002A41DE /* Task.swift */,
+				01D8670D21236075005379E1 /* ContractTask.swift */,
 				01C43C6B203A02F10068A5E0 /* Shift.swift */,
+				01D8670B21221901005379E1 /* Signature.swift */,
 				01C43C74203CD14C0068A5E0 /* Payroll.swift */,
 				014B02AB1E216944002A41DE /* Usage.swift */,
 				014B02AD1E216950002A41DE /* Vendor.swift */,
 				0166341B1E33F510002F7763 /* Contact.swift */,
 				016634211E340F6D002F7763 /* Item.swift */,
 				014CC8DB1E539C9A00D48A26 /* Image.swift */,
+				01D86719212C8C1A005379E1 /* Zone.swift */,
 				0160A1B51E89EA8400C2AB4A /* Bug.swift */,
 			);
 			name = "Data Classes";
@@ -579,18 +719,22 @@
 				01C43C7A203DE4FA0068A5E0 /* PayrollEntryTableViewCell.swift */,
 				0116A7FA1E1DD4B7002C5051 /* ScheduleTableViewCell.swift */,
 				01C8B97C1FB2755200ADF284 /* LeadTableViewCell.swift */,
+				0121DEF41FBA71BF00AD6039 /* LeadTaskTableViewCell.swift */,
 				015EB5591FF6D6D0000CA2A7 /* EquipmentFieldTableViewCell.swift */,
+				01634B532084F09B00D22832 /* ContractTableViewCell.swift */,
+				01634B592086E35700D22832 /* ContractItemTableViewCell.swift */,
 				01A9DDDE1FE0D4480075AC72 /* EquipmentTableViewCell.swift */,
 				01C43C6320372FBE0068A5E0 /* DepartmentTableViewCell.swift */,
 				01A9DDE41FE715E20075AC72 /* EquipmentServiceTableViewCell.swift */,
-				0121DEF41FBA71BF00AD6039 /* LeadTaskTableViewCell.swift */,
 				01EE1B2D1E20105A00E5E061 /* HomeCollectionViewCell.swift */,
 				014B029D1E215DB5002A41DE /* CustomerTableViewCell.swift */,
 				0160A1B71E89F98200C2AB4A /* BugTableViewCell.swift */,
+				01634B5B2088E04F00D22832 /* TagTableViewCell.swift */,
 				019B24611EB82EC5008D4475 /* NewWoItemTableViewCell.swift */,
 				014B02B11E2690AC002A41DE /* WoItemTableViewCell.swift */,
 				014B02B71E26A8E6002A41DE /* AttachmentTableViewCell.swift */,
 				015B9AEF1E27D4C50020FB58 /* TaskTableViewCell.swift */,
+				01D86713212B1853005379E1 /* ContractTaskTableViewCell.swift */,
 				01DC793D1E2805200022566C /* UsageTableViewCell.swift */,
 				01DC793F1E2805590022566C /* UsageEntryTableViewCell.swift */,
 				016634161E33F496002F7763 /* ContactTableViewCell.swift */,
@@ -899,6 +1043,7 @@
 				019B24621EB82EC5008D4475 /* NewWoItemTableViewCell.swift in Sources */,
 				014B02B21E2690AC002A41DE /* WoItemTableViewCell.swift in Sources */,
 				014B02951E21577D002A41DE /* CustomerListViewController.swift in Sources */,
+				01D8671A212C8C1A005379E1 /* Zone.swift in Sources */,
 				01C8B97D1FB2755200ADF284 /* LeadTableViewCell.swift in Sources */,
 				01C43C6C203A02F10068A5E0 /* Shift.swift in Sources */,
 				0160A1B61E89EA8400C2AB4A /* Bug.swift in Sources */,
@@ -906,12 +1051,14 @@
 				015231BB1E1D69FF009949BD /* LogInView.swift in Sources */,
 				01A9DDE31FE430C90075AC72 /* EquipmentService.swift in Sources */,
 				0160A1B41E89BD2D00C2AB4A /* BugsListViewController.swift in Sources */,
+				01D8670A2121BFF9005379E1 /* TermsViewController.swift in Sources */,
 				014B02A81E2168DF002A41DE /* WoItem.swift in Sources */,
 				01C43C77203CD5810068A5E0 /* PayrollSummaryTableViewCell.swift in Sources */,
 				0116A7FB1E1DD4B7002C5051 /* ScheduleTableViewCell.swift in Sources */,
 				0166341C1E33F510002F7763 /* Contact.swift in Sources */,
 				01EC4E6C1E1DDA90009CE261 /* WorkOrder.swift in Sources */,
 				015EB55C1FF6E639000CA2A7 /* NewEditEquipmentFieldViewController.swift in Sources */,
+				01D86714212B1853005379E1 /* ContractTaskTableViewCell.swift in Sources */,
 				0160A1B21E873F3D00C2AB4A /* ImageSettingsViewController.swift in Sources */,
 				010937BE1E802313007865FB /* ImageUploadProgressTableViewCell.swift in Sources */,
 				01DC793E1E2805200022566C /* UsageTableViewCell.swift in Sources */,
@@ -920,8 +1067,10 @@
 				01EC4E731E1DDBBD009CE261 /* ScheduleViewController.swift in Sources */,
 				01A81E5A1E92FC090089B55F /* GroupMessageViewController.swift in Sources */,
 				016634221E340F6D002F7763 /* Item.swift in Sources */,
+				01D86706211B3554005379E1 /* YPDrawSignatureView.swift in Sources */,
 				019B24641EB8BEC0008D4475 /* ScheduleSettingsViewController.swift in Sources */,
 				015EB5602002E31F000CA2A7 /* EquipmentServiceViewController.swift in Sources */,
+				01D8670C21221901005379E1 /* Signature.swift in Sources */,
 				014B029E1E215DB5002A41DE /* CustomerTableViewCell.swift in Sources */,
 				0125B6D91E26B10E00BAC949 /* ImageDrawingViewController.swift in Sources */,
 				0125B6D41E26AE2500BAC949 /* NetData.swift in Sources */,
@@ -929,6 +1078,7 @@
 				014CC8EA1E53F4E000D48A26 /* ImageFullViewController.swift in Sources */,
 				014B02A21E21685A002A41DE /* WorkOrderViewController.swift in Sources */,
 				01C8B9741FB26ED800ADF284 /* LeadListViewController.swift in Sources */,
+				01D86708211B3936005379E1 /* SignatureViewController.swift in Sources */,
 				01C43C662037AE8C0068A5E0 /* CrewListViewController.swift in Sources */,
 				01C43C6A2039F0500068A5E0 /* ShiftsViewController.swift in Sources */,
 				01EE1B2E1E20105A00E5E061 /* HomeCollectionViewCell.swift in Sources */,
@@ -936,6 +1086,7 @@
 				01A9DDE71FE9868F0075AC72 /* NewEditEquipmentViewController.swift in Sources */,
 				0166342A1E341616002F7763 /* VendorViewController.swift in Sources */,
 				014CC8E81E53E8E900D48A26 /* ImageDetailViewController.swift in Sources */,
+				01D8671C212CB75A005379E1 /* LeadSettingsViewController.swift in Sources */,
 				019B24591EB6D1BB008D4475 /* NewWoItemViewController.swift in Sources */,
 				01C43C682037AFB20068A5E0 /* Crew.swift in Sources */,
 				01A9DDDD1FE0BAD60075AC72 /* Equipment.swift in Sources */,
@@ -947,15 +1098,19 @@
 				01D9AD971E6DD14900BD35AE /* UnderConstructionViewController.swift in Sources */,
 				015EB5511FF695ED000CA2A7 /* EquipmentFieldsListViewController.swift in Sources */,
 				01DDE0701E071FB3002C0F8B /* JsonDataHolder.swift in Sources */,
+				0137DA562080300400A29F4E /* NewEditContractViewController.swift in Sources */,
 				01C43C6E203A4AD60068A5E0 /* ShiftTableViewCell.swift in Sources */,
 				015B9AF71E27DDFD0020FB58 /* Date.swift in Sources */,
 				01DC79421E281C8B0022566C /* UsageListViewController.swift in Sources */,
 				014B02B01E2169BF002A41DE /* WoItemViewController.swift in Sources */,
 				01C8B9811FB27D0400ADF284 /* LeadViewController.swift in Sources */,
 				014B02AC1E216944002A41DE /* Usage.swift in Sources */,
+				01D8670E21236075005379E1 /* ContractTask.swift in Sources */,
 				014B02A61E2168D3002A41DE /* Attachment.swift in Sources */,
 				016634261E3415DF002F7763 /* VendorTableViewCell.swift in Sources */,
+				01634B562084F52500D22832 /* ContractViewController.swift in Sources */,
 				01A9DDD41FE0B59C0075AC72 /* EquipmentListViewController.swift in Sources */,
+				01634B5C2088E04F00D22832 /* TagTableViewCell.swift in Sources */,
 				01E01C1A1E7DB54D00385B86 /* ImageUploadPrepViewController.swift in Sources */,
 				014B02A41E2168C6002A41DE /* Employee.swift in Sources */,
 				0109382B1E835394007865FB /* CustomImageCropperOverlayView.swift in Sources */,
@@ -964,12 +1119,16 @@
 				01C43C7B203DE4FA0068A5E0 /* PayrollEntryTableViewCell.swift in Sources */,
 				01EE1B301E201E0C00E5E061 /* TimeEntryView.swift in Sources */,
 				014B02AA1E216939002A41DE /* Task.swift in Sources */,
+				01D86712212AFD2A005379E1 /* ContractItemViewController.swift in Sources */,
+				01D867102124959B005379E1 /* NewEditContractItemViewController.swift in Sources */,
 				01DC79491E292CF30022566C /* CustomerContactViewController.swift in Sources */,
 				01C43C62203725DD0068A5E0 /* Department.swift in Sources */,
 				01C43C71203CA5330068A5E0 /* ContractListViewController.swift in Sources */,
 				014B029C1E21585A002A41DE /* Customer.swift in Sources */,
+				01D86718212C5FDF005379E1 /* ImageEmployeeLikesListViewController.swift in Sources */,
 				016DD5901E9AF8EC00359405 /* PerformanceViewController.swift in Sources */,
 				01C43C75203CD14C0068A5E0 /* Payroll.swift in Sources */,
+				01D86716212B68B9005379E1 /* ContractSettingsViewController.swift in Sources */,
 				0121DEF51FBA71BF00AD6039 /* LeadTaskTableViewCell.swift in Sources */,
 				01DDE0731E071FEC002C0F8B /* EmployeeTableViewCell.swift in Sources */,
 				01DC79371E2803BB0022566C /* UsageEntryViewController.swift in Sources */,
@@ -978,6 +1137,7 @@
 				014B02A01E2160BF002A41DE /* CustomerViewController.swift in Sources */,
 				016634201E340F5A002F7763 /* ItemViewController.swift in Sources */,
 				01DC79401E2805590022566C /* UsageEntryTableViewCell.swift in Sources */,
+				01C340D420718FEC0093545C /* LeadTaskAssignViewController.swift in Sources */,
 				015231AC1E1A982F009949BD /* EmployeeListViewController.swift in Sources */,
 				01C43C572027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift in Sources */,
 				01A9DDDF1FE0D4480075AC72 /* EquipmentTableViewCell.swift in Sources */,
@@ -985,18 +1145,23 @@
 				015B9AF01E27D4C50020FB58 /* TaskTableViewCell.swift in Sources */,
 				01DDE0691E071BAC002C0F8B /* ViewControllerWithMenu.swift in Sources */,
 				0166341E1E340F48002F7763 /* ItemListViewController.swift in Sources */,
+				01D86764212DF27B005379E1 /* NewEditWoViewController.swift in Sources */,
 				016634241E340F91002F7763 /* ItemTableViewCell.swift in Sources */,
 				0160A1B81E89F98200C2AB4A /* BugTableViewCell.swift in Sources */,
 				01C43C602037251B0068A5E0 /* DepartmentListViewController.swift in Sources */,
 				016634171E33F496002F7763 /* ContactTableViewCell.swift in Sources */,
+				01634B542084F09B00D22832 /* ContractTableViewCell.swift in Sources */,
 				01C43C79203DB9D20068A5E0 /* PayrollEntryViewController.swift in Sources */,
 				01C43C73203CC88E0068A5E0 /* PayrollSummaryViewController.swift in Sources */,
 				014B02B61E269449002A41DE /* AttachmentListViewController.swift in Sources */,
 				015231AE1E1A9EFF009949BD /* EmployeeViewController.swift in Sources */,
 				01A1F2DF1E0704FF00DCCB39 /* AppDelegate.swift in Sources */,
+				01634B5A2086E35700D22832 /* ContractItemTableViewCell.swift in Sources */,
+				01634B582086D13500D22832 /* ContractItem.swift in Sources */,
 				015EB55A1FF6D6D0000CA2A7 /* EquipmentFieldTableViewCell.swift in Sources */,
 				014CC8E41E539EB100D48A26 /* ImageCollectionViewController.swift in Sources */,
 				014B02B81E26A8E6002A41DE /* AttachmentTableViewCell.swift in Sources */,
+				01634B5220811BCD00D22832 /* Contract.swift in Sources */,
 				014CC8DC1E539C9A00D48A26 /* Image.swift in Sources */,
 				01A9DDE11FE409A90075AC72 /* EquipmentViewController.swift in Sources */,
 			);
@@ -1116,7 +1281,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
@@ -1168,7 +1333,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				SDKROOT = iphoneos;

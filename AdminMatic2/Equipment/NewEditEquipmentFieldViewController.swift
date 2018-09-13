@@ -327,8 +327,8 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         
         //let parameters = ["fieldID": self.ID as AnyObject, "addedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "fieldName": self.name as AnyObject, "code": self.code as AnyObject,"field": self.field as AnyObject] as [String : Any]
         
-        
-        let parameters = ["fieldID": self.ID as AnyObject, "addedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "fieldName": self.name as AnyObject, "field": self.field as AnyObject] as [String : Any]
+        let parameters:[String:String]
+        parameters = ["fieldID": self.ID, "addedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "fieldName": self.name, "field": self.field] as! [String : String]
         
         
         
@@ -346,11 +346,13 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
                     self.json = JSON(json)
                     
                     if self.json["errorArray"][0]["error"].stringValue.count > 0{
+                        playErrorSound()
                         simpleAlert(_vc: self, _title: "Error with Save", _message: self.json["errorArray"][0]["error"].stringValue)
                         self.indicator.dismissIndicator()
                         return
                     }
                     
+                    playSaveSound()
                     let newEquipmentFieldID = self.json["equipmentFieldID"].stringValue
                     
                     

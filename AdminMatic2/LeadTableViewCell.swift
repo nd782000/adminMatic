@@ -12,11 +12,12 @@ import UIKit
 class LeadTableViewCell: UITableViewCell {
     var layoutVars:LayoutVars = LayoutVars()
     var lead:Lead!
-    //var dateLbl: UILabel!
+    //var name: String!
     var statusIcon: UIImageView!
     var titleLbl: UILabel!
     var urgentLbl: UILabel!
     var descriptionLbl: UILabel!
+    var daysAgedLbl: UILabel!
     
     
     
@@ -27,14 +28,10 @@ class LeadTableViewCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        
-        
-        
-        
     }
     
     
-    func layoutViews(_scheduleMode:String){
+    func layoutViews(){
         
         
         self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
@@ -63,63 +60,94 @@ class LeadTableViewCell: UITableViewCell {
         descriptionLbl.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(descriptionLbl)
         
+        daysAgedLbl = UILabel()
+        daysAgedLbl.font = layoutVars.extraSmallFont
+        daysAgedLbl.textColor = UIColor.red
+        daysAgedLbl.textAlignment = .right
+        daysAgedLbl.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(daysAgedLbl)
         
         
         titleLbl.text = ""
         urgentLbl.text = ""
         descriptionLbl.text = ""
+        daysAgedLbl.text = ""
         setStatus(status: lead.statusId)
         
         
-        titleLbl.text = "Lead #\(lead.ID!) for \(lead.customerName!)"
         
-         descriptionLbl.text = lead.description
         
-        //if (cell.lead)
+        
        
         
         
+        titleLbl.text = self.lead.custNameAndID!
         
-        let viewsDictionary = ["status":statusIcon,"title":titleLbl,"urgent":urgentLbl,"description":descriptionLbl] as [String : Any]
+        //titleLbl.text = self.lead.custNameAndZone
+        
+        
+        descriptionLbl.text = lead.description
+        
+        
+        switch lead.daysAged! {
+        case "0":
+            daysAgedLbl.text = "Today"
+            break
+        case "1":
+            daysAgedLbl.text = "Yesterday"
+            break
+        
+        default:
+            daysAgedLbl.text = "\(lead.daysAged!) Days"
+        }
+       
+        
+        let viewsDictionary = ["status":statusIcon,"title":titleLbl,"urgent":urgentLbl,"description":descriptionLbl,"daysAged":daysAgedLbl] as [String : Any]
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[status(40)]-[title]-|", options: [], metrics: nil, views: viewsDictionary))
         
         if(lead.urgent == "1"){
             urgentLbl.text = "\u{22C6}URGENT\u{22C6}"
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[status(40)]-[urgent(80)]-[description]-|", options: [], metrics: nil, views: viewsDictionary))
+            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[status(40)]-[urgent(80)]-[description]-[daysAged(65)]-|", options: [], metrics: nil, views: viewsDictionary))
 
         }else{
-            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[status(40)]-[description]-|", options: [], metrics: nil, views: viewsDictionary))
+            contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[status(40)]-[description]-[daysAged(65)]-|", options: [], metrics: nil, views: viewsDictionary))
         }
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[status(40)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[title(30)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[urgent(30)]|", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[description(30)]|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[daysAged(30)]|", options: [], metrics: nil, views: viewsDictionary))
         
     }
     
     func setStatus(status: String) {
         print("set status \(status)")
         switch (status) {
-        case "0":
-            let statusImg = UIImage(named:"inProgressStatus.png")
-            statusIcon.image = statusImg
-            break;
         case "1":
-            let statusImg = UIImage(named:"doneStatus.png")
+            let statusImg = UIImage(named:"unDoneStatus.png")
             statusIcon.image = statusImg
             break;
         case "2":
-            let statusImg = UIImage(named:"cancelStatus.png")
+            let statusImg = UIImage(named:"inProgressStatus.png")
             statusIcon.image = statusImg
             break;
         case "3":
+            let statusImg = UIImage(named:"doneStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "4":
+            let statusImg = UIImage(named:"cancelStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "5":
             let statusImg = UIImage(named:"waitingStatus.png")
             statusIcon.image = statusImg
             break;
+        
         default:
-            let statusImg = UIImage(named:"inProgressStatus.png")
+            let statusImg = UIImage(named:"unDoneStatus.png")
             statusIcon.image = statusImg
             break;
         }

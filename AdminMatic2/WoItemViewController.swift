@@ -70,6 +70,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     var tasksJson:JSON?
     
     var customerID:String = ""
+    var customerName:String = ""
     
     var tasks: [Task] = []//data array
     
@@ -92,11 +93,11 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     override func viewWillAppear(_ animated: Bool) {
         ////print("view will appear")
-        if(self.itemView != nil){
-            if(self.woDelegate != nil){
-                woDelegate.refreshWo(_refeshWoID: self.woItem.ID, _newWoStatus: self.newWoStatus)
-            }
-        }
+        //if(self.itemView != nil){
+           // if(self.woDelegate != nil){
+                //woDelegate.refreshWo(_refeshWoID: self.woItem.ID, _newWoStatus: self.newWoStatus)
+            //}
+        //}
         
         ////print("woItem = \(woItem)")
         // Do any additional setup after loading the view.
@@ -538,6 +539,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
                 cell.activityView.startAnimating()
                 cell.setImageUrl(_url: "\(self.tasks[indexPath.row].images[0].thumbPath!)")
             }else{
+                print("set blank image")
                 cell.setBlankImage()
             }
             
@@ -667,6 +669,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         actionSheet.addAction(UIAlertAction(title: "Add Task Image(s)", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
             let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _taskID: _ID, _customerID: self.customerID, _images: [])
+            imageUploadPrepViewController.customerName = self.customerName
             imageUploadPrepViewController.selectedID = self.customerID
             imageUploadPrepViewController.taskStatus = self.tasks[_row].status
             imageUploadPrepViewController.layoutViews()
@@ -771,7 +774,8 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         //, "cb":timeStamp as AnyObject
         */
         
-        let parameters = ["woItemID": self.woItem.ID as AnyObject]
+        let parameters:[String:String]
+        parameters = ["woItemID": self.woItem.ID]
         
         print("parameters = \(parameters)")
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/tasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)

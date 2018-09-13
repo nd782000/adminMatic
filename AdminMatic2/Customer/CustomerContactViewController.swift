@@ -23,6 +23,9 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
     
     var currentSearchMode = SearchMode.name
     
+    var customerNotesLbl:GreyLabel!
+    var customerNotesTxtView:UITextView = UITextView()
+    
     var contactTableView:TableView = TableView()
     
     var layoutVars:LayoutVars = LayoutVars()
@@ -52,7 +55,7 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Contacts"
+        title = "Customer Info"
         
         //custom back button
         let backButton:UIButton = UIButton(type: UIButtonType.custom)
@@ -73,6 +76,44 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
         
         
         
+        DispatchQueue.main.async {
+            self.customerNotesTxtView.contentOffset = CGPoint.zero
+            self.customerNotesTxtView.scrollRangeToVisible(NSRange(location:0, length:0))
+            
+           
+        }
+        
+        
+        
+        
+        //instructions
+        self.customerNotesLbl = GreyLabel()
+        self.customerNotesLbl.text = "Customer Notes:"
+        self.customerNotesLbl.textAlignment = .left
+        self.customerNotesLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(self.customerNotesLbl)
+        
+        //self.instructionsView = UITextView()
+        self.customerNotesTxtView.layer.borderWidth = 1
+        self.customerNotesTxtView.layer.borderColor = UIColor(hex:0x005100, op: 0.2).cgColor
+        self.customerNotesTxtView.layer.cornerRadius = 4.0
+        
+        self.customerNotesTxtView.backgroundColor = UIColor.white
+        var custNotes:String
+        if self.customerJSON["customer"]["custNotes"].stringValue == ""{
+            custNotes = "No notes on file."
+        }else{
+            custNotes = self.customerJSON["customer"]["custNotes"].stringValue
+        }
+        self.customerNotesTxtView.text = custNotes
+        self.customerNotesTxtView.font = layoutVars.smallFont
+        self.customerNotesTxtView.isEditable = false
+        self.customerNotesTxtView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(self.customerNotesTxtView)
+        
+        
+        
+        
         self.contactTableView.delegate  =  self
         self.contactTableView.dataSource = self
         self.contactTableView.register(ContactTableViewCell.self, forCellReuseIdentifier: "cell")
@@ -83,13 +124,18 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
         self.view.addSubview(self.contactTableView)
         //auto layout group
         let viewsDictionary = [
-            "view1":self.contactTableView
+            "notesLbl":self.customerNotesLbl,
+            "notesTxt":self.customerNotesTxtView,
+            "table":self.contactTableView
         ]  as [String : Any]
         
-        let sizeVals = ["fullWidth": layoutVars.fullWidth,"width": layoutVars.fullWidth ,"navBottom":layoutVars.navAndStatusBarHeight,"height": self.view.frame.size.height - 10]  as [String : Any]
+        //let sizeVals = ["navBottom":layoutVars.navAndStatusBarHeight,"height": self.view.frame.size.height - 10]  as [String : Any]
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(height)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesTxt]-|", options: [], metrics: nil, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[table]-|", options: [], metrics: nil, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[notesLbl(30)][notesTxt(80)]-[table]-10-|", options: [], metrics: nil, views: viewsDictionary))
         
     }
     
@@ -109,7 +155,7 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
         let cell = contactTableView.dequeueReusableCell(withIdentifier: "cell") as! ContactTableViewCell
         contactTableView.rowHeight = 50.0
         
-        cell.contact = Contact(_ID: self.customerJSON["customer"]["contacts"][indexPath.row]["ID"].stringValue, _sort: self.customerJSON["customer"]["contacts"][indexPath.row]["sort"].stringValue, _value: self.customerJSON["customer"]["contacts"][indexPath.row]["value"].stringValue, _type: self.customerJSON["customer"]["contacts"][indexPath.row]["type"].stringValue, _contactName: self.customerJSON["customer"]["contacts"][indexPath.row]["contactName"].stringValue, _main: self.customerJSON["customer"]["contacts"][indexPath.row]["main"].stringValue, _name: self.customerJSON["customer"]["contacts"][indexPath.row]["name"].stringValue,_street1:self.customerJSON["customer"]["contacts"][indexPath.row]["street1"].stringValue,_street2:self.customerJSON["customer"]["contacts"][indexPath.row]["street2"].stringValue,_city:self.customerJSON["customer"]["contacts"][indexPath.row]["city"].stringValue,_state:self.customerJSON["customer"]["contacts"][indexPath.row]["state"].stringValue,_zip:self.customerJSON["customer"]["contacts"][indexPath.row]["zip"].stringValue,_zone:self.customerJSON["customer"]["zone"][indexPath.row]["street1"].stringValue,_zoneName:self.customerJSON["customer"]["contacts"][indexPath.row]["zoneName"].stringValue,_color:self.customerJSON["customer"]["contacts"][indexPath.row]["color"].stringValue,_lat:self.customerJSON["customer"]["contacts"][indexPath.row]["lat"].stringValue as NSString,_lng:self.customerJSON["customer"]["contacts"][indexPath.row]["lng"].stringValue as NSString)
+        cell.contact = Contact(_ID: self.customerJSON["customer"]["contacts"][indexPath.row]["ID"].stringValue, _sort: self.customerJSON["customer"]["contacts"][indexPath.row]["sort"].stringValue, _value: self.customerJSON["customer"]["contacts"][indexPath.row]["value"].stringValue, _type: self.customerJSON["customer"]["contacts"][indexPath.row]["type"].stringValue, _contactName: self.customerJSON["customer"]["contacts"][indexPath.row]["contactName"].stringValue, _main: self.customerJSON["customer"]["contacts"][indexPath.row]["main"].stringValue, _name: self.customerJSON["customer"]["contacts"][indexPath.row]["name"].stringValue,_street1:self.customerJSON["customer"]["contacts"][indexPath.row]["street1"].stringValue,_street2:self.customerJSON["customer"]["contacts"][indexPath.row]["street2"].stringValue,_city:self.customerJSON["customer"]["contacts"][indexPath.row]["city"].stringValue,_state:self.customerJSON["customer"]["contacts"][indexPath.row]["state"].stringValue,_zip:self.customerJSON["customer"]["contacts"][indexPath.row]["zip"].stringValue,_zone:self.customerJSON["customer"]["zone"][indexPath.row]["street1"].stringValue,_zoneName:self.customerJSON["customer"]["contacts"][indexPath.row]["zoneName"].stringValue,_color:self.customerJSON["customer"]["contacts"][indexPath.row]["color"].stringValue,_lat:self.customerJSON["customer"]["contacts"][indexPath.row]["lat"].stringValue as NSString,_lng:self.customerJSON["customer"]["contacts"][indexPath.row]["lng"].stringValue as NSString,_fullAddress:self.customerJSON["customer"]["contacts"][indexPath.row]["fullAddress"].stringValue as String)
         
         switch  self.customerJSON["customer"]["contacts"][indexPath.row]["type"].stringValue {
         //main phone
@@ -132,7 +178,7 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
         case "3":
             cell.iconView.image = UIImage(named:"mapIcon.png")
             
-           // cell.nameLbl?.text = cell.contact.street1 + " " + cell.contact.street2 + " " + cell.contact.city + ", " + cell.contact.state
+            cell.nameLbl?.text = cell.contact.fullAddress
             cell.detailLbl?.text = "Billing Address"
             break
             
@@ -141,6 +187,7 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
             cell.iconView.image = UIImage(named:"mapIcon.png")
             
            // cell.nameLbl?.text = cell.contact.street1 + " " + cell.contact.street2 + " " + cell.contact.city + ", " + cell.contact.state
+            cell.nameLbl?.text = cell.contact.fullAddress
             cell.detailLbl?.text = "Jobsite Address"
             
             break
@@ -262,7 +309,10 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
         
         
         
-        
+        // set preferred state
+        if self.customerJSON["customer"]["contacts"][indexPath.row]["preferred"].stringValue == "1"{
+            cell.contentView.backgroundColor = UIColor.yellow
+        }
         
         
         

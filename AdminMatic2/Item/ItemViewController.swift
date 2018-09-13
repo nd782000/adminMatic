@@ -103,7 +103,8 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         indicator = SDevIndicator.generate(self.view)!
         //reset task array
         //self.tasksArray = []
-        let parameters = ["itemID": self.item.ID as AnyObject]
+        let parameters:[String:String]
+        parameters = ["itemID": self.item.ID as AnyObject] as! [String : String]
         print("parameters = \(parameters)")
         
         
@@ -681,7 +682,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
             
         case "WORKORDER":
             let currentCell = tableView.cellForRow(at: indexPath!) as! ScheduleTableViewCell;
-            let workOrderViewController = WorkOrderViewController(_workOrderID: currentCell.workOrder.ID,_customerName: currentCell.workOrder.customer)
+            let workOrderViewController = WorkOrderViewController(_workOrder: currentCell.workOrder,_customerName: currentCell.workOrder.customer)
             navigationController?.pushViewController(workOrderViewController, animated: false )
             
             //workOrderViewController.scheduleDelegate = self

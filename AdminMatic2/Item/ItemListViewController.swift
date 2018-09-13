@@ -17,8 +17,7 @@ import SwiftyJSON
 class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating{
     var indicator: SDevIndicator!
     var totalItems:Int!
-    //var loadedItems:Int!
-    //var refreshControl:UIRefreshControl!
+    
     var searchController:UISearchController!
     
     var currentSearchMode = SearchMode.name
@@ -177,7 +176,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         self.countLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.countLbl.text = "\(self.itemsArray.count) Active Items "
+        
         self.countView.addSubview(self.countLbl)
 
         
@@ -220,27 +219,37 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
    
     func filterSearchResults(){
+        /*
             self.itemsSearchResults = self.itemsArray.filter({( aItem: Item) -> Bool in
                 return (aItem.name!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)            })
             self.itemTableView.reloadData()
+ */
+        
+        self.itemsSearchResults = self.itemsArray.filter({( aItem: Item) -> Bool in
+            
+            //return type name or name
+            return (aItem.name!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
+        })
+        self.itemTableView.reloadData()
+        
     }
     
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        //print("searchBarTextDidBeginEditing")
+        print("searchBarTextDidBeginEditing")
         shouldShowSearchResults = true
         self.itemTableView.reloadData()
     }
     
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        //print("searchBarCancelButtonClicked")
+        print("searchBarCancelButtonClicked")
         shouldShowSearchResults = false
         self.itemTableView.reloadData()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        //print("searchBarSearchButtonClicked")
+        print("searchBarSearchButtonClicked")
         if !shouldShowSearchResults {
             shouldShowSearchResults = true
             self.itemTableView.reloadData()
@@ -249,10 +258,12 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         searchController.searchBar.resignFirstResponder()
     }
     
+    /*
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         //print("searchBarTextDidEndEditing")
         shouldShowSearchResults = false;
     }
+    */
     
     func willPresentSearchController(_ searchController: UISearchController){
         
@@ -302,23 +313,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         }
     }
     
-    /*
-    func sectionIndexTitlesForTableView(tableView: UITableView) -> [String]? {
-        print("------------------------------")
-        print("sectionIndexTitlesForTableView")
-        print("------------------------------")
-        if shouldShowSearchResults{
-            return nil
-        }else{
-            
-            return sections.map { $0.title }
-            
-        }
-        
-    }
- */
-    
-    
+   
     
     
     
@@ -342,8 +337,14 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //print("numberOfRowsInSection")
         if shouldShowSearchResults{
+            
+            self.countLbl.text = "\(self.itemsSearchResults.count) Item(s) Found"
+            
             return self.itemsSearchResults.count
         } else {
+            
+            self.countLbl.text = "\(self.itemsArray.count) Active Items"
+            
             return sections[section].length
         }
     }
@@ -360,14 +361,22 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //print("self.itemsArray!.count = \(self.itemsArray.count)")
         
         if shouldShowSearchResults{
+            
+            print("cell for table - search")
+            /*
             cell.item = self.itemsSearchResults[indexPath.row]
             let searchString = self.searchController.searchBar.text!.lowercased()
             
             // if(currentSearchMode == .name){
             
             //text highlighting
-            let baseString:NSString = cell.item.name as NSString
-            let highlightedText = NSMutableAttributedString(string: cell.item.name!)
+            //let baseString:NSString = cell.item.name as NSString
+            //let highlightedText = NSMutableAttributedString(string: cell.item.name!)
+            
+            let baseString:NSString = self.itemsSearchResults[indexPath.row].name! as NSString
+            let highlightedText = NSMutableAttributedString(string: self.itemsSearchResults[indexPath.row].name!)
+            
+            
             var error: NSError?
             let regex: NSRegularExpression?
             do {
@@ -378,15 +387,59 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             }
             
             if let regexError = error {
-                //print("Oh no! \(regexError)")
+                print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
                     highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
                 
             }
+            cell.layoutViews()
             cell.nameLbl.attributedText = highlightedText
             //cell.addressLbl.text = cell.item.address
+            */
+            
+            cell.item = self.itemsSearchResults[indexPath.row]
+            
+            let searchString = self.searchController.searchBar.text!.lowercased()
+            
+            //text highlighting
+            
+            
+            
+            
+            let baseString:NSString = self.itemsSearchResults[indexPath.row].name! as NSString
+            let highlightedText = NSMutableAttributedString(string: self.itemsSearchResults[indexPath.row].name!)
+            
+            var error: NSError?
+            let regex: NSRegularExpression?
+            do {
+                regex = try NSRegularExpression(pattern: searchString, options: .caseInsensitive)
+            } catch let error1 as NSError {
+                error = error1
+                regex = nil
+            }
+            if let regexError = error {
+                print("Oh no! \(regexError)")
+            } else {
+                for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
+                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                }
+            }
+            
+            
+            
+            
+            
+            
+            
+            cell.layoutViews()
+            
+            cell.nameLbl.attributedText = highlightedText
+            
+            //cell.descriptionLbl.attributedText = highlightedText2
+            
+            
             
             
             
@@ -394,12 +447,11 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             
             cell.item = self.itemsArray[sections[indexPath.section].index + indexPath.row]
-            cell.nameLbl.text = self.itemsArray[sections[indexPath.section].index + indexPath.row].name
-                       
+            cell.layoutViews()
+            //cell.nameLbl.text = self.itemsArray[sections[indexPath.section].index + indexPath.row].name
         }
         
-        cell.typeLbl.text = "\(cell.item.type!) Type"
-        cell.priceLbl.text = "$\(cell.item.price!)/\(cell.item.units!)"
+       
         return cell
         
         

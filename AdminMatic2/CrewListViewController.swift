@@ -12,10 +12,11 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 import Nuke
+import MessageUI
 
 
 
-class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource{
+class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, MFMessageComposeViewControllerDelegate{
     var indicator: SDevIndicator!
     
     var empID:String!
@@ -44,6 +45,8 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var editCrewBtn:Button = Button(titleText: "Edit")
     
     var employeeViewController:EmployeeViewController!
+    
+    var controller:MFMessageComposeViewController = MFMessageComposeViewController()
     
     
     
@@ -97,13 +100,16 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         // Show Indicator
         indicator = SDevIndicator.generate(self.view)!
         
+        /*
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
         
+        */
         
-        let parameters = ["empID":self.empID as AnyObject, "crewView":"1" as AnyObject, "cb": timeStamp as AnyObject]
+        let parameters:[String:String]
+            parameters = ["empID":self.empID, "crewView":"1"]
         print("parameters = \(parameters)")
         
         
@@ -166,6 +172,8 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 //crew.employeeArray.append(employee)
                 
                 self.employeeArray.append(employee)
+                
+                crew.employeeArray.append(employee)
                 
             }
             
@@ -424,12 +432,69 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     
-    /*
-    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let currentCell = tableView.cellForRow(at: indexPath as IndexPath) as! EmployeeTableViewCell;
+        let call = UITableViewRowAction(style: .normal, title: "Call") { action, index in
+            //print("call button tapped")
+            //callPhoneNumber(currentCell.employee.phone)
+            if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
+                UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: [:], completionHandler: nil)
+            }
+            tableView.setEditing(false, animated: true)
+        }
+        call.backgroundColor = self.layoutVars.buttonColor1
+        let text = UITableViewRowAction(style: .normal, title: "Text") { action, index in
+            if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
+                if (MFMessageComposeViewController.canSendText()) {
+                    self.controller = MFMessageComposeViewController()
+                    self.controller.recipients = [currentCell.employee.phone]
+                    self.controller.messageComposeDelegate = self
+                    
+                    self.controller.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(EmployeeListViewController.dismissMessage))
+                    
+                    self.present(self.controller, animated: true, completion: nil)
+                    tableView.setEditing(false, animated: true)
+                }
+            }
+        }
+        text.backgroundColor = UIColor.orange
+        
+        let group = UITableViewRowAction(style: .normal, title: "Group") { action, index in
+        let sectionNumber = indexPath.section
+        let groupMessageViewController = GroupMessageViewController(_employees: self.crewArray[sectionNumber].employeeArray, _mode:"Crew")
+            
+            self.navigationController?.pushViewController(groupMessageViewController, animated: false )
+        }
+        
+        group.backgroundColor = UIColor.darkGray
+        
+        return [call,text,group]
     }
-    */
     
+    
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        print("didfinish")
+        //... handle sms screen actions
+        self.dismiss(animated: true, completion: nil)
+        //getBatch()
+        //print("try and send text")
+        
+        
+    }
+    
+    
+    @objc func dismissMessage(){
+        print("dismiss")
+        controller.dismiss(animated: true, completion: nil)
+        
+    }
+    
+    
+    
+    
+    
+    
+   
     
     @objc func goBack(){
         _ = navigationController?.popViewController(animated: true)

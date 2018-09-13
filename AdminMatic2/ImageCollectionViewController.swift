@@ -16,10 +16,11 @@ import DKImagePickerController
 protocol ImageViewDelegate{
     func getPrevNextImage(_next:Bool)
     func refreshImages(_images:[Image], _scoreAdjust:Int)
+    func showCustomerImages(_customer:String)
 }
 
 protocol ImageSettingsDelegate{
-    func updateSettings(_uploadedBy:String,_portfolio:String,_attachment:String,_task:String,_order:String)
+    func updateSettings(_uploadedBy:String,_portfolio:String,_attachment:String,_task:String,_order:String,_customer:String)
 }
     
 protocol ImageLikeDelegate{
@@ -27,23 +28,37 @@ protocol ImageLikeDelegate{
 }
 
 
-class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating, ImageViewDelegate, ImageSettingsDelegate, ImageLikeDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UIPickerViewDelegate  {
+class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating, ImageViewDelegate, ImageSettingsDelegate, ImageLikeDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UIPickerViewDelegate, UITableViewDelegate, UITableViewDataSource  {
         
     var layoutVars:LayoutVars!
     var indicator: SDevIndicator!
     var totalImages:Int!
     var images: JSON!
     var imageArray:[Image] = []
-    var imagesSearchResults:[Image] = []
-    var imagesSearchResults2:[Image] = []
+    //var imagesSearchResults:[Image] = []
+    //var imagesSearchResults2:[Image] = []
     var shouldShowSearchResults:Bool = false
     var searchTerm:String = "" // used to retain search when leaving this view and having to deactivate search to enable device rotation - a real pain
     var searchController:UISearchController!
+    
+    var tagsResultsTableView:TableView = TableView()
+    var tagsJSON: JSON!
+    var tags = [String]()
+    var tagsSearchResults:[String] = []
+    var selectedTag:String = ""
+    
+    
+    
+    
+    
     let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
     var imageCollectionView: UICollectionView?
     var addImageBtn:Button = Button(titleText: "Add Images")
     
     var imageSettingsBtn:Button = Button(titleText: "")
+    let settingsIcon:UIImageView = UIImageView()
+    let settingsImg = UIImage(named:"settingsIcon.png")
+    let settingsEditedImg = UIImage(named:"settingsEditedIcon.png")
     
     var currentImageIndex:Int!
     var imageDetailViewController:ImageDetailViewController!
@@ -55,6 +70,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     var portfolio:String = "0"
     var attachment:String = "0"
     var task:String = "0"
+    var customer:String = ""
     
     var order:String = "ID DESC"
     
@@ -65,9 +81,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     var batch = 0
     
     
-    let settingsIcon:UIImageView = UIImageView()
-    let settingsImg = UIImage(named:"settingsIcon.png")
-    let settingsEditedImg = UIImage(named:"settingsEditedIcon.png")
+    
     
     
     var i:Int = 0 //number of times thia vc is displayed
@@ -98,9 +112,62 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
        layoutVars = LayoutVars()
         
-            getImages()
+            getTags()
        
     }
+    
+    func getTags(){
+        //print("parameters = \(parameters)")
+        // Show Indicator
+        indicator = SDevIndicator.generate(self.view)!
+        
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/tags.php",method: .post, parameters: nil, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("tags response = \(response)")
+            }
+            
+            .responseJSON(){
+                response in
+                
+                if let json = response.result.value {
+                    print("JSON: \(json)")
+                    self.tagsJSON = JSON(json)
+                    self.parseTagsJSON()
+                    
+                }
+                
+               // self.indicator.dismissIndicator()
+                
+                
+        }
+        
+        
+        
+    }
+    
+    
+    func parseTagsJSON(){
+        let jsonCount = self.tagsJSON["tags"].count
+        //self.totalImages = jsonCount
+        print("JSONcount: \(jsonCount)")
+        
+        
+        for i in 0 ..< jsonCount {
+            
+            
+            
+            self.tags.append(self.tagsJSON["tags"][i]["name"].stringValue)
+            
+        }
+        
+        self.getImages()
+        
+        
+    }
+    
+    
+    
     
     
     
@@ -123,8 +190,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         print("get images")
        
         
-        // Show Indicator
-        indicator = SDevIndicator.generate(self.view)!
+       
         
         
         //cache buster
@@ -134,15 +200,26 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         var parameters = [String:AnyObject]()
         
-       
-         parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject,"limit": "\(self.limit)" as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject, "cb":timeStamp as AnyObject]
+        
+        
+        if selectedTag == ""{
+            parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject, "limit": self.limit as AnyObject,"offset": self.offset as AnyObject, "order":self.order as AnyObject, "cb":timeStamp as AnyObject]
+        }else{
+            parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject, "tag":self.selectedTag as AnyObject, "limit": self.limit as AnyObject,"offset": self.offset as AnyObject, "order":self.order as AnyObject, "cb":timeStamp as AnyObject]
+            
+        }
+ 
+        
+     
         
         if(self.uploadedBy != "0"){
-            parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject,"limit": "\(self.limit)" as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject, "cb":timeStamp as AnyObject, "uploadedBy": self.uploadedBy as AnyObject]
+            parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject, "limit": "\(self.limit)" as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject, "cb":timeStamp as AnyObject, "uploadedBy": self.uploadedBy as AnyObject]
         }
         
         if(self.portfolio == "1"){
-            parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject,"limit": "\(self.limit)" as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject, "cb":timeStamp as AnyObject, "portfolio": self.portfolio as AnyObject]
+           
+            parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject, "tag":self.selectedTag as AnyObject, "limit": self.limit as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject, "cb":timeStamp as AnyObject, "portfolio": self.portfolio as AnyObject]
+           
         }
         
         if(self.attachment == "1"){
@@ -151,6 +228,10 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         if(self.task == "1"){
             parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject,"limit": "\(self.limit)" as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject, "cb":timeStamp as AnyObject, "task": self.task as AnyObject]
+        }
+        
+        if self.customer != ""{
+            parameters = ["loginID": self.appDelegate.loggedInEmployee?.ID as AnyObject,"limit": "\(self.limit)" as AnyObject,"offset": "\(self.offset)" as AnyObject, "order":self.order as AnyObject, "cb":timeStamp as AnyObject, "customer": self.customer as AnyObject]
         }
         
         
@@ -239,13 +320,12 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
        
             // Initialize and perform a minimum configuration to the search controller.
             searchController = UISearchController(searchResultsController: nil)
-            searchController.searchBar.placeholder = "Search Images"
+            searchController.searchBar.placeholder = "Search Image Tags"
             searchController.searchResultsUpdater = self
             searchController.delegate = self
             searchController.searchBar.delegate = self
             searchController.dimsBackgroundDuringPresentation = false
             searchController.hidesNavigationBarDuringPresentation = false
-           // navigationItem.titleView = searchController.searchBar
         
         
         
@@ -284,6 +364,17 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         imageCollectionView!.addSubview(refresher)
         
         
+        self.tagsResultsTableView.translatesAutoresizingMaskIntoConstraints = false
+        self.tagsResultsTableView.delegate  =  self
+        self.tagsResultsTableView.dataSource = self
+        self.tagsResultsTableView.register(TagTableViewCell.self, forCellReuseIdentifier: "tagCell")
+        self.tagsResultsTableView.alpha = 0.0
+        self.tagsResultsTableView.separatorStyle = .none
+        self.tagsResultsTableView.backgroundColor = UIColor.clear
+        self.view.addSubview(self.tagsResultsTableView)
+        
+        
+        
         
         
         self.addImageBtn.addTarget(self, action: #selector(ImageCollectionViewController.addImage), for: UIControlEvents.touchUpInside)
@@ -312,7 +403,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         settingsIcon.frame = CGRect(x: 11, y: 11, width: 28, height: 28)
         
         
-        if(self.uploadedBy != "0" || self.portfolio != "0" || self.attachment != "0" || self.task != "0" || self.order != "ID DESC"){
+        if(self.uploadedBy != "0" || self.portfolio != "0" || self.attachment != "0" || self.task != "0" || self.order != "ID DESC" || self.customer != ""){
             print("changes made")
             settingsIcon.image = settingsEditedImg
         }else{
@@ -358,11 +449,15 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
 
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-         if(shouldShowSearchResults == false){
+         /*if(shouldShowSearchResults == false){
             return self.imageArray.count
          }else{
             return self.imagesSearchResults.count
-        }
+        }*/
+        
+        
+        return self.imageArray.count
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -372,46 +467,27 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         cell.activityView.startAnimating()
         cell.imageView.image = nil
         
-         //print("name = \(self.imageArray)")
+       
+        print("name = \(self.imageArray[indexPath.row].name!)")
         
-        if(shouldShowSearchResults == false){
-            print("name = \(self.imageArray[indexPath.row].name!)")
-            
-            cell.textLabel.text = " \(self.imageArray[indexPath.row].customerName)"
-            
-            
-            cell.image = self.imageArray[indexPath.row]
-            cell.activityView.startAnimating()
-            
-            print("thumb = \(self.imageArray[indexPath.row].thumbPath!)")
-            
-            let imgURL:URL = URL(string: self.imageArray[indexPath.row].thumbPath!)!
-            
-            //print("imgURL = \(imgURL)")
-            
-            
-            
-            Nuke.loadImage(with: imgURL, into: cell.imageView){
-                //print("nuke loadImage")
-                cell.imageView?.handle(response: $0, isFromMemoryCache: $1)
-                cell.activityView.stopAnimating()
-                
-            }
-            
-            
-            
-            
-        }else{
-            cell.textLabel.text = " \(self.imagesSearchResults[indexPath.row].name!)"
-            cell.image = self.imagesSearchResults[indexPath.row]
-            cell.activityView.startAnimating()
-            let imgURL:URL = URL(string: self.imagesSearchResults[indexPath.row].thumbPath!)!
-            Nuke.loadImage(with: imgURL, into: cell.imageView){ 
-                cell.imageView?.handle(response: $0, isFromMemoryCache: $1)
-                cell.activityView.stopAnimating()
-            }
-
-            
+        cell.textLabel.text = " \(self.imageArray[indexPath.row].customerName)"
+        
+        
+        cell.image = self.imageArray[indexPath.row]
+        cell.activityView.startAnimating()
+        
+        print("thumb = \(self.imageArray[indexPath.row].thumbPath!)")
+        
+        let imgURL:URL = URL(string: self.imageArray[indexPath.row].thumbPath!)!
+        
+        //print("imgURL = \(imgURL)")
+        
+        
+        
+        Nuke.loadImage(with: imgURL, into: cell.imageView){
+            //print("nuke loadImage")
+            cell.imageView?.handle(response: $0, isFromMemoryCache: $1)
+            cell.activityView.stopAnimating()
             
         }
         
@@ -435,14 +511,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         imageDetailViewController.delegate = self
         imageDetailViewController.imageLikeDelegate = self
         
-        
-        if(searchController != nil){
-            searchTerm = self.searchController.searchBar.text!
-            imagesSearchResults2 = imagesSearchResults
-            
-            searchController.isActive = false
-        }
-        
+      
         
         currentImageIndex = indexPath.row
         
@@ -461,35 +530,44 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     func filterSearchResults(){
         //print("filterSearchResults")
         
-        self.imagesSearchResults = self.imageArray.filter({( aImage: Image) -> Bool in
-            return ("\(aImage.name!)\(aImage.tags)".lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)            })
-        self.imageCollectionView?.reloadData()
+        self.tagsSearchResults = self.tags.filter({( aTag: String) -> Bool in
+            return (aTag.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)            })
+        self.tagsResultsTableView.reloadData()
+        //self.imageCollectionView?.reloadData()
     }
     
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         //print("searchBarTextDidBeginEditing")
-        shouldShowSearchResults = true
-        self.imageCollectionView?.reloadData()
+        //shouldShowSearchResults = true
+        //self.imageCollectionView?.reloadData()
+        
+        self.tagsResultsTableView.alpha = 1.0
+        self.tagsResultsTableView.reloadData()
+        
+        searchBar.setShowsCancelButton(true, animated: true)
     }
+    
     
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         
         searchTerm = ""
         
-        //print("searchBarCancelButtonClicked")
-        shouldShowSearchResults = false
-        self.imagesSearchResults = []
+        
+        self.tagsSearchResults = []
+        self.tagsResultsTableView.alpha = 0.0
+        self.tagsResultsTableView.reloadData()
+        self.selectedTag = ""
+        self.imageArray = []
         self.imageCollectionView?.reloadData()
+        getImages()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        //print("searchBarSearchButtonClicked")
-        if !shouldShowSearchResults {
-            shouldShowSearchResults = true
-            self.imageCollectionView?.reloadData()
-        }
+       
+        
+        self.tagsResultsTableView.reloadData()
         
         searchController.searchBar.resignFirstResponder()
     }
@@ -497,6 +575,92 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         //print("searchBarTextDidEndEditing")
     }
+    
+    
+    
+    /////////////// Table Delegate Methods   ///////////////////////
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+        var count:Int!
+        count = self.tagsSearchResults.count
+        return count
+    }
+    
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
+       
+        //print("cell for row tableViewMode = \(self.searchController.tableViewMode)")
+        
+        
+            //print("customer name: \(self.customerNames[indexPath.row])")
+            let searchString = self.searchController.searchBar.text!.lowercased()
+        
+            let cell:TagTableViewCell = tagsResultsTableView.dequeueReusableCell(withIdentifier: "tagCell") as! TagTableViewCell
+            
+            
+            cell.titleLbl.text = self.tagsSearchResults[indexPath.row]
+       
+        
+            //text highlighting
+            let baseString:NSString = self.tagsSearchResults[indexPath.row] as NSString
+            let highlightedText = NSMutableAttributedString(string: self.tagsSearchResults[indexPath.row])
+            var error: NSError?
+            let regex: NSRegularExpression?
+            do {
+                regex = try NSRegularExpression(pattern: searchString, options: .caseInsensitive)
+            } catch let error1 as NSError {
+                error = error1
+                regex = nil
+            }
+            if let regexError = error {
+                print("Oh no! \(regexError)")
+            } else {
+                for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
+                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                }
+            }
+            cell.titleLbl.attributedText = highlightedText
+            
+            
+            return cell
+        
+            
+            
+        //}
+        
+        
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+            let currentCell = tableView.cellForRow(at: indexPath) as! TagTableViewCell
+           // self.searchController.searchBar.text = currentCell.titleLbl.text!
+            self.selectedTag = currentCell.titleLbl.text!
+            self.searchController.searchBar.resignFirstResponder()
+            self.tagsResultsTableView.alpha = 0.0
+        
+            self.lazyLoad = 0
+            self.limit = 100
+            self.offset = 0
+            self.batch = 0
+            self.imageArray = []
+        
+        
+            getImages()
+        
+        self.searchController.searchBar.text = currentCell.titleLbl.text!
+            searchTerm = self.selectedTag
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     func willPresentSearchController(_ searchController: UISearchController){
         
@@ -615,7 +779,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     @objc func imageSettings(){
         print("image settings")
         
-        let imageSettingsViewController = ImageSettingsViewController(_uploadedBy:self.uploadedBy,_portfolio: self.portfolio, _attachment: self.attachment, _task: self.task, _order:self.order)
+        let imageSettingsViewController = ImageSettingsViewController(_uploadedBy:self.uploadedBy,_portfolio: self.portfolio, _attachment: self.attachment, _task: self.task, _order:self.order, _customer:self.customer)
         imageSettingsViewController.imageSettingsDelegate = self
         navigationController?.pushViewController(imageSettingsViewController, animated: false )
         
@@ -626,7 +790,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     
     func getPrevNextImage(_next:Bool){
         //print("IN  getPrevNextImage currentImageIndex = \(currentImageIndex!)")
-        if(shouldShowSearchResults == false){
+        //if(shouldShowSearchResults == false){
             if(_next == true){
                 if(currentImageIndex + 1) > (self.imageArray.count - 1){
                     currentImageIndex = 0
@@ -659,45 +823,12 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                     imageDetailViewController.imageFullViewController.layoutViews()
                 }
             }
-        }else{
-            if(_next == true){
-                if(currentImageIndex + 1) > (self.imagesSearchResults2.count - 1){
-                    currentImageIndex = 0
-                    imageDetailViewController.image = self.imagesSearchResults2[currentImageIndex]
-                    imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.imagesSearchResults2[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
-                }else{
-                    currentImageIndex = currentImageIndex + 1
-                    imageDetailViewController.image = self.imagesSearchResults2[currentImageIndex]
-                    imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.imagesSearchResults2[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
-                }
-                
-            }else{
-                if(currentImageIndex - 1) < 0{
-                    currentImageIndex = self.imagesSearchResults2.count - 1
-                    imageDetailViewController.image = self.imagesSearchResults2[currentImageIndex]
-                    imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.imagesSearchResults2[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
-                }else{
-                    currentImageIndex = currentImageIndex - 1
-                    imageDetailViewController.image = self.imagesSearchResults2[currentImageIndex]
-                    imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.imagesSearchResults2[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
-                }
-            }
-        }
-        //print("OUT  getPrevNextImage currentImageIndex = \(currentImageIndex!)")
+            
         
-        if(shouldShowSearchResults == false){
             imageCollectionView?.scrollToItem(at: IndexPath(row: currentImageIndex, section: 0),
                                               at: .top,
                                               animated: false)
-        }
+       
         
 
     }
@@ -726,37 +857,33 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                                           animated: true)
          
  
-        /*
-         print("scoreAdjust")
-        
-        print("scoreAdjust = \(_scoreAdjust)")
-        
-        //add appPoints
-        var points:Int = _scoreAdjust
-        
-        print("points = \(points)")
-        
-        if(points > 0){
-            self.appDelegate.showMessage(_message: "earned \(points) App Points!")
-        }else if(points < 0){
-            points = points * -1
-            self.appDelegate.showMessage(_message: "lost \(points) App Points!")
-            
-        }
- */
-
+       
         
         
     }
     
-    func updateSettings(_uploadedBy:String,_portfolio:String, _attachment:String,_task:String,_order:String){
+    func showCustomerImages(_customer:String){
+        print("show customer images cust: \(_customer)")
+        
+        self.customer = _customer
+        self.imageArray = []
+        getImages()
+        
+        
+    }
+    
+    
+    
+    
+    func updateSettings(_uploadedBy:String,_portfolio:String, _attachment:String,_task:String,_order:String,_customer:String){
         print("update settings")
-        print("_uploadedBy = \(_uploadedBy) _portfolio = \(_portfolio) _attachment = \(_attachment) _task = \(_task) _order = \(_order)")
+        print("_uploadedBy = \(_uploadedBy) _portfolio = \(_portfolio) _attachment = \(_attachment) _task = \(_task) _order = \(_order) _customer = \(_customer)")
         self.portfolio = _portfolio
         self.attachment = _attachment
         self.task = _task
         self.uploadedBy = _uploadedBy
         self.order = _order
+        self.customer = _customer
         
         offset = 0
         batch = 0
@@ -806,6 +933,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         }
         
         imageCollectionView?.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height - 50)
+        tagsResultsTableView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height - 50)
        self.addImageBtn.frame = CGRect(x:0, y: self.view.frame.height - 50, width: self.view.frame.width, height: 50)
         
         

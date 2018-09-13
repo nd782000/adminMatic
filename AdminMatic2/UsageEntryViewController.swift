@@ -169,7 +169,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         self.stopBtn.addTarget(self, action: #selector(UsageEntryViewController.stopTime), for: UIControlEvents.touchUpInside)
         
         self.submitBtn = Button(titleText: "Submit")
-        self.submitBtn.backgroundColor = UIColor(hex:0x00ff00, op:1)
+        self.submitBtn.backgroundColor = UIColor(hex:0xE09E43, op:1)
         self.startStopContainerView.addSubview(submitBtn)
         self.submitBtn.addTarget(self, action: #selector(UsageEntryViewController.submit), for: UIControlEvents.touchUpInside)
         
@@ -187,7 +187,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             "submitBtn":self.submitBtn
             
         ] as [String:Any]
-        let metricsDictionary = ["screenWidth": self.view.frame.size.width as AnyObject,"screenHeight": self.view.frame.size.height,"fullWidth": self.view.frame.size.width - 20,"halfWidth": (self.view.frame.size.width - 20)/2,"inputHeight":layoutVars.inputHeight,"doubleInputHeight":layoutVars.inputHeight*2] as [String : Any]
+        let metricsDictionary = ["screenWidth": self.view.frame.size.width as AnyObject,"screenHeight": self.view.frame.size.height,"fullWidth": self.view.frame.size.width - 20,"halfWidth": (self.view.frame.size.width - 28)/2,"inputHeight":layoutVars.inputHeight,"doubleInputHeight":layoutVars.inputHeight*2 + 8] as [String : Any]
         
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[container(screenWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
@@ -1124,6 +1124,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                             )
                             self.usageToLog.insert(usage, at: 0)
                         }
+                        playSaveSound()
                         self.usageTableView.reloadData()
                     case .failure(let error):
                         self.indicator.dismissIndicator()

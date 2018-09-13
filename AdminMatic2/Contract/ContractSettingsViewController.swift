@@ -1,0 +1,554 @@
+//
+//  ContractSettingsViewController.swift
+//  AdminMatic2
+//
+//  Created by Nick on 8/20/18.
+//  Copyright © 2018 Nick. All rights reserved.
+//
+
+
+
+import Foundation
+import UIKit
+
+
+
+
+class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIScrollViewDelegate {
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var layoutVars:LayoutVars = LayoutVars()
+    var indicator: SDevIndicator!
+    
+    
+    var status:String!
+    var salesRep:String!
+    var salesRepName:String!
+    
+    
+    
+    var filterArray:[String] = ["New","Sent","Awarded","Scheduled","Declined","Waiting","Cancelled"]
+    
+    var filterLbl:GreyLabel!
+    var filterTxtField:PaddedTextField!
+    var filterPicker: Picker!
+    
+    
+    //rep search
+    var repLbl:GreyLabel!
+    var repSearchBar:UISearchBar = UISearchBar()
+    var repResultsTableView:TableView = TableView()
+    var repSearchResults:[String] = []
+    
+    
+    
+    
+    var clearFiltersBtn:Button = Button(titleText: "Clear All Filters")
+    
+    // var imageDelegate:ImageViewDelegate!
+    var contractSettingsDelegate:ContractSettingsDelegate!
+    
+    var editsMade:Bool = false
+    
+    
+    
+    
+    init(_status:String, _salesRep:String, _salesRepName:String){
+        super.init(nibName:nil,bundle:nil)
+        print("init _status = \(_status)  _salesRep = \(_salesRep)")
+        
+        self.status = _status
+        self.salesRep = _salesRep
+        self.salesRepName = _salesRepName
+        
+        
+    }
+    
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        
+        
+        
+        
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        // Do any additional setup after loading the view.
+        
+        
+        
+        view.backgroundColor = layoutVars.backgroundColor
+        title = "Contract Settings"
+        
+        //custom back button
+        let backButton:UIButton = UIButton(type: UIButtonType.custom)
+        backButton.addTarget(self, action: #selector(ImageSettingsViewController.goBack), for: UIControlEvents.touchUpInside)
+        backButton.setTitle("Back", for: UIControlState.normal)
+        backButton.titleLabel!.font =  layoutVars.buttonFont
+        backButton.sizeToFit()
+        let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
+        navigationItem.leftBarButtonItem  = backButtonItem
+        
+        
+        self.layoutViews()
+        
+    }
+    
+    
+    func layoutViews(){
+        
+        print("layoutViews")
+        // indicator.dismissIndicator()
+        
+        self.filterPicker = Picker()
+        self.filterPicker.delegate = self
+        
+        self.filterLbl = GreyLabel()
+        self.filterLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.filterLbl.text = "Status:"
+        self.view.addSubview(self.filterLbl)
+        
+        self.filterTxtField = PaddedTextField()
+        if status != ""{
+            self.filterTxtField.text = self.filterArray[Int(status)!]
+            
+            self.filterPicker.selectRow(Int(status)!, inComponent: 0, animated: false)
+                
+                
+           
+        }
+        //setFilterText()
+        
+        self.filterTxtField.textAlignment = NSTextAlignment.center
+        self.filterTxtField.tag = 1
+        self.filterTxtField.delegate = self
+        self.filterTxtField.tintColor = UIColor.clear
+        self.filterTxtField.inputView = filterPicker
+        self.view.addSubview(self.filterTxtField)
+        
+        
+        print("layoutViews 1")
+        let filterToolBar = UIToolbar()
+        filterToolBar.barStyle = UIBarStyle.default
+        filterToolBar.barTintColor = UIColor(hex:0x005100, op:1)
+        filterToolBar.sizeToFit()
+        
+        let filterCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ContractSettingsViewController.cancelFilter))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let filterSelectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ContractSettingsViewController.filter))
+        
+        filterToolBar.setItems([filterCloseButton, spaceButton, filterSelectButton], animated: false)
+        filterToolBar.isUserInteractionEnabled = true
+        
+        filterTxtField.inputAccessoryView = filterToolBar
+        
+        
+        
+        
+        //sales rep
+        self.repLbl = GreyLabel()
+        self.repLbl.text = "Sales Rep:"
+        
+        self.view.addSubview(repLbl)
+        
+        
+        
+        repSearchBar.placeholder = "Sales Rep..."
+        repSearchBar.translatesAutoresizingMaskIntoConstraints = false
+        //customerSearchBar.layer.cornerRadius = 4
+        
+        repSearchBar.layer.borderWidth = 1
+        repSearchBar.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
+        repSearchBar.layer.cornerRadius = 4.0
+        repSearchBar.inputView?.layer.borderWidth = 0
+        
+        repSearchBar.clipsToBounds = true
+        
+        repSearchBar.backgroundColor = UIColor.white
+        repSearchBar.barTintColor = UIColor.white
+        repSearchBar.searchBarStyle = UISearchBarStyle.default
+        repSearchBar.delegate = self
+        //repSearchBar.tag = 2
+        self.view.addSubview(repSearchBar)
+        
+        
+        let repToolBar = UIToolbar()
+        repToolBar.barStyle = UIBarStyle.default
+        repToolBar.barTintColor = UIColor(hex:0x005100, op:1)
+        repToolBar.sizeToFit()
+        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ContractSettingsViewController.cancelRepInput))
+        
+        repToolBar.setItems([closeRepButton], animated: false)
+        repToolBar.isUserInteractionEnabled = true
+        repSearchBar.inputAccessoryView = repToolBar
+        
+        
+        
+        
+        if(self.appDelegate.salesRepIDArray.count == 0){
+            repSearchBar.isUserInteractionEnabled = false
+        }
+ 
+        
+        if(salesRepName != ""){
+            repSearchBar.text = salesRepName
+        }
+ 
+        
+        
+        self.repResultsTableView.translatesAutoresizingMaskIntoConstraints = false
+        self.repResultsTableView.delegate  =  self
+        self.repResultsTableView.dataSource = self
+        self.repResultsTableView.register(CustomerTableViewCell.self, forCellReuseIdentifier: "repCell")
+        self.repResultsTableView.alpha = 0.0
+        
+        
+        
+        
+        
+        
+        
+        
+        self.clearFiltersBtn.addTarget(self, action: #selector(ImageSettingsViewController.clearFilters), for: UIControlEvents.touchUpInside)
+        
+        // self.addImageBtn.frame = CGRect(x:0, y: self.view.frame.height - 50, width: self.view.frame.width - 100, height: 50)
+        self.clearFiltersBtn.translatesAutoresizingMaskIntoConstraints = false
+        //self.clearFiltersBtn.layer.borderColor = UIColor.white.cgColor
+        //self.clearFiltersBtn.layer.borderWidth = 1.0
+        self.view.addSubview(self.clearFiltersBtn)
+        
+        
+        
+        self.view.addSubview(self.repResultsTableView)
+        
+        
+        let viewsDictionary = [
+            "filterLbl":self.filterLbl,"filterTxt":self.filterTxtField,"repLbl":self.repLbl,
+            "repSearchBar":self.repSearchBar,
+            "repTable":self.repResultsTableView,"clearFiltersBtn":self.clearFiltersBtn
+            ] as [String:Any]
+        
+        let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": (layoutVars.fullWidth/2)-15, "height": 24,"fullHeight":layoutVars.fullHeight - 344, "navHeight":layoutVars.navAndStatusBarHeight + 20] as [String:Any]
+        
+        //////////////   auto layout position constraints   /////////////////////////////
+        
+        
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[filterLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[filterTxt]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repSearchBar]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repTable]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+       
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[clearFiltersBtn]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[filterLbl(40)][filterTxt(40)]-20-[repLbl(40)][repSearchBar(40)][repTable]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[filterLbl(40)][filterTxt(40)]-20-[repLbl(40)][repSearchBar(40)]-20-[clearFiltersBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        
+    }
+    
+    
+    
+    
+    //picker view methods
+    
+    public func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        
+        
+        var count:Int = 1
+        
+        //if pickerView == filterPicker {
+            print("numberOfComponents = \(filterArray.count )")
+            count = filterArray.count
+        //}
+        
+        return count
+    }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        
+        var title = ""
+        
+       // if pickerView == filterPicker {
+            print("titleForRow = \(filterArray[row])")
+            title = filterArray[row]
+        //}
+        
+        
+        return title
+        
+        
+    }
+    
+    
+    /*
+     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+     if pickerView == filterPicker {
+     filter()
+     } else if pickerView == orderPicker{
+     setOrder()
+     }
+     }
+     */
+    
+    
+    
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    
+    
+    /////////////// Search Delegate Methods   ///////////////////////
+    
+    /*
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        <#code#>
+    }
+    */
+    
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        // Filter the data you have. For instance:
+        print("search edit")
+        print("searchText.count = \(searchText.count)")
+        
+        
+            if (searchText.count == 0) {
+                self.repResultsTableView.alpha = 0.0
+                self.salesRep = ""
+                self.salesRepName = ""
+            }else{
+                self.repResultsTableView.alpha = 1.0
+            }
+            
+        
+        
+        
+        filterSearchResults()
+    }
+    
+    
+    
+    func filterSearchResults(){
+        
+        
+            print("Rep filter")
+            repSearchResults = []
+            self.repSearchResults = self.appDelegate.salesRepNameArray.filter({( aRep: String ) -> Bool in
+                return (aRep.lowercased().range(of: repSearchBar.text!.lowercased(), options:.regularExpression) != nil)})
+            self.repResultsTableView.reloadData()
+            
+        
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+       
+            self.repResultsTableView.reloadData()
+            
+            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+                self.view.frame.origin.y -= 160
+                
+                
+            }, completion: { finished in
+                print("Napkins opened!")
+            })
+           
+        
+        
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        print("searchBarTextDidEndEditing")
+        // self.tableViewMode = "TASK"
+        
+       
+            if(self.view.frame.origin.y < 0){
+                UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+                    self.view.frame.origin.y += 160
+                    
+                    
+                }, completion: { finished in
+                })
+            }
+        
+        
+        
+        
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        self.repResultsTableView.reloadData()
+            
+        
+        searchBar.resignFirstResponder()
+        
+        // self.tableViewMode = "TASK"
+        
+    }
+    
+    
+    
+    
+    /////////////// Table Delegate Methods   ///////////////////////
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+        var count:Int!
+       
+        count = self.repSearchResults.count
+        
+        
+        return count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
+        
+            let searchString = self.repSearchBar.text!.lowercased()
+            let cell:CustomerTableViewCell = repResultsTableView.dequeueReusableCell(withIdentifier: "repCell") as! CustomerTableViewCell
+            
+            cell.nameLbl.text = self.repSearchResults[indexPath.row]
+            cell.name = self.repSearchResults[indexPath.row]
+            if let i = self.appDelegate.salesRepNameArray.index(of: cell.nameLbl.text!) {
+                cell.id = self.self.appDelegate.salesRepIDArray[i]
+            } else {
+                cell.id = ""
+            }
+            
+            //text highlighting
+            let baseString:NSString = cell.name as NSString
+            let highlightedText = NSMutableAttributedString(string: cell.name)
+            var error: NSError?
+            let regex: NSRegularExpression?
+            do {
+                regex = try NSRegularExpression(pattern: searchString, options: .caseInsensitive)
+            } catch let error1 as NSError {
+                error = error1
+                regex = nil
+            }
+            if let regexError = error {
+                print("Oh no! \(regexError)")
+            } else {
+                for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
+                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                }
+            }
+            cell.nameLbl.attributedText = highlightedText
+            
+            
+            return cell
+            // break
+            
+        
+        
+        
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+            let currentCell = tableView.cellForRow(at: indexPath) as! CustomerTableViewCell
+            self.salesRep = currentCell.id
+            self.salesRepName = currentCell.name
+            
+            repSearchBar.text = currentCell.name
+            repResultsTableView.alpha = 0.0
+            repSearchBar.resignFirstResponder()
+        
+        editsMade = true
+    }
+    
+    
+    
+    
+    
+    @objc func cancelRepInput(){
+        print("Cancel Rep Input")
+        self.repSearchBar.resignFirstResponder()
+        self.repResultsTableView.alpha = 0.0
+    }
+    
+    
+    
+    
+    
+    
+    
+    @objc func cancelFilter() {
+        filterTxtField.resignFirstResponder()
+    }
+    
+    
+    
+    @objc func filter() {
+        filterTxtField.resignFirstResponder()
+        
+        print("set filter")
+        
+        let row = self.filterPicker.selectedRow(inComponent: 0)
+        
+        
+        editsMade = true
+        
+        //resetVals()
+        status = "\(row)"
+        
+        
+        self.filterTxtField.text = self.filterArray[Int(status)!]
+        
+        //setFilterText()
+        
+        
+    }
+    
+    
+    
+   
+    
+    
+    @objc func clearFilters() {
+        
+        //self.status = ""
+        resetVals()
+        
+        contractSettingsDelegate.updateSettings(_status: self.status, _salesRep: self.salesRep, _salesRepName: self.salesRepName)
+        
+        goBack()
+    }
+    
+    func resetVals(){
+        print("resetVals")
+        self.status = ""
+        self.salesRep = ""
+        self.salesRepName = ""
+    }
+    
+    
+    
+    @objc func goBack(){
+        _ = navigationController?.popViewController(animated: false)
+        
+        if(editsMade == true){
+            contractSettingsDelegate.updateSettings(_status: self.status, _salesRep: self.salesRep, _salesRepName: self.salesRepName)
+            
+        }
+    }
+    
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+        //print("Test")
+    }
+    
+}
+

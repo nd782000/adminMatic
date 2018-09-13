@@ -12,7 +12,8 @@ import Alamofire
 import SwiftyJSON
 
 protocol EditLeadDelegate{
-    func updateLead(_lead:Lead)
+    func updateLead(_lead:Lead,_newStatusValue:String)
+    //func updateTable()
     
 }
 
@@ -31,7 +32,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     var statusIcon:UIImageView = UIImageView()
     var statusTxtField:PaddedTextField!
     var statusPicker: Picker!
-    var statusArray = ["In Progress","Done","Cancel","Waiting"]
+    var statusArray = ["Not Started", "In Progress","Done","Cancel","Waiting"]
     var statusValue: String!
     var statusValueToUpdate: String!
     var customerBtn: Button!
@@ -54,12 +55,18 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     var tasksTableView: TableView!
     var imageUploadPrepViewController:ImageUploadPrepViewController!
     
+    var addBtn:Button = Button(titleText: "Add Tasks")
+    var assignBtn:Button = Button(titleText: "Assign Tasks")
+    
+    
     
     init(_lead:Lead){
         super.init(nibName:nil,bundle:nil)
         //print("lead init \(_leadID)")
         self.lead = _lead
     }
+    
+   
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -96,7 +103,8 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
         indicator = SDevIndicator.generate(self.view)!
         //reset task array
         self.tasksArray = []
-        let parameters = ["leadID": self.lead.ID as AnyObject]
+        let parameters:[String:String]
+        parameters = ["leadID": self.lead.ID]
         print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leadTasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
@@ -175,7 +183,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
         
         //self.statusPicker.selectRow(Int(lead.statusId)! - 1, inComponent: 0, animated: false)
         
-        self.statusPicker.selectRow(Int(lead.statusId)!, inComponent: 0, animated: false)
+        self.statusPicker.selectRow(Int(lead.statusId)! - 1, inComponent: 0, animated: false)
       
         self.statusTxtField = PaddedTextField(placeholder: "")
         self.statusTxtField.textAlignment = NSTextAlignment.center
@@ -193,9 +201,9 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(WorkOrderViewController.cancelPicker))
+        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(LeadViewController.cancelPicker))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItemStyle.plain, target: self, action: #selector(WorkOrderViewController.handleStatusChange))
+        let setButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItemStyle.plain, target: self, action: #selector(LeadViewController.handleStatusChange))
         
         toolBar.setItems([closeButton, spaceButton, setButton], animated: false)
         toolBar.isUserInteractionEnabled = true
@@ -219,7 +227,10 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
         // Info Window
         self.infoView.translatesAutoresizingMaskIntoConstraints = false
         self.infoView.backgroundColor = UIColor(hex:0xFFFFFc, op: 0.8)
-        self.infoView.layer.cornerRadius = 4
+        //self.infoView.layer.cornerRadius = 4
+        self.infoView.layer.borderWidth = 1
+        self.infoView.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
+        self.infoView.layer.cornerRadius = 4.0
         self.view.addSubview(infoView)
         
         //date
@@ -317,14 +328,26 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
         self.tasksTableView.autoresizesSubviews = true
         self.tasksTableView.delegate  =  self
         self.tasksTableView.dataSource  =  self
-        self.tasksTableView.layer.cornerRadius = 0
-        self.tasksTableView.rowHeight = 70
+        self.tasksTableView.layer.cornerRadius = 4
+        self.tasksTableView.rowHeight = 90
         self.tasksTableView.register(LeadTaskTableViewCell.self, forCellReuseIdentifier: "cell")
         self.view.addSubview(self.tasksTableView)
         
+        
+        self.addBtn.addTarget(self, action: #selector(LeadViewController.addTask), for: UIControlEvents.touchUpInside)
+        self.view.addSubview(self.addBtn)
+        
+        
+        self.assignBtn.addTarget(self, action: #selector(LeadViewController.assignTasks), for: UIControlEvents.touchUpInside)
+        self.view.addSubview(self.assignBtn)
+        
+        
+        if tasksArray.count == 0{
+            newLeadMessage()
+        }
         /////////  Auto Layout   //////////////////////////////////////
         
-        let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30, "nameWidth": layoutVars.fullWidth - 150] as [String:Any]
+        let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30,"halfWidth": (layoutVars.fullWidth - 38)/2, "nameWidth": layoutVars.fullWidth - 150] as [String:Any]
         
         //main views
         let viewsDictionary = [
@@ -334,6 +357,8 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
             "info":self.infoView,
             "tasksLbl":self.tasksLbl,
             "table":self.tasksTableView,
+            "assignBtn":self.assignBtn,
+            "addBtn":self.addBtn
             ] as [String:AnyObject]
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[statusIcon(40)]-15-[customerBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
@@ -341,7 +366,9 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[info]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[tasksLbl]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[table]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(200)]-[tasksLbl(22)][table]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[addBtn(halfWidth)]-[assignBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(180)]-[tasksLbl(22)][table]-[addBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[assignBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
@@ -381,6 +408,31 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
         }
     }
     
+    func newLeadMessage(){
+        
+        let alertController = UIAlertController(title: "Add Tasks/Images Now?", message: "This lead has no tasks or images added.", preferredStyle: UIAlertControllerStyle.alert)
+        let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+            (result : UIAlertAction) -> Void in
+            print("No")
+            //_ = self.navigationController?.popViewController(animated: true)
+        }
+        
+        let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+            (result : UIAlertAction) -> Void in
+            print("Yes")
+            
+            self.addTask()
+            
+        }
+        
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        self.present(alertController, animated: true, completion: nil)
+        
+        
+        
+    }
+    
     func showCustInfo() {
         ////print("SHOW CUST INFO")
         let customerViewController = CustomerViewController(_customerID: self.lead.customer,_customerName: self.lead.customerName)
@@ -406,7 +458,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     // returns the # of rows in each component..
     func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
         // shows first 3 status options, not cancel or waiting
-        return self.statusArray.count - 2
+        return self.statusArray.count
     }
     
     
@@ -419,17 +471,51 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
         let myImageView = UIImageView(frame: CGRect(x:0, y:0, width:50, height:50))
         var rowString = String()
         rowString = statusArray[row]
+        /*
+        switch (status) {
+        case "1":
+            let statusImg = UIImage(named:"unDoneStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "2":
+            let statusImg = UIImage(named:"inProgressStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "3":
+            let statusImg = UIImage(named:"doneStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "4":
+            let statusImg = UIImage(named:"cancelStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "5":
+            let statusImg = UIImage(named:"waitingStatus.png")
+            statusIcon.image = statusImg
+            break;
+            
+        default:
+            let statusImg = UIImage(named:"unDoneStatus.png")
+            statusIcon.image = statusImg
+            break;
+        }
+        
+        */
+        
         switch row {
         case 0:
+            myImageView.image = UIImage(named:"unDoneStatus.png")
+            break;
+        case 1:
             myImageView.image = UIImage(named:"inProgressStatus.png")
             break
-        case 1:
+        case 2:
             myImageView.image = UIImage(named:"doneStatus.png")
             break
-        case 2:
+        case 3:
             myImageView.image = UIImage(named:"cancelStatus.png")
             break
-        case 3:
+        case 4:
             myImageView.image = UIImage(named:"waitingStatus.png")
             break
         default:
@@ -445,7 +531,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
     {
-        self.statusValueToUpdate = "\(row)"
+        self.statusValueToUpdate = "\(row + 1)"
     }
     
     func cancelPicker(){
@@ -455,46 +541,52 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     
     func handleStatusChange(){
         self.statusTxtField.resignFirstResponder()
-        var parameters:[String:String]
         
-       
-        
-        
-         parameters = [
-         "leadID":self.lead.ID,
-         "status":"\(self.statusPicker.selectedRow(inComponent: 0))"
-         ]
-        print("parameters = \(parameters)")
-        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/leadStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
-            response in
-            print(response.request ?? "")  // original URL request
-            print(response.result)   // result of response serialization
-            self.editsMade = true
-            self.statusValue = self.statusValueToUpdate
-            self.setStatus(status: self.statusValue)
-            self.lead.statusId = self.statusValue
-            }.responseString() {
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }else{
+            
+            var parameters:[String:String]
+            
+           
+            
+            
+             parameters = [
+             "leadID":self.lead.ID,
+             "status":"\(self.statusPicker.selectedRow(inComponent: 0) + 1)"
+             ]
+            print("parameters = \(parameters)")
+            layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/leadStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                 response in
-                print(response)  // original URL request
+                print(response.request ?? "")  // original URL request
+                print(response.result)   // result of response serialization
+                self.editsMade = true
+                self.statusValue = self.statusValueToUpdate
+                self.setStatus(status: self.statusValue)
+                self.lead.statusId = self.statusValue
+                }.responseString() {
+                    response in
+                    print(response)  // original URL request
+            }
         }
     }
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         var count:Int!
-        count = self.tasksArray.count + 1
+        count = self.tasksArray.count
+        
         return count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell:LeadTaskTableViewCell = tasksTableView.dequeueReusableCell(withIdentifier: "cell") as! LeadTaskTableViewCell
-        if(indexPath.row == self.tasksArray.count){
-            //cell add btn mode
-            cell.layoutAddBtn()
-        }else{
+        //if(indexPath.row == self.tasksArray.count){
+        
             cell.task = self.tasksArray[indexPath.row]
             cell.layoutViews()
-        }
+            cell.setConstraints()
+       // }
         return cell;
     }
     
@@ -568,14 +660,43 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     
     
     
-    func addTask(){
+    @objc func addTask(){
         print("add task")
+        
+        if(delegate != nil){
+            delegate.cancelSearch()
+        }
+        
+        
         let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Lead Task", _leadID: self.lead.ID, _leadTaskID: "0", _customerID: self.lead.customer, _images: [])
          imageUploadPrepViewController.layoutViews()
          imageUploadPrepViewController.groupImages = true
          imageUploadPrepViewController.attachmentDelegate = self
          self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
     }
+    
+    
+    @objc func assignTasks(){
+        print("Assign Tasks")
+        
+        
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }else{
+            
+            
+            if tasksArray.count == 0{
+                simpleAlert(_vc: self, _title: "No Tasks to Assign", _message: "You need to add some tasks to assign them to a work order or contract")
+                return
+            }
+            
+            let leadTaskAssignViewController = LeadTaskAssignViewController(_lead: self.lead, _tasks: self.tasksArray)
+            leadTaskAssignViewController.editDelegate = self
+            //editLeadViewController.delegate = self
+            navigationController?.pushViewController(leadTaskAssignViewController, animated: false )
+        }
+    }
+    
     
    
     
@@ -593,15 +714,20 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     
     @objc func displayEditView(){
         print("display Edit View")
-        let editLeadViewController = NewEditLeadViewController(_lead: self.lead,_tasks: self.tasksArray)
-        editLeadViewController.editDelegate = self
-        navigationController?.pushViewController(editLeadViewController, animated: false )
+        
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }else{
+            let editLeadViewController = NewEditLeadViewController(_lead: self.lead,_tasks: self.tasksArray)
+            editLeadViewController.editDelegate = self
+            navigationController?.pushViewController(editLeadViewController, animated: false )
+        }
     }
     
     
     @objc func goBack(){
         if(editsMade == true){
-            delegate.getLeads()
+            delegate.getLeads(_openNewLead: false)
         }
         _ = navigationController?.popViewController(animated: true)
         
@@ -633,34 +759,138 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     func setStatus(status: String) {
         print("set status \(status)")
         switch (status) {
-        case "0":
-            let statusImg = UIImage(named:"inProgressStatus.png")
-            statusIcon.image = statusImg
-            break;
         case "1":
-            let statusImg = UIImage(named:"doneStatus.png")
+            let statusImg = UIImage(named:"unDoneStatus.png")
             statusIcon.image = statusImg
             break;
         case "2":
-            let statusImg = UIImage(named:"cancelStatus.png")
+            let statusImg = UIImage(named:"inProgressStatus.png")
             statusIcon.image = statusImg
             break;
         case "3":
+            let statusImg = UIImage(named:"doneStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "4":
+            let statusImg = UIImage(named:"cancelStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "5":
             let statusImg = UIImage(named:"waitingStatus.png")
             statusIcon.image = statusImg
             break;
         default:
-            let statusImg = UIImage(named:"inProgressStatus.png")
+            let statusImg = UIImage(named:"unDoneStatus.png")
             statusIcon.image = statusImg
             break;
         }
     }
     
-    func updateLead(_lead: Lead){
+    
+    
+    func updateLead(_lead: Lead, _newStatusValue:String){
         print("update Lead")
         editsMade = true
         self.lead = _lead
-        self.layoutViews()
+        //self.layoutViews()
+        
+        
+        
+        if(self.lead.statusId != _newStatusValue && _newStatusValue != "na"){
+            print("should update status _newStatusValue = \(_newStatusValue)")
+        
+            var statusName = ""
+            switch (_newStatusValue) {
+            case "1":
+                statusName = "Un-Done"
+                break;
+            case "2":
+                statusName = "In Progress"
+                break;
+            case "3":
+                statusName = "Done"
+                break;
+            case "4":
+                statusName = "Cancel"
+                break;
+                
+            default:
+                statusName = ""
+                break;
+            }
+            
+            
+            
+            
+            let alertController = UIAlertController(title: "Set Lead to \(statusName)", message: "", preferredStyle: UIAlertControllerStyle.alert)
+            let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                (result : UIAlertAction) -> Void in
+                
+               // self.getWorkOrder()
+                
+            }
+            
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                (result : UIAlertAction) -> Void in
+                
+                
+                var parameters:[String:String]
+                
+                
+                parameters = [
+                    "leadID":self.lead.ID,
+                    "status":"\(_newStatusValue)"
+                ]
+                print("parameters = \(parameters)")
+                self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/leadStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+                    response in
+                    print(response.request ?? "")  // original URL request
+                    print(response.result)   // result of response serialization
+                    self.editsMade = true
+                    //self.statusValue = self.statusValueToUpdate
+                    self.setStatus(status: _newStatusValue)
+                    self.lead.statusId = _newStatusValue
+                    }.responseString() {
+                        response in
+                        print(response)  // original URL request
+                }
+                
+                
+                
+                /*
+                parameters = [
+                    "woID":self.lead.ID,
+                    "status":_newStatusValue,
+                    "empID":(self.appDelegate.loggedInEmployee?.ID)!
+                ]
+                
+                print("parameters = \(parameters)")
+                
+                
+                
+                self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/workOrderStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+                    response in
+                    print(response.request ?? "")  // original URL request
+                    //print(response.response ?? "") // URL response
+                    //print(response.data ?? "")     // server data
+                    print(response.result)   // result of response serialization
+                    
+                    self.getWorkOrder()
+                    
+                    
+                }
+                 */
+                
+                
+            }
+            
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            self.present(alertController, animated: true, completion: nil)
+            
+        }
+        
+        getLead()
         
     }
     
@@ -671,7 +901,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDel
     
     func updateLeadTable(){
         print("updateLeadTable")
-        delegate.getLeads()
+        delegate.getLeads(_openNewLead: false)
         goBack()
         
     }

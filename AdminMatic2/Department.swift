@@ -16,7 +16,7 @@ class Department {
     var color: String!
     var depHead: String!
     
-    //var employeeArray:[Employee] = []
+    var employeeArray:[Employee] = []
     
     
     required init(_ID:String?, _name: String?,_status:String?,  _color:String?,  _depHead:String?) {

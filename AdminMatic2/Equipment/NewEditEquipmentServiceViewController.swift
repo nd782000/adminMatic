@@ -996,8 +996,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
         //reset task array
-        
-        let parameters = ["ID": self.equipmentService.ID as AnyObject, "addedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "name": self.equipmentService.name as AnyObject, "type": self.equipmentService.type as AnyObject,"frequency": self.equipmentService.frequency  as AnyObject, "instructions": self.equipmentService.instruction as AnyObject, "equipmentID": self.equipmentService.equipmentID as AnyObject, "status": self.equipmentService.status as AnyObject, "nextValue": self.equipmentService.nextValue as AnyObject] as [String : Any]
+        let parameters:[String:String]
+        parameters = ["ID": self.equipmentService.ID, "addedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "name": self.equipmentService.name, "type": self.equipmentService.type,"frequency": self.equipmentService.frequency, "instructions": self.equipmentService.instruction, "equipmentID": self.equipmentService.equipmentID, "status": self.equipmentService.status, "nextValue": self.equipmentService.nextValue] as! [String : String]
         
         print("parameters = \(parameters)")
         
@@ -1013,11 +1013,13 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
                     self.json = JSON(json)
                     
                     if self.json["errorArray"][0]["error"].stringValue.count > 0{
+                        playErrorSound()
                         simpleAlert(_vc: self, _title: "Error with Save", _message: self.json["errorArray"][0]["error"].stringValue)
                         self.indicator.dismissIndicator()
                         return
                     }
                     
+                    playSaveSound()
                     let newEquipmentServiceID = self.json["serviceID"].stringValue
                     //let creationDate = self.json["creationDate"].stringValue
                     

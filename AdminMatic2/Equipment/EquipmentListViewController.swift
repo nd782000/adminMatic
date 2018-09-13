@@ -50,6 +50,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
     var editFieldsBtn:Button = Button(titleText: "Edit Fields")
     
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Equipment List"
@@ -77,17 +78,9 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         // Show Indicator
         indicator = SDevIndicator.generate(self.view)!
         
-        //cache buster
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
         
         
-        let parameters = ["cb": timeStamp as AnyObject]
-        print("parameters = \(parameters)")
-        
-        
-        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/equipmentList.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/equipmentList.php",method: .post, parameters: nil, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
                 print("equipment response = \(response)")
@@ -436,8 +429,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
     func filterSearchResults(){
         self.equipmentSearchResults = self.equipmentArray.filter({( aEquipment: Equipment) -> Bool in
             
-            //return typeName
-           // return (aEquipment.typeName!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
+           
             
             
             //return type name or name
@@ -477,12 +469,14 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         searchController.searchBar.resignFirstResponder()
     }
     
+    /*
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         //print("searchBarTextDidEndEditing")
         shouldShowSearchResults = false
         searchBar.setShowsCancelButton(false, animated: true)
         customSC.isEnabled = true
     }
+ */
     
     func willPresentSearchController(_ searchController: UISearchController){
         
@@ -520,9 +514,6 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         }
         
     }
-    
-   
-    
     
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -803,7 +794,8 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
                 (result : UIAlertAction) -> Void in
                 print("Yes")
                 
-                let parameters = ["equipmentID": _ID as AnyObject]
+                let parameters:[String:String]
+                parameters = ["equipmentID": _ID]
                 print("parameters = \(parameters)")
                 
                 // Show Indicator

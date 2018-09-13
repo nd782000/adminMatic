@@ -34,7 +34,7 @@ class Employee {
     var crewColor: String!
     //var crewColor2: String!
     
-    
+    var hasSignature:Bool = false
     
     required init(_ID:String?, _name: String?, _lname:String?, _fname:String?, _username:String?, _pic:String?, _phone:String?, _depID:String?, _payRate:String?, _appScore:String?, _userLevel:Int?, _userLevelName:String?) {
         //print(json)
@@ -105,6 +105,26 @@ class Employee {
             self.userLevelName = ""
         }
         
-        
+        print("init emp ID = \(ID)")
+    }
+    
+    //simple initializer
+    init(_ID:String?, _name: String?, _pic:String?) {
+        //print(json)
+        if _ID != nil {
+            self.ID = _ID
+        }else{
+            self.ID = ""
+        }
+        if _name != nil {
+            self.name = _name
+        }else{
+            self.name = ""
+        }
+        if _pic != nil {
+            self.pic = _pic
+        }else{
+            self.pic = ""
+        }
     }
 }

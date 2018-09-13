@@ -11,6 +11,8 @@ import Foundation
 import CoreLocation
 import MapKit
 import Alamofire
+// import this
+import AVFoundation
 
 
 
@@ -135,7 +137,21 @@ class LayoutVars: UIViewController {
     var colorBtnSize:CGFloat! = UIScreen.main.bounds.width/7
     var navAndStatusBarHeight:CGFloat! = 64
     var statusBarHeight:CGFloat! = UIApplication.shared.statusBarFrame.height
+    
+    /*
+    var backgroundColor1:UIColor = UIColor(hex:0xefc6c6, op: 1)
+    var backgroundColor2:UIColor = UIColor(hex:0xefeac6, op: 1)
+    var backgroundColor3:UIColor = UIColor(hex:0xdbefc6, op: 1)
+    var backgroundColor4:UIColor = UIColor(hex:0xc6edef, op: 1)
+    var backgroundColor5:UIColor = UIColor(hex:0xd0c6ef, op: 1)
+    
+    
+    var backgroundColorArray:[UIColor]!
+    */
+    
+    
     var backgroundColor:UIColor = UIColor(hex:0xFFF8E6, op: 1)
+    
     var backgroundLight:UIColor = UIColor(hex:0xFFFaF8, op: 1)
     var buttonBackground:UIColor = UIColor(hex:0xFFFFFF, op: 1)
     var buttonTint:UIColor = UIColor(hex:0x005100, op: 1)
@@ -152,6 +168,7 @@ class LayoutVars: UIViewController {
     var extraSmallFont:UIFont = UIFont(name: "Helvetica Neue", size: 14)!
     var buttonFont:UIFont = UIFont(name: "Helvetica Neue", size: 18)!
     var textFieldFont:UIFont = UIFont(name: "Helvetica Neue", size: 12)!
+    var microFont:UIFont = UIFont(name: "Helvetica Neue", size: 10)!
 
     var inputHeight = 50
     
@@ -160,6 +177,31 @@ class LayoutVars: UIViewController {
     let rawBase : String = "https://www.atlanticlawnandgarden.com/uploads/general/raw/"
     let mediumBase : String = "https://www.atlanticlawnandgarden.com/uploads/general/medium/"
     let thumbBase : String = "https://www.atlanticlawnandgarden.com/uploads/general/thumbs/"
+    
+    
+    /*
+    init(){
+        super.init(nibName:nil,bundle:nil)
+        
+        
+        let number:Int = Int(arc4random_uniform(5))
+        print("background color number = \(number)")
+        
+        self.backgroundColorArray = [backgroundColor1,backgroundColor2,backgroundColor3,backgroundColor4,backgroundColor5]
+        
+        self.backgroundColor = self.backgroundColorArray[number]
+    }
+    
+    
+    
+    required init?(coder aDecoder: NSCoder) {
+        //fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
+    }
+    */
+    
+    
+    
     
     
     var manager: Alamofire.SessionManager = {
@@ -268,7 +310,38 @@ class LayoutVars: UIViewController {
         let weekDay = myCalendar.component(.weekday, from: todayDate)
         return weekDay - 1
     }
+    
+    
+    func numberAsCurrency(_number:String)->String{
+        
+        let currencyFormatter = NumberFormatter()
+        currencyFormatter.usesGroupingSeparator = true
+        currencyFormatter.numberStyle = .currency
+        // localize to your grouping and decimal separator
+        currencyFormatter.locale = Locale.current
+        
+        // We'll force unwrap with the !, if you've got defined data you may need more error checking
+        
+        let priceString = currencyFormatter.string(from: NSNumber(value: Double(_number)!))!
+        //let priceString = "\(currencyFormatter.number(from: _number))"
+        print(priceString) // Displays $9,999.99 in the US locale
+        
+        return priceString
+        
+        /*
+        let formatter = NumberFormatter()
+        formatter.locale = Locale.current // Change this to another locale if you want to force a specific locale, otherwise this is redundant as the current locale is the default already
+        formatter.numberStyle = .currency
+        var returnVal:String = ""
+        if let formattedTipAmount = formatter.number(from: _number) {
+            returnVal = "\(formattedTipAmount)"
+        }
+        return returnVal
+ */
+        
+    }
 }
+
 
 
 class PaddedTextField: UITextField {
@@ -281,7 +354,7 @@ class PaddedTextField: UITextField {
         
         
         self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor(hex:0x005100, op: 0.2).cgColor
+        self.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
         self.layer.cornerRadius = 4.0
         self.backgroundColor = UIColor(hex:0xFFFFFF, op: 1)
         let inputFont:UIFont = UIFont(name: "Helvetica Neue", size: 17)!
@@ -308,16 +381,18 @@ class PaddedTextField: UITextField {
     }
     
     func reset() {
-        self.layer.borderColor = UIColor(hex:0x005100, op: 0.2).cgColor
+        self.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
         self.backgroundColor = UIColor(hex:0xFFFFFF, op: 1)
         self.layer.borderWidth = 1
     }
     
     func error() {
-        self.layer.borderColor = UIColor(hex:0xff0000, op: 0.2).cgColor
+        self.layer.borderColor = UIColor(hex:0xff0000, op: 1.0).cgColor
         self.backgroundColor = UIColor(hex:0xFFFFFF, op: 1)
         self.layer.borderWidth = 3
     }
+    
+    
     
     convenience init(placeholder:String!) {
         self.init()
@@ -329,6 +404,8 @@ class PaddedTextField: UITextField {
         self.init()
         self.text = textValue
     }
+    
+    
 }
 
 
@@ -427,6 +504,17 @@ class Label :UILabel{
         self.translatesAutoresizingMaskIntoConstraints = false//for autolayout
         
     }
+    
+    /*
+    func setStrikethrough(text:String, color:UIColor = UIColor.black) {
+        let attributedText = NSAttributedString(string: text , attributes: [
+            NSStrikethroughStyleAttributeName: NSUnderlineStyle.StyleSingle.rawValue, NSStrikethroughColorAttributeName: color])
+            self.attributedText = attributedText
+    }
+ */
+        
+        
+    
 }
 
 class DetailLabel :UILabel{
@@ -767,6 +855,18 @@ func simpleAlert(_vc:UIViewController,_title:String,_message:String?){
     
 }
 
+func playSaveSound(){
+    // create a sound ID, in this case its the tweet sound.
+    let systemSoundID: SystemSoundID = 1322
+    AudioServicesPlaySystemSound (systemSoundID)
+}
+
+func playErrorSound(){
+    // create a sound ID, in this case its the tweet sound.
+    let systemSoundID: SystemSoundID = 1324
+    AudioServicesPlaySystemSound (systemSoundID)
+}
+
 
 
 
@@ -1091,6 +1191,7 @@ class SDevIndicator : UIView {
 
 struct loggedInKeys {
     static let loggedInId = ""
+    
 }
 
 
@@ -1408,6 +1509,10 @@ internal extension DateComponents {
         self.second = 59
     }
 }
+
+
+
+
 
 
 

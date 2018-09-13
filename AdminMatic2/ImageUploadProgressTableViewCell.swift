@@ -15,6 +15,7 @@ import SwiftyJSON
 
 class ImageUploadProgressTableViewCell: UITableViewCell {
     
+    
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var imageData:Image!
     //var albumID:String = "0"
@@ -112,6 +113,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                     "customer":imageData.customer,
                     "createdBy":createdBy,
                     "leadTask":imageData.leadTaskID,
+                    "contractTask":imageData.contractTaskID,
                     "task":imageData.taskID,
                     "woID":imageData.woID,
                     "equipmentID":imageData.equipmentID,
@@ -156,6 +158,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                             print("result = \(response.result)")   // result of response serialization
                             
                             if("\(response.result)" == "FAILURE") {
+                                playErrorSound()
                                self.progressLbl.text = "Failed"
                                 self.reloadBtn.isHidden = false
                                 self.progressLbl.textColor = UIColor.red
@@ -163,6 +166,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                             }
                             
                             if let result = response.result.value {
+                                playSaveSound()
                                 let json = result as! NSDictionary
                                 let thumbBase = JSON(json)["thumbBase"].stringValue
                                 let mediumBase = JSON(json)["mediumBase"].stringValue

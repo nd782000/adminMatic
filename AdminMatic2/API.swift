@@ -16,51 +16,8 @@ import Foundation
 public protocol ResponseCollectionSerializable {
     static func collection(response: HTTPURLResponse, representation: AnyObject) -> [Self]
 }
-/*
- extension String: ParameterEncoding {
- 
- public func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> URLRequest {
- var request = try urlRequest.asURLRequest()
- request.httpBody = data(using: .utf8, allowLossyConversion: false)
- return request
- }
- 
- }
- */
-
-/*
-extension Alamofire.SessionManager{
-    @discardableResult
-    open func requestWithoutCashe(
-        _ url: URLConvertible,
-        method: HTTPMethod = .get,
-        parameters: Parameters? = nil,
-        encoding: ParameterEncoding = URLEncoding.default,
-        headers: HTTPHeaders? = nil)
-        -> DataRequest
-    {
-        do {
-            var urlRequest = try URLRequest(url: url, method: method, headers: headers)
-            urlRequest.cachePolicy = .reloadIgnoringCacheData
-            let encodedURLRequest = try encoding.encode(urlRequest, with: parameters)
-            return request(encodedURLRequest)
-        } catch {
-            print(error)
-            return request(URLRequest(url: URL(string: "http://example.com/wrong_request")!))
-        }
-    }
-}
-*/
-
-
-
 
 struct API {
-    
-    
-        
-    
-    
     
     enum Method {
         case get
@@ -133,11 +90,7 @@ struct API {
         
         case vendor([String: AnyObject])
         
-        //case images([String: AnyObject])
-        
         case bugs([String: AnyObject])
-        
-        //case newAlbum([String: AnyObject])
         
         case newLike([String: AnyObject])
         
@@ -157,15 +110,8 @@ struct API {
         }
         
         
-        
-        
-        
         var path: String {
             
-            //cache buster
-            let now = Date()
-            let timeInterval = now.timeIntervalSince1970
-            let timeStamp = Int(timeInterval)
             
             switch self {
             case .fields:
@@ -197,7 +143,6 @@ struct API {
             case .changeField:
                 return ("/functions/update/changeField.php")
             case .updateUsage:
-                //print("/functions/update/usage.php")
                 return ("/functions/update/usage.php")
             case .updateTaskStatus:
                 return ("/functions/update/taskStatus.php")
@@ -212,18 +157,14 @@ struct API {
                 return ("/functions/get/vendors.php")
             case .vendor:
                 return ("/functions/get/vendor.php")
-            //case .images:
-              //  return ("/functions/get/images.php?cb=\(timeStamp)")
             case .bugs:
-                return ("/functions/get/bugs.php?cb=\(timeStamp)")
+                return ("/functions/get/bugs.php")
                 
             case .newLike:
                 return ("/functions/new/like.php")
             case .deleteLike:
                 return ("/functions/delete/like.php")
                 
-           // case .newAlbum:
-              //  return ("/functions/new/album.php")
             }
         }
         
@@ -283,8 +224,6 @@ struct API {
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
             case .vendor(let parameters):
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
-           // case .images(let parameters):
-               // return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
             case .bugs(let parameters):
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
             
@@ -292,9 +231,6 @@ struct API {
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
             case .deleteLike(let parameters):
                 return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
-            //case .newAlbum(let parameters):
-               // return try Alamofire.URLEncoding.default.encode(urlRequest, with: parameters)
-                
             }
             ////print("urlRequest = \(urlRequest)")
             return urlRequest

@@ -214,107 +214,34 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        
         let currentCell = tableView.cellForRow(at: indexPath as IndexPath) as! EmployeeTableViewCell;
-        
         let call = UITableViewRowAction(style: .normal, title: "Call") { action, index in
             //print("call button tapped")
-            
             //callPhoneNumber(currentCell.employee.phone)
-            
-            
             if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
-                
                 UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: [:], completionHandler: nil)
             }
- 
             tableView.setEditing(false, animated: true)
-            //tableView.reloadRows(at: [indexPath], with: UITableViewRowAnimation.top)
-
         }
-        
         call.backgroundColor = self.layoutVars.buttonColor1
-        
-        
         let text = UITableViewRowAction(style: .normal, title: "Text") { action, index in
-            //print("call button tapped")
-            
-            //callPhoneNumber(currentCell.employee.phone)
-            
-            
             if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
-                
-                //UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: [:], completionHandler: nil)
-                //let alertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-                //let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
-                    //(result : UIAlertAction) -> Void in
-               // }
-                //let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
-                   // (result : UIAlertAction) -> Void in
                     if (MFMessageComposeViewController.canSendText()) {
-                         self.controller = MFMessageComposeViewController()
-                        //controller.body = "\(self.messageTxt.text!) ~ Atlantic Group Message by \((self.appDelegate.loggedInEmployee?.name!)!)"
-                        //self.controller = MFMessageComposeViewController()
+                        self.controller = MFMessageComposeViewController()
                         self.controller.recipients = [currentCell.employee.phone]
                         self.controller.messageComposeDelegate = self
-                        //self.controller.navigationBar.barTintColor = self.layoutVars.buttonColor1
-                        
                         self.controller.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
                         self.controller.navigationBar.shadowImage = UIImage()
                         self.controller.navigationBar.isTranslucent = true
-                        
-                        /*
-                        self.controller.navigationBar.barTintColor = UIColor.blue
-                        self.controller.navigationBar.isTranslucent = false
-                        self.controller.navigationBar.barStyle = .black
-                        */
-
-                        
-                        
                         self.controller.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(EmployeeListViewController.dismissMessage))
                         self.controller.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.blue]
-
-                        
-                        
                         self.present(self.controller, animated: true, completion: nil)
-                        
-                        //tableView.reloadRows(at: [indexPath], with: UITableViewRowAnimation.top)
                         tableView.setEditing(false, animated: true)
                     }
-                //}
-                //alertController.addAction(cancelAction)
-                //alertController.addAction(okAction)
-               // self.present(alertController, animated: true, completion: nil)
-                
-                
-                
-                
             }
-            
-            
-            
         }
-        
-        
         text.backgroundColor = UIColor.orange
         return [call,text]
-        
-        
-        
-        
-        
-        
-        
-        
-        
-            
-        
-        
-        
-        
-        
-        
-        
     }
     
     
@@ -370,9 +297,6 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         print("group message")
         
         let groupMessageViewController = GroupMessageViewController()
-        
-        
-        //tableView.deselectRow(at: indexPath!, animated: true)
         
         navigationController?.pushViewController(groupMessageViewController, animated: false )
         

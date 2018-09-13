@@ -13,10 +13,11 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 import Nuke
+import MessageUI
 
 
 
-class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource{
+class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, MFMessageComposeViewControllerDelegate{
     var indicator: SDevIndicator!
     
     var empID:String!
@@ -35,18 +36,17 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
     var sections : [(index: Int, length :Int, title: String, color: String)] = Array()
     
     var departments: JSON!
+    
     var departmentArray:[Department] = []
     
     var employeeArray:[Employee] = []
-    
-    
     
     var addDepartmentBtn:Button = Button(titleText: "Add Department")
     var editDepartmentsBtn:Button = Button(titleText: "Edit")
     
     var employeeViewController:EmployeeViewController!
     
-    
+    var controller:MFMessageComposeViewController = MFMessageComposeViewController()
     
     init(){
         super.init(nibName:nil,bundle:nil)
@@ -79,7 +79,6 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
-        
         getDepartmentList()
     }
     
@@ -93,20 +92,13 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
         departmentTableView = TableView()
         departmentArray = []
         
-       
-        
+    
         // Show Indicator
         indicator = SDevIndicator.generate(self.view)!
         
-        //cache buster
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
-        
-        
-        let parameters = ["empID":self.empID as AnyObject, "crewView":"0" as AnyObject, "cb": timeStamp as AnyObject]
+        let parameters:[String:String]
+        parameters = ["empID":self.empID, "crewView":"0"]
         print("parameters = \(parameters)")
-        
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/departments.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
@@ -125,9 +117,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
                     self.departments = JSON(json)
                     self.parseJSON()
                 }
-                
         }
-        
     }
     func parseJSON(){
         let jsonCount = self.departments["departments"].count
@@ -162,15 +152,9 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
                 
                 print("employee.deptColor = \(employee.deptColor)")
                 
-                
-                //department.employeeArray.append(employee)
-                
                 self.employeeArray.append(employee)
-                
+                department.employeeArray.append(employee)
             }
-            
-            
-            
             
             self.departmentArray.append(department)
             
@@ -248,9 +232,6 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
         noDepartmentLabel.textAlignment = NSTextAlignment.center
         noDepartmentLabel.font = layoutVars.largeFont
         self.view.addSubview(self.noDepartmentLabel)
-        
-        
-        
         
         self.countView = UIView()
         self.countView.backgroundColor = layoutVars.backgroundColor
@@ -346,30 +327,21 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
     {
         print("viewForHeaderInSection")
-        //let headerView = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         
         let headerView = UIView(frame: CGRect(x: 0, y: 0, width: layoutVars.fullWidth, height: 60.0))
         headerView.backgroundColor = UIColor.clear
         //headerView.alpha = 0.5
         // Do your customization
         
-        //colorSwatch.layer.cornerRadius = 4.0
-        //colorSwatch.alpha = 1.0
-        
         let lblBg = UIView(frame: CGRect(x: 0, y: 0, width: layoutVars.fullWidth , height: 60.0))
         lblBg.backgroundColor = UIColor.lightGray
         lblBg.alpha = 0.5
         headerView.addSubview(lblBg)
         
-        
-        
         let titleLbl = Label(text: "\(sections[section].title) Department")
         titleLbl.font = layoutVars.buttonFont
         titleLbl.frame = CGRect(x: 70.0, y: 10.0, width: layoutVars.fullWidth - 80.0, height: 40.0)
         titleLbl.translatesAutoresizingMaskIntoConstraints = true
-        //titleLbl.text = sections[section].title
-        
-        //titleLbl.insets = UIEdgeInsetsMake(10.0, 50.0, 0.0, 0.0)
         
         headerView.addSubview(titleLbl)
         
@@ -385,14 +357,8 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
         print("colorSwatch.width = \(colorSwatch.frame.width)")
         
         return headerView
+        
     }
-    
-    
-    
-    
-    
-    
-    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
@@ -418,17 +384,68 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
         self.employeeViewController = EmployeeViewController(_employee: currentCell.employee)
         tableView.deselectRow(at: indexPath!, animated: true)
         
-        
-        
         navigationController?.pushViewController(self.employeeViewController, animated: false )
     }
     
     
-    /*
-    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let currentCell = tableView.cellForRow(at: indexPath as IndexPath) as! EmployeeTableViewCell;
+        let call = UITableViewRowAction(style: .normal, title: "Call") { action, index in
+            //print("call button tapped")
+            //callPhoneNumber(currentCell.employee.phone)
+            if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
+                UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: [:], completionHandler: nil)
+            }
+            tableView.setEditing(false, animated: true)
+        }
+        call.backgroundColor = self.layoutVars.buttonColor1
+        let text = UITableViewRowAction(style: .normal, title: "Text") { action, index in
+            if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
+                if (MFMessageComposeViewController.canSendText()) {
+                    self.controller = MFMessageComposeViewController()
+                    self.controller.recipients = [currentCell.employee.phone]
+                    self.controller.messageComposeDelegate = self
+                    
+                    self.controller.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(EmployeeListViewController.dismissMessage))
+                    
+                    self.present(self.controller, animated: true, completion: nil)
+                    tableView.setEditing(false, animated: true)
+                }
+            }
+        }
+        text.backgroundColor = UIColor.orange
+        
+        let group = UITableViewRowAction(style: .normal, title: "Group") { action, index in
+            
+            let sectionNumber = indexPath.section
+            let groupMessageViewController = GroupMessageViewController(_employees: self.departmentArray[sectionNumber].employeeArray, _mode:"Dept.")
+            
+            
+            self.navigationController?.pushViewController(groupMessageViewController, animated: false )
+        }
+        group.backgroundColor = UIColor.darkGray
+        
+        return [call,text,group]
     }
- */
+    
+    
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        print("didfinish")
+        //... handle sms screen actions
+        self.dismiss(animated: true, completion: nil)
+        //getBatch()
+        //print("try and send text")
+        
+    
+    }
+    
+    
+    @objc func dismissMessage(){
+        print("dismiss")
+        controller.dismiss(animated: true, completion: nil)
+        
+    }
+    
     
     
     

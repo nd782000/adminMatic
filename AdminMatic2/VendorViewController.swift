@@ -249,7 +249,7 @@ for i in 0 ..< contactCount {
         self.vendorPhoneBtn = Button()
         self.vendorPhoneBtn.translatesAutoresizingMaskIntoConstraints = false
         self.vendorPhoneBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
-        self.vendorPhoneBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 35.0, 0.0, 0.0)
+        self.vendorPhoneBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 40.0, 0.0, 0.0)
         
         print("vendor phone = \(vendor.phone)")
         print("vendor phoneNumberClean = \(self.phoneNumberClean)")
@@ -279,7 +279,7 @@ for i in 0 ..< contactCount {
         self.vendorWebsiteBtn = Button()
         self.vendorWebsiteBtn.translatesAutoresizingMaskIntoConstraints = false
         self.vendorWebsiteBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
-        self.vendorWebsiteBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 35.0, 0.0, 0.0)
+        self.vendorWebsiteBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 40.0, 0.0, 0.0)
         
         
         
@@ -308,7 +308,7 @@ for i in 0 ..< contactCount {
         self.vendorAddressBtn = Button()
         self.vendorAddressBtn.translatesAutoresizingMaskIntoConstraints = false
         self.vendorAddressBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
-        self.vendorAddressBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 35.0, 0.0, 0.0)
+        self.vendorAddressBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 40.0, 0.0, 0.0)
         
         if (self.vendor.address == "") {
             self.vendorAddressBtn.setTitle("No Location Saved", for: UIControlState.normal)
@@ -413,7 +413,7 @@ for i in 0 ..< contactCount {
         self.vendorView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view4]-10-|", options: [], metrics: sizeVals, views: vendorsViewsDictionary))
         self.vendorView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view5]-10-|", options: [], metrics: sizeVals, views: vendorsViewsDictionary))
         self.vendorView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[map]-|", options: [], metrics: sizeVals, views: vendorsViewsDictionary))
-        self.vendorView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[view2(35)]-[balance(25)]-[view3(30)]-[view4(30)]-[view5(30)]-[map]-|", options: [], metrics: sizeVals, views: vendorsViewsDictionary))
+        self.vendorView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[view2(35)]-[balance(25)]-[view3(40)]-[view4(40)]-[view5(40)]-[map]-|", options: [], metrics: sizeVals, views: vendorsViewsDictionary))
         
     }
     

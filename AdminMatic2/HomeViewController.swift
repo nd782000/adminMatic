@@ -28,7 +28,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         super.init(nibName:nil,bundle:nil)
         
         title = "Home v \(self.appDelegate.appVersion)"
-        homeBtnData = [("customersIcon","Customers"),("employeesIcon","Employees"),("vendorsIcon","Vendors"),("itemsIcon","Items"),("scheduleIcon","Schedule"),("performanceIcon","Performance"),("imagesIcon","Images"),("equipmentIcon","Equipment"),("leadsIcon","Leads"),("contractsIcon","Contracts")]
+        homeBtnData = [("employeesIcon","Employees"),("customersIcon","Customers"),("vendorsIcon","Vendors"),("itemsIcon","Items"),("scheduleIcon","Schedule"),("performanceIcon","Performance"),("imagesIcon","Images"),("equipmentIcon","Equipment"),("leadsIcon","Leads"),("contractsIcon","Contracts")]
         self.view.backgroundColor = layoutVars.backgroundColor
     }
     
@@ -140,7 +140,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         
             appDelegate.navigationController?.pushViewController(employeeViewController, animated: false )
         }else{
-            appDelegate.menuChange(1)
+            appDelegate.menuChange(0)
         }
     
     }
@@ -162,11 +162,12 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch indexPath.row {
         case 0:
-            //customers
+            //employees
              appDelegate.menuChange(0)
             break
         case 1:
-            //employees
+            
+            //customers
             appDelegate.menuChange(1)
             break
         case 2:
@@ -199,6 +200,12 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             break
         case 9:
             //contracts
+            
+            //need userLevel greater then 1 to access this
+            if self.layoutVars.grantAccess(_level: 1,_view: self) {
+                return
+            }
+            
             appDelegate.menuChange(9)
             break
         default:

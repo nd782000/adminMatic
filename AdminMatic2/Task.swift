@@ -8,14 +8,17 @@
 
 
 import Foundation
+import UIKit
+import SwiftyJSON
+import ObjectMapper
 
-class Task {
+class Task:Mappable {
     
     var ID: String!
     var sort: String!
     var status: String!
     var task: String!
-    
+
     var images: [Image] = []
 
     
@@ -54,5 +57,23 @@ class Task {
 
         
     }
+    
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        print("Mapping")
+        ID    <- map["ID"]
+        sort      <- map["sort"]
+        status      <- map["status"]
+        task      <- map["task"]
+        
+    }
+    
+    
+    
+    
     
 }

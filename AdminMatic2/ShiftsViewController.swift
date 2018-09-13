@@ -142,7 +142,8 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         
         
-        let parameters = ["startDate":  startDateDB,"endDate": endDateDB,"empID":self.empID] as [String : Any]
+        let parameters:[String:String]
+            parameters = ["startDate":  startDateDB,"endDate": endDateDB,"empID":self.empID]
         
         print("parameters = \(parameters)")
         

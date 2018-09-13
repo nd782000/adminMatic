@@ -27,13 +27,14 @@ class Contact {
     var color: String!
     var lat: NSString!
     var lng: NSString!
-    var layoutVars:LayoutVars = LayoutVars()
+    var fullAddress: String!
+   // var layoutVars:LayoutVars = LayoutVars()
     
     init(_ID:String?){
         
     }
     
-    convenience init(_ID:String?,_sort:String?,_value:String?,_type:String?,_contactName:String?,_main:String?,_name:String?, _street1:String?, _street2:String?, _city:String?, _state:String?, _zip:String?, _zone:String?, _zoneName:String?, _color:String?, _lat:NSString?, _lng:NSString?) {
+    convenience init(_ID:String?,_sort:String?,_value:String?,_type:String?,_contactName:String?,_main:String?,_name:String?, _street1:String?, _street2:String?, _city:String?, _state:String?, _zip:String?, _zone:String?, _zoneName:String?, _color:String?, _lat:NSString?, _lng:NSString?, _fullAddress:String?) {
         self.init(_ID: _ID)
         if _ID != nil {self.ID = _ID}else{self.ID = ""}
         if _sort != nil {self.sort = _sort}else{self.sort = ""}
@@ -56,6 +57,7 @@ class Contact {
         if _color != nil {self.color = _color}else{self.color = ""}
         if _lat != nil {self.lat = _lat}else{self.lat = ""}
         if _lng != nil {self.lng = _lng}else{self.lng = ""}
+        if _fullAddress != nil {self.fullAddress = _fullAddress}else{self.fullAddress = ""}
     }
     
 }

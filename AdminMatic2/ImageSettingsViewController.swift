@@ -23,6 +23,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
     var portfolio:String!
     var attachment:String!
     var task:String!
+    var customer:String!
     
     
     
@@ -40,6 +41,8 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
     var orderTxtField:PaddedTextField!
     var orderPicker: Picker!
     
+    var clearFiltersBtn:Button = Button(titleText: "Clear All Filters")
+    
     
    // var imageDelegate:ImageViewDelegate!
     var imageSettingsDelegate:ImageSettingsDelegate!
@@ -49,15 +52,16 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
     
     
     
-    init(_uploadedBy:String,_portfolio:String,_attachment:String,_task:String,_order:String){
+    init(_uploadedBy:String,_portfolio:String,_attachment:String,_task:String,_order:String,_customer:String){
         super.init(nibName:nil,bundle:nil)
-        print("init _uploadedBy = \(_uploadedBy) _portfolio = \(_portfolio)   _attachment = \(_attachment) _task = \(_task) _order = \(_order)")
+        print("init _uploadedBy = \(_uploadedBy) _portfolio = \(_portfolio)   _attachment = \(_attachment) _task = \(_task) _order = \(_order)  _customer = \(_customer)")
         
         self.uploadedBy = _uploadedBy
         self.portfolio = _portfolio
         self.attachment = _attachment
         self.task = _task
         self.order = _order
+        self.customer = _customer
         
     }
     
@@ -174,8 +178,20 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         orderTxtField.inputAccessoryView = orderToolBar
         print("layoutViews 2")
         
+        
+        self.clearFiltersBtn.addTarget(self, action: #selector(ImageSettingsViewController.clearFilters), for: UIControlEvents.touchUpInside)
+        
+       // self.addImageBtn.frame = CGRect(x:0, y: self.view.frame.height - 50, width: self.view.frame.width - 100, height: 50)
+        self.clearFiltersBtn.translatesAutoresizingMaskIntoConstraints = false
+        //self.clearFiltersBtn.layer.borderColor = UIColor.white.cgColor
+        //self.clearFiltersBtn.layer.borderWidth = 1.0
+        self.view.addSubview(self.clearFiltersBtn)
+        
+        
+        
+        
         let viewsDictionary = [
-            "filterLbl":self.filterLbl,"filterTxt":self.filterTxtField,"orderLbl":self.orderLbl,"orderTxt":self.orderTxtField
+            "filterLbl":self.filterLbl,"filterTxt":self.filterTxtField,"orderLbl":self.orderLbl,"orderTxt":self.orderTxtField,"clearFiltersBtn":self.clearFiltersBtn
             ] as [String:Any]
         
         let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": (layoutVars.fullWidth/2)-15, "height": 24,"fullHeight":layoutVars.fullHeight - 344, "navHeight":layoutVars.navAndStatusBarHeight + 20] as [String:Any]
@@ -188,8 +204,9 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[filterTxt]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[orderLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[orderTxt]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[clearFiltersBtn]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[filterLbl(40)][filterTxt(40)]-20-[orderLbl(40)][orderTxt(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[filterLbl(40)][filterTxt(40)]-20-[orderLbl(40)][orderTxt(40)]-20-[clearFiltersBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
     }
     
@@ -377,7 +394,17 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         }
     }
 
-    
+    @objc func clearFilters() {
+        self.portfolio = "0"
+        self.attachment = "0"
+        self.task = "0"
+        self.uploadedBy = "0"
+        self.customer = ""
+        
+        imageSettingsDelegate.updateSettings(_uploadedBy:self.uploadedBy, _portfolio:self.portfolio, _attachment:self.attachment, _task:self.task, _order: self.order, _customer: self.customer)
+        
+        goBack()
+    }
 
     func resetVals(){
         print("resetVals")
@@ -385,6 +412,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         self.attachment = "0"
         self.task = "0"
         self.uploadedBy = "0"
+        self.customer = ""
         
     }
     
@@ -394,7 +422,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         _ = navigationController?.popViewController(animated: false)
         
         if(editsMade == true){
-            imageSettingsDelegate.updateSettings(_uploadedBy:self.uploadedBy, _portfolio:self.portfolio, _attachment:self.attachment, _task:self.task, _order: self.order)
+            imageSettingsDelegate.updateSettings(_uploadedBy:self.uploadedBy, _portfolio:self.portfolio, _attachment:self.attachment, _task:self.task, _order: self.order, _customer: self.customer)
 
         }
     }

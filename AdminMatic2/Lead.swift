@@ -25,15 +25,19 @@ class Lead {
     var deadline: String!
     var requestedByCust: String!
     var createdBy: String!
+    var daysAged: String!
     
     var dateNice:String?
    // var dateRaw:String?
     
+    var custNameAndID:String!
+    
+    var zone:Zone!
+    
+    var custNameAndZone:String!
     
     
-    
-    
-    required init(_ID:String?, _statusID: String?,_scheduleType:String?,  _date:String?,  _time:String?, _statusName:String?, _customer:String?, _customerName:String?, _urgent:String?, _description:String?, _rep:String?, _repName:String?, _deadline:String?, _requestedByCust:String?, _createdBy:String?) {
+    required init(_ID:String?, _statusID: String?,_scheduleType:String?,  _date:String?,  _time:String?, _statusName:String?, _customer:String?, _customerName:String?, _urgent:String?, _description:String?, _rep:String?, _repName:String?, _deadline:String?, _requestedByCust:String?, _createdBy:String?, _daysAged:String?) {
         //print(json)
         if _ID != nil {
             self.ID = _ID
@@ -109,6 +113,11 @@ class Lead {
             self.createdBy = _createdBy
         }else{
             self.createdBy = ""
+        }
+        if _daysAged != nil {
+            self.daysAged = _daysAged
+        }else{
+            self.daysAged = ""
         }
         
     }

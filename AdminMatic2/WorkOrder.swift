@@ -31,6 +31,17 @@ class WorkOrder {
     var plowMonitoring:String = "NA"
     
     
+    var customerName:String = ""
+    var invoiceType:String = ""
+    var scheduleType:String = "5"
+    var department:String = "0"
+    var crew:String = "0"
+    var crewName:String = ""
+    var rep:String = ""
+    var repName:String = ""
+    var notes:String = ""
+    
+    
     required init(_ID:String?, _statusID: String?, _date:String?, _firstItem:String?, _statusName:String?, _customer:String?, _type:String?, _progress:String?, _totalPrice:String?, _totalCost:String?, _totalPriceRaw:String?, _totalCostRaw:String?, _charge:String?) {
         //print(json)
         if _ID != nil {
@@ -106,7 +117,11 @@ class WorkOrder {
             self.charge = ""
         }
         
+        if self.ID! == "0"{
+            title = ""
+        }else{
+            title = "\(self.firstItem!)  \(self.customer!) #\(self.ID!)"
+        }
         
-        title = "\(self.firstItem!)  \(self.customer!) #\(self.ID!)"
     }
 }

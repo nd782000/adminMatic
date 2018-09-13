@@ -51,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.3.5"
+    var appVersion:String = "1.3.9"
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
     var employeeListViewController:EmployeeListViewController!
@@ -72,9 +72,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
 
     
     var fieldsJson:JSON!
+    var zones:[Zone] = []
+    
+    var departments:[Department] = []
+    var crews:[Crew] = []
     
     var employees:JSON!
     var employeeArray:[Employee] = []
+    
+    var salesRepArray:[Employee] = []
+    
+    var salesRepIDArray:[String] = []
+    var salesRepNameArray:[String] = []
+    
+    //var chargeTypeArray:[String] = []
+    //var invoiceTypeArray:[String] = []
+    //var scheduleTypeArray:[String] = []
+    
     
     var loggedInEmployee:Employee?
     var loggedInEmployeeJSON: JSON!
@@ -125,15 +139,72 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         Alamofire.request(API.Router.fields(["cb":timeStamp as AnyObject])).responseJSON() {
             response in
             ////print(response.request ?? "default request")  // original URL request
-            ////print(response.response ?? "default response") // URL response
-            ////print(response.data ?? "default data")     // server data
-            ////print(response.result)   // result of response serialization
+            print(response.response ?? "default response") // URL response
+            print(response.data ?? "default data")     // server data
+            print(response.result)   // result of response serialization
             
             if let json = response.result.value {
                 jsonDataHolder.jsonData = JSON(json)
                 self.fieldsJson = JSON(json)
                 
-                //print("fields json = \(self.fieldsJson)")
+                let zonesCount:Int = self.fieldsJson["zones"].count
+                
+                for i in 0 ..< zonesCount {
+                    
+                    let zone = Zone(_ID: self.fieldsJson["zones"][i][0].stringValue, _name: self.fieldsJson["zones"][i][1].stringValue)
+                    
+                    print("zone.id = \(zone.ID)")
+                    print("zone.name = \(zone.name)")
+                    self.zones.append(zone)
+                    
+                }
+                
+                
+                let departmentCount:Int = self.fieldsJson["departments"].count
+                print("dept count = \(departmentCount)")
+                for n in 0 ..< departmentCount {
+                    
+                    let department = Department(_ID: self.fieldsJson["departments"][n]["id"].stringValue, _name: self.fieldsJson["departments"][n]["name"].stringValue, _status: self.fieldsJson["departments"][n]["status"].stringValue, _color: self.fieldsJson["departments"][n]["color"].stringValue, _depHead: self.fieldsJson["departments"][n]["depHead"].stringValue)
+                    
+                    //print("zone.id = \(zone.ID)")
+                    //print("zone.name = \(zone.name)")
+                    self.departments.append(department)
+                    
+                }
+                
+                
+                let crewCount:Int = self.fieldsJson["crews"].count
+                print("crew count = \(crewCount)")
+                for p in 0 ..< crewCount {
+                    
+                    let crew = Crew(_ID: self.fieldsJson["crews"][p]["ID"].stringValue, _name: self.fieldsJson["crews"][p]["name"].stringValue)
+                    
+                    
+                    //print("zone.id = \(zone.ID)")
+                    //print("zone.name = \(zone.name)")
+                    self.crews.append(crew)
+                    
+                }
+                
+                /*
+                let chargeCount:Int = self.fieldsJson["chargeType"].count
+                for i in 0 ..< chargeCount {
+                    let charge = self.fieldsJson["charge"][i].stringValue
+                    self.chargeTypeArray.append(charge)
+                }
+                
+                let invoiceCount:Int = self.fieldsJson["invoiceType"].count
+                for i in 0 ..< invoiceCount {
+                    let invoice = self.fieldsJson["invoiceType"][i].stringValue
+                    self.invoiceTypeArray.append(invoice)
+                }
+                
+                let scheduleCount:Int = self.fieldsJson["scheduleType"].count
+                for i in 0 ..< scheduleCount {
+                    let schedule = self.fieldsJson["scheduleType"][i].stringValue
+                    self.scheduleTypeArray.append(schedule)
+                }
+                */
             }
         }
         
@@ -145,6 +216,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.employeeListViewController.delegate = self
         
         self.employeeArray = []
+        self.salesRepIDArray = []
+        self.salesRepNameArray = []
         
         
         //Get employee list
@@ -168,11 +241,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                     print("JSONcount: \(jsonCount)")
                     for i in 0 ..< jsonCount {
                         
-                        
+                        print("emp ID = \(self.employees["employees"][i]["ID"].stringValue)")
                         let employee = Employee(_ID: self.employees["employees"][i]["ID"].stringValue, _name: self.employees["employees"][i]["name"].stringValue, _lname: self.employees["employees"][i]["lname"].stringValue, _fname: self.employees["employees"][i]["fname"].stringValue, _username: self.employees["employees"][i]["username"].stringValue, _pic: self.employees["employees"][i]["pic"].stringValue, _phone: self.employees["employees"][i]["phone"].stringValue, _depID: self.employees["employees"][i]["depID"].stringValue, _payRate: self.employees["employees"][i]["payRate"].stringValue, _appScore: self.employees["employees"][i]["appScore"].stringValue, _userLevel: self.employees["employees"][i]["level"].intValue, _userLevelName: self.employees["employees"][i]["levelName"].stringValue)
+                        
+                        if self.employees["employees"][i]["hasSignature"].stringValue == "1"{
+                            employee.hasSignature = true
+                        }
                         
                         self.employeeArray.append(employee)
                         
+                        if self.employees["employees"][i]["salesRep"].stringValue == "1"
+                        {
+                            self.salesRepArray.append(employee)
+                            self.salesRepIDArray.append(employee.ID)
+                            self.salesRepNameArray.append(employee.name)
+                        }
                     }
                     
                     if self.employeeListViewController.employeeTableView != nil{
@@ -325,6 +408,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         switch (menuItem) {
         case 0:
+            //print("Show Employee List")
+            navigationController = UINavigationController(rootViewController: self.employeeListViewController)
+            window?.rootViewController = navigationController
+            window?.makeKeyAndVisible()
+            
+            break
+        case 1:
+            
             //print("Show Customers")
             if(loggedInEmployee != nil){
                 self.navigationController = UINavigationController(rootViewController: self.customerListViewController)
@@ -333,14 +424,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             }else{
                 requireLogIn(_destination: "customers", _vc:homeViewController)
             }
-            
-            break;
-        case 1:
-            //print("Show Employee List")
-            navigationController = UINavigationController(rootViewController: self.employeeListViewController)
-            window?.rootViewController = navigationController
-            window?.makeKeyAndVisible()
-            break;
+            break
         case 2:
             //print("Show Vendor List")
             if(loggedInEmployee != nil){
@@ -350,7 +434,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             }else{
                 requireLogIn(_destination: "vendors", _vc:homeViewController)
             }
-            break;
+            break
         case 3:
             //print("Show Item List")
             if(loggedInEmployee != nil){
@@ -360,7 +444,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             }else{
                 requireLogIn(_destination: "items", _vc:homeViewController)
             }
-            break;
+            break
         case 4:
             //print("Show Schedule")
             if(loggedInEmployee != nil){
@@ -370,7 +454,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             }else{
                requireLogIn(_destination: "schedule", _vc:homeViewController)
            }
-            break;
+            break
         case 5:
             //print("Show  Performance")
             if(loggedInEmployee != nil){
@@ -381,7 +465,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             }else{
                 requireLogIn(_destination: "performance", _vc:homeViewController)
             }
-            break;
+            break
         case 6:
             //print("Show  Images")
             if(loggedInEmployee != nil){
@@ -399,7 +483,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             }else{
                 requireLogIn(_destination: "images", _vc:homeViewController)
             }
-            break;
+            break
         case 7:
             //print("Show  Equipment List")
             if(loggedInEmployee != nil){
@@ -411,7 +495,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             }
 
             
-            break;
+            break
             
         case 8:
             print("Show  Lead List")
@@ -424,7 +508,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             }
             
             
-            break;
+            break
             
         case 9:
             //print("Show  Contract List")
@@ -444,7 +528,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             navigationController = UINavigationController(rootViewController: self.homeViewController)
             window?.rootViewController = navigationController
             window?.makeKeyAndVisible()
-            break;
+            break
         }
         
         

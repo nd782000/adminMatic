@@ -121,8 +121,8 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         indicator = SDevIndicator.generate(self.view)!
         
         
-         
-        let parameters = ["startDate":  startDateDB,"endDate": endDateDB,"empID":(appDelegate.loggedInEmployee?.ID)!] as [String : Any]
+        let parameters:[String:String]
+        parameters = ["startDate":  startDateDB,"endDate": endDateDB,"empID":appDelegate.loggedInEmployee?.ID] as! [String : String]
         
         print("parameters = \(parameters)")
         

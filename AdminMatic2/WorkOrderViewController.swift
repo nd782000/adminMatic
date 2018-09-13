@@ -18,10 +18,18 @@ protocol WoDelegate{
 }
 
 
-class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UITextFieldDelegate, UIGestureRecognizerDelegate, WoDelegate {
+class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UITextFieldDelegate, UIGestureRecognizerDelegate, WoDelegate {
+    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
-    var editMode:Bool = false
+    //var editMode:Bool = false
+    
+    
+    var editButton:UIBarButtonItem!
+    var editsMade:Bool = false
+    
     
     //var scrollView: UIScrollView!
     var tapBtn:UIButton!
@@ -30,15 +38,16 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     var scheduleIndex:Int!
     
     var json:JSON!
+    var workOrder:WorkOrder!
     var workOrderID:String!
-    var customerID:String!
+    //var customerID:String!
     var customerName:String!
     
     var statusIcon:UIImageView = UIImageView()
     
     var statusTxtField:PaddedTextField!
     var statusPicker: Picker!
-    var statusArray = ["Un-Done","In Progress","Done","Cancel","Waiting"]
+    var statusArray = ["Not Started","In Progress","Done","Cancel","Waiting"]
     
     
     var statusValue: String!
@@ -74,20 +83,26 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     var salesRep:GreyLabel!
     var salesRepValue:String!
 
+    
+    //attachments is disabled for now
     var attachmentsView: UIView! = UIView()
     var attachmentsLbl:GreyLabel!
     var attachmentsTxt:GreyLabel!
+    var attachments:[Attachment] = []
+    var numberAttachmentPics: Int = 0
+ 
+    
     
     var woItems: JSON!
     var woItemsArray:[WoItem] = []
     var empsOnWo:[Employee] = []
-    var attachments:[Attachment] = []
+    
     
     var woItemViewController:WoItemViewController?
     var refreshWoID:String?
     var currentWoItem:WoItem?
     
-    var numberAttachmentPics: Int = 0
+    
     
     var itemsTableView: TableView!
     
@@ -124,10 +139,27 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     
     init(_workOrderID:String,_customerName:String){
+        //init(_workOrder:WorkOrder){
+        //init(_workOrderID:String,_customerName:String){
         
         super.init(nibName:nil,bundle:nil)
         print("workorder init")
         self.workOrderID = _workOrderID
+        //self.workOrderID = _workOrderID
+        self.customerName = _customerName
+        
+    }
+    
+    
+    
+    init(_workOrder:WorkOrder,_customerName:String){
+    //init(_workOrder:WorkOrder){
+    //init(_workOrderID:String,_customerName:String){
+        
+        super.init(nibName:nil,bundle:nil)
+        print("workorder init")
+        self.workOrder = _workOrder
+        //self.workOrderID = _workOrderID
         self.customerName = _customerName
         
     }
@@ -177,7 +209,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             case "3":
                 statusName = "Done"
                 break;
-            case "3":
+            case "4":
                 statusName = "Cancel"
                 break;
                 
@@ -200,15 +232,10 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
                 (result : UIAlertAction) -> Void in
                 
-                /*
-                //cache buster
-                let now = Date()
-                let timeInterval = now.timeIntervalSince1970
-                let timeStamp = Int(timeInterval)
-                */
+                
                 var parameters:[String:String]
                 parameters = [
-                    "woID":self.workOrderID,
+                    "woID":self.workOrder.ID,
                     "status":_newWoStatus,
                     "empID":(self.appDelegate.loggedInEmployee?.ID)!
                 ]
@@ -256,6 +283,10 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
+        
+        
+        
+        
         showLoadingScreen()
     }
     
@@ -268,7 +299,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     //sends request for wo Data
     func getWorkOrder() {
-        print(" GetWo  Work Order Id \(self.workOrderID)")
+        print(" GetWo  Work Order Id \(self.workOrder.ID)")
         
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -280,7 +311,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
       
         
-        Alamofire.request(API.Router.workOrder(["woID":self.workOrderID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
+        Alamofire.request(API.Router.workOrder(["woID":self.workOrder.ID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
             
             response in
             // ////print(response.request)  // original URL request
@@ -291,15 +322,11 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             if let json = response.result.value {
                 // Close Indicator
                 self.indicator.dismissIndicator()
-                
+                /*
                 print("----------------")
-                
-                
                 print("Work Order  JSON: \(json)")
-                
                 print("----------------")
-                
-                
+                */
                 self.json = JSON(json)["woInfo"]
                 self.parseJSON()
             }
@@ -313,7 +340,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         //print(" parseJSON()")
         
-        self.customerID = self.json["customerID"].stringValue
+        self.workOrder.customer = self.json["customerID"].stringValue
         let mainAddr:String = self.json["customer"]["mainAddr"].stringValue
          self.locationValue =  mainAddr.components(separatedBy: ",").first
         
@@ -436,7 +463,8 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                 if(self.woItemViewController != nil){
                     //print("update woItemVC \(self.currentWoItem?.usageQty)")
                     self.woItemViewController!.woItem = self.currentWoItem
-                    self.woItemViewController?.customerID = self.customerID
+                    self.woItemViewController?.customerID = self.workOrder.customer
+                    self.woItemViewController?.customerName = self.customerName
                     self.woItemViewController?.saleRepName = self.salesRepValue
                     self.woItemViewController?.layoutViews()
                 }
@@ -448,19 +476,11 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             
             let taskCount = self.json["items"][i]["tasks"].count
             for n in 0 ..< taskCount {
-                //var taskPicUrl = "0"
-                //var taskThumbUrl = "0"
                 var taskImages:[Image] = []
-                //if(self.json["items"][i]["tasks"][n]["pic"].stringValue != "0" && self.json["items"][i]["tasks"][n]["image"] != JSON.null){
-                    
-                    
                     
                     let imageCount = Int((self.json["items"][i]["tasks"][n]["images"].count))
                     print("imageCount: \(imageCount)")
-                    
-                    
-                    
-                    
+                
                     for p in 0 ..< imageCount {
                         
                         let fileName:String = (self.json["items"][i]["tasks"][n]["images"][p]["fileName"].stringValue)
@@ -483,12 +503,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                         taskImages.append(image)
                         
                     }
-
-                
-                
-                
-           // print("task = ")
-                ////print("thumb url = \(taskThumbUrl)")
                 
                 let task = Task(_ID: self.json["items"][i]["tasks"][n]["ID"].stringValue, _sort: self.json["items"][i]["tasks"][n]["sort"].stringValue, _status: self.json["items"][i]["tasks"][n]["status"].stringValue, _task: self.json["items"][i]["tasks"][n]["task"].stringValue, _images:taskImages)
                 woItem.tasks.append(task)
@@ -519,7 +533,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                     locked = false
                 }
                 
-                
                 let usage:Usage
                 
                 if(self.json["items"][i]["usage"][n]["stop"].string != "0000-00-00 00:00:00"){
@@ -549,7 +562,6 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                                       _del: ""
                     )
                 }else{
-                    
                     usage = Usage(_ID: self.json["items"][i]["usage"][n]["ID"].stringValue,
                                       _empID: self.json["items"][i]["usage"][n]["empID"].stringValue,
                                       _depID: self.json["items"][i]["usage"][n]["depID"].stringValue,
@@ -575,9 +587,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
                 }
                 woItem.usages.append(usage)
             }
-            
             self.woItemsArray.append(woItem)
-            
         }
         
         
@@ -588,17 +598,11 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         print("JSON attachments: \(self.json["attachments"])")
         for n in 0 ..< attachmentCount {
             
-           // var picUrl = "0"
-           // var thumbUrl = "0"
-            
             var attachmentImages:[Image]  = []
-            
             
             let imageCount = self.json["attachments"][n]["images"].count
             print("imageCount: \(imageCount)")
             
-           // let thumbBase:String = self.images["thumbBase"].stringValue
-           // let rawBase:String = self.images["rawBase"].stringValue
             
             for i in 0 ..< imageCount {
                 
@@ -640,18 +644,15 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     
     func layoutViews(){
-        //print("layout views")
+       
+        title =  "Work Order #" + self.workOrder.ID
         
-       // for attachment in attachments{
-            ////print("thumb = \(attachment.thumb)")
-        //}
         
-        title =  "Work Order #" + self.workOrderID
+        editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(WorkOrderViewController.displayEditView))
+        navigationItem.rightBarButtonItem = editButton
+        
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
-        //if(self.scrollView != nil){
-            //self.scrollView.subviews.forEach({ $0.removeFromSuperview() })
-       // }
         
         if(self.infoView != nil){
             self.infoView.subviews.forEach({ $0.removeFromSuperview() })
@@ -668,10 +669,12 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         if(self.woItemViewController != nil){
             self.woItemViewController?.woItem = currentWoItem
+            //self.woItemViewController!.woItem = self.currentWoItem
+            self.woItemViewController?.customerID = self.workOrder.customer
+            self.woItemViewController?.customerName = self.customerName
+            self.woItemViewController?.saleRepName = self.salesRepValue
             self.woItemViewController?.layoutViews()
         }
-        
-        
         
         //statusIcon = UIImageView()
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
@@ -681,7 +684,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         setStatus(status: self.json["status"].stringValue)
         
         
-        //employee picker
+        //status picker
         self.statusPicker = Picker()
         print("statusValue : \(statusValue)")
         print("set picker position : \(Int(self.statusValue)! - 1)")
@@ -831,16 +834,11 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             self.attachmentsTxt.text = "None Saved"
         }else{
             self.attachmentsTxt.text = "\(self.attachments.count) w/ \(picString)"
-        }//else{
-            //self.attachmentsTxt.text = "\(self.attachments.count) note \(picString)"
-        //}
+        }
         
         self.attachmentsTxt.translatesAutoresizingMaskIntoConstraints = false
         
         self.attachmentsView.addSubview(attachmentsTxt)
-        
-        
-
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(WorkOrderViewController.showAttachmentsList))
         attachmentsView.addGestureRecognizer(tapGesture)
@@ -937,10 +935,8 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         //Profit Info
         let profitBarWidth = Float(layoutVars.fullWidth - 20)
         
-        
         let totalRaw = Float(self.priceRawValue!)
         let totalCostRaw = Float(self.costRawValue!)
-        
         
         var scaleFactor = Float(0.00)
         var costWidth = Float(0.00)
@@ -994,11 +990,14 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[info]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[attachments]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[attachments]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[table]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[th]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[profitView]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(90)]-[attachments(40)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(90)]-[attachments(40)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(90)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
@@ -1130,11 +1129,12 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         
         
-        let attachmentsListViewControler:AttachmentListViewController = AttachmentListViewController(_workOrderID: self.workOrderID,_customerID: self.customerID, _attachments: self.attachments)
+        let attachmentsListViewControler:AttachmentListViewController = AttachmentListViewController(_workOrderID: self.workOrder.ID,_customerID: self.workOrder.customer, _attachments: self.attachments)
         attachmentsListViewControler.woDelegate = self
         navigationController?.pushViewController(attachmentsListViewControler, animated: false )
     }
     
+    /*
     func enterEditMode(){
         editMode = true
         removeViews()
@@ -1147,10 +1147,11 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         layoutViews()
         
     }
+ */
     
     @objc func showCustInfo() {
         ////print("SHOW CUST INFO")
-        let customerViewController = CustomerViewController(_customerID: self.customerID,_customerName: self.customerName)
+        let customerViewController = CustomerViewController(_customerID: self.workOrder.customer,_customerName: self.customerName)
         navigationController?.pushViewController(customerViewController, animated: false )
     }
     
@@ -1246,7 +1247,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
         var parameters:[String:String]
         parameters = [
-            "woID":self.workOrderID,
+            "woID":self.workOrder.ID,
             "status":self.statusValueToUpdate,
             "empID":(self.appDelegate.loggedInEmployee?.ID)!
         ]
@@ -1324,7 +1325,13 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             let indexPath = tableView.indexPathForSelectedRow;
             let currentCell = tableView.cellForRow(at: indexPath!) as! WoItemTableViewCell;
             if(currentCell.woItem != nil && currentCell.woItem.ID != ""){
-                self.woItemViewController = WoItemViewController(_woID: self.workOrderID, _woItem: currentCell.woItem, _empsOnWo: self.empsOnWo, _woStatus: self.statusValue)
+                self.woItemViewController = WoItemViewController(_woID: self.workOrder.ID, _woItem: currentCell.woItem, _empsOnWo: self.empsOnWo, _woStatus: self.statusValue)
+                
+                //self.woItemViewController!.woItem = self.currentWoItem
+                self.woItemViewController?.customerID = self.workOrder.customer
+                self.woItemViewController?.customerName = self.customerName
+                self.woItemViewController?.saleRepName = self.salesRepValue
+                
                 self.woItemViewController!.woDelegate = self
                 print("task count = \(currentCell.woItem.tasks.count)")
                 // print("task image  count = \(currentCell.woItem.tasks)")
@@ -1371,7 +1378,7 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         
         
-        let newWoItemViewController:NewWoItemViewController = NewWoItemViewController(_woID: self.workOrderID, _charge: self.json["charge"].stringValue)
+        let newWoItemViewController:NewWoItemViewController = NewWoItemViewController(_woID: self.workOrder.ID, _charge: self.json["charge"].stringValue)
         
         newWoItemViewController.delegate = self
         
@@ -1507,6 +1514,30 @@ class WorkOrderViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
 
         
     }
+    
+    
+    
+    
+    
+    @objc func displayEditView(){
+        print("display Edit View")
+        
+        //need userLevel greater then 1 to access this
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }
+        
+        
+       // self.equipmentDelegate.disableSearch()
+        let newEditWorkOrderViewController = NewEditWoViewController(_wo:self.workOrder )
+        newEditWorkOrderViewController.editDelegate = self
+        navigationController?.pushViewController(newEditWorkOrderViewController, animated: false )
+    }
+    
+    
+    
+    
+    
     
     
 }

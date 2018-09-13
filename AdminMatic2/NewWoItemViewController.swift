@@ -6,17 +6,11 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
-
-
 import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
 import DKImagePickerController
-
-
-
-
 
 
 class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate{
@@ -25,9 +19,6 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
    var delegate:WoDelegate!  // refreshing the list
     var indicator: SDevIndicator!
     var backButton:UIButton!
-    
-    
-  
     
     
     var woID:String!
@@ -223,7 +214,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         
         
         
-        self.priceLbl = Label(text: "Unit Price")
+        self.priceLbl = Label(text: "Unit Price $")
         self.priceLbl.textAlignment = .right
         self.view.addSubview(self.priceLbl)
         
@@ -473,17 +464,18 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
             
                 }
         
-        
+        /*
                 //cache buster
                 let now = Date()
                 let timeInterval = now.timeIntervalSince1970
                 let timeStamp = Int(timeInterval)
                 //, "cb":timeStamp as AnyObject
+        */
         
         
         
-        
-                let parameters = ["woID": self.woID!,"itemID": selectedID as AnyObject,"estQty": estQtyString as AnyObject,"price": priceString as AnyObject,"chargeID": self.charge as AnyObject,"createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "cb":timeStamp as AnyObject] as [String : Any]
+        let parameters:[String:String]
+        parameters = ["woID": self.woID!,"itemID": selectedID,"estQty": estQtyString,"price": priceString,"chargeID": self.charge,"createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId)] as! [String : String]
         
         print("parameters : \(parameters)")
                 

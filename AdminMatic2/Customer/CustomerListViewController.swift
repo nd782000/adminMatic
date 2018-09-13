@@ -175,7 +175,7 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         self.view.addSubview(self.countView)
         
         self.countLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.countLbl.text = "\(self.ids.count) Active Customers "
+        
         self.countView.addSubview(self.countLbl)
         
         
@@ -324,8 +324,10 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //print("numberOfRowsInSection")
         if shouldShowSearchResults{
+            self.countLbl.text = "\(self.customersSearchResults.count) Customer(s) Found "
             return self.customersSearchResults.count
         } else {
+            self.countLbl.text = "\(self.ids.count) Active Customer(s) "
             return sections[section].length
         }
     }

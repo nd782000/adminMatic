@@ -27,12 +27,9 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
     var phones = [String]()
     
     
-    //var loadedVendors:Int!
-    // var loadingString:String = "Connecting..."
-    //var refreshControl:UIRefreshControl!
+    
     var searchController:UISearchController!
     
-    //var currentSearchMode = SearchMode.name
     
     var vendorTableView:TableView = TableView()
     
@@ -99,10 +96,14 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
                         
                         if let address = vendor["address"] as? String {
                             self.addresses.append(address)
+                        }else{
+                            self.addresses.append("No Address on File")
                         }
                         
                         if let phone = vendor["phone"] as? String {
                             self.phones.append(phone)
+                        }else{
+                            self.phones.append("No Phone on File")
                         }
                         
                     }
@@ -202,7 +203,7 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
         
         
         self.countLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.countLbl.text = "\(self.ids.count) Active Vendors "
+        
         self.countView.addSubview(self.countLbl)
         
         
@@ -335,8 +336,14 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //print("numberOfRowsInSection")
         if shouldShowSearchResults{
+            
+            self.countLbl.text = "\(self.vendorsSearchResults.count) Vendor(s) Found "
+            
             return self.vendorsSearchResults.count
         } else {
+            
+            self.countLbl.text = "\(self.ids.count) Active Vendor(s) "
+            
             return sections[section].length
         }
     }
@@ -353,10 +360,20 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
             
                 if let i = self.names.index(of: cell.nameLbl.text!) {
                     //print("\(cell.nameLbl.text!) is at index \(i)")
+                   // if self.addresses[i] != nil{
                     cell.addressLbl.text = self.addresses[i]
                     cell.address = self.addresses[i]
+                    //}else{
+                       // cell.addressLbl.text = ""
+                        //cell.address = ""
+                    //}
+                    
                     cell.id = self.ids[i]
+                    //if self.phones[i] != nil{
                     cell.phone = self.phones[i]
+                    //}else{
+                       // cell.phone = ""
+                   // }
                 } else {
                     cell.addressLbl.text = ""
                     cell.address = ""

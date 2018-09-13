@@ -32,7 +32,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
     
-    var empID:String!
+    //var empID:String!
     var empFirstName:String!
     var screenHeaderLbl: Label!
     
@@ -75,7 +75,9 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     init(_employee:Employee){
         super.init(nibName:nil,bundle:nil)
         self.employee = _employee
-        self.empID = self.employee.ID
+        //self.empID = self.employee.ID
+        
+        print("payroll entry view init ID = \(self.employee.ID!)")
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -131,7 +133,8 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         let endDateDB = dateFormatterDB.string(from: Date().endOfWeek)
        
     
-        let parameters = ["endDate": endDateDB,"empID":self.empID] as [String : Any]
+        let parameters:[String:String]
+            parameters = ["endDate": endDateDB,"empID":self.employee.ID]
         
         print("parameters = \(parameters)")
         
@@ -381,7 +384,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         let row = employeePicker.selectedRow(inComponent: 0)
         
         self.employee = appDelegate.employeeArray[row]
-        self.empID = appDelegate.employeeArray[row].ID!
+        //self.empID = appDelegate.employeeArray[row].ID!
         
         self.employeeTxtField.text = appDelegate.employeeArray[row].name!
         
@@ -391,7 +394,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     
    @objc func displayPayrollSummary(){
         print("display Summary View")
-        let payrollSummaryViewController = PayrollSummaryViewController(_empID: self.empID, _empFirstName: self.employee.fname!)
+        let payrollSummaryViewController = PayrollSummaryViewController(_empID: self.employee.ID, _empFirstName: self.employee.fname!)
         navigationController?.pushViewController(payrollSummaryViewController, animated: false )
     }
     
@@ -860,7 +863,8 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
             del  = "\(self.payroll[0].del!)"
         }
         
-        let parameters = ["ID": self.payroll[0].ID as AnyObject, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "empID": self.empID as AnyObject, "startTime": start as AnyObject, "stopTime": stop as AnyObject, "lunch": lunch as AnyObject, "date": todaysDate as AnyObject, "del": del as AnyObject] as [String : Any]
+        let parameters:[String:String]
+        parameters = ["ID": self.payroll[0].ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "empID": self.employee.ID, "startTime": start, "stopTime": stop, "lunch": lunch, "date": todaysDate, "del": del] as! [String : String]
         
         print("parameters = \(parameters)")
         

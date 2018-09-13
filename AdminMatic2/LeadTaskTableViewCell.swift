@@ -15,14 +15,15 @@ import Nuke
 class LeadTaskTableViewCell: UITableViewCell {
     
     var task:Task!
+    var checkMarkView:UIImageView = UIImageView()
     var thumbView:UIImageView = UIImageView()
     var activityView:UIActivityIndicatorView!
-    var taskLbl: UILabel! = UILabel()
+    var taskLbl: Label! = Label()
     var imageQtyLbl: Label! = Label()
     
-   // var statusIcon: UIImageView!
+    var statusLbl: Label! = Label()
     
-    var addTasksLbl:Label = Label()
+    //var addTasksLbl:Label = Label()
     
     var layoutVars:LayoutVars = LayoutVars()
     
@@ -43,12 +44,20 @@ class LeadTaskTableViewCell: UITableViewCell {
         
         self.selectionStyle = .none
         
-        taskLbl = UILabel()
+        taskLbl = Label()
         taskLbl.text = self.task.task
         taskLbl.font = layoutVars.buttonFont
         taskLbl.numberOfLines = 2
-        taskLbl.translatesAutoresizingMaskIntoConstraints = false
+        //taskLbl.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(taskLbl)
+        
+        
+        checkMarkView = UIImageView()
+        checkMarkView.translatesAutoresizingMaskIntoConstraints = false
+        checkMarkView.backgroundColor = UIColor.clear
+        checkMarkView.contentMode = .scaleAspectFill
+        contentView.addSubview(checkMarkView)
+        
         
         
         self.thumbView.clipsToBounds = true
@@ -60,6 +69,33 @@ class LeadTaskTableViewCell: UITableViewCell {
         taskLbl.numberOfLines = 0;
         
         contentView.addSubview(taskLbl)
+        
+       // let attributeString: NSMutableAttributedString =  NSMutableAttributedString(string: self.task.task)
+        
+       // strikethroughStyle
+       // UIStringAttributes { StrikethroughStyle = NSUnderlineStyle.Single })
+        //attributeString.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: NSMakeRange(0, attributeString.length))
+        
+        switch task.status {
+        case "0":
+            statusLbl.text = ""
+            break
+        case "1":
+            statusLbl.text = "--- Assigned ---"
+            break
+        case "2":
+            statusLbl.text = "--- Not Needed ---"
+            break
+        default:
+            statusLbl.text = ""
+        }
+        statusLbl.textColor = UIColor.red
+        statusLbl.textAlignment = .center
+        statusLbl.translatesAutoresizingMaskIntoConstraints = false
+        statusLbl.font = layoutVars.microFont
+        contentView.addSubview(statusLbl)
+        
+        
         
         if(self.task.images.count > 1){
             imageQtyLbl.text = "+\(self.task.images.count - 1)"
@@ -84,13 +120,7 @@ class LeadTaskTableViewCell: UITableViewCell {
         }
         
         
-        /*
-        statusIcon = UIImageView()
-        statusIcon.translatesAutoresizingMaskIntoConstraints = false
-        statusIcon.backgroundColor = UIColor.clear
-        statusIcon.contentMode = .scaleAspectFill
-        contentView.addSubview(statusIcon)
-        */
+        
         
         
         self.separatorInset = UIEdgeInsets.zero
@@ -98,25 +128,49 @@ class LeadTaskTableViewCell: UITableViewCell {
         self.preservesSuperviewLayoutMargins = false
         
         
-        let viewsDictionary = ["thumbs":self.thumbView,"task":taskLbl, "imageQty":imageQtyLbl] as [String:AnyObject]
+    }
+    
+    func setConstraints(){
+        
+        let viewsDictionary = ["checkMark":self.checkMarkView,"thumbs":self.thumbView,"task":taskLbl,"status":statusLbl, "imageQty":imageQtyLbl] as [String:AnyObject]
         
         let sizeVals = ["fullWidth": layoutVars.fullWidth - 90] as [String:Any]
         
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[checkMark(0)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[task(50)]", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[thumbs(50)]", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[imageQty(50)]", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[status(20)]-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-20-[thumbs(50)]", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-20-[imageQty(50)]", options: [], metrics: nil, views: viewsDictionary))
         
         
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[checkMark(0)]-[task]-[thumbs(50)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[checkMark(0)]-[task]-[imageQty(50)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[checkMark(0)]-[status]-[imageQty(50)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
-        //contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[status(40)]", options: [], metrics: nil, views: viewsDictionary))
+    }
+    
+    func setConstraintsWithCheckMark(){
         
-        // contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[note(20)]-[imageQty(20)]", options: [], metrics: nil, views: viewsDictionary))
+        let viewsDictionary = ["checkMark":self.checkMarkView,"thumbs":self.thumbView,"task":taskLbl,"status":statusLbl, "imageQty":imageQtyLbl] as [String:AnyObject]
         
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[task]-[thumbs(50)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[task]-[imageQty(50)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        let sizeVals = ["fullWidth": layoutVars.fullWidth - 90] as [String:Any]
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-30-[checkMark(30)]", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[task(50)]", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[status(20)]-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-20-[thumbs(50)]", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-20-[imageQty(50)]", options: [], metrics: nil, views: viewsDictionary))
+        
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[checkMark(30)]-[task]-[thumbs(50)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[checkMark(30)]-[task]-[imageQty(50)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[checkMark(30)]-[status]-[imageQty(50)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        
     }
     
     
+    
+    /*
     func layoutAddBtn(){
         self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
@@ -137,6 +191,7 @@ class LeadTaskTableViewCell: UITableViewCell {
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[addBtn(40)]", options: [], metrics: nil, views: viewsDictionary))
         
     }
+ */
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
@@ -144,9 +199,9 @@ class LeadTaskTableViewCell: UITableViewCell {
     }
     
     func setImageUrl(_url:String?){
-        print("set Task ImageUrl")
+        //print("set Task ImageUrl")
         
-        print("url = \(String(describing: _url))")
+        //print("url = \(String(describing: _url))")
         
         if(_url == nil){
             setBlankImage()
@@ -161,13 +216,7 @@ class LeadTaskTableViewCell: UITableViewCell {
                 
             }
             
-            /* DispatchQueue.global().async {
-             let data = try? Data(contentsOf: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
-             DispatchQueue.main.async {
-             self.thumbView.image = UIImage(data: data!)
-             }
-             }
-             */
+           
             
         }
     }
@@ -176,37 +225,17 @@ class LeadTaskTableViewCell: UITableViewCell {
         self.thumbView.image = layoutVars.defaultImage
     }
     
-    /*
-    
-    func setStatus(status: String) {
-        switch (status) {
-        case "1":
-            let statusImg = UIImage(named:"unDoneStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "2":
-            let statusImg = UIImage(named:"inProgressStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "3":
-            let statusImg = UIImage(named:"doneStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "4":
-            let statusImg = UIImage(named:"cancelStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "5":
-            let statusImg = UIImage(named:"waitingStatus.png")
-            statusIcon.image = statusImg
-            break;
-        default:
-            let statusImg = UIImage(named:"unDoneStatus.png")
-            statusIcon.image = statusImg
-            break;
-        }
+    func setCheck(){
+        let blueCheckImg = UIImage(named:"checkMarkBlue.png")
+        checkMarkView.image = blueCheckImg
     }
- */
+    
+    func unSetCheck(){
+        let grayCheckImg = UIImage(named:"checkMarkGray.png")
+        checkMarkView.image = grayCheckImg
+    }
+    
+    
     
     
     
