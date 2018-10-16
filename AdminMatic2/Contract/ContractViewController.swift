@@ -13,25 +13,32 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-import Nuke
+
 
 
 protocol EditContractDelegate{
     func updateContract(_contract:Contract)
     func updateContract(_contract:Contract, _status:String)
+    //func updateContractLead(_lead:Lead)
+    func suggestStatusChange(_emailCount:Int)
 }
 
 
 
 
 
-class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFieldDelegate, UIGestureRecognizerDelegate, UITableViewDelegate, UITableViewDataSource, EditContractDelegate, EditTermsDelegate {
+class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFieldDelegate, UIGestureRecognizerDelegate, UITableViewDelegate, UITableViewDataSource, EditContractDelegate, EditTermsDelegate, StackDelegate, EditLeadDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
     var json:JSON!
     var contract:Contract!
     var delegate:ContractListDelegate!
+    
+    var editLeadDelegate:EditLeadDelegate!
+    
+    
+    var stackController:StackController!
     
     var optionsButton:UIBarButtonItem!
     var editsMade:Bool = false
@@ -61,7 +68,9 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     var itemsLbl:GreyLabel!
     var items: JSON!
     var itemsArray:[ContractItem] = []
-    var signatureArray:[Signature] = []
+    //var signatureArray:[Signature] = []
+    
+    var customerSignature:Signature!
     var itemsTableView: TableView!
     
     var signBtn:Button = Button(titleText: "Sign")
@@ -74,12 +83,15 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     var totalLbl:GreyLabel!
     var taxLbl:GreyLabel!
     
+    
+    var leadTasksWaiting:String?
+    
     //var employeeSignature:Bool = false
     
     
     var contractItemViewController:ContractItemViewController?
 
-    
+    //var lead:Lead?
     
     init(_contract:Contract){
         super.init(nibName:nil,bundle:nil)
@@ -217,7 +229,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             
             
             
-            let item = ContractItem(_ID: self.json["items"][i]["ID"].stringValue, _chargeType: self.json["items"][i]["chargeType"].stringValue, _contractID: self.contract.ID, _createDate: self.json["items"][i]["createDate"].stringValue, _itemID:self.json["items"][i]["itemID"].stringValue, _name:self.json["items"][i]["name"].stringValue, _price:self.json["items"][i]["price"].stringValue, _qty:self.json["items"][i]["qty"].stringValue, _sort:self.json["items"][i]["sort"].stringValue, _totalImages:self.json["items"][i]["totalImages"].stringValue, _total:self.json["items"][i]["total"].stringValue, _type: self.json["items"][i]["typeID"].stringValue, _taxCode: self.json["items"][i]["taxType"].stringValue)
+            let item = ContractItem(_ID: self.json["items"][i]["ID"].stringValue, _chargeType: self.json["items"][i]["chargeType"].stringValue, _contractID: self.contract.ID, _createDate: self.json["items"][i]["createDate"].stringValue, _itemID:self.json["items"][i]["itemID"].stringValue, _name:self.json["items"][i]["name"].stringValue, _price:self.json["items"][i]["price"].stringValue, _qty:self.json["items"][i]["qty"].stringValue, _totalImages:self.json["items"][i]["totalImages"].stringValue, _total:self.json["items"][i]["total"].stringValue, _type: self.json["items"][i]["type"].stringValue, _taxCode: self.json["items"][i]["taxType"].stringValue, _subcontractor: self.json["items"][i]["subcontractor"].stringValue)
             
             
                 item.tasks = contractTasks
@@ -229,20 +241,13 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         
         
         //signatures
-    let signatureCount = self.json["customerSignature"].count
         
-        //print("signatureCount \(signatureCount)")
-    for n in 0 ..< signatureCount {
+        
         if self.contract.customerSignature == "1"{
-            let signature = Signature(_ID: self.json["customerSignature"][n]["ID"].stringValue, _contractID: self.contract.ID, _type: self.json["customerSignature"][n]["type"].stringValue, _path: self.json["customerSignature"][n]["path"].stringValue)
-            
-             self.signatureArray.append(signature)
+            customerSignature = Signature(_contractID: self.contract.ID, _type: "1", _path: self.json["contract"]["customerSignaturePath"].stringValue)
+            print("customer signature = \(self.json["contract"]["customerSignaturePath"].stringValue)")
+            //self.signatureArray.append(signature)
         }
-        
-            
-            
-        
-    }
         
         
         self.layoutViews()
@@ -263,6 +268,13 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         if(self.infoView != nil){
             self.infoView.subviews.forEach({ $0.removeFromSuperview() })
         }
+        
+        
+        stackController = StackController()
+        stackController.delegate = self
+        stackController.getStack(_type:1,_ID:self.contract.ID)
+        self.view.addSubview(stackController)
+        
         
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
@@ -464,8 +476,8 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         
         if self.contract.customerSignature == "1"{
         //if(self.signatureArray.count > 0){
-            print("trying to load path \(self.signatureArray[0].path!)")
-            let imgURL:URL = URL(string: self.signatureArray[0].path!)!
+            print("trying to load path \(self.customerSignature.path!)")
+            let imgURL:URL = URL(string: self.customerSignature.path!)!
             
             
             let data = try? Data(contentsOf: imgURL) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
@@ -483,6 +495,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         
         //main views
         let viewsDictionary = [
+            "stackController":self.stackController,
             "statusIcon":self.statusIcon,
             "statusTxtField":self.statusTxtField,
             "customerBtn":self.customerBtn,
@@ -496,13 +509,14 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             "taxLbl":self.taxLbl
             ] as [String:AnyObject]
         
+         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[stackController]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusIcon(40)]-[customerBtn]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[info]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[itemsLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[table]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        if(self.signatureArray.count > 0){
+        if(self.contract.customerSignature == "1"){
            
             
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[signature(halfWidth)]-[totalLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
@@ -521,20 +535,20 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             
         }
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table]-[signBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table]-[signBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        if(self.signatureArray.count > 0){
+        if(self.contract.customerSignature == "1"){
             
             //print("v constraint for signature")
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table]-[signature(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table]-[tapBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table]-[signature(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table]-[tapBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         }
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table][totalLbl(35)][taxLbl(10)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table][totalLbl(35)][taxLbl(10)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         
         
@@ -567,7 +581,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     }
     
     func newContractMessage(){
-        //simpleAlert(_vc: self, _title: "Add Items", _message: "You should add items to this contract.")
+        //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Add Items", _message: "You should add items to this contract.")
         
         
         let alertController = UIAlertController(title: "Add Items?", message: "This contract has no items.  Add items now?", preferredStyle: UIAlertControllerStyle.alert)
@@ -585,7 +599,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         }
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)
-        self.present(alertController, animated: true, completion: nil)
+        layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         
     }
     
@@ -673,10 +687,12 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     @objc func handleStatusChange(){
         self.statusTxtField.resignFirstResponder()
         
-        
-        self.contract.status = "\(self.statusPicker.selectedRow(inComponent: 0))"
-        self.updateContract(_contract: self.contract)
-        
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }else{
+            self.contract.status = "\(self.statusPicker.selectedRow(inComponent: 0))"
+            self.updateContract(_contract: self.contract)
+        }
         
         
     }
@@ -716,8 +732,12 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             let currentCell = tableView.cellForRow(at: indexPath!) as! ContractItemTableViewCell;
             if(currentCell.contractItem != nil && currentCell.contractItem.ID != ""){
                 self.contractItemViewController = ContractItemViewController(_contract: self.contract, _contractItem: currentCell.contractItem)
-                
-                
+                if self.contract.lead != nil{
+                    self.contractItemViewController?.lead = self.contract.lead
+
+                }
+                self.contractItemViewController?.leadDelegate = self
+                self.contractItemViewController?.leadTasksWaiting = self.leadTasksWaiting
                 
                 self.contractItemViewController!.contractDelegate = self
                
@@ -786,343 +806,193 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     func deleteItem(_row:Int){
         print("delete item")
         
-        
-        let alertController = UIAlertController(title: "Delete Item?", message: "Are you sure you want to delete this contract item?", preferredStyle: UIAlertControllerStyle.alert)
-        let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
-            (result : UIAlertAction) -> Void in
-            print("No")
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
-        }
-        
-        let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
-            (result : UIAlertAction) -> Void in
-            print("Yes")
+        }else{
+            let alertController = UIAlertController(title: "Delete Item?", message: "Are you sure you want to delete this contract item?", preferredStyle: UIAlertControllerStyle.alert)
+            let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                (result : UIAlertAction) -> Void in
+                print("No")
+                return
+            }
+            
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                (result : UIAlertAction) -> Void in
+                print("Yes")
+                
+                
+                var shouldRefreshTerms:Bool = false
             
             
-            var shouldRefreshTerms:Bool = false
-        
-        
-            var parameters:[String:String]
-            parameters = [
-                "contractItemID":self.itemsArray[_row].ID,
-                "contractID":self.contract.ID
-            ]
-            print("parameters = \(parameters)")
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/delete/contractItem.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
-                .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
-                .responseString { response in
-                    print("delete response = \(response)")
-                }
-                .responseJSON(){
-                    response in
-                    if let json = response.result.value {
-                        print("JSON: \(json)")
-                        self.json = JSON(json)
-                        //self.parseJSON()
-                        
-                        
-                        let subTotal = self.json["subTotal"]
-                        print("subTotal: \(subTotal)")
-                        
-                        let taxTotal = self.json["taxTotal"]
-                        print("taxTotal: \(taxTotal)")
-                        
-                        let total = self.json["total"]
-                        print("total: \(total)")
-                        
-                        
-                        
-                        self.contract.subTotal = subTotal.stringValue
-                        self.contract.taxTotal = taxTotal.stringValue
-                        self.contract.total = total.stringValue
-                        
-                        if self.json["shouldRefreshTerms"].stringValue == "1"{
-                            shouldRefreshTerms = true
-                        }
-                        
-                        
-                        
-                        if shouldRefreshTerms == true{
-                            print("refresh terms")
-                            let alertController2 = UIAlertController(title: "Regenerate Contract Terms", message: "This item had contract terms, would you like to regenerate the contract terms now based on current items?  All custom edits to terms will be overwritten.", preferredStyle: UIAlertControllerStyle.alert)
-                            let cancelAction2 = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
-                                (result : UIAlertAction) -> Void in
-                                print("No")
-                                
-                                self.itemsArray.remove(at: _row)
-                                
-                                
-                                self.updateContract(_contract: self.contract)
-                                
-                                
-                                return
+                var parameters:[String:String]
+                parameters = [
+                    "contractItemID":self.itemsArray[_row].ID,
+                    "contractID":self.contract.ID
+                ]
+                print("parameters = \(parameters)")
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/delete/contractItem.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                    .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+                    .responseString { response in
+                        print("delete response = \(response)")
+                    }
+                    .responseJSON(){
+                        response in
+                        if let json = response.result.value {
+                            print("JSON: \(json)")
+                            self.json = JSON(json)
+                            //self.parseJSON()
+                            
+                            
+                            let subTotal = self.json["subTotal"]
+                            print("subTotal: \(subTotal)")
+                            
+                            let taxTotal = self.json["taxTotal"]
+                            print("taxTotal: \(taxTotal)")
+                            
+                            let total = self.json["total"]
+                            print("total: \(total)")
+                            
+                            
+                            
+                            self.contract.subTotal = subTotal.stringValue
+                            self.contract.taxTotal = taxTotal.stringValue
+                            self.contract.total = total.stringValue
+                            
+                            if self.json["shouldRefreshTerms"].stringValue == "1"{
+                                shouldRefreshTerms = true
                             }
                             
-                            let okAction2 = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
-                                (result : UIAlertAction) -> Void in
-                                print("Yes")
-                                
-                                print("re generate contract terms")
-                                
-                                
-                                
-                                var parameters:[String:String]
-                                parameters = [
-                                    "contractID":self.contract.ID,
-                                    "refresh":"1"
+                            
+                            
+                            if shouldRefreshTerms == true{
+                                print("refresh terms")
+                                let alertController2 = UIAlertController(title: "Regenerate Contract Terms", message: "This item had contract terms, would you like to regenerate the contract terms now based on current items?  All custom edits to terms will be overwritten.", preferredStyle: UIAlertControllerStyle.alert)
+                                let cancelAction2 = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                                    (result : UIAlertAction) -> Void in
+                                    print("No")
+                                    
+                                    self.itemsArray.remove(at: _row)
                                     
                                     
-                                ]
+                                    self.updateContract(_contract: self.contract)
+                                    
+                                    
+                                    return
+                                }
                                 
-                                print("parameters = \(parameters)")
-                                
-                                
-                                
-                                self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contractTerms.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
-                                    response in
-                                    print(response.request ?? "")  // original URL request
-                                    //print(response.response ?? "") // URL response
-                                    //print(response.data ?? "")     // server data
-                                    print(response.result)   // result of response serialization
+                                let okAction2 = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                                    (result : UIAlertAction) -> Void in
+                                    print("Yes")
+                                    
+                                    print("re generate contract terms")
                                     
                                     
                                     
-                                    //self.checkForSalesRepSignature()
-                                    //self.getContract()
+                                    var parameters:[String:String]
+                                    parameters = [
+                                        "contractID":self.contract.ID,
+                                        "refresh":"1"
+                                        
+                                        
+                                    ]
                                     
-                                    //self.layoutViews()
-                                    //self.delegate.updateTerms(_terms: self.terms)
+                                    print("parameters = \(parameters)")
                                     
-                                    //self.editsMade = false
                                     
-                                    //self.goBack()
-                                    }.responseJSON(){
+                                    
+                                    self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contractTerms.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                                         response in
-                                        if let json = response.result.value {
-                                            print("JSON: \(json)")
-                                            self.json = JSON(json)
-                                            let newTerms = self.json["newTerms"].stringValue
-                                            self.contract.terms = newTerms
-                                            
-                                            
-                                            
-                                            
-                                            self.itemsArray.remove(at: _row)
-                                            
-                                            
-                                            self.updateContract(_contract: self.contract)
-                                            
-                                            
-                                        }
-                                        print(" dismissIndicator")
-                                        //self.indicator.dismissIndicator()
+                                        print(response.request ?? "")  // original URL request
+                                        //print(response.response ?? "") // URL response
+                                        //print(response.data ?? "")     // server data
+                                        print(response.result)   // result of response serialization
+                                        
+                                        
+                                        
+                                       
+                                        }.responseJSON(){
+                                            response in
+                                            if let json = response.result.value {
+                                                print("JSON: \(json)")
+                                                self.json = JSON(json)
+                                                let newTerms = self.json["newTerms"].stringValue
+                                                self.contract.terms = newTerms
+                                                
+                                                
+                                                
+                                                
+                                                self.itemsArray.remove(at: _row)
+                                                
+                                                
+                                                self.updateContract(_contract: self.contract)
+                                                
+                                                
+                                            }
+                                            print(" dismissIndicator")
+                                    }
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
                                 }
                                 
                                 
+                                alertController2.addAction(cancelAction2)
+                                alertController2.addAction(okAction2)
+                                self.layoutVars.getTopController().present(alertController2, animated: true, completion: nil)
                                 
                                 
                                 
-                                
-                                
-                                
+                            }else{
+                                self.itemsArray.remove(at: _row)
+                                self.updateContract(_contract: self.contract)
                             }
                             
                             
-                            alertController2.addAction(cancelAction2)
-                            alertController2.addAction(okAction2)
-                            self.present(alertController2, animated: true, completion: nil)
                             
                             
-                            
-                        }else{
-                            self.itemsArray.remove(at: _row)
-                            self.updateContract(_contract: self.contract)
                         }
-                        
-                        
-                        
-                        
-                    }
- 
-            
-                    //print(" dismissIndicator")
-                    //self.indicator.dismissIndicator()
-            }
-            
-            
-            
-            
-            
-            }
-            
-            
-            
-            
-            
-            
-            
-            /*
-            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/delete/contractItem.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
-                response in
-                print(response.request ?? "")  // original URL request
-                print(response.result)   // result of response serialization
+     
                 
-                
-                
-                if let json = response.result.value {
-                    var deleteReturn:JSON!
-                    deleteReturn = JSON(json)
-                    
-                    
-                    
-                    
-                    
-                    let subTotal = deleteReturn["subTotal"]
-                    print("subTotal: \(subTotal)")
-                    
-                    let taxTotal = deleteReturn["taxTotal"]
-                    print("taxTotal: \(taxTotal)")
-                    
-                    let total = deleteReturn["total"]
-                    print("total: \(total)")
-                    
-                    
-                    
-                    self.contract.subTotal = subTotal.stringValue
-                    self.contract.taxTotal = taxTotal.stringValue
-                    self.contract.total = total.stringValue
-                    
-                    if deleteReturn["shouldRefreshTerms"].stringValue == "1"{
-                         shouldRefreshTerms = true
-                    }
-                    print("shouldRefreshTerms: \(shouldRefreshTerms)")
-                }
-                
-                self.itemsArray.remove(at: _row)
-                
-                
-                self.updateContract(_contract: self.contract)
-                
-                
-                
-                if shouldRefreshTerms == true{
-                    let alertController2 = UIAlertController(title: "Re-Generate Contract Terms", message: "This item had contract terms, would you like to regenerate the contract terms now?", preferredStyle: UIAlertControllerStyle.alert)
-                    let cancelAction2 = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
-                        (result : UIAlertAction) -> Void in
-                        print("No")
-                        return
-                    }
-                    
-                    let okAction2 = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
-                        (result : UIAlertAction) -> Void in
-                        print("Yes")
-                        
-                        print("re generate contract terms")
-                        
-                        
-                        
-                        var parameters:[String:String]
-                        parameters = [
-                            "contractID":self.contract.ID,
-                            "refresh":"1"
-                            
-                            
-                        ]
-                        
-                        print("parameters = \(parameters)")
-                        
-                        
-                        
-                        self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contractTerms.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
-                            response in
-                            print(response.request ?? "")  // original URL request
-                            //print(response.response ?? "") // URL response
-                            //print(response.data ?? "")     // server data
-                            print(response.result)   // result of response serialization
-                            
-                            
-                            
-                            //self.checkForSalesRepSignature()
-                            //self.getContract()
-                            
-                            //self.layoutViews()
-                            //self.delegate.updateTerms(_terms: self.terms)
-                            
-                            //self.editsMade = false
-                            
-                            //self.goBack()
-                            }.responseJSON(){
-                                response in
-                                if let json = response.result.value {
-                                    print("JSON: \(json)")
-                                    self.json = JSON(json)
-                                    let newTerms = self.json["newTerms"].stringValue
-                                    self.contract.terms = newTerms
-                                    
-                                    
-                                    
-                                    
-                                    
-                                    
-                                    
-                                }
-                                print(" dismissIndicator")
-                                //self.indicator.dismissIndicator()
-                        }
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                    }
-                    
-                    
-                    alertController2.addAction(cancelAction2)
-                    alertController2.addAction(okAction2)
-                    self.present(alertController2, animated: true, completion: nil)
-                    
-                    
+                       
                 }
                 
                 
-                    
-                    
-                    
-                    
-                    
                 
                 
-                }.responseString() {
-                    response in
-                    print(response)  // original URL request
-            }
- 
-  */
-        
-        
+                
+                }
             
             
-        
-        
-        
-        
-        alertController.addAction(cancelAction)
-        alertController.addAction(okAction)
-        self.present(alertController, animated: true, completion: nil)
- 
-        
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+     
+        }
         
         
     }
@@ -1131,42 +1001,49 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     
     func editItem(_row:Int){
         print("edit item")
-        let newEditContractItemViewController:NewEditContractItemViewController = NewEditContractItemViewController(_contract:self.contract,_itemID:itemsArray[_row].ID,_itemName:itemsArray[_row].name,_itemType:itemsArray[_row].type,_est:itemsArray[_row].qty,_price:itemsArray[_row].price,_originalID:itemsArray[_row].itemID,_sort:itemsArray[_row].sort)
-        
-        newEditContractItemViewController.delegate = self
-        
-        
-       
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
-        
-        newEditContractItemViewController.loadLinkList(_linkType: "items", _loadScript: API.Router.itemList(["cb":timeStamp as AnyObject]))
-        
-        
-        
-        self.navigationController?.pushViewController(newEditContractItemViewController, animated: false )
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }else{
+            let newEditContractItemViewController:NewEditContractItemViewController = NewEditContractItemViewController(_contract:self.contract,_itemID:itemsArray[_row].ID,_itemName:itemsArray[_row].name,_itemType:itemsArray[_row].type,_est:itemsArray[_row].qty,_price:itemsArray[_row].price,_originalID:itemsArray[_row].itemID)
+            
+            newEditContractItemViewController.delegate = self
+            
+            
+           
+            let now = Date()
+            let timeInterval = now.timeIntervalSince1970
+            let timeStamp = Int(timeInterval)
+            
+            newEditContractItemViewController.loadLinkList(_linkType: "items", _loadScript: API.Router.itemList(["cb":timeStamp as AnyObject]))
+            
+            
+            
+            self.navigationController?.pushViewController(newEditContractItemViewController, animated: false )
+        }
     }
     
     
     func addItem(){
         print("add item")
-        
-        let newEditContractItemViewController:NewEditContractItemViewController = NewEditContractItemViewController(_contract: self.contract,_itemCount:self.itemsArray.count)
-        
-        newEditContractItemViewController.delegate = self
-        
-        
-        
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
-        
-        newEditContractItemViewController.loadLinkList(_linkType: "items", _loadScript: API.Router.itemList(["cb":timeStamp as AnyObject]))
-        
-        
-        
-        self.navigationController?.pushViewController(newEditContractItemViewController, animated: false )
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }else{
+            let newEditContractItemViewController:NewEditContractItemViewController = NewEditContractItemViewController(_contract: self.contract,_itemCount:self.itemsArray.count)
+            
+            newEditContractItemViewController.delegate = self
+            
+            
+            
+            let now = Date()
+            let timeInterval = now.timeIntervalSince1970
+            let timeStamp = Int(timeInterval)
+            
+            newEditContractItemViewController.loadLinkList(_linkType: "items", _loadScript: API.Router.itemList(["cb":timeStamp as AnyObject]))
+            
+            
+            
+            self.navigationController?.pushViewController(newEditContractItemViewController, animated: false )
+        }
         
     }
     
@@ -1185,81 +1062,84 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     
     @objc func displayContractOptions(){
         print("display Options")
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }else{
         
-        
-        let actionSheet = UIAlertController(title: "Contract Options", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-        actionSheet.view.backgroundColor = UIColor.white
-        actionSheet.view.layer.cornerRadius = 5;
-        
-        actionSheet.addAction(UIAlertAction(title: "Edit Contract", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
-            print("display Edit View")
-            self.displayEditView()
-        }))
-        
-        actionSheet.addAction(UIAlertAction(title: "Edit Terms", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
-            print("display Edit View")
-            self.displayTermsView()
-        }))
-        
-        
-        actionSheet.addAction(UIAlertAction(title: "Send Contract", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
-            print("Send Contract")
+            let actionSheet = UIAlertController(title: "Contract Options", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+            actionSheet.view.backgroundColor = UIColor.white
+            actionSheet.view.layer.cornerRadius = 5;
             
-            self.sendContract()
+            actionSheet.addAction(UIAlertAction(title: "Edit Contract", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+                print("display Edit View")
+                self.displayEditView()
+            }))
+            
+            actionSheet.addAction(UIAlertAction(title: "Edit Terms", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+                print("display Edit View")
+                self.displayTermsView()
+            }))
+            
+            
+            actionSheet.addAction(UIAlertAction(title: "Send Contract", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+                print("Send Contract")
+                
+                self.sendContract()
 
 
-        
-        }))
-        
-        
-        
-        
-        actionSheet.addAction(UIAlertAction(title: "Schedule Contract", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
-            print("schedule contract")
             
-            //turn contract into workorder
-                //link contract to work order
-            
-            //open workorder in edit view
-                //confirm title
-                //add schedule parameters
-                //select dept and crew
-            
-            self.scheduleContract()
+            }))
             
             
-        }))
-        
-        
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
-        }))
-        
-        
-        
-        switch UIDevice.current.userInterfaceIdiom {
-        case .phone:
-            self.present(actionSheet, animated: true, completion: nil)
             
-            break
-        // It's an iPhone
-        case .pad:
-            let nav = UINavigationController(rootViewController: actionSheet)
-            nav.modalPresentationStyle = UIModalPresentationStyle.popover
-            let popover = nav.popoverPresentationController as UIPopoverPresentationController?
-            actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
-            popover?.sourceView = self.view
-            popover?.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
             
-            self.present(nav, animated: true, completion: nil)
-            break
-        // It's an iPad
-        case .unspecified:
-            break
-        default:
-            self.present(actionSheet, animated: true, completion: nil)
-            break
+            actionSheet.addAction(UIAlertAction(title: "Schedule Contract", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+                print("schedule contract")
+                
+                //turn contract into workorder
+                    //link contract to work order
+                
+                //open workorder in edit view
+                    //confirm title
+                    //add schedule parameters
+                    //select dept and crew
+                
+                self.scheduleContract()
+                
+                
+            }))
             
-            // Uh, oh! What could it be?
+            
+            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
+            }))
+            
+            
+            
+            switch UIDevice.current.userInterfaceIdiom {
+            case .phone:
+                self.present(actionSheet, animated: true, completion: nil)
+                
+                break
+            // It's an iPhone
+            case .pad:
+                let nav = UINavigationController(rootViewController: actionSheet)
+                nav.modalPresentationStyle = UIModalPresentationStyle.popover
+                let popover = nav.popoverPresentationController as UIPopoverPresentationController?
+                actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
+                popover?.sourceView = self.view
+                popover?.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
+                
+                self.present(nav, animated: true, completion: nil)
+                break
+            // It's an iPad
+            case .unspecified:
+                break
+            default:
+                self.present(actionSheet, animated: true, completion: nil)
+                break
+                
+                // Uh, oh! What could it be?
+            }
         }
         
         
@@ -1290,101 +1170,10 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     
     @objc func sendContract(){
         
-        indicator = SDevIndicator.generate(self.view)!
-        
-        
-        let parameters:[String:String]
-        parameters = ["contractID": self.contract.ID, "sentBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId)] as! [String : String]
-        print("parameters = \(parameters)")
-        
-        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/send/contract.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
-            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
-            .responseString { response in
-                print("send response = \(response)")
-            }
-            .responseJSON(){
-                response in
-                if let json = response.result.value {
-                    print("JSON: \(json)")
-                    self.json = JSON(json)
-                    let emailList = self.json["emailList"].stringValue
-                    
-                    print("email list = \(emailList)")
-                    
-                    
-                    //if status is less then 1 (new) ask user if they would like to set status to 1 (sent) within the alert that shows the emailList
-                    
-                    //else just show alert that displays emailList
-                    
-                    if self.contract.status == "0" {
-                        
-                        
-                        
-                        let alertController = UIAlertController(title: "Set Status to SENT?", message: "Email sent to: \(emailList)", preferredStyle: UIAlertControllerStyle.alert)
-                        let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
-                            (result : UIAlertAction) -> Void in
-                            
-                            //self.getContract()
-                            
-                           
-                            
-                        }
-                        let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
-                            (result : UIAlertAction) -> Void in
-                            
-                            
-                            var parameters:[String:String]
-                            parameters = [
-                                "contractID":self.contract.ID,
-                                "statusID":"1"
-                            ]
-                            
-                            self.contract.status = "1"
-                            self.setStatus(status: "1")
-                            print("parameters = \(parameters)")
-                            
-                            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/changeContractStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
-                                response in
-                                print(response.request ?? "")  // original URL request
-                                print(response.result)   // result of response serialization
-                                
-                                
-                                
-                                //self.editsMade = true
-                                //self.getContract()
-                                
-                                //self.goToNewWorkOrder(_newWoID:newWoID)
-                                
-                                
-                            }
-                            
-                        }
-                        alertController.addAction(cancelAction)
-                        alertController.addAction(okAction)
-                        self.present(alertController, animated: true)
-                        
-                        
-                        
-                        
-                        
-                    }else{
-                        
-                        simpleAlert(_vc: self, _title: "Email Sent", _message: "Adresses: \(emailList)")
-                        
-                    }
-                    
-                    //self.editsMade = false // avoids the back without saving check
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                }
-                print(" dismissIndicator")
-                self.indicator.dismissIndicator()
-        }
+        let emailViewController:EmailViewController = EmailViewController(_customerID: self.contract.customer, _customerName: self.contract.customerName, _type: "1", _docID: self.contract.ID)
+        emailViewController.contractDelegate = self
+        navigationController?.pushViewController(emailViewController, animated: false )
+    
     }
     
     
@@ -1412,19 +1201,10 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
                 }
             
             alertController.addAction(okAction)
-            self.present(alertController, animated: true)
+            layoutVars.getTopController().present(alertController, animated: true)
             }
         
             
-            
-            
-            
-        
-        
-        
-        
-        
-        
         
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -1445,16 +1225,16 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
                     print("JSON: \(json)")
                     
                     let newWoID = JSON(json)["newWoID"].stringValue
-                    //self.parseJSON()
                     
                     
                     
                     if self.contract.status == "0" || self.contract.status == "1" || self.contract.status == "2" || self.contract.status == "4" || self.contract.status == "5"{
+                        self.indicator.dismissIndicator()
+                        
                         let alertController = UIAlertController(title: "Update Contract Status?", message: "Do you want to set the contract to SCHEDULED?", preferredStyle: UIAlertControllerStyle.alert)
                         let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
                             (result : UIAlertAction) -> Void in
                             
-                            //self.getContract()
                             
                             self.goToNewWorkOrder(_newWoID:newWoID)
                         
@@ -1462,6 +1242,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
                         let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
                             (result : UIAlertAction) -> Void in
                             
+                            self.indicator = SDevIndicator.generate(self.view)!
                             
                             var parameters:[String:String]
                             parameters = [
@@ -1480,8 +1261,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
                                 
                                 
                                 
-                                //self.editsMade = true
-                                //self.getContract()
+                                self.indicator.dismissIndicator()
                                 
                                 self.goToNewWorkOrder(_newWoID:newWoID)
                                 
@@ -1491,7 +1271,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
                         }
                         alertController.addAction(cancelAction)
                         alertController.addAction(okAction)
-                        self.present(alertController, animated: true)
+                        self.layoutVars.getTopController().present(alertController, animated: true)
                     }else{
                         self.goToNewWorkOrder(_newWoID:newWoID)
                     }
@@ -1520,6 +1300,8 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
             (result : UIAlertAction) -> Void in
             print("No")
+            self.getContract()
+            
             return
         }
         
@@ -1529,16 +1311,16 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             
             
             
-            let wo:WorkOrder = WorkOrder(_ID: _newWoID, _statusID: "1", _date: "", _firstItem: "", _statusName: "", _customer: self.contract.customer, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: self.contract.chargeType)
-            wo.title = self.contract.title
-            wo.customerName = self.contract.customerName
+            let wo:WorkOrder = WorkOrder(_ID: _newWoID, _statusID: "1", _date: "", _firstItem: "", _statusName: "", _customer: self.contract.customer, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: self.contract.chargeType, _title: self.contract.title, _customerName: self.contract.customerName)
+            
             wo.rep = self.contract.salesRep
             wo.repName = self.contract.repName
             wo.notes = self.contract.notes
             
             
+            let newEditWorkOrderViewController = NewEditWoViewController(_contract: self.contract, _wo: wo)
             
-            let newEditWorkOrderViewController = NewEditWoViewController(_wo: wo)
+            newEditWorkOrderViewController.editContractDelegate = self
             //newEditWorkOrderViewController.editDelegate = self
             self.navigationController?.pushViewController(newEditWorkOrderViewController, animated: false )
             
@@ -1546,10 +1328,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)
-        self.present(alertController, animated: true, completion: nil)
-        
-        
-        
+        layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         
     }
     
@@ -1683,110 +1462,102 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         print("delete signature")
         print("contract status = \(self.contract.status)")
         
-        
-        
-        let alertController = UIAlertController(title: "Delete Signature?", message: "Are you sure you want to delete this signature?", preferredStyle: UIAlertControllerStyle.alert)
-        let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
-            (result : UIAlertAction) -> Void in
-            print("No")
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
-        }
+        }else{
         
-        let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
-            (result : UIAlertAction) -> Void in
-            print("Yes")
+            let alertController = UIAlertController(title: "Delete Signature?", message: "Are you sure you want to delete this signature?", preferredStyle: UIAlertControllerStyle.alert)
+            let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                (result : UIAlertAction) -> Void in
+                print("No")
+                return
+            }
+            
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                (result : UIAlertAction) -> Void in
+                print("Yes")
+                
+                
+               
             
             
-           
-        
-        
-            var parameters:[String:String]
-            parameters = [
-                "signatureID":self.signatureArray[0].ID
-            ]
-            print("parameters = \(parameters)")
+                var parameters:[String:String]
+                parameters = [
+                    "contractID":self.contract.ID,
+                    "customerID":self.contract.customer
+                ]
+                print("parameters = \(parameters)")
+                
+                print("remove signature from array")
             
-            print("remove signature from array")
-            
-            
-            //self.signatureArray.remove(at: 0)
-            
-            
-            
-            
-            self.signatureArray = []
-            
-            
-            
-            
-            
-            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/delete/signature.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
-                response in
-                print(response.request ?? "")  // original URL request
-                print(response.result)   // result of response serialization
+                
+                self.contract.customerSignature = "0"
                 
                 
                 
-                
-                
-                
-                if self.contract.status == "0"  || self.contract.status == "1" || self.contract.status == "2"{
-                    //status already set to NEW or SENT
+                self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/delete/signature.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+                    response in
+                    print(response.request ?? "")  // original URL request
+                    print(response.result)   // result of response serialization
                     
-                    self.getContract()
-                }else{
-                    let alertController = UIAlertController(title: "Update Contract Status?", message: "Do you want to set the contract back to NEW?", preferredStyle: UIAlertControllerStyle.alert)
-                    let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
-                        (result : UIAlertAction) -> Void in
+                    
+                    if self.contract.status == "0"  || self.contract.status == "1" || self.contract.status == "2"{
+                        //status already set to NEW or SENT
                         
                         self.getContract()
-                    }
-                    let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
-                        (result : UIAlertAction) -> Void in
-                        
-                        
-                        var parameters:[String:String]
-                        parameters = [
-                            "contractID":self.contract.ID,
-                            "statusID":"0"
-                        ]
-                        
-                        self.contract.status = "0"
-                        self.setStatus(status: "0")
-                        print("parameters = \(parameters)")
-                        
-                        self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/changeContractStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
-                            response in
-                            print(response.request ?? "")  // original URL request
-                            print(response.result)   // result of response serialization
+                    }else{
+                        let alertController = UIAlertController(title: "Update Contract Status?", message: "Do you want to set the contract back to NEW?", preferredStyle: UIAlertControllerStyle.alert)
+                        let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+                            (result : UIAlertAction) -> Void in
                             
-                            
-                        
-                            self.editsMade = true
                             self.getContract()
+                        }
+                        let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+                            (result : UIAlertAction) -> Void in
+                            
+                            
+                            var parameters:[String:String]
+                            parameters = [
+                                "contractID":self.contract.ID,
+                                "statusID":"0"
+                            ]
+                            
+                            self.contract.status = "0"
+                            self.setStatus(status: "0")
+                            print("parameters = \(parameters)")
+                            
+                            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/changeContractStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+                                response in
+                                print(response.request ?? "")  // original URL request
+                                print(response.result)   // result of response serialization
+                                
+                                
+                            
+                                self.editsMade = true
+                                self.getContract()
+                                
+                            }
                             
                         }
-                        
+                        alertController.addAction(cancelAction)
+                        alertController.addAction(okAction)
+                        self.layoutVars.getTopController().present(alertController, animated: true)
                     }
-                    alertController.addAction(cancelAction)
-                    alertController.addAction(okAction)
-                    self.present(alertController, animated: true)
+                    
+                    
+                    
+                    
+                    }.responseString() {
+                        response in
+                        print(response)  // original URL request
                 }
-                
-                
-                
-                
-                }.responseString() {
-                    response in
-                    print(response)  // original URL request
             }
+            
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+            
         }
-        
-        alertController.addAction(cancelAction)
-        alertController.addAction(okAction)
-        self.present(alertController, animated: true, completion: nil)
-        
-        
         
         
         
@@ -1828,65 +1599,78 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             
             
             alertController.addAction(okAction)
-            self.present(alertController, animated: true)
+            layoutVars.getTopController().present(alertController, animated: true)
             
             
-       // }
+       
     }
     
-    /*
-    func checkForEmployeeSignature(){
-        print("check for employee signature")
-        if self.contract.employeeSignature == true{
-            self.getContract()
-        }else{
-            //alert user and give options
+   
+    
+    
+    
+    
+    func suggestStatusChange(_emailCount:Int) {
+        print("suggestStatusChange")
+        
+        var messageString:String = "Email Sent"
+        if _emailCount > 1{
+            messageString = "Emails Sent"
+        }
+        if self.contract.status == "0" {
             
             
-            let alertController = UIAlertController(title: "No Sales Rep Signature", message: "Do you want to add your signature now?", preferredStyle: UIAlertControllerStyle.alert)
+            
+            let alertController = UIAlertController(title: messageString, message:  "Set contract status to SENT?", preferredStyle: UIAlertControllerStyle.alert)
             let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
                 (result : UIAlertAction) -> Void in
-                //NO  proceed with get contract
-                self.getContract()
+                
+                //self.getContract()
+                
+                
+                
             }
             let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
                 (result : UIAlertAction) -> Void in
-                //YES  go to signature page
-                
-                let signatureViewController:SignatureViewController = SignatureViewController(_employee: self.appDelegate.loggedInEmployee!)
-                signatureViewController.delegate = self
-                self.navigationController?.pushViewController(signatureViewController, animated: false )
-                
-                //return and get contract
                 
                 
+                var parameters:[String:String]
+                parameters = [
+                    "contractID":self.contract.ID,
+                    "statusID":"1"
+                ]
+                
+                self.contract.status = "1"
+                self.setStatus(status: "1")
+                print("parameters = \(parameters)")
+                
+                self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/changeContractStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+                    response in
+                    print(response.request ?? "")  // original URL request
+                    print(response.result)   // result of response serialization
+                    
+                    
+                    
+                    self.layoutVars.playSaveSound()
+                    
+                }
                 
             }
-            
-            
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true)
+            layoutVars.getTopController().present(alertController, animated: true)
             
             
             
+            //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Email Sent", _message: "")
             
+        }else{
             
-            
-            
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: messageString, _message: "")
             
         }
+        
     }
-    
-    
-    */
-    
-    
-    
-    
-    
-    
-    
     
     
     func updateContract(_contract: Contract){
@@ -1935,6 +1719,8 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         }
     
     }
+    
+    
     
     
     func updateContract(_contract: Contract, _status:String){
@@ -1986,12 +1772,123 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     
     }
     
+  
+    
+    //lead Delegate
+    func updateLead(_lead:Lead,_newStatusValue:String){
+        self.contract.lead = _lead
+        
+        if self.editLeadDelegate != nil{
+            self.editLeadDelegate.updateLead(_lead: self.contract.lead!, _newStatusValue: (self.contract.lead?.statusId)!)
+        }
+        
+        
+        
+    }
     
     
+    
+    //Stack Delegates
+    func displayAlert(_title: String) {
+        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: _title, _message: "")
+    }
+    
+    
+    
+    func newLeadView(_lead:Lead){
+        
+        let leadViewController:LeadViewController = LeadViewController(_lead: _lead)
+        //leadViewController
+        self.navigationController?.pushViewController(leadViewController, animated: false )
+        
+    }
+    
+    
+    func newContractView(_contract:Contract){
+        
+        
+    }
+    
+    func newWorkOrderView(_workOrder:WorkOrder){
+        
+        let workOrderViewController:WorkOrderViewController = WorkOrderViewController(_workOrder: _workOrder, _customerName: _workOrder.customerName)
+        workOrderViewController.editLeadDelegate = self
+        self.navigationController?.pushViewController(workOrderViewController, animated: false )
+        
+        
+    }
+    
+    func newInvoiceView(_invoice:Invoice){
+        
+        //self.navigationController?.pushViewController(_view, animated: false )
+        
+    }
+    
+    
+    
+    
+    func setLeadTasksWaiting(_leadTasksWaiting:String){
+        self.leadTasksWaiting = _leadTasksWaiting
+    }
+    
+    
+    
+    
+    func suggestNewWorkOrderFromContract(){
+        print("suggestNewWorkOrderFromContract")
+        
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }else{
+            
+            let alertController = UIAlertController(title: "No Work Order Exists", message: "Would you like to link a new WorkOrder now?", preferredStyle: UIAlertControllerStyle.alert)
+            let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                (result : UIAlertAction) -> Void in
+                print("No")
+                //_ = self.navigationController?.popViewController(animated: true)
+            }
+            
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                (result : UIAlertAction) -> Void in
+                print("Yes")
+                
+                self.scheduleContract()
+                
+                
+                
+                
+            }
+            
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+            
+        }
+        
+        
+    }
+    
+    //following 2 mwethods not used in this vc
+    func suggestNewContractFromLead(){
+        print("suggestNewContractFromLead")
+    }
+    
+    func suggestNewWorkOrderFromLead(){
+        print("suggestNewWorkOrderFromLead")
+    }
+    
+    
+    
+   
     
     @objc func goBack(){
         if(editsMade == true){
-            delegate.getContracts(_openNewContract: false)
+            if delegate != nil{
+                delegate.getContracts(_openNewContract: false)
+            }
+            if editLeadDelegate != nil{
+                editLeadDelegate.updateLead(_lead: self.contract.lead!, _newStatusValue: (self.contract.lead?.statusId!)!)
+            }
         }
         _ = navigationController?.popViewController(animated: true)
         

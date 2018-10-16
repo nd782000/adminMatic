@@ -16,7 +16,7 @@ class WoItem {
     var name: String!
     var type: String!
     var sort: String!
-    var input: String!
+    //var input: String!
     var est: String!
     var empDesc: String!
     var itemStatus: String!
@@ -46,7 +46,7 @@ class WoItem {
     
     
     
-    required init(_ID: String?,_type: String?,_sort: String?,_input: String?,_est: String?,_empDesc: String?,_itemStatus: String?,_chargeID: String?,_act: String?,_price: String?,_total: String?,_totalCost: String?,_usageQty: String?,_extraUsage: String?,_unit: String?) {
+    required init(_ID: String?,_type: String?,_sort: String?,_name: String?,_est: String?,_empDesc: String?,_itemStatus: String?,_chargeID: String?,_act: String?,_price: String?,_total: String?,_totalCost: String?,_usageQty: String?,_extraUsage: String?,_unit: String?) {
         //print(json)
         if _ID != nil {
             self.ID = _ID
@@ -63,10 +63,10 @@ class WoItem {
         }else{
             self.sort = ""
         }
-        if _input != nil {
-            self.input = _input
+        if _name != nil {
+            self.name = _name
         }else{
-            self.input = ""
+            self.name = ""
         }
         if _est != nil {
             self.est = _est

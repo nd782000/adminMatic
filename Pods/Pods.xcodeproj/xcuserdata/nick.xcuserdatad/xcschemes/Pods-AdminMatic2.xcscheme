@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DFC2424715BC76FA3F2713C2F71BCC82"
+               BlueprintIdentifier = "93BDFCB897A4904B2427AFF68A0F3788"
                BuildableName = "Pods_AdminMatic2.framework"
                BlueprintName = "Pods-AdminMatic2"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -26,7 +26,6 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      language = ""
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
@@ -37,7 +36,6 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      language = ""
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
@@ -47,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DFC2424715BC76FA3F2713C2F71BCC82"
+            BlueprintIdentifier = "93BDFCB897A4904B2427AFF68A0F3788"
             BuildableName = "Pods_AdminMatic2.framework"
             BlueprintName = "Pods-AdminMatic2"
             ReferencedContainer = "container:Pods.xcodeproj">

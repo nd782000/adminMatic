@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Nuke
+
 
 protocol EquipmentListDelegate{
     func reDrawEquipmentList()
@@ -819,7 +819,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }
         
         

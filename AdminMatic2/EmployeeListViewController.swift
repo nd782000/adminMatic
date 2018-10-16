@@ -64,7 +64,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
             }
             alertController.addAction(okAction)
            // alertController.addAction(DestructiveAction)
-            self.present(alertController, animated: true, completion: nil)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
             
             
             

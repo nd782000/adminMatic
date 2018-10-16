@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Nuke
+//import Nuke
 import DKImagePickerController
 
 protocol ImageViewDelegate{
@@ -474,7 +474,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         
         cell.image = self.imageArray[indexPath.row]
-        cell.activityView.startAnimating()
+        //cell.activityView.startAnimating()
         
         print("thumb = \(self.imageArray[indexPath.row].thumbPath!)")
         
@@ -484,12 +484,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         
         
-        Nuke.loadImage(with: imgURL, into: cell.imageView){
-            //print("nuke loadImage")
-            cell.imageView?.handle(response: $0, isFromMemoryCache: $1)
-            cell.activityView.stopAnimating()
-            
-        }
+      //  Nuke.loadImage(with: imgURL, into: cell.imageView)
         
         //print("view width = \(imageCollectionView?.frame.width)")
         //print("cell width = \(cell.frame.width)")
@@ -716,7 +711,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
        
         multiPicker.showsCancelButton = true
         multiPicker.assetType = .allPhotos
-        self.present(multiPicker, animated: true) {}
+        self.layoutVars.getTopController().present(multiPicker, animated: true) {}
         
         
         
@@ -730,7 +725,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                 selectedAssets.append(assets[i])
                 //print(self.selectedAssets)
                 
-                assets[i].fetchOriginalImage(true, completeBlock: { image, info in
+                assets[i].fetchOriginalImage(completeBlock: { image, info in
                
                     
                     print("making image")

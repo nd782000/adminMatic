@@ -16,7 +16,7 @@ import DKImagePickerController
 class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate{
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var layoutVars:LayoutVars = LayoutVars()
-   var delegate:WoDelegate!  // refreshing the list
+    var delegate:WoDelegate!  // refreshing the list
     var indicator: SDevIndicator!
     var backButton:UIButton!
     
@@ -38,13 +38,9 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
     
     
     var submitBtn:Button = Button(titleText: "Submit")
-    
-   
-    
+
     var keyBoardShown:Bool = false
-    
-    
-    
+
     //linking result arrays
     var ids = [String]()
     var names = [String]()
@@ -62,6 +58,27 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
     
     
     
+    /*var multiButton:UIBarButtonItem!
+    var multiSelectMode:Bool = false
+ */
+    
+    //var tasksArray:[Task] = []
+    
+    //var selectedTasks:[Int] = []
+    
+    //var taskCountLbl: UILabel! = UILabel()
+    
+   // var tasksTableView: TableView!
+    
+    //var tableViewMode:String = "LEADTASK"
+    
+    
+    var editsMade:Bool = false
+    var tasksToLog: [Task] = []//data array
+    var tasksToLogJSON: [JSON] = []//data array
+    
+    
+
     init(_woID:String, _charge:String){
         super.init(nibName:nil,bundle:nil)
         
@@ -166,6 +183,16 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         }
         
         
+        
+        //multiButton = UIBarButtonItem(title: "Select", style: .plain, target: self, action: #selector(NewWoItemViewController.displayMultiSelectView))
+        //navigationItem.rightBarButtonItem = multiButton
+        
+        self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        
+       
+        
+        
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
     
         itemSearchBar.placeholder = "Item..."
@@ -184,7 +211,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         //might want to change to custom linkCell class
         self.itemResultsTableView.register(NewWoItemTableViewCell.self, forCellReuseIdentifier: "linkCell")
         self.itemResultsTableView.alpha = 0.0
-        self.view.addSubview(self.itemResultsTableView)
+        
         
         self.estQtyLbl = Label(text: "Estimated Qty")
         self.estQtyLbl.textAlignment = .right
@@ -239,6 +266,32 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         priceTxtField.inputAccessoryView = priceToolBar
         
         
+        self.view.addSubview(self.itemResultsTableView)
+        
+        /*
+        self.taskCountLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.taskCountLbl.font = layoutVars.buttonFont
+        self.view.addSubview(self.taskCountLbl)
+        
+        updateTaskCountLabel()
+        
+        
+        
+        
+        self.tasksTableView  =   TableView()
+        self.tasksTableView.autoresizesSubviews = true
+        self.tasksTableView.delegate  =  self
+        self.tasksTableView.dataSource  =  self
+        self.tasksTableView.layer.cornerRadius = 0
+        self.tasksTableView.rowHeight = 90
+        self.tasksTableView.register(LeadTaskTableViewCell.self, forCellReuseIdentifier: "cell")
+        self.view.addSubview(self.tasksTableView)
+        
+        
+        
+        
+        
+        */
         
         
         
@@ -260,21 +313,34 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         
         
             //auto layout group
-            let viewsDictionary = [
-                "estQtyLbl":self.estQtyLbl, "estQty":self.estQtyTxtField,"priceLbl":self.priceLbl, "price":self.priceTxtField,"searchBar":self.itemSearchBar, "searchTable":self.itemResultsTableView, "submitBtn":self.submitBtn
+            /*let viewsDictionary = [
+                "estQtyLbl":self.estQtyLbl, "estQty":self.estQtyTxtField,"priceLbl":self.priceLbl, "price":self.priceTxtField,"searchBar":self.itemSearchBar, "searchTable":self.itemResultsTableView,"taskCountLbl":self.taskCountLbl, "taskTable":self.tasksTableView, "submitBtn":self.submitBtn
                 ] as [String:Any]
+ */
+        
+        
+        let viewsDictionary = [
+            "estQtyLbl":self.estQtyLbl, "estQty":self.estQtyTxtField,"priceLbl":self.priceLbl, "price":self.priceTxtField,"searchBar":self.itemSearchBar, "searchTable":self.itemResultsTableView,"submitBtn":self.submitBtn
+            ] as [String:Any]
             
             
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchBar]-|", options: [], metrics: nil, views: viewsDictionary))
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[estQtyLbl(150)]-[estQty]-|", options: [], metrics: nil, views: viewsDictionary))
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[priceLbl(150)]-[price]-|", options: [], metrics: nil, views: viewsDictionary))
-
+            //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[taskCountLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+            //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[taskTable]-|", options: [], metrics: nil, views: viewsDictionary))
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchTable]-|", options: [], metrics: nil, views: viewsDictionary))
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
             
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[searchBar(40)]-10-[estQtyLbl(40)]-10-[priceLbl(40)]-[searchTable]-[submitBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
-             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[searchBar(40)]-10-[estQty(40)]-10-[price(40)]-[searchTable]-[submitBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[searchBar(40)]-10-[estQtyLbl(40)]-10-[priceLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[searchBar(40)]-10-[estQty(40)]-10-[price(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[searchBar(40)][searchTable]-[submitBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        
+        
+           // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[searchBar(40)]-10-[estQty(40)]-10-[price(40)]-[taskCountLbl(30)][taskTable]-[submitBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        
         
     }
     
@@ -320,47 +386,126 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         print("numberOfRowsInSection")
-        return self.itemSearchResults.count
+        //if tableViewMode == "LEADTASK"{
+            //return self.tasksArray.count
+        //}else{
+            return self.itemSearchResults.count
+        //}
+        
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         print("cellForRowAt")
-        let cell = itemResultsTableView.dequeueReusableCell(withIdentifier: "linkCell") as! NewWoItemTableViewCell
-       itemResultsTableView.rowHeight = 50.0
-        cell.nameLbl.text = self.itemSearchResults[indexPath.row]
-        cell.name = self.itemSearchResults[indexPath.row]
-        if let i = self.names.index(of: cell.nameLbl.text!) {
-            cell.id = self.ids[i]
-            cell.type = self.types[i]
-            cell.price = self.prices[i]
-            cell.unit = self.units[i]
-        } else {
-            cell.id = ""
-            cell.type = ""
-            cell.price = ""
-            cell.unit = ""
-        }
+        /*
+        if tableViewMode == "LEADTASK"{
+            let cell:LeadTaskTableViewCell = tasksTableView.dequeueReusableCell(withIdentifier: "cell") as! LeadTaskTableViewCell
+            //if(indexPath.row == self.tasksArray.count){
+            // if(indexPath.row == 0){
+            //cell add btn mode
+            //cell.layoutAddBtn()
+            //}else{
+            cell.task = self.tasksArray[indexPath.row]
+            cell.layoutViews()
+            
+            if multiSelectMode {
+                cell.setConstraintsWithCheckMark()
+                if self.selectedTasks.contains(indexPath.row){
+                    cell.setCheck()
+                }else{
+                    cell.unSetCheck()
+                }
+            }else{
+                cell.setConstraints()
+            }
+        
+        //}
         return cell
+        
+        
+       // return cell
+        
+        }else{
+        
+        */
+            let cell = itemResultsTableView.dequeueReusableCell(withIdentifier: "linkCell") as! NewWoItemTableViewCell
+           itemResultsTableView.rowHeight = 50.0
+            cell.nameLbl.text = self.itemSearchResults[indexPath.row]
+            cell.name = self.itemSearchResults[indexPath.row]
+            if let i = self.names.index(of: cell.nameLbl.text!) {
+                cell.id = self.ids[i]
+                cell.type = self.types[i]
+                cell.price = self.prices[i]
+                cell.unit = self.units[i]
+            } else {
+                cell.id = ""
+                cell.type = ""
+                cell.price = ""
+                cell.unit = ""
+            }
+            return cell
+       // }
+        
+        
+        
         
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let currentCell = tableView.cellForRow(at: indexPath) as! NewWoItemTableViewCell
-        selectedID = currentCell.id
         
-        selectedName = currentCell.name
-        selectedType = currentCell.type
-        selectedPrice = currentCell.price
-        selectedUnit = currentCell.unit
+        /*
+        if tableViewMode == "LEADTASK"{
+            if multiSelectMode {
+                if self.selectedTasks.contains(indexPath.row) {
+                    self.selectedTasks.remove(at: self.selectedTasks.index(of: indexPath.row)!)
+                    
+                    
+                } else {
+                    self.selectedTasks.append(indexPath.row)
+                    
+                }
+                
+                tasksTableView.reloadData()
+            }else{
+                
+ 
+                
+                /*
+                
+                tableView.deselectRow(at: indexPath as IndexPath, animated: true)
+                imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Lead Task", _leadID: self.lead.ID, _leadTaskID: self.tasksArray[indexPath.row].ID, _customerID: self.lead.customer, _images: self.tasksArray[indexPath.row].images)
+                imageUploadPrepViewController.layoutViews()
+                imageUploadPrepViewController.groupDescriptionTxt.text = self.tasksArray[indexPath.row].task
+                imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
+                imageUploadPrepViewController.selectedID = self.lead.customer
+                imageUploadPrepViewController.groupImages = true
+                imageUploadPrepViewController.attachmentDelegate = self
+                self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+ 
+ */
+                
+                
+            }
+        }else{*/
+            let currentCell = tableView.cellForRow(at: indexPath) as! NewWoItemTableViewCell
+            selectedID = currentCell.id
+            
+            selectedName = currentCell.name
+            selectedType = currentCell.type
+            selectedPrice = currentCell.price
+            selectedUnit = currentCell.unit
+            
+            self.priceTxtField.text = currentCell.price
+            print("select item")
+            
+            tableView.deselectRow(at: indexPath, animated: true)
+            itemSearchBar.text = currentCell.name
+            itemSearchBar.resignFirstResponder()
+            self.itemResultsTableView.alpha = 0.0
+            
+            //tableViewMode = "LEADTASK"
+       // }
         
-        self.priceTxtField.text = currentCell.price
-        print("select item")
-       
-        tableView.deselectRow(at: indexPath, animated: true)
-        itemSearchBar.text = currentCell.name
-        itemSearchBar.resignFirstResponder()
-        self.itemResultsTableView.alpha = 0.0
     }
     
     
@@ -372,15 +517,20 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         // Filter the data you have. For instance:
         print("search edit")
+        // tableViewMode = "SEARCH"
         //print("searchText.characters.count = \(searchText.characters.count)")
         print("searchText.characters.count = \(searchText.count)")
 
         
         if (searchText.count == 0) {
             self.itemResultsTableView.alpha = 0.0
+           // self.taskCountLbl.alpha = 1.0
+           // self.tasksTableView.alpha = 1.0
             self.selectedID = ""
         }else{
             self.itemResultsTableView.alpha = 1.0
+           // self.taskCountLbl.alpha = 0.0
+           // self.tasksTableView.alpha = 0.0
         }
         
         filterSearchResults()
@@ -397,12 +547,17 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+       // tableViewMode = "SEARCH"
+        //self.tasksTableView.alpha = 0.0
+        
         self.itemResultsTableView.reloadData()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.itemResultsTableView.reloadData()
         searchBar.resignFirstResponder()
+        
+        
     }
     
     
@@ -410,6 +565,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         // Stop doing the search stuff
         // and clear the text in the search bar
         print("search cancel")
+        //tableViewMode = "LEADTASK"
         searchBar.text = ""
         selectedID = ""
         // Hide the cancel button
@@ -417,6 +573,22 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         // You could also change the position, frame etc of the searchBar
         self.itemResultsTableView.alpha = 0.0
     }
+    
+    /*
+    func updateTaskCountLabel(){
+        var assignedCount:Int = 0
+        for task in tasksArray{
+            if task.status == "1" || task.status == "2"{
+                assignedCount += 1
+            }
+        }
+        
+        self.taskCountLbl.text = "\(tasksArray.count) Tasks, \(assignedCount) Assigned or Not Needed"
+    }
+    */
+    
+    
+    
     
     
     
@@ -437,7 +609,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
             }
             
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
             return
         }
         
@@ -516,8 +688,26 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
     }
     
     
-    
-    
+    /*
+    @objc func displayMultiSelectView(){
+        print("display Multi Select View")
+        
+        self.selectedTasks = []
+        
+        if multiSelectMode {
+            multiButton.title = "Select"
+            multiSelectMode = false
+            
+        }else{
+            multiButton.title = "Done"
+            multiSelectMode = true
+            
+        }
+        tasksTableView.reloadData()
+        
+        
+    }
+ */
     
     
     

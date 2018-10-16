@@ -10,7 +10,7 @@
 
 import Foundation
 import UIKit
-import Nuke
+//import Nuke
 
 
 class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelegate, UITextViewDelegate {
@@ -84,7 +84,7 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
                 self.activityView.startAnimating()
             }
             
-            
+            /*
             Nuke.loadImage(with: imgURL, into: self.selectedImageView){ 
                 //print("nuke loadImage")
                 self.selectedImageView.handle(response: $0, isFromMemoryCache: $1)
@@ -92,7 +92,8 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
                 self.imageLoaded = true
                 
             }
-
+*/
+            
             
             
         }

@@ -12,7 +12,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Nuke
+//import Nuke
 
 
 class ImageFullViewController: UIViewController, UIScrollViewDelegate{
@@ -83,20 +83,28 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
         activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
         activityView.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
         self.view.addSubview(activityView)
-        activityView.startAnimating()
+        //activityView.startAnimating()
         
         
-        let imgUrl = URL(string: image.rawPath)
+        //let imgUrl = URL(string: image.rawPath)
         
         
         //Nuke.loadImage(with: imgUrl!, into: imageView){ [weak view] in
-            
+        //Nuke.loadImage(with: , into: <#T##ImageDisplayingView#>)
+        
+        //Nuke.loadImage(with: imgUrl!, into: self.imageView)
+        
+        //self.activityView.stopAnimating()
+        
+        /*
         Nuke.loadImage(with: imgUrl!, into: imageView){
             self.imageView?.handle(response: $0, isFromMemoryCache: $1)
             self.activityView.stopAnimating()
             let shareBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.action, target: self, action: #selector(ImageFullViewController.share))
             self.navigationItem.rightBarButtonItem = shareBtn
         }
+ */
+        
         
         setZoomScale()
         setupGestureRecognizer()

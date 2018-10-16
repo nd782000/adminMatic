@@ -34,6 +34,13 @@ class Contact {
         
     }
     
+    
+    init(_ID:String?,_value:String?){
+        if _ID != nil {self.ID = _ID}else{self.ID = ""}
+        if _value != nil {self.value = _value}else{self.value = ""}
+    }
+    
+    
     convenience init(_ID:String?,_sort:String?,_value:String?,_type:String?,_contactName:String?,_main:String?,_name:String?, _street1:String?, _street2:String?, _city:String?, _state:String?, _zip:String?, _zone:String?, _zoneName:String?, _color:String?, _lat:NSString?, _lng:NSString?, _fullAddress:String?) {
         self.init(_ID: _ID)
         if _ID != nil {self.ID = _ID}else{self.ID = ""}

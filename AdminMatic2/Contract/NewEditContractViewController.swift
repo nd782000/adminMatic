@@ -19,7 +19,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
     var layoutVars:LayoutVars = LayoutVars()
     var json:JSON!
     
-    var lead:Lead!
+    //var lead:Lead!
     var taskArray:[Task]!
     var contract:Contract!
     
@@ -30,6 +30,8 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
     
     var delegate:ContractListDelegate!
     var editDelegate:EditContractDelegate!
+    var leadTaskDelegate:LeadTaskDelegate!
+    //var editLeadDelegate:EditLeadDelegate!
     
     var statusIcon:UIImageView = UIImageView()
     var statusTxtField:PaddedTextField!
@@ -113,12 +115,12 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         
         print("new contract from lead init")
         
-        self.lead = _lead
+        //self.lead = _lead
         self.taskArray = _tasks
         
-        self.contract = Contract(_ID: "0", _title: "", _status: "0", _statusName: "New", _chargeType: "", _customer: self.lead.customer, _customerName: self.lead.customerName, _notes: "", _salesRep: self.lead.rep, _repName:  self.lead.repName, _createdBy: self.appDelegate.loggedInEmployee?.ID, _createDate: "", _subTotal: "0", _taxTotal: "0", _total: "0", _terms: "", _daysAged: "0")
+        self.contract = Contract(_ID: "0", _title: "", _status: "0", _statusName: "New", _chargeType: "", _customer: _lead.customer, _customerName: _lead.customerName, _notes: "", _salesRep: _lead.rep, _repName:  _lead.repName, _createdBy: self.appDelegate.loggedInEmployee?.ID, _createDate: "", _subTotal: "0", _taxTotal: "0", _total: "0", _terms: "", _daysAged: "0")
         
-        
+        self.contract.lead = _lead
         
     }
     
@@ -753,7 +755,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }
         
         
@@ -854,16 +856,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
                 print("Napkins opened!")
             })
             
-            /*
-            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                self.view.frame.origin.y -= self.repResultsTableView.frame.height - 30
-                
-                
-            }, completion: { finished in
-                // //print("Napkins opened!")
-            })
-            */
-            
+           
             
         }
         
@@ -879,16 +872,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
             
         }else{
             
-            /*
-            if(self.view.frame.origin.y < 0){
-                UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                    self.view.frame.origin.y += self.repResultsTableView.frame.height - 30
-                    
-                    
-                }, completion: { finished in
-                })
-            }
- */
+          
             
             if(self.view.frame.origin.y < 0){
                 UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
@@ -1078,7 +1062,13 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
     
     
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+    }
     
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        self.editsMade = true
+    }
    
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -1094,21 +1084,21 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         //customer check
         if(contract.customer == ""){
             print("select a customer")
-            simpleAlert(_vc: self, _title: "Incomplete Contract", _message: "Select a Customer")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Contract", _message: "Select a Customer")
             return false
         }
         
         //title check
         if(contract.title == ""){
             print("Add a Title")
-            simpleAlert(_vc: self, _title: "Incomplete Contract", _message: "Provide a Title")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Contract", _message: "Provide a Title")
             return false
         }
         
         //charge type check
         if(contract.chargeType == ""){
             print("select a charge type")
-            simpleAlert(_vc: self, _title: "Incomplete Contract", _message: "Select a Charge Type")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Contract", _message: "Select a Charge Type")
             return false
         }
         
@@ -1119,7 +1109,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         //rep check
         if(contract.salesRep == ""){
             print("select a sales rep")
-            simpleAlert(_vc: self, _title: "Incomplete Contract", _message: "Select a Sales Rep.")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Contract", _message: "Select a Sales Rep.")
             return false
         }
         
@@ -1152,7 +1142,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
         //reset task array
-        
+        //self.search
         /*
         php params
  
@@ -1174,9 +1164,13 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         
         
         
-        let parameters:[String:String]
-        parameters = ["contractID": self.contract.ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "customer": self.contract.customer, "salesRep": self.contract.salesRep,  "chargeType": contract.chargeType , "status": self.contract.status, "total":self.contract.total, "notes":self.contract.notes, "repName":self.contract.repName, "customerName":self.contract.customerName, "title":self.contract.title, "companySigned":self.contract.repSignature,
-                      "customerSigned":self.contract.customerSignature] as! [String : String]
+        var parameters:[String:String] = [:]
+        if self.contract.lead != nil{
+            parameters = ["contractID": self.contract.ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "customer": self.contract.customer, "salesRep": self.contract.salesRep,  "chargeType": contract.chargeType , "status": self.contract.status, "total":self.contract.total, "notes":self.contract.notes, "repName":self.contract.repName, "customerName":self.contract.customerName, "title":self.contract.title, "companySigned":self.contract.repSignature,"customerSigned":self.contract.customerSignature,"leadID":self.contract.lead?.ID!] as! [String : String]
+        }else{
+            parameters = ["contractID": self.contract.ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "customer": self.contract.customer, "salesRep": self.contract.salesRep,  "chargeType": contract.chargeType , "status": self.contract.status, "total":self.contract.total, "notes":self.contract.notes, "repName":self.contract.repName, "customerName":self.contract.customerName, "title":self.contract.title, "companySigned":self.contract.repSignature,"customerSigned":self.contract.customerSignature] as! [String : String]
+        }
+        
         print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contract.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
@@ -1192,27 +1186,54 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
                     let newContractID = self.json["contractID"].stringValue
                     self.contract.ID = newContractID
                     
+                    self.layoutVars.playSaveSound()
                     
                     self.editsMade = false // avoids the back without saving check
                     
                     
                     if(self.title == "New Contract"){
                         
-                        self.goBack()
-                        self.delegate.getContracts(_openNewContract: true)
+                        _ = self.navigationController?.popViewController(animated: false)
+
+                        
+                        if self.leadTaskDelegate != nil{
+                           // self.leadTaskDelegate.updateItems()
+                           //pop 2 views off the stack (editContract, assignLeadTasks)
+                            //_ = self.navigationController?.popViewController(animated: false)
+                            
+                             //_ = self.navigationController?.popViewController(animated: false)
+                            
+                            
+                            self.leadTaskDelegate.handleNewContract(_contract:self.contract)
+                            
+                           
+                            
+                            
+                           
+                            
+                        }
+                        
+                        
+                        if self.delegate != nil{
+                            self.delegate.getContracts(_openNewContract: true)
+
+                        }
+                        
+                       // self.goBack()
                         
                         //self.delegate.getLeads(_openNewLead: true)
                         
                     }else if(self.title == "New Customer Contract"){
                         //no delegate method
                     }else{
-                        self.goBack()
+                        //self.goBack()
+                        _ = self.navigationController?.popViewController(animated: false)
                         self.editDelegate.updateContract(_contract: self.contract)
                     }
                     
                     /*
                      if newLead {
-                     simpleAlert(_vc: self, _title: "Add Tasks and Images", _message: "You can now add leat tasks and images to this lead.")
+                     simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Add Tasks and Images", _message: "You can now add leat tasks and images to this lead.")
                      }
                      */
                     
@@ -1244,7 +1265,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             _ = navigationController?.popViewController(animated: true)
         }
@@ -1331,7 +1352,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
                 
                 alertController.addAction(cancelAction)
                 alertController.addAction(okAction)
-                self.present(alertController, animated: true)
+                layoutVars.getTopController().present(alertController, animated: true)
                 
                 
             }else{
@@ -1349,7 +1370,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
                 self.contract.repSignature = "0"
                 
                 alertController.addAction(okAction)
-                self.present(alertController, animated: true, completion: nil)
+                layoutVars.getTopController().present(alertController, animated: true, completion: nil)
             }
             
             
@@ -1407,7 +1428,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
             //print(response.data ?? "")     // server data
             print(response.result)   // result of response serialization
             
-            
+            self.layoutVars.playSaveSound()
             
             //self.checkForSalesRepSignature()
             //self.getContract()
@@ -1456,6 +1477,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
             //print(response.data ?? "")     // server data
             print(response.result)   // result of response serialization
             
+            self.layoutVars.playSaveSound()
             
             //self.checkForSalesRepSignature()
             //self.getContract()
@@ -1471,6 +1493,11 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
     
     
     
+    
+    func suggestStatusChange(_emailCount:Int) {
+        print("suggestStatusChange")
+        
+    }
     
     
     

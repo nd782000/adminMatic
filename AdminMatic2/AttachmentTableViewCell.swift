@@ -9,7 +9,7 @@
 
 import Foundation
 import UIKit
-import Nuke
+//import Nuke
 
 class AttachmentTableViewCell: UITableViewCell {
     
@@ -84,13 +84,16 @@ class AttachmentTableViewCell: UITableViewCell {
         print("set imgURL = \(imgURL)")
         
         
-        
+        /*
         Nuke.loadImage(with: imgURL, into: self.picImageView){ 
             //print("nuke loadImage")
             self.picImageView.handle(response: $0, isFromMemoryCache: $1)
             self.activityView.stopAnimating()
             
         }
+ */
+        
+        
     }
     
     func setBlankImage(){

@@ -290,7 +290,7 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         //name check
         if(name == ""){
             print("provide a name")
-            simpleAlert(_vc: self, _title: "Incomplete Field", _message: "Provide a Name")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Field", _message: "Provide a Name")
             return false
         }
         
@@ -346,13 +346,13 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
                     self.json = JSON(json)
                     
                     if self.json["errorArray"][0]["error"].stringValue.count > 0{
-                        playErrorSound()
-                        simpleAlert(_vc: self, _title: "Error with Save", _message: self.json["errorArray"][0]["error"].stringValue)
+                        self.layoutVars.playErrorSound()
+                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Error with Save", _message: self.json["errorArray"][0]["error"].stringValue)
                         self.indicator.dismissIndicator()
                         return
                     }
                     
-                    playSaveSound()
+                    self.layoutVars.playSaveSound()
                     let newEquipmentFieldID = self.json["equipmentFieldID"].stringValue
                     
                     
@@ -394,7 +394,7 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             _ = navigationController?.popViewController(animated: true)
         }

@@ -424,7 +424,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                     usageTableView.reloadData()
                 }
             }else{
-                simpleAlert(_vc: self,_title: "Can't Delete Saved Rows", _message: "")
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(),_title: "Can't Delete Saved Rows", _message: "")
                 tableView.setEditing(false, animated: true)
             }
         }
@@ -467,7 +467,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             popView()
         }
@@ -495,7 +495,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             appDelegate.menuChange(100)//home
         }
@@ -667,7 +667,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             
         }else if(stopDate! < start){
             usageTableView.reloadData()
-            simpleAlert(_vc:self, _title: "Time Error", _message: "\(usageToLog[row].empName!)'s start time can not be later then their stop time.")
+            self.layoutVars.simpleAlert(_vc:self, _title: "Time Error", _message: "\(usageToLog[row].empName!)'s start time can not be later then their stop time.")
         }else{
             
             editOtherStartTimes(_row:row, _start: start)
@@ -702,7 +702,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                             self.usageToLog[n].start = _start
                         }else if(stopDate! < _start){
                             self.usageTableView.reloadData()
-                            simpleAlert(_vc: self, _title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s start time can not be later then their stop time.")
+                            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s start time can not be later then their stop time.")
                         }else{
                             self.usageToLog[n].start = _start
                         }
@@ -728,11 +728,11 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         if(usageToLog[row].start == nil){
             //no start time
             usageTableView.reloadData()
-             simpleAlert(_vc: self, _title: "Time Error", _message: "\(usageToLog[row].empName!)'s has no start time.  Enter start time first.")
+             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "\(usageToLog[row].empName!)'s has no start time.  Enter start time first.")
         }else if(stop<usageToLog[row].start!){
             //stop is before start
             usageTableView.reloadData()
-            simpleAlert(_vc: self, _title: "Time Error", _message: "\(usageToLog[row].empName!)'s stop time can not be earlier then their start time.")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "\(usageToLog[row].empName!)'s stop time can not be earlier then their start time.")
         }else{
             
             editOtherStopTimes(_row:row, _stop: stop)
@@ -765,11 +765,11 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         if(self.usageToLog[n].start == nil){
                             //no start time
                             self.usageTableView.reloadData()
-                            simpleAlert(_vc: self, _title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s has no start time.  Enter start time first.")
+                            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s has no start time.  Enter start time first.")
                         }else if(_stop<self.usageToLog[n].start!){
                             //stop is before start
                             self.usageTableView.reloadData()
-                            simpleAlert(_vc: self, _title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s stop time can not be earlier then their start time.")
+                            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "\(self.usageToLog[n].empName!)'s stop time can not be earlier then their start time.")
                         }else{
                             self.usageToLog[n].stop = _stop
                             self.editsMade = true
@@ -784,7 +784,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             }
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }
     }
     
@@ -821,7 +821,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             }
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }
     }
 
@@ -870,7 +870,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             let usageListViewController = UsageListViewController(_workOrderItemID: self.woItem.ID, _units: self.woItem.unit)
             self.navigationController?.pushViewController(usageListViewController, animated: true )
@@ -893,7 +893,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                     self.editsMade = true
                 }else if(usageStop!  < Date()){
                     //start is after stop
-                    simpleAlert(_vc: self, _title: "Time Error", _message: "\(usage.empName!)'s start time can not be later then their stop time.")
+                    self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "\(usage.empName!)'s start time can not be later then their stop time.")
                 }else{
                     
                     usage.start = Date()
@@ -916,10 +916,10 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                 //test if stop is after start or start is nil
                 if(usage.start == nil){
                     //no start time
-                    simpleAlert(_vc: self, _title: "Time Error", _message: "\(usage.empName!)'s has no start time.  Enter start time first.")
+                    self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "\(usage.empName!)'s has no start time.  Enter start time first.")
                 }else if(Date() <  usage.start!){
                     //stop is before start
-                     simpleAlert(_vc: self, _title: "Time Error", _message: "\(usage.empName!)'s stop time can not be earlier then their start time.")
+                     self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "\(usage.empName!)'s stop time can not be earlier then their start time.")
                 }else{
                     usage.stop =  Date()
                     self.editsMade = true
@@ -953,7 +953,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                     if(usage.lunch != "" && usage.lunch != "0"){
                         breakTime = Double(usage.lunch!)! * 60
                         if(breakTime >= qtySeconds!){
-                            simpleAlert(_vc: self, _title: "Time Error", _message: "\(usage.empName!)'s break time can not be equal or greater then their shift time.")
+                            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "\(usage.empName!)'s break time can not be equal or greater then their shift time.")
                             usage.lunch = "0"
                             breakTime = 0.0
                         }
@@ -982,7 +982,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             if(usage.locked == false){
                 if(usage.type == "1"){
                     if(usage.start == nil){
-                        simpleAlert(_vc: self, _title: "Time Error", _message: "\(usage.empName!)'s break time can not be equal or greater then their shift time.")
+                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "\(usage.empName!)'s break time can not be equal or greater then their shift time.")
                     }else{
                         if(usageQty > 0.0){
                             if(Int(appDelegate.loggedInEmployee!.ID!)! > 0 &&  appDelegate.loggedInEmployee!.ID! == usage.addedBy){
@@ -1012,7 +1012,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         let JSONString = usage.toJSONString(prettyPrint: true)
                         usageToLogJSON.append(JSON(JSONString ?? ""))
                     }else{
-                        simpleAlert(_vc: self, _title: "Qty Error", _message: "Qty needs to be added.")
+                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Qty Error", _message: "Qty needs to be added.")
                     }
                 }
             }
@@ -1124,7 +1124,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                             )
                             self.usageToLog.insert(usage, at: 0)
                         }
-                        playSaveSound()
+                        self.layoutVars.playSaveSound()
                         self.usageTableView.reloadData()
                     case .failure(let error):
                         self.indicator.dismissIndicator()

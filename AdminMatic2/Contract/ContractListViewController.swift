@@ -450,7 +450,8 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         self.status = _status
         self.salesRep = _salesRep
         self.salesRepName = _salesRepName
-        self.getContracts(_openNewContract: false)
+        //self.getContracts(_openNewContract: false)
+        self.showLoadingScreen()
     }
     
     

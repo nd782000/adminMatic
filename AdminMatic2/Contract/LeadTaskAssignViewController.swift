@@ -13,7 +13,11 @@ import SwiftyJSON
 
 
 
-class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate{
+
+
+
+
+class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate, LeadTaskDelegate{
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
@@ -26,18 +30,19 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     
     var editDelegate:EditLeadDelegate!
     
-    var tasksArray:[Task] = []
     var json:JSON!
+    var tasksArray:[Task] = []
+    var woItemsJson:JSON!
+    var contractItemsJson:JSON!
     var woItemsArray:[WoItem] = []
-    var contractItemsArray:[WoItem] = []
+    var contractItemsArray:[ContractItem] = []
     var selectedTasks:[Int] = []
+    var selectedRow:Int!
     
     var taskCountLbl: UILabel! = UILabel()
     
     var tasksTableView: TableView!
     var imageUploadPrepViewController:ImageUploadPrepViewController!
-    
-    //var addBtn:Button = Button(titleText: "Add Tasks")
     
     var scheduleBtn:Button = Button(titleText: "Schedule Tasks")
     
@@ -62,13 +67,61 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     
     var itemID:String = ""
     
+    var fromContractItem:Bool = false
+    var contractItem:ContractItem?
+    var fromWorkOrderItem:Bool = false
+    var workOrderItem:WoItem?
     
+    var type:String = "1"
     
+    var setToItemBtn:Button = Button(titleText: "")
+    
+    var leadTaskDelegate:LeadTaskDelegate!
+    
+    init(_leadFromContractItem:Lead, _contractItem:ContractItem){
+        super.init(nibName:nil,bundle:nil)
+        
+        print("_leadFromContractItem")
+        
+        
+        self.lead = _leadFromContractItem
+        self.fromContractItem = true
+        self.contractItem = _contractItem
+        self.itemID = (self.contractItem?.ID)!
+        self.type = "2"
+        self.multiSelectMode = true
+        self.setToItemBtn.setTitle("Assign to \(String(describing: self.contractItem!.name!)) Item", for: .normal)
+        //self.tasksArray = _tasks
+        getLead()
+    }
+    
+    init(_leadFromWorkOrderItem:Lead, _workOrderItem:WoItem){
+        super.init(nibName:nil,bundle:nil)
+        
+        print("_leadFromWorkOrderItem")
+        
+        self.lead = _leadFromWorkOrderItem
+        self.fromWorkOrderItem = true
+        self.workOrderItem = _workOrderItem
+        self.itemID = (self.workOrderItem?.ID!)!
+        self.type = "1"
+        self.multiSelectMode = true
+        print("workOrderItem Name = \(String(describing: self.workOrderItem!.name!))")
+        self.setToItemBtn.setTitle("Assign to \(String(describing: self.workOrderItem!.name!)) Item", for: .normal)
+        //self.tasksArray = _tasks
+        getLead()
+    }
     
     init(_lead:Lead, _tasks:[Task]){
         super.init(nibName:nil,bundle:nil)
+        
+        print("Basic init")
+        
         self.lead = _lead
         self.tasksArray = _tasks
+        
+        indicator = SDevIndicator.generate(self.view)!
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -89,21 +142,82 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         navigationItem.leftBarButtonItem  = backButtonItem
         
         
-        showLoadingScreen()
+    }
+   
+    
+    //sends request for lead tasks
+    func getLead() {
+        print(" GetLead  Lead Id \(self.lead.ID)")
+        
+        // Show Loading Indicator
+        indicator = SDevIndicator.generate(self.view)!
+        //reset task array
+        self.tasksArray = []
+        let parameters:[String:String]
+        parameters = ["leadID": self.lead.ID]
+        print("parameters = \(parameters)")
+        
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leadTasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("lead response = \(response)")
+            }
+            .responseJSON(){
+                response in
+                if let json = response.result.value {
+                    print("JSON: \(json)")
+                    self.json = JSON(json)
+                    self.parseTaskJSON()
+                }
+                print(" dismissIndicator")
+                //self.indicator.dismissIndicator()
+        }
     }
     
-    func showLoadingScreen(){
-        title = "Loading Items..."
+    
+    func parseTaskJSON(){
+        //tasks
+        let taskCount = self.json["leadTasks"].count
+        for n in 0 ..< taskCount {
+            var taskImages:[Image] = []
+            
+            let imageCount = Int((self.json["leadTasks"][n]["images"].count))
+            print("imageCount: \(imageCount)")
+            for p in 0 ..< imageCount {
+                let fileName:String = (self.json["leadTasks"][n]["images"][p]["fileName"].stringValue)
+                let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
+                let mediumPath:String = "\(self.layoutVars.mediumBase)\(fileName)"
+                let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
+                print("rawPath = \(rawPath)")
+                
+                let image = Image(_id: self.json["leadTasks"][n]["images"][p]["ID"].stringValue,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: self.json["leadTasks"][n]["images"][p]["name"].stringValue,_width: self.json["leadTasks"][n]["images"][p]["width"].stringValue,_height: self.json["leadTasks"][n]["images"][p]["height"].stringValue,_description: self.json["leadTasks"][n]["images"][p]["description"].stringValue,_dateAdded: self.json["leadTasks"][n]["images"][p]["dateAdded"].stringValue,_createdBy: self.json["leadTasks"][n]["images"][p]["createdByName"].stringValue,_type: self.json["leadTasks"][n]["images"][p]["type"].stringValue)
+                image.customer = (self.json["leadTasks"][n]["images"][p]["customer"].stringValue)
+                image.tags = (self.json["leadTasks"][n]["images"][p]["tags"].stringValue)
+                print("appending image")
+                taskImages.append(image)
+            }
+            let task = Task(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue, _images:taskImages)
+            self.tasksArray.append(task)
+        }
+        //getStack()
+        //self.layoutViews()
+        
         getWoItems()
     }
     
     
+    
+    
+    
     //sends request for lead tasks
     func getWoItems() {
+        
         print(" GetItems  Cust Id \(self.lead.customer)")
         
+        title = "Loading Items..."
+        
         // Show Loading Indicator
-        indicator = SDevIndicator.generate(self.view)!
+        //indicator = SDevIndicator.generate(self.view)!
         //reset task array
         self.woItemsArray = []
         let parameters: [String:String] = ["custID": self.lead.customer]
@@ -116,10 +230,56 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
             }
             .responseJSON(){
                 response in
-                if let json = response.result.value {
-                    print("JSON: \(json)")
-                    self.json = JSON(json)
-                    self.parseJSON()
+                if let woItemsJson = response.result.value {
+                    print("woItemsJson: \(woItemsJson)")
+                    self.woItemsJson = JSON(woItemsJson)
+                    self.parseWoItemsJSON()
+                }
+                print(" dismissIndicator")
+                //self.indicator.dismissIndicator()
+        }
+    }
+    
+    
+    func parseWoItemsJSON(){
+        //tasks
+        let itemCount = self.woItemsJson["items"].count
+        for n in 0 ..< itemCount {
+            
+            let item = WoItem(_ID: self.woItemsJson["items"][n]["itemID"].stringValue, _name: self.woItemsJson["items"][n]["itemName"].stringValue, _woID: self.woItemsJson["items"][n]["woID"].stringValue, _woTitle: self.woItemsJson["items"][n]["woTitle"].stringValue)
+            
+            
+            self.woItemsArray.append(item)
+        }
+        self.getContractItems()
+    }
+    
+    
+    //sends request for lead tasks
+    func getContractItems() {
+        
+        print(" GetContractItems  Cust Id \(self.lead.customer)")
+        
+        title = "Loading Items..."
+        
+        // Show Loading Indicator
+        //indicator = SDevIndicator.generate(self.view)!
+        //reset task array
+        self.contractItemsArray = []
+        let parameters: [String:String] = ["custID": self.lead.customer]
+        print("parameters = \(parameters)")
+        
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leadCustomerContractSearch.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("item response = \(response)")
+            }
+            .responseJSON(){
+                response in
+                if let contractItemsJson = response.result.value {
+                    print("contractItemsJson: \(contractItemsJson)")
+                    self.contractItemsJson = JSON(contractItemsJson)
+                    self.parseContractItemsJSON()
                 }
                 print(" dismissIndicator")
                 self.indicator.dismissIndicator()
@@ -127,26 +287,30 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     }
     
     
-    func parseJSON(){
+    func parseContractItemsJSON(){
         //tasks
-        let itemCount = self.json["items"].count
+        let itemCount = self.contractItemsJson["items"].count
         for n in 0 ..< itemCount {
             
-            let item = WoItem(_ID: self.json["items"][n]["itemID"].stringValue, _name: self.json["items"][n]["itemName"].stringValue, _woID: self.json["items"][n]["woID"].stringValue, _woTitle: self.json["items"][n]["woTitle"].stringValue)
+           
+            let item = ContractItem(_ID: self.contractItemsJson["items"][n]["itemID"].stringValue, _contractID: self.contractItemsJson["items"][n]["contractID"].stringValue, _name: self.contractItemsJson["items"][n]["itemName"].stringValue, _contractTitle: self.contractItemsJson["items"][n]["contractTitle"].stringValue)
             
-            
-            self.woItemsArray.append(item)
+            self.contractItemsArray.append(item)
         }
         self.layoutViews()
     }
     
     
+    
+    
+    
     func layoutViews(){
         print("layout views")
         title =  "Assign Tasks"
-        
-        multiButton = UIBarButtonItem(title: "Select", style: .plain, target: self, action: #selector(LeadTaskAssignViewController.displayMultiSelectView))
-        navigationItem.rightBarButtonItem = multiButton
+        if multiSelectMode == false{
+            multiButton = UIBarButtonItem(title: "Select", style: .plain, target: self, action: #selector(LeadTaskAssignViewController.displayMultiSelectView))
+            navigationItem.rightBarButtonItem = multiButton
+        }
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
@@ -211,12 +375,6 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         
         scheduleTxtField.inputAccessoryView = toolBar
         
-        
-        
-        
-        
-        
-       
         self.view.addSubview(self.contractBtn)
         
         
@@ -248,10 +406,10 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         contractToolBar.isUserInteractionEnabled = true
         
         contractTxtField.inputAccessoryView = contractToolBar
+
         
-        
-        
-        
+        self.setToItemBtn.addTarget(self, action: #selector(LeadTaskAssignViewController.setToItem), for: UIControlEvents.touchUpInside)
+        self.view.addSubview(self.setToItemBtn)
         
         /////////  Auto Layout   //////////////////////////////////////
         
@@ -265,24 +423,33 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
             "scheduleBtn":self.scheduleBtn,
             "scheduleTxt":self.scheduleTxtField,
             "contractBtn":self.contractBtn,
-            "contractTxt":self.contractTxtField
+            "contractTxt":self.contractTxtField,
+            "setToItemBtn":self.setToItemBtn
             ] as [String:AnyObject]
         
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[countLbl]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[table]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
          //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[addBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[scheduleBtn(halfWidth)]-[contractBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[scheduleTxt(halfWidth)]-[contractTxt]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[contractBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[contractTxt]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[scheduleBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[scheduleTxt(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        if fromContractItem == true || fromWorkOrderItem == true{
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[setToItemBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        }else{
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[contractBtn(halfWidth)]-[scheduleBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[contractTxt(halfWidth)]-[scheduleTxt]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        }
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[contractBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[contractTxt(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        if fromContractItem == true || fromWorkOrderItem == true{
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[setToItemBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        }else{
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[scheduleBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[scheduleTxt(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[contractBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[contractTxt(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        }
        
         
     }
@@ -339,6 +506,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                 woString = "W.O. #\(woItemsArray[row].woID!)  \(woItemsArray[row].woTitle!)"
                 let woLabel = UILabel(frame: CGRect(x:0, y:0, width:pickerView.bounds.width, height:30 ))
                 woLabel.font = layoutVars.smallFont
+                woLabel.textAlignment = .center
                 woLabel.text = woString
                 myView.addSubview(woLabel)
                 
@@ -347,6 +515,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                 itemString = "\(woItemsArray[row].name!) Item"
                 let itemLabel = UILabel(frame: CGRect(x:60, y:30, width:pickerView.bounds.width - 60, height:30 ))
                 itemLabel.font = layoutVars.buttonFont
+                itemLabel.textAlignment = .center
                 itemLabel.text = itemString
                 myView.addSubview(itemLabel)
             }
@@ -363,16 +532,22 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
             }else{
                 
                 var contractString = String()
+                contractString =  "Contract #\(contractItemsArray[row].contractID!)  \(contractItemsArray[row].contractTitle!)"
+                
+               
+                
                 let contractLabel = UILabel(frame: CGRect(x:0, y:0, width:pickerView.bounds.width, height:30 ))
                 contractLabel.font = layoutVars.smallFont
+                contractLabel.textAlignment = .center
                 contractLabel.text = contractString
                 myView.addSubview(contractLabel)
                 
                 
                 var itemString = String()
-                itemString = "\(contractItemsArray[row].name!) Item"
+                itemString = "\(contractItemsArray[row].name!) Item # \(contractItemsArray[row].ID!)"
                 let itemLabel = UILabel(frame: CGRect(x:60, y:30, width:pickerView.bounds.width - 60, height:30 ))
                 itemLabel.font = layoutVars.buttonFont
+                itemLabel.textAlignment = .center
                 itemLabel.text = itemString
                 myView.addSubview(itemLabel)
             }
@@ -387,6 +562,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
     {
         if pickerMode == "WORKORDER"{
+            self.type = "1"
             if row == woItemsArray.count{
                 print("new work order")
                 
@@ -395,6 +571,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                 print("row \(row) selected")
             }
         }else{
+            self.type = "2"
             if row == woItemsArray.count{
                 print("new contract")
                 
@@ -403,6 +580,9 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                 print("row \(row) selected")
             }
         }
+        
+        self.selectedRow = row
+        
     }
     
     @objc func cancelPicker(){
@@ -424,11 +604,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
          print("cellForRowAt, selectTasks = \(selectedTasks)")
         
         let cell:LeadTaskTableViewCell = tasksTableView.dequeueReusableCell(withIdentifier: "cell") as! LeadTaskTableViewCell
-        //if(indexPath.row == self.tasksArray.count){
-       // if(indexPath.row == 0){
-            //cell add btn mode
-            //cell.layoutAddBtn()
-        //}else{
+        
             cell.task = self.tasksArray[indexPath.row]
             cell.layoutViews()
             
@@ -443,7 +619,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                 cell.setConstraints()
             }
             
-        //}
+        
         
         
         
@@ -452,9 +628,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("selectTasks = \(selectedTasks)")
-       // if(indexPath.row == self.tasksArray.count){
-            //self.addTask()
-        //}else{
+       
             if multiSelectMode {
                 if self.selectedTasks.contains(indexPath.row) {
                     self.selectedTasks.remove(at: self.selectedTasks.index(of: indexPath.row)!)
@@ -482,16 +656,17 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                 imageUploadPrepViewController.attachmentDelegate = self
                 self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
             }
-        //}
     }
     
     
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        var editablity:Bool = true
+        if multiSelectMode == true{
+            editablity = false
+        }
         
-        return true
-        
-        
+        return editablity
     }
     
     
@@ -520,8 +695,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         
         let notNeeded = UITableViewRowAction(style: .normal, title: "N/A") { action, index in
             //print("progress button tapped")
-           // self.selectedTasks.append(indexPath.row)
-            //self.contractTxtField.becomeFirstResponder()
+           
             
             self.editsMade = true
             
@@ -602,7 +776,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                     
                     alertController.addAction(cancelAction)
                     alertController.addAction(okAction)
-                    self.present(alertController, animated: true, completion: nil)
+                    self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
                     
                     
                     
@@ -613,7 +787,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                     
                 }
             }else{
-                simpleAlert(_vc: self,_title: "Can't delete lead tasks you didn't create.", _message: "")
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(),_title: "Can't delete lead tasks you didn't create.", _message: "")
                 tableView.setEditing(false, animated: true)
             }
             
@@ -630,17 +804,6 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     
     
     
-    
-    /*
-    func addTask(){
-        print("add task")
-        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Lead Task", _leadID: self.lead.ID, _leadTaskID: "0", _customerID: self.lead.customer, _images: [])
-        imageUploadPrepViewController.layoutViews()
-        imageUploadPrepViewController.groupImages = true
-        imageUploadPrepViewController.attachmentDelegate = self
-        self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
-    }
-    */
     
     
     
@@ -664,10 +827,63 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     }
     
   
+    @objc func setToItem(){
+        print("set to item")
+        //scheduleTxtField.resignFirstResponder()
+        //contractTxtField.resignFirstResponder()
+        
+        self.tasksToLog = []
+        
+        
+        print("selectedTasks.count = \(selectedTasks.count)")
+        for row in selectedTasks{
+            self.tasksToLog.append(tasksArray[row])
+            
+            
+            print("row = \(row)")
+            //let indexPath = IndexPath(row: row, section: 0)
+            // let cell:LeadTaskTableViewCell = tasksTableView.cellForRow(at: indexPath) as! LeadTaskTableViewCell
+            //cell.unSetCheck()
+            
+            tasksArray[row].status = "1"
+            // cell.task.status = "2"
+            
+            
+        }
+        
+        selectedTasks = []
+        tasksTableView.reloadData()
+        
+        print("tasksToLog count = \(self.tasksToLog.count)")
+        
+        
+        
+        tasksToLogJSON = []
+        //loop thru usage array and build JSON array
+        self.editsMade = true
+        for  (index,task) in tasksToLog.enumerated() {
+            
+            
+            let JSONString = task.toJSONString(prettyPrint: true)
+            tasksToLogJSON.append(JSON(JSONString ?? ""))
+            print("task JSONString = \(String(describing: JSONString))")
+            
+            
+            
+            
+        }
+        callAlamoFire()
+        
+        
+        
+    }
+    
     
     
     @objc func handleItemSelect(){
-        print("handleItemSelect selectedrow = \(schedulePicker.selectedRow(inComponent: 0))")
+       // print("handleItemSelect selectedrow = \(schedulePicker.selectedRow(inComponent: 0))")
+        
+        print("handleItemSelect selectedrow = \(self.selectedRow)")
         
         
         print("pickerMode = \(pickerMode)")
@@ -675,42 +891,42 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         
         
         if pickerMode == "WORKORDER"{
-            if schedulePicker.selectedRow(inComponent: 0) == woItemsArray.count{
+            if self.selectedRow == woItemsArray.count{
                 print("needs new wo")
                 
-                self.editsMade = true
+                //self.editsMade = true
                 
                 let editWoViewController = NewEditWoViewController(_lead: self.lead,_tasks: self.tasksArray)
+                editWoViewController.leadTaskDelegate = self
                 navigationController?.pushViewController(editWoViewController, animated: false )
                 
                 return
                 
-                //simpleAlert(_vc: self, _title: "Make New Work Order", _message: "This feature is coming soon.")
+                //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Make New Work Order", _message: "This feature is coming soon.")
                 //return
             }
-            woID = woItemsArray[schedulePicker.selectedRow(inComponent: 0)].woID!
-            itemID = woItemsArray[schedulePicker.selectedRow(inComponent: 0)].ID!
+            woID = woItemsArray[self.selectedRow].woID!
+            itemID = woItemsArray[self.selectedRow].ID!
             scheduleTxtField.resignFirstResponder()
         }else{
             
-            if contractPicker.selectedRow(inComponent: 0) == contractItemsArray.count{
+            if self.selectedRow == contractItemsArray.count{
                 print("needs new contract")
-                //simpleAlert(_vc: self, _title: "Make New Contract", _message: "This feature is coming soon.")
+                //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Make New Contract", _message: "This feature is coming soon.")
                 //return
                 
-                self.editsMade = true
+                //self.editsMade = true
                 
                 let editContractViewController = NewEditContractViewController(_lead: self.lead,_tasks: self.tasksArray)
+                editContractViewController.leadTaskDelegate = self
                 navigationController?.pushViewController(editContractViewController, animated: false )
                 
                 return
             }
             
-            //contractID = contractItemsArray[contractPicker.selectedRow(inComponent: 0)].woID
-            //itemID = contractItemsArray[contractPicker.selectedRow(inComponent: 0)].ID
-            
-            contractID = contractItemsArray[schedulePicker.selectedRow(inComponent: 0)].contractID!
-            itemID = contractItemsArray[schedulePicker.selectedRow(inComponent: 0)].ID!
+          
+            contractID = contractItemsArray[self.selectedRow].contractID!
+            itemID = contractItemsArray[self.selectedRow].ID!
             
             contractTxtField.resignFirstResponder()
             
@@ -744,7 +960,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         
             tasksToLogJSON = []
             //loop thru usage array and build JSON array
-            self.editsMade = false //resets edit checker
+            //self.editsMade = false //resets edit checker
             for  (index,task) in tasksToLog.enumerated() {
                 
                 
@@ -756,10 +972,10 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
              
                 
             }
-            callAlamoFire(_type: "new")
+            callAlamoFire()
         }
         
-        func callAlamoFire(_type:String){
+        func callAlamoFire(){
             if(tasksToLogJSON.count > 0){
                 indicator = SDevIndicator.generate(self.view)!
                 
@@ -767,16 +983,28 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                 
                 self.editsMade = true
                 
-                var parameters:[String:String]
-                parameters = [
-                    "type":"1",
-                    "itemID":"\(itemID)",
-                    "leadTasks": "\(tasksToLogJSON)",
-                    "createdBy":"\(self.appDelegate.loggedInEmployee!.ID!)"
+                var parameters:[String:String] = [:]
+                
+                if pickerMode == "WORKORDER"{
                     
-                    
-                    
-                ]
+                    parameters = [
+                        "type":self.type,
+                        "itemID":"\(itemID)",
+                        "leadTasks": "\(tasksToLogJSON)",
+                        "createdBy":"\(self.appDelegate.loggedInEmployee!.ID!)",
+                        "leadID":self.lead.ID!,
+                        "linkID":self.woID
+                    ]
+                }else{
+                    parameters = [
+                        "type":self.type,
+                        "itemID":"\(itemID)",
+                        "leadTasks": "\(tasksToLogJSON)",
+                        "createdBy":"\(self.appDelegate.loggedInEmployee!.ID!)",
+                        "leadID":self.lead.ID!,
+                        "linkID":self.contractID
+                    ]
+                }
                 
                 print("parameters = \(parameters)")
                 
@@ -793,19 +1021,29 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                             //let updatedJSON = JSON(value)
                             self.indicator.dismissIndicator()
                             
-                            
+                            self.layoutVars.playSaveSound()
                             
                             self.tasksTableView.reloadData()
                         case .failure(let error):
                             self.indicator.dismissIndicator()
                             self.tasksTableView.reloadData()
                             print("Error: \(error)")
+                            
+                            self.layoutVars.playErrorSound()
                         }
                         
                         self.updateTaskCountLabel()
                 }
             }else{
                 print("No Tasks to Link")
+                
+                
+                    self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Select Tasks", _message: "Tap select button at the top to multi select tasks or swipe to assign individual tasks.")
+                    //textField.resignFirstResponder()
+                
+               
+                
+                
             }
             
         }
@@ -813,11 +1051,14 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
        
+        /*
         if selectedTasks.count == 0{
-            simpleAlert(_vc: self, _title: "Select Tasks", _message: "Tap select button at the top to multi select tasks or swipe to assign individual tasks.")
+            simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Select Tasks", _message: "Tap select button at the top to multi select tasks or swipe to assign individual tasks.")
             textField.resignFirstResponder()
             return
         }
+ */
+        
         
         if textField.tag == 1{
             pickerMode = "WORKORDER"
@@ -873,20 +1114,122 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         
         
         
-        _ = navigationController?.popViewController(animated: true)
+        print("editsMade = \(editsMade)")
         
         if self.editsMade == true{
             
             
+            var newStatusValue:String!
             
             if numberOfAssignedTasks == 0{
-                self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: "1")
+                newStatusValue = "1"
+                //self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: "1")
             }else if numberOfAssignedTasks  < tasksArray.count{
-                self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: "2")
+                
+                newStatusValue = "2"
+                //self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: "2")
             }else{
-                self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: "3")
+                
+                newStatusValue = "3"
+                //self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: "3")
             }
+            
+            
+            
+            if(self.lead?.statusId != newStatusValue && newStatusValue != "na"){
+                print("should update status _newStatusValue = \(newStatusValue)")
+                
+                var statusName = ""
+                switch (newStatusValue) {
+                case "1":
+                    statusName = "Un-Done"
+                    break;
+                case "2":
+                    statusName = "In Progress"
+                    break;
+                case "3":
+                    statusName = "Done"
+                    break;
+                case "4":
+                    statusName = "Cancel"
+                    break;
+                    
+                default:
+                    statusName = ""
+                    break;
+                }
+                
+                
+                
+                
+                let alertController = UIAlertController(title: "Set Lead to \(statusName)", message: "", preferredStyle: UIAlertControllerStyle.alert)
+                let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                    (result : UIAlertAction) -> Void in
+                    
+                    
+                    
+                    self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: self.lead.statusId)
+                    
+                    _ = self.navigationController?.popViewController(animated: true)
+                    
+                }
+                
+                let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                    (result : UIAlertAction) -> Void in
+                    
+                    
+                    var parameters:[String:String]
+                    
+                    
+                    parameters = [
+                        "leadID":self.lead!.ID,
+                        "status":"\(newStatusValue!)"
+                    ]
+                    print("parameters = \(parameters)")
+                    self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/leadStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+                        response in
+                        print(response.request ?? "")  // original URL request
+                        print(response.result)   // result of response serialization
+                        //self.editsMade = true
+                        //self.statusValue = self.statusValueToUpdate
+                        //self.setStatus(status: _newStatusValue)
+                        self.lead!.statusId = newStatusValue
+                        }.responseString() {
+                            response in
+                            print(response)  // original URL request
+                            
+                            // self.getLead()
+                            
+                            self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: self.lead.statusId)
+                            _ = self.navigationController?.popViewController(animated: true)
+                    }
+                    
+                    
+                    
+                    
+                    
+                }
+                
+                alertController.addAction(cancelAction)
+                alertController.addAction(okAction)
+                layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+                
+            }else{
+                self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: self.lead.statusId)
+                 _ = navigationController?.popViewController(animated: true)
+            }
+            
+            
+            
+            
+            
+        }else{
+            _ = navigationController?.popViewController(animated: true)
         }
+        
+        
+        
+        
         
     }
     
@@ -907,6 +1250,27 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     }
     
     
+   
+    
+    func handleNewContract(_contract: Contract) {
+        print("handle new contract in assign view contract.ID: \(_contract.ID)")
+        
+        _ = self.navigationController?.popViewController(animated: false)
+        
+        self.leadTaskDelegate.handleNewContract(_contract:_contract)
+        
+        
+    }
+    
+    func handleNewWorkOrder(_workOrder: WorkOrder) {
+        print("handle new work order in assign view workOrder.ID: \(_workOrder.ID)")
+        
+    
+        _ = self.navigationController?.popViewController(animated: false)
+        
+        self.leadTaskDelegate.handleNewWorkOrder(_workOrder: _workOrder)
+    }
+ 
     
 }
 

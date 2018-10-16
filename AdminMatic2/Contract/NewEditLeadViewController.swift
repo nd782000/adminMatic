@@ -1299,24 +1299,24 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         //customer check
         if(lead.customer == ""){
             print("select a customer")
-            playErrorSound()
-            simpleAlert(_vc: self, _title: "Incomplete Lead", _message: "Select a Customer")
+            self.layoutVars.playErrorSound()
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Lead", _message: "Select a Customer")
             return false
         }
         
         //type check
         if(lead.scheduleType == ""){
             print("select a schedule type")
-            playErrorSound()
-            simpleAlert(_vc: self, _title: "Incomplete Lead", _message: "Select a Schedule Type")
+            self.layoutVars.playErrorSound()
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Lead", _message: "Select a Schedule Type")
             return false
         }
         
         if(lead.scheduleType == "1"){
             if(lead.date == "" || lead.date == "null"){
                 print("select an apt date")
-                playErrorSound()
-                simpleAlert(_vc: self, _title: "Incomplete Lead", _message: "Select an Appointment Date")
+                self.layoutVars.playErrorSound()
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Lead", _message: "Select an Appointment Date")
                 return false
             }
             
@@ -1327,8 +1327,8 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         //rep check
         if(lead.rep == ""){
             print("select a sales rep")
-            playErrorSound()
-            simpleAlert(_vc: self, _title: "Incomplete Lead", _message: "Select a Sales Rep.")
+            self.layoutVars.playErrorSound()
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Lead", _message: "Select a Sales Rep.")
             return false
         }
         
@@ -1336,8 +1336,8 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         //description check
         if(descriptionView.text.count == 0){
             print("add a description")
-            playErrorSound()
-            simpleAlert(_vc: self, _title: "Incomplete Lead", _message: "Provide a General Description")
+            self.layoutVars.playErrorSound()
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Lead", _message: "Provide a General Description")
             return false
         }
         
@@ -1351,10 +1351,10 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     
     @objc func submit(){
         print("submit lead")
-        var newLead:Bool = false
-        if self.lead.ID == "0"{
-            newLead = true
-        }
+        //var newLead:Bool = false
+        //if self.lead.ID == "0"{
+            //newLead = true
+        //}
         
         if(!validateFields()){
             print("didn't pass validation")
@@ -1381,7 +1381,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
                 response in
                 if let json = response.result.value {
                     print("JSON: \(json)")
-                    playSaveSound()
+                    self.layoutVars.playSaveSound()
                     self.json = JSON(json)
                     let newLeadID = self.json["leadID"].stringValue
                     self.lead.ID = newLeadID
@@ -1391,13 +1391,15 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
                     
                     if(self.title == "New Lead"){
                         
-                        self.goBack()
+                        //self.goBack()
+                        _ = self.navigationController?.popViewController(animated: false)
+                        
                         self.delegate.getLeads(_openNewLead: true)
                     }else if(self.title == "New Customer Lead"){
                         //no delegate method
                         
-                        self.goBack()
-                        
+                        //self.goBack()
+                        _ = self.navigationController?.popViewController(animated: false)
                         self.delegate.getLeads(_openNewLead: true)
                         
                         
@@ -1407,7 +1409,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
                     
                     /*
                     if newLead {
-                        simpleAlert(_vc: self, _title: "Add Tasks and Images", _message: "You can now add leat tasks and images to this lead.")
+                        simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Add Tasks and Images", _message: "You can now add leat tasks and images to this lead.")
                     }
                     */
                    
@@ -1439,7 +1441,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             _ = navigationController?.popViewController(animated: true)
         }

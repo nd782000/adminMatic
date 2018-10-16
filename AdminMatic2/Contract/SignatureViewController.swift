@@ -101,8 +101,6 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
         navigationItem.leftBarButtonItem  = backButtonItem
         
         
-        //let shareBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.action, target: self, action: #selector(SignatureViewController.share))
-        //self.navigationItem.rightBarButtonItem = shareBtn
         
         signatureView.delegate = self
     
@@ -227,7 +225,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     
     @objc func terms(){
         print("terms")
-        let termsViewController:TermsViewController = TermsViewController(_terms: self.contract.terms, _contractID: self.contract.ID)
+        let termsViewController:TermsViewController = TermsViewController(_terms: self.contract.terms, _contractID: self.contract.ID, _editable: false)
         termsViewController.delegate = self
         navigationController?.pushViewController(termsViewController, animated: false )
     }
@@ -251,7 +249,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
             self.uploadSignature()
             
         }else{
-                simpleAlert(_vc: self, _title: "Please Sign", _message: "")
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Please Sign", _message: "")
         }
         
         
@@ -342,14 +340,14 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
                     print("result = \(response.result)")   // result of response serialization
                     
                     if("\(response.result)" == "FAILURE") {
-                        playErrorSound()
+                        self.layoutVars.playErrorSound()
                         self.progressLbl.text = "Upload Failed"
                         self.progressLbl.textColor = UIColor.red
                         self.progressView.progressTintColor = UIColor.red
                     }
                     
                     if let result = response.result.value {
-                        playSaveSound()
+                        self.layoutVars.playSaveSound()
                         let json = result as! NSDictionary
                         let thumbBase = JSON(json)["thumbBase"].stringValue
                         let mediumBase = JSON(json)["mediumBase"].stringValue
@@ -372,6 +370,9 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
                 }
             case .failure(let encodingError):
                 print("fail \(encodingError)")
+                
+                self.layoutVars.playErrorSound()
+                
                 self.progressLbl.text = "Failed"
                 self.progressLbl.textColor = UIColor.red
                 self.progressView.progressTintColor = UIColor.red
@@ -462,27 +463,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     
     
     
-   /*
-    
-    @objc func share() {
-        print("share")
-        /*
-         if self.presentedViewController == nil {
-         let activity = UIActivityViewController(activityItems: [self.imageView.image!], applicationActivities: nil)
-         present(activity, animated: true, completion: nil)
-         }else{
-         self.dismiss(animated: true, completion: {
-         let activity = UIActivityViewController(activityItems: [self.image!], applicationActivities: nil)
-         self.present(activity, animated: true, completion: nil)
-         })
-         }
-         */
-        
-    }
-    */
-    
-    
-    
+  
     
     
     

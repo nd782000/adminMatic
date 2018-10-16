@@ -17,8 +17,9 @@
 import UIKit
 import CoreData
 import Alamofire
+import AlamofireImage
 import SwiftyJSON
-import Nuke
+//import Nuke
 import AVFoundation
 
 
@@ -51,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.3.9"
+    var appVersion:String = "1.4.0"
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
     var employeeListViewController:EmployeeListViewController!
@@ -709,6 +710,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.messageView?.translatesAutoresizingMaskIntoConstraints = false
         self.messageView?.alpha = 0.0
         
+        Alamofire.request("https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(self.loggedInEmployee?.pic)!).responseImage { response in
+            debugPrint(response)
+            
+            print(response.request)
+            print(response.response)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                self.messageImageView.image = image
+            }
+        }
+        
+        
+        /*
         let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(self.loggedInEmployee?.pic)!)
         
         
@@ -718,6 +734,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             self.messageImageView.handle(response: $0, isFromMemoryCache: $1)
         }
 
+        */
+        
         
         
         

@@ -15,7 +15,7 @@ class ContractItem {
     var ID: String!
     var name: String!
     var chargeType: String!
-    var sort: String!
+    //var sort: String!
     var qty: String!
     var contractID: String!
     var price: String!
@@ -26,9 +26,11 @@ class ContractItem {
     var total: String!
     var type: String!
     var taxCode: String!
+    var subcontractor: String!
    
+    var contractTitle:String!
     
-    init(_ID: String?,_chargeType: String?,_contractID: String?,_createDate: String?,_itemID: String?,_name: String?,_price: String?,_qty: String?,_sort: String?,_totalImages: String?,_total: String?,_type: String?,_taxCode: String?) {
+    init(_ID: String?,_chargeType: String?,_contractID: String?,_createDate: String?,_itemID: String?,_name: String?,_price: String?,_qty: String?,_totalImages: String?,_total: String?,_type: String?,_taxCode: String?,_subcontractor: String?) {
         //print(json)
         if _ID != nil {
             self.ID = _ID
@@ -79,11 +81,14 @@ class ContractItem {
             self.qty = ""
         }
         
+        /*
         if _sort != nil {
             self.sort = _sort
         }else{
             self.sort = ""
         }
+        */
+        
         
         if _totalImages != nil {
             self.totalImages = _totalImages
@@ -108,7 +113,53 @@ class ContractItem {
             self.taxCode = ""
         }
         
+        if _subcontractor != nil {
+            self.subcontractor = _subcontractor
+        }else{
+            self.subcontractor = ""
+        }
+        
+        
+        
         
     }
+    
+    
+    init(_ID: String?,_contractID: String?,_name: String?,_contractTitle: String?) {
+        //print(json)
+        if _ID != nil {
+            self.ID = _ID
+        }else{
+            self.ID = ""
+        }
+        
+        
+        
+        if _contractID != nil {
+            self.contractID = _contractID
+        }else{
+            self.contractID = ""
+        }
+        
+       
+        
+        if _name != nil {
+            self.name = _name
+        }else{
+            self.ID = ""
+        }
+        
+        
+        if _contractTitle != nil {
+            self.contractTitle = _contractTitle
+        }else{
+            self.contractTitle = ""
+        }
+        
+        
+    }
+    
+    
+    
     
 }

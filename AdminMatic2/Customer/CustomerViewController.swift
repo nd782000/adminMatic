@@ -9,8 +9,9 @@
 import Foundation
 import UIKit
 import Alamofire
+import AlamofireImage
 import SwiftyJSON
-import Nuke
+//import Nuke
 import DKImagePickerController
 
 protocol CustomerDelegate{
@@ -389,7 +390,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //print("workOrderCount: \(workOrderCount)")
         for i in 0 ..< workOrderCount {
             //print("ID: " + self.customerSchedule["workOrder"][i]["ID"].stringValue)
-            let workOrder = WorkOrder(_ID: self.customerSchedule["workOrder"][i]["ID"].stringValue, _statusID: self.customerSchedule["workOrder"][i]["statusID"].stringValue, _date: self.customerSchedule["workOrder"][i]["date"].stringValue, _firstItem: self.customerSchedule["workOrder"][i]["firstItem"].stringValue, _statusName: self.customerSchedule["workOrder"][i]["statusName"].stringValue, _customer: self.customerSchedule["workOrder"][i]["customer"].stringValue, _type: self.customerSchedule["workOrder"][i]["type"].stringValue, _progress: self.customerSchedule["workOrder"][i]["progress"].stringValue, _totalPrice: self.customerSchedule["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.customerSchedule["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.customerSchedule["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.customerSchedule["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.customerSchedule["workOrder"][i]["charge"].stringValue)
+            let workOrder = WorkOrder(_ID: self.customerSchedule["workOrder"][i]["ID"].stringValue, _statusID: self.customerSchedule["workOrder"][i]["statusID"].stringValue, _date: self.customerSchedule["workOrder"][i]["date"].stringValue, _firstItem: self.customerSchedule["workOrder"][i]["firstItem"].stringValue, _statusName: self.customerSchedule["workOrder"][i]["statusName"].stringValue, _customer: self.customerSchedule["workOrder"][i]["customer"].stringValue, _type: self.customerSchedule["workOrder"][i]["type"].stringValue, _progress: self.customerSchedule["workOrder"][i]["progress"].stringValue, _totalPrice: self.customerSchedule["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.customerSchedule["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.customerSchedule["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.customerSchedule["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.customerSchedule["workOrder"][i]["charge"].stringValue, _title: self.customerSchedule["workOrder"][i]["title"].stringValue, _customerName: self.customerSchedule["workOrder"][i]["customerName"].stringValue)
             self.customerScheduleArray.append(workOrder)
         }
         scheduleLoaded = true
@@ -539,7 +540,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //print("workOrderCount: \(workOrderCount)")
         for i in 0 ..< workOrderCount {
             //print("ID: " + self.customerHistory["workOrder"][i]["ID"].stringValue)
-            let workOrder = WorkOrder(_ID: self.customerHistory["workOrder"][i]["ID"].stringValue, _statusID: self.customerHistory["workOrder"][i]["statusID"].stringValue, _date: self.customerHistory["workOrder"][i]["date"].stringValue, _firstItem: self.customerHistory["workOrder"][i]["firstItem"].stringValue, _statusName: self.customerHistory["workOrder"][i]["statusName"].stringValue, _customer: self.customerHistory["workOrder"][i]["customer"].stringValue, _type: self.customerHistory["workOrder"][i]["type"].stringValue, _progress: self.customerHistory["workOrder"][i]["progress"].stringValue, _totalPrice: self.customerHistory["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.customerHistory["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.customerHistory["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.customerHistory["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.customerSchedule["workOrder"][i]["charge"].stringValue)
+            let workOrder = WorkOrder(_ID: self.customerHistory["workOrder"][i]["ID"].stringValue, _statusID: self.customerHistory["workOrder"][i]["statusID"].stringValue, _date: self.customerHistory["workOrder"][i]["date"].stringValue, _firstItem: self.customerHistory["workOrder"][i]["firstItem"].stringValue, _statusName: self.customerHistory["workOrder"][i]["statusName"].stringValue, _customer: self.customerHistory["workOrder"][i]["customer"].stringValue, _type: self.customerHistory["workOrder"][i]["type"].stringValue, _progress: self.customerHistory["workOrder"][i]["progress"].stringValue, _totalPrice: self.customerHistory["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.customerHistory["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.customerHistory["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.customerHistory["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.customerSchedule["workOrder"][i]["charge"].stringValue, _title: self.customerSchedule["workOrder"][i]["title"].stringValue, _customerName: self.customerSchedule["workOrder"][i]["customerName"].stringValue)
             self.customerHistoryArray.append(workOrder)
         }
         
@@ -1134,7 +1135,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         multiPicker.showsCancelButton = true
         multiPicker.assetType = .allPhotos
-        self.present(multiPicker, animated: false) {
+        self.layoutVars.getTopController().present(multiPicker, animated: false) {
             print("done")
         }
         
@@ -1150,7 +1151,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 selectedAssets.append(assets[i])
                 //print(self.selectedAssets)
                 
-                assets[i].fetchOriginalImage(true, completeBlock: { image, info in
+                assets[i].fetchOriginalImage(completeBlock: { image, info in
                     
                     
                     print("making image")
@@ -1246,18 +1247,36 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             print("thumb = \(self.imageArray[indexPath.row].thumbPath!)")
             
-            let imgURL:URL = URL(string: self.imageArray[indexPath.row].thumbPath!)!
+           // let imgURL:URL = URL(string: self.imageArray[indexPath.row].thumbPath!)!
             
             //print("imgURL = \(imgURL)")
             
             
-            
+            /*
             Nuke.loadImage(with: imgURL, into: cell.imageView){
                 //print("nuke loadImage")
                 cell.imageView?.handle(response: $0, isFromMemoryCache: $1)
                 cell.activityView.stopAnimating()
                 
+            }*/
+        
+        
+        Alamofire.request(self.imageArray[indexPath.row].thumbPath!).responseImage { response in
+            debugPrint(response)
+            
+            print(response.request)
+            print(response.response)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                
+                cell.imageView.image = image
             }
+        }
+        
+        
+        
         
         //print("view width = \(imageCollectionView?.frame.width)")
         //print("cell width = \(cell.frame.width)")
@@ -1389,7 +1408,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             cell.workOrder = self.customerScheduleArray[indexPath.row]
             cell.layoutViews(_scheduleMode: "CUSTOMER")
             cell.dateLbl.text = cell.workOrder.date
-            cell.firstItemLbl.text = "\(cell.workOrder.firstItem!) #\(cell.workOrder.ID!)"
+            cell.firstItemLbl.text = "\(cell.workOrder.title!) #\(cell.workOrder.ID!)"
             cell.setStatus(status: cell.workOrder.statusId)
            
             
@@ -1417,7 +1436,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             cell.layoutViews(_scheduleMode: "CUSTOMER")
             cell.dateLbl.text = cell.workOrder.date
-            cell.firstItemLbl.text = "\(cell.workOrder.firstItem!) #\(cell.workOrder.ID!)"
+            cell.firstItemLbl.text = "\(cell.workOrder.title!) #\(cell.workOrder.ID!)"
             cell.setStatus(status: cell.workOrder.statusId)
            
             

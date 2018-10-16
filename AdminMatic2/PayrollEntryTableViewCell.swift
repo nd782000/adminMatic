@@ -317,7 +317,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         
         if self.payroll.verified == "1"{
             //need userLevel greater then 1 to access this
-        simpleAlert(_vc: self.parentVC, _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
+        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
                 return
         }
         
@@ -334,7 +334,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         
         if self.payroll.verified == "1"{
             //need userLevel greater then 1 to access this
-            simpleAlert(_vc: self.parentVC, _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
             return
         }
         
@@ -358,7 +358,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         
         if self.payroll.verified == "1"{
             //need userLevel greater then 1 to access this
-            simpleAlert(_vc: self.parentVC, _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
             return
         }
         
@@ -395,7 +395,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         /*
         if self.payroll.verified == "1"{
             //need userLevel greater then 1 to access this
-            simpleAlert(_vc: self.parentVC, _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
+            simpleAlert(_vc: self.layoutVars.getTopController().parentVC, _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
             return
         }*/
         
@@ -412,7 +412,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         /*
         if self.payroll.verified == "1"{
             //need userLevel greater then 1 to access this
-            simpleAlert(_vc: self.parentVC, _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
+            simpleAlert(_vc: self.layoutVars.getTopController().parentVC, _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
             return
         }*/
         
@@ -428,7 +428,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         /*
         if self.payroll.verified == "1"{
             //need userLevel greater then 1 to access this
-            simpleAlert(_vc: self.parentVC, _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
+            simpleAlert(_vc: self.layoutVars.getTopController().parentVC, _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
             return
         }
  */

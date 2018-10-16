@@ -12,12 +12,15 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate{
+class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate, EditLeadDelegate{
     
     var layoutVars:LayoutVars = LayoutVars()
     
     
     var contractDelegate:EditContractDelegate!
+    var leadDelegate:EditLeadDelegate!
+    
+    
     var editsMade:Bool = false
     
     var contract:Contract!
@@ -44,16 +47,16 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
 
     var itemDetailsTableView:TableView = TableView()
     
-    
-    
-    
     var tasksJson:JSON?
-   
+    var json:JSON!
+    var lead:Lead?
+    var leadTasksWaiting:String?
+    var leadTasksWaitingBtn:Button = Button(titleText: "Open LeadTasks to Assign...")
     
+
     var imageUploadPrepViewController:ImageUploadPrepViewController!
     
-   
-    
+
     init(_contract:Contract,_contractItem:ContractItem){
         super.init(nibName:nil,bundle:nil)
         self.contract = _contract
@@ -129,8 +132,6 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
        
         
        
-        
-        
         self.itemLbl = GreyLabel()
         self.itemLbl.text = self.contractItem.name
         self.itemLbl.font = layoutVars.largeFont
@@ -200,6 +201,8 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         ///////////   Item Details Section   /////////////
         
+        self.leadTasksWaitingBtn.addTarget(self, action: #selector(ContractItemViewController.assignLeadTasks), for: UIControlEvents.touchUpInside)
+        //self.detailsView.addSubview(self.leadTasksWaitingBtn)
         
         self.itemDetailsTableView.delegate  =  self
         self.itemDetailsTableView.dataSource = self
@@ -209,21 +212,86 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         
         self.itemDetailsTableView.register(ContractTaskTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.detailsView.addSubview(itemDetailsTableView)
+        //self.detailsView.addSubview(itemDetailsTableView)
         
+        
+        /*
         
         //auto layout group
         let itemDetailsViewsDictionary = [
-            
-            "view1":itemDetailsTableView
+            "view1":leadTasksWaitingBtn,
+            "view2":itemDetailsTableView
             ]  as [String:AnyObject]
         
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
         
-        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(fullHeight)]", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2]|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
         
+       */
+        
+        
+        //print("leadTasksWaiting \(leadTasksWaiting)")
+        //print("contractItem.type \(contractItem.type!)")
+        
+        if self.leadTasksWaiting! == "1" && self.contractItem.type! == "1"{
+            
+            showLeadTaskBtn()
+            
+            //print("leadTasksWaiting")
+            
+             //self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(40)][view2]|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+            
+            //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Lead Tasks To Assign", _message: ""
+            //)
+        }else{
+            
+            hideLeadTaskBtn()
+            
+             //self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view2(fullHeight)]", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+        }
     }
     
+    
+    
+    
+    func showLeadTaskBtn(){
+        print("showLeadTaskBtn")
+        self.detailsView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        self.detailsView.addSubview(self.leadTasksWaitingBtn)
+        self.detailsView.addSubview(itemDetailsTableView)
+        
+        //auto layout group
+        let itemDetailsViewsDictionary = [
+            "view1":leadTasksWaitingBtn,
+            "view2":itemDetailsTableView
+            ]  as [String:AnyObject]
+        
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: nil, views: itemDetailsViewsDictionary))
+        
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2]|", options: [], metrics: nil, views: itemDetailsViewsDictionary))
+        
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(40)][view2]|", options: [], metrics: nil, views: itemDetailsViewsDictionary))
+
+
+    }
+    
+    func hideLeadTaskBtn(){
+        print("hideLeadTaskBtn")
+        self.detailsView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        self.detailsView.addSubview(itemDetailsTableView)
+        
+        let itemDetailsViewsDictionary = [
+            "view1":itemDetailsTableView
+            ]  as [String:AnyObject]
+        
+        
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: nil, views: itemDetailsViewsDictionary))
+        
+    
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1]|", options: [], metrics: nil, views: itemDetailsViewsDictionary))
+        
+    }
     
     
     
@@ -282,7 +350,6 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
             }
             
             
-           // cell.setStatus(status: self.tasks[indexPath.row].status)
             
             print("image count = \(self.contractItem.tasks[indexPath.row].images.count)")
             
@@ -311,11 +378,9 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
             tableView.deselectRow(at: indexPath as IndexPath, animated: true)
             imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Contract Task", _contractItemID: self.contractItem.ID, _contractTaskID: self.contractItem.tasks[indexPath.row].ID, _customerID: self.contract.customer, _images: self.contractItem.tasks[indexPath.row].images)
             
-            //imageUploadPrepViewController.images = self.contractItem.tasks[indexPath.row].images
             imageUploadPrepViewController.layoutViews()
             imageUploadPrepViewController.groupDescriptionTxt.text = self.contractItem.tasks[indexPath.row].taskDescription
             imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
-            //imageUploadPrepViewController.taskStatus = self.tasks[indexPath.row].status
             imageUploadPrepViewController.selectedID = self.contract.customer
             imageUploadPrepViewController.contractID = self.contract.ID
             imageUploadPrepViewController.groupImages = true
@@ -350,6 +415,13 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
         return [delete]
     }
     
+    
+    @objc func assignLeadTasks(){
+        print("assign lead tasks")
+        let leadTaskAssignViewController:LeadTaskAssignViewController = LeadTaskAssignViewController(_leadFromContractItem: self.lead!, _contractItem: self.contractItem)
+        leadTaskAssignViewController.editDelegate = self
+        self.navigationController?.pushViewController(leadTaskAssignViewController, animated: false)
+    }
     
     
     @objc func deleteTask(_indexPath: IndexPath){
@@ -391,8 +463,7 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
                 if let json = response.result.value {
                     print("JSON: \(json)")
                     
-                    //newItemStatus = JSON(json)["newItemStatus"].stringValue
-                    //self.newWoStatus = JSON(json)["newWoStatus"].stringValue
+                    
                     
                     self.itemDetailsTableView.reloadData()
                     
@@ -413,7 +484,7 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)
-        self.present(alertController, animated: true, completion: nil)
+        layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         
         
         
@@ -429,26 +500,7 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
     func addTask(){
         print("add task")
         
-        /*
-        if(self.woItem.chargeID == "2"){
-            var message:String = ""
-            if(self.saleRepName != "No Rep"){
-                message = "Contact sales rep: \(self.saleRepName) or the office to add tasks to this item."
-            }else{
-                message = "Contact the office to add tasks to this item."
-            }
-            let alertController = UIAlertController(title: "Flat Price Item", message: message, preferredStyle: UIAlertControllerStyle.alert)
-            
-            
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
-                (result : UIAlertAction) -> Void in
-                print("OK")
-            }
-            alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
-            return
-        }
- */
+       
         
         
         let imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Contract Task", _contractItemID: self.contractItem.ID, _contractTaskID: "0", _customerID: self.contract.customer, _images: [])
@@ -458,7 +510,6 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         imageUploadPrepViewController.layoutViews()
         
-        //imageUploadPrepViewController.contractID = self.contract.ID
         imageUploadPrepViewController.groupImages = true
         imageUploadPrepViewController.attachmentDelegate = self
         
@@ -537,7 +588,6 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
                             taskImages.append(image)
                             
                         }
-                        //let task = Task(_ID: ts?[n]["ID"].stringValue, _sort: ts?[n]["sort"].stringValue, _status: ts?[n]["status"].stringValue, _task: ts?[n]["task"].stringValue, _images: taskImages)
                         let task = ContractTask(_ID: ts?[n]["ID"].stringValue, _contractItemID: self.contractItem.ID, _createDate: ts?[n]["createDate"].stringValue, _createdBy: ts?[n]["createdBy"].stringValue, _sort: ts?[n]["sort"].stringValue, _taskDescription: ts?[n]["taskDescription"].stringValue, _images: taskImages)
                         self.contractItem.tasks.append(task)
                         
@@ -554,6 +604,87 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
     
     
     
+    
+    func updateLead(_lead: Lead, _newStatusValue:String){
+        print("update Lead")
+        editsMade = true
+        self.lead = _lead
+        
+        
+        if self.lead?.statusId! == "3"{
+            self.hideLeadTaskBtn()
+        }
+        
+        
+        getLead()
+        
+    }
+    
+    
+    func getLead() {
+        print(" GetLead  Lead Id \(self.contract.lead!.ID)")
+        
+        //get updated contractItem tasks
+        self.getTasks()
+        
+        
+        // Show Loading Indicator
+        //indicator = SDevIndicator.generate(self.view)!
+        //reset task array
+        self.contract.lead!.tasksArray = []
+        let parameters:[String:String]
+        parameters = ["leadID": self.contract.lead!.ID]
+        print("parameters = \(parameters)")
+        
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leadTasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("lead response = \(response)")
+            }
+            .responseJSON(){
+                response in
+                if let json = response.result.value {
+                    print("JSON: \(json)")
+                    self.json = JSON(json)
+                    self.parseJSON()
+                }
+                print(" dismissIndicator")
+                //self.indicator.dismissIndicator()
+        }
+    }
+    
+    
+    func parseJSON(){
+        //tasks
+        let taskCount = self.json["leadTasks"].count
+        for n in 0 ..< taskCount {
+            var taskImages:[Image] = []
+            
+            let imageCount = Int((self.json["leadTasks"][n]["images"].count))
+            print("imageCount: \(imageCount)")
+            for p in 0 ..< imageCount {
+                let fileName:String = (self.json["leadTasks"][n]["images"][p]["fileName"].stringValue)
+                let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
+                let mediumPath:String = "\(self.layoutVars.mediumBase)\(fileName)"
+                let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
+                print("rawPath = \(rawPath)")
+                
+                let image = Image(_id: self.json["leadTasks"][n]["images"][p]["ID"].stringValue,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: self.json["leadTasks"][n]["images"][p]["name"].stringValue,_width: self.json["leadTasks"][n]["images"][p]["width"].stringValue,_height: self.json["leadTasks"][n]["images"][p]["height"].stringValue,_description: self.json["leadTasks"][n]["images"][p]["description"].stringValue,_dateAdded: self.json["leadTasks"][n]["images"][p]["dateAdded"].stringValue,_createdBy: self.json["leadTasks"][n]["images"][p]["createdByName"].stringValue,_type: self.json["leadTasks"][n]["images"][p]["type"].stringValue)
+                image.customer = (self.json["leadTasks"][n]["images"][p]["customer"].stringValue)
+                image.tags = (self.json["leadTasks"][n]["images"][p]["tags"].stringValue)
+                print("appending image")
+                taskImages.append(image)
+            }
+            let task = Task(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue, _images:taskImages)
+            self.lead!.tasksArray.append(task)
+        }
+        
+    }
+    
+    
+    
+
+    
     @objc func goBack(){
         _ = navigationController?.popViewController(animated: true)
         if contractDelegate != nil && self.editsMade == true{
@@ -561,6 +692,8 @@ class ContractItemViewController: ViewControllerWithMenu, UITableViewDelegate, U
         }
         
     }
+    
+    
     
     
     override func didReceiveMemoryWarning() {

@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Nuke
+//import Nuke
 
 
 protocol UpdateEquipmentImageDelegate{
@@ -270,15 +270,17 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
             activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
             activityView.center = CGPoint(x: self.equipmentImage.frame.size.width / 2, y: self.equipmentImage.frame.size.height / 2)
             equipmentImage.addSubview(activityView)
-            activityView.startAnimating()
+            //activityView.startAnimating()
             
             //let imgURL:URL = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.equipment.pic!)!
-        
+        /*
             let imgURL = URL(string: equipment.image.thumbPath!)!
         
             print("imgURL = \(imgURL)")
             
-            
+            Nuke.loadImage(with: imgURL, into: self.equipmentImage!)
+        */
+        /*
             Nuke.loadImage(with: imgURL, into: self.equipmentImage!){
                 print("nuke loadImage")
                 self.equipmentImage?.handle(response: $0, isFromMemoryCache: $1)
@@ -286,7 +288,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
                 //self.image = Image(_path: self.equipment.pic!)
                 //self.image = equipment.image
             }
-            
+            */
         
         
         
@@ -721,7 +723,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         print("Edit Image")
         
         if equipment.ID == "0"{
-            simpleAlert(_vc: self, _title: "Save Equipment First", _message: "You must save the new equipment before adding an image.")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Save Equipment First", _message: "You must save the new equipment before adding an image.")
         }else{
             
             //if equipment.pic == ""{
@@ -1274,62 +1276,62 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         //type check
         if(equipment.type == ""){
             print("select a type")
-            simpleAlert(_vc: self, _title: "Incomplete Equipment", _message: "Select a Type")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Equipment", _message: "Select a Type")
             return false
         }
         
         //crew check
         if(equipment.crew == ""){
             print("select a crew")
-            simpleAlert(_vc: self, _title: "Incomplete Equipment", _message: "Select a Crew")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Equipment", _message: "Select a Crew")
             return false
         }
         //make check
         if(equipment.make == ""){
             print("select a make")
-            simpleAlert(_vc: self, _title: "Incomplete Equipment", _message: "Provide a Make (Brand)")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Equipment", _message: "Provide a Make (Brand)")
             return false
         }
         //model check
         if(equipment.model == ""){
             print("select a model")
-            simpleAlert(_vc: self, _title: "Incomplete Equipment", _message: "Provide a Model")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Equipment", _message: "Provide a Model")
             return false
         }
         //name check
         if(equipment.name == ""){
             print("select a name")
-            simpleAlert(_vc: self, _title: "Incomplete Equipment", _message: "Provide a Name")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Equipment", _message: "Provide a Name")
             return false
         }
         //serial check
         if(equipment.serial == ""){
             print("select a serial")
-            simpleAlert(_vc: self, _title: "Incomplete Equipment", _message: "Provide a Serial #")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Equipment", _message: "Provide a Serial #")
             return false
         }
         //fuel check
         if(equipment.fuelType == ""){
             print("select a fuel type")
-            simpleAlert(_vc: self, _title: "Incomplete Equipment", _message: "Select a Fuel Type")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Equipment", _message: "Select a Fuel Type")
             return false
         }
         //engine check
         if(equipment.engineType == ""){
             print("select an engine type")
-            simpleAlert(_vc: self, _title: "Incomplete Equipment", _message: "Select an Engine Type")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Equipment", _message: "Select an Engine Type")
             return false
         }
         //dealer check
         if(equipment.dealer == ""){
             print("select a dealer")
-            simpleAlert(_vc: self, _title: "Incomplete Equipment", _message: "Select a Dealer")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Equipment", _message: "Select a Dealer")
             return false
         }
         //date check
         if(equipment.purchaseDate == ""){
             print("select a purchased date")
-            simpleAlert(_vc: self, _title: "Incomplete Equipment", _message: "Select a Purchase Date")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Equipment", _message: "Select a Purchase Date")
             return false
         }
         
@@ -1374,7 +1376,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
                     self.json = JSON(json)
                     
                     if self.json["errorArray"][0]["error"].stringValue.count > 0{
-                        simpleAlert(_vc: self, _title: "Error with Save", _message: self.json["errorArray"][0]["error"].stringValue)
+                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Error with Save", _message: self.json["errorArray"][0]["error"].stringValue)
                         self.indicator.dismissIndicator()
                         return
                     }
@@ -1413,7 +1415,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
                         
                         alertController.addAction(cancelAction)
                         alertController.addAction(okAction)
-                        self.present(alertController, animated: true, completion: nil)
+                        self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
                     }else{
                         
                         
@@ -1458,7 +1460,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             _ = navigationController?.popViewController(animated: true)
         }
@@ -1494,9 +1496,13 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
        // print("imgURL = \(imgURL)")
         
         
+        
+        //Nuke.loadImage(with: imgURL, into: self.equipmentImage!)
+        
+        /*
         Nuke.loadImage(with: imgURL, into: self.equipmentImage!){
             print("nuke loadImage")
-            self.equipmentImage?.handle(response: $0, isFromMemoryCache: $1)
+            //self.equipmentImage?.handle(response: $0, isFromMemoryCache: $1)
             self.activityView.stopAnimating()
             
             //self.image = Image(_path: self.equipment.pic!)
@@ -1516,7 +1522,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
             }
             
         }
-        
+        */
         
         
     }

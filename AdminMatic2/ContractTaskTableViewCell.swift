@@ -1,4 +1,12 @@
 //
+//  ContractTaskTableViewCell.swift
+//  AdminMatic2
+//
+//  Created by Nick on 8/20/18.
+//  Copyright © 2018 Nick. All rights reserved.
+//
+
+//
 //  TaskTableViewCell.swift
 //  AdminMatic2
 //
@@ -8,20 +16,21 @@
 
 import Foundation
 import UIKit
+//import AlamofireImage
 //import Nuke
 
-class TaskTableViewCell: UITableViewCell {
+class ContractTaskTableViewCell: UITableViewCell {
     
-    var task:Task!
+    var task:ContractTask!
     var thumbView:UIImageView = UIImageView()
     var activityView:UIActivityIndicatorView!
     var taskLbl: UILabel! = UILabel()
     var imageQtyLbl: Label! = Label()
     
-    var statusIcon: UIImageView!
+    //var statusIcon: UIImageView!
     
     var addTasksLbl:Label = Label()
-
+    
     var layoutVars:LayoutVars = LayoutVars()
     
     
@@ -37,7 +46,7 @@ class TaskTableViewCell: UITableViewCell {
     
     func layoutViews(){
         
-         self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         self.selectionStyle = .none
         
@@ -59,19 +68,20 @@ class TaskTableViewCell: UITableViewCell {
         thumbView.addSubview(activityView)
         
         
-        
+        /*
         statusIcon = UIImageView()
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
         contentView.addSubview(statusIcon)
+        */
         
         self.separatorInset = UIEdgeInsets.zero
         self.layoutMargins = UIEdgeInsets.zero
         self.preservesSuperviewLayoutMargins = false
         
         
-        let viewsDictionary = ["thumbs":self.thumbView,"task":taskLbl,"status":statusIcon, "imageQty":imageQtyLbl] as [String:AnyObject]
+        let viewsDictionary = ["thumbs":self.thumbView,"task":taskLbl, "imageQty":imageQtyLbl] as [String:AnyObject]
         
         let sizeVals = ["fullWidth": layoutVars.fullWidth - 90] as [String:Any]
         
@@ -80,28 +90,31 @@ class TaskTableViewCell: UITableViewCell {
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[task(>=20)]-[imageQty(20)]-|", options: [], metrics: nil, views: viewsDictionary))
         
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[status(40)]", options: [], metrics: nil, views: viewsDictionary))
+        //contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[status(40)]", options: [], metrics: nil, views: viewsDictionary))
         
-       // contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[note(20)]-[imageQty(20)]", options: [], metrics: nil, views: viewsDictionary))
+        // contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[note(20)]-[imageQty(20)]", options: [], metrics: nil, views: viewsDictionary))
         
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[thumbs(50)]-5-[task]-[status(40)]-15-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[thumbs(50)]-5-[imageQty]-[status(40)]-15-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[thumbs(50)]-5-[task]-15-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[thumbs(50)]-5-[imageQty]-15-|", options: [], metrics: sizeVals, views: viewsDictionary))
     }
     
     
     func layoutAddBtn(){
         self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
-       // self.selectedImageView.image = nil
+        // self.selectedImageView.image = nil
         
-        self.addTasksLbl.text = "Add New Task"
+        self.addTasksLbl.text = "Add Task"
         self.addTasksLbl.textColor = UIColor.white
         self.addTasksLbl.backgroundColor = UIColor(hex: 0x005100, op: 1.0)
         self.addTasksLbl.layer.cornerRadius = 4.0
         self.addTasksLbl.clipsToBounds = true
         self.addTasksLbl.textAlignment = .center
+        
         self.addTasksLbl.translatesAutoresizingMaskIntoConstraints = false
         self.addTasksLbl.numberOfLines = 0;
+        
+        
         contentView.addSubview(self.addTasksLbl)
         
         
@@ -127,24 +140,38 @@ class TaskTableViewCell: UITableViewCell {
         }else{
             
             let url = URL(string: _url!)
-            /*
-            Nuke.loadImage(with: url!, into: self.thumbView){ 
+            
+            //cell.activityIndicator.startAnimating()
+            
+            //let cellImageView = cell.imageView
+            
+           /*
+            Nuke.loadImage(with: url!, into: self.thumbView){
+                //self.thumbView.handle(response: <#T##Result<Image>#>, isFromMemoryCache: <#T##Bool#>)
+                }
+                */
+                
+            //Nuke.loadImage(with: url!, into: self.thumbView) {
+                //self.thumbView.handle(response: $0, isFromMemoryCache: $1)
+                
+                //cell.activityIndicator.stopAnimating()
+            //}
+                
+                
+             /*
+                self.activityView.startAnimating()
+            Nuke.loadImage(with: url!, into: self.thumbView){
                 //print("nuke loadImage")
-                self.thumbView.handle(response: $0, isFromMemoryCache: $1)
-                self.activityView.stopAnimating()
+                //self.thumbView.handle(response: $, isFromMemoryCache: <#T##Bool#>)
+                //self.thumbView.handle(response: $0, isFromMemoryCache: $1)
+                //self.thumbView.handle(response: , isFromMemoryCache: <#T##Bool#>)
+                //self.activityView.stopAnimating
                 
             }
  */
             
             
             
-           /* DispatchQueue.global().async {
-                let data = try? Data(contentsOf: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
-                DispatchQueue.main.async {
-                    self.thumbView.image = UIImage(data: data!)
-                }
-            }
- */
             
         }
     }
@@ -153,6 +180,7 @@ class TaskTableViewCell: UITableViewCell {
         self.thumbView.image = layoutVars.defaultImage
     }
     
+    /*
     
     func setStatus(status: String) {
         switch (status) {
@@ -182,5 +210,8 @@ class TaskTableViewCell: UITableViewCell {
             break;
         }
     }
+ */
+    
+    
     
 }

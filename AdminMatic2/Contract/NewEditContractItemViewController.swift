@@ -57,6 +57,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     var prices = [String]()
     var units = [String]()
     var taxes = [String]()
+    var subcontractors = [String]()
     
     var selectedID:String = ""
     var selectedName:String = ""
@@ -65,9 +66,10 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     var selectedPrice:String = ""
     var selectedUnit:String = ""
     var selectedTax:String = ""
+    var selectedSubcontractor:String = ""
     
     var originalID:String = ""
-    var sort:String = ""
+    //var sort:String = ""
     
     
     var editID:String = ""
@@ -88,7 +90,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     }
     
     //init for edit
-    init(_contract:Contract,_itemID:String,_itemName:String,_itemType:String,_est:String,_price:String,_originalID:String,_sort:String){
+    init(_contract:Contract,_itemID:String,_itemName:String,_itemType:String,_est:String,_price:String,_originalID:String){
         super.init(nibName:nil,bundle:nil)
         
         print("edit Item init")
@@ -102,7 +104,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
          self.selectedPrice = _price
         
         self.originalID = _originalID
-        self.sort = _sort
+        //self.sort = _sort
         
         editMode = true
         
@@ -186,6 +188,9 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
                         }
                         if let tax = result["tax"] as? String {
                             self.taxes.append(tax)
+                        }
+                        if let subcontractor = result["subcontractor"] as? String {
+                            self.subcontractors.append(subcontractor)
                         }
                     }
                 }
@@ -403,12 +408,14 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             cell.price = self.prices[i]
             cell.unit = self.units[i]
             cell.tax = self.taxes[i]
+            cell.subcontractor = self.subcontractors[i]
         } else {
             cell.id = ""
             cell.type = ""
             cell.price = ""
             cell.unit = ""
             cell.tax = ""
+            cell.subcontractor = ""
         }
         return cell
         
@@ -428,9 +435,13 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         selectedPrice = currentCell.price
         selectedUnit = currentCell.unit
         selectedTax = currentCell.tax
+        selectedSubcontractor = currentCell.subcontractor
         
         self.priceTxtField.text = currentCell.price
         print("select item")
+        
+        print("select type = \(selectedType)")
+        
         
         tableView.deselectRow(at: indexPath, animated: true)
         itemSearchBar.text = currentCell.name
@@ -507,7 +518,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
                 //self.popView()
             }
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
             return
         }
         
@@ -519,7 +530,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
                 //self.popView()
             }
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
             return
         }
         
@@ -567,7 +578,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             print("contractItemID = \(selectedID)")
             print("contractID = \(contract.ID!)")
             print("ID = \(selectedID)")
-            print("sort = \(itemCount)")
+           // print("sort = \(itemCount)")
             print("type = \(selectedType)")
             print("chargeType = \(self.contract.chargeType!)")
             print("qty = \(estQtyString)")
@@ -575,14 +586,15 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             print("total = \(totalString)")
             print("name = \(selectedName)")
             print("tax = \(selectedTax)")
+            print("subcontractor = \(selectedSubcontractor)")
             
-            parameters = ["contractItemID": "0","contractID":self.contract.ID!,"itemID": selectedID,"sort":"\(self.itemCount!)", "type":self.selectedType, "chargeType": self.contract.chargeType!, "qty": estQtyString, "price": priceString, "total":totalString, "name":self.selectedName,"taxCode":selectedTax] as! [String : String]
+            parameters = ["contractItemID": "0","contractID":self.contract.ID!,"itemID": selectedID, "type":self.selectedType, "chargeType": self.contract.chargeType!, "qty": estQtyString, "price": priceString, "total":totalString, "name":self.selectedName,"taxCode":selectedTax,"subcontractor":selectedSubcontractor] as! [String : String]
         }else{
             
             print("contractItemID = \(editID)")
             print("contractID = \(contract.ID!)")
             print("itemID = \(originalID)")
-            print("sort = \(self.sort)")
+            //print("sort = \(self.sort)")
             print("type = \(selectedType)")
             print("chargeType = \(self.contract.chargeType!)")
             print("qty = \(estQtyString)")
@@ -590,8 +602,9 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             print("total = \(totalString)")
             print("name = \(selectedName)")
             print("tax = \(selectedTax)")
+            print("subcontractor = \(selectedSubcontractor)")
             
-            parameters = ["contractItemID": self.editID,"contractID":self.contract.ID!,"itemID": originalID,"sort":"\(self.sort)", "type":self.selectedType, "chargeType": self.contract.chargeType!, "qty": estQtyString, "price": priceString, "total":totalString, "name":self.selectedName,"taxCode":selectedTax] as! [String : String]
+            parameters = ["contractItemID": self.editID,"contractID":self.contract.ID!,"itemID": originalID, "type":self.selectedType, "chargeType": self.contract.chargeType!, "qty": estQtyString, "price": priceString, "total":totalString, "name":self.selectedName,"taxCode":selectedTax,"subcontractor":selectedSubcontractor] as! [String : String]
         }
         
         

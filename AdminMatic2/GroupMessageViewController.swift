@@ -325,7 +325,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
                 print("OK")
             }
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
             
             return
         }else{
@@ -364,7 +364,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
                 print("OK")
             }
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             let title:String!
             var message:String = ""
@@ -394,7 +394,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
             }
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }
     }
     

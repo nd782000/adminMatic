@@ -11,8 +11,9 @@
 import Foundation
 import UIKit
 import Alamofire
+import AlamofireImage
 import SwiftyJSON
-import Nuke
+//import Nuke
 
 
 protocol ImageUploadProgressDelegate {
@@ -90,16 +91,32 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
         self.employeeView.backgroundColor = layoutVars.backgroundColor
         self.employeeView.translatesAutoresizingMaskIntoConstraints = false
         
-               
+        Alamofire.request("https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!).responseImage { response in
+            debugPrint(response)
+            
+            print(response.request)
+            print(response.response)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                
+                self.employeeImageView.image = image
+            }
+        }
         
-        let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!)
+        //let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!)
         
+        
+        //Nuke.loadImage(with: imgUrl!, into: self.employeeImageView)
+        
+        /*
         //Nuke.loadImage(with: imgUrl!, into: self.employeeImageView){ [weak view] in
         Nuke.loadImage(with: imgUrl!, into: self.employeeImageView){ 
             //print("nuke loadImage")
             self.employeeImageView.handle(response: $0, isFromMemoryCache: $1)
         }
-        
+        */
         
         
         employeeImageView.contentMode = .scaleAspectFill
@@ -250,7 +267,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
         alertController.addAction(cancelAction)
         
         
-        self.present(alertController, animated: true, completion: nil)
+        self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         
     }
     

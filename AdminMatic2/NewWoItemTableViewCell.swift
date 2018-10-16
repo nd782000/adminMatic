@@ -21,6 +21,7 @@ class NewWoItemTableViewCell: UITableViewCell {
     var price: String!
     var unit: String!
     var tax: String!
+    var subcontractor: String!
     var nameLbl: Label! = Label()
     var unitLbl: DetailLabel! = DetailLabel()
     var layoutVars:LayoutVars = LayoutVars()

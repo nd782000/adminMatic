@@ -10,7 +10,7 @@
 
 import Foundation
 import UIKit
-import Nuke
+//import Nuke
 
 class LeadTaskTableViewCell: UITableViewCell {
     
@@ -209,13 +209,14 @@ class LeadTaskTableViewCell: UITableViewCell {
             
             let url = URL(string: _url!)
             
+            /*
             Nuke.loadImage(with: url!, into: self.thumbView){ 
                 //print("nuke loadImage")
                 self.thumbView.handle(response: $0, isFromMemoryCache: $1)
                 self.activityView.stopAnimating()
                 
             }
-            
+            */
            
             
         }

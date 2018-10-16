@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Nuke
+//import Nuke
 
 protocol EditEquipmentDelegate{
     func updateEquipment(_equipment:Equipment)
@@ -144,6 +144,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         equipmentImage.addSubview(activityView)
         activityView.startAnimating()
         
+        /*
         let imgURL:URL = URL(string: self.equipment.image.thumbPath!)!
     
         print("imgURL = \(imgURL)")
@@ -155,6 +156,8 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
             
             self.imageFullViewController = ImageFullViewController(_image: self.equipment.image)
         }
+        */
+        
         
         self.equipmentImage.layer.cornerRadius = 5.0
         self.equipmentImage.layer.borderWidth = 2

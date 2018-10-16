@@ -157,7 +157,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         let workOrderCount = Int((self.itemJSON["item"]["workOrders"].count))
         print("workOrderCount: \(workOrderCount)")
         for n in 0 ..< workOrderCount {
-            let workOrder = WorkOrder(_ID: self.itemJSON["item"]["workOrders"][n]["ID"].stringValue, _statusID: self.itemJSON["item"]["workOrders"][n]["status"].stringValue, _date: "", _firstItem: self.itemJSON["item"]["workOrders"][n]["title"].stringValue, _statusName: "", _customer: self.itemJSON["item"]["workOrders"][n]["custName"].stringValue, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "")
+            let workOrder = WorkOrder(_ID: self.itemJSON["item"]["workOrders"][n]["ID"].stringValue, _statusID: self.itemJSON["item"]["workOrders"][n]["status"].stringValue, _date: "", _firstItem: self.itemJSON["item"]["workOrders"][n]["title"].stringValue, _statusName: "", _customer: self.itemJSON["item"]["workOrders"][n]["custName"].stringValue, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "", _title: self.itemJSON["item"]["workOrders"][n]["title"].stringValue, _customerName: self.itemJSON["item"]["workOrders"][n]["customerName"].stringValue)
            workOrder.itemRemQty = self.itemJSON["item"]["workOrders"][n]["remQty"].stringValue
             itemWorkOrderArray.append(workOrder)
         }
@@ -453,7 +453,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         }else{
             if(itemVendorArray.count == 0){
                 print("no vendors")
-                simpleAlert(_vc: self, _title: "No Vendors", _message: "We do not have any registered vendors in our system.")
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "No Vendors", _message: "We do not have any registered vendors in our system.")
                 segmentedControl.isEnabled = false
                 segmentedControl.selectedSegmentIndex = 2
                 locateView.alpha = 0.0

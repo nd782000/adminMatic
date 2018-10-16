@@ -387,8 +387,9 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             self.fullScheduleArray = []
             for i in 0 ..< workOrderCount {
                 
-                let workOrder = WorkOrder(_ID: self.fullScheduleJSON["workOrder"][i]["ID"].stringValue, _statusID: self.fullScheduleJSON["workOrder"][i]["statusID"].stringValue, _date: self.fullScheduleJSON["workOrder"][i]["date"].stringValue, _firstItem: self.fullScheduleJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.fullScheduleJSON["workOrder"][i]["statusName"].stringValue, _customer: self.fullScheduleJSON["workOrder"][i]["customer"].stringValue, _type: self.fullScheduleJSON["workOrder"][i]["type"].stringValue, _progress: self.fullScheduleJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.fullScheduleJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.fullScheduleJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.fullScheduleJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.fullScheduleJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.fullScheduleJSON["workOrder"][i]["charge"].stringValue)
+                let workOrder = WorkOrder(_ID: self.fullScheduleJSON["workOrder"][i]["ID"].stringValue, _statusID: self.fullScheduleJSON["workOrder"][i]["statusID"].stringValue, _date: self.fullScheduleJSON["workOrder"][i]["date"].stringValue, _firstItem: self.fullScheduleJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.fullScheduleJSON["workOrder"][i]["statusName"].stringValue, _customer: self.fullScheduleJSON["workOrder"][i]["customer"].stringValue, _type: self.fullScheduleJSON["workOrder"][i]["type"].stringValue, _progress: self.fullScheduleJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.fullScheduleJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.fullScheduleJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.fullScheduleJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.fullScheduleJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.fullScheduleJSON["workOrder"][i]["charge"].stringValue, _title: self.fullScheduleJSON["workOrder"][i]["title"].stringValue, _customerName: self.fullScheduleJSON["workOrder"][i]["customerName"].stringValue)
                 
+                //workOrder.customerName
                 if(plowSort == "1"){
                     workOrder.plowPriority = self.fullScheduleJSON["workOrder"][i]["plowPriority"].stringValue
                     workOrder.plowDepth = self.fullScheduleJSON["workOrder"][i]["plowDepth"].stringValue
@@ -405,7 +406,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             for i in 0 ..< workOrderCount {
                 ////print("ID: " + self.scheduleJSON["workOrder"][i]["ID"].stringValue)
                 
-                let workOrder = WorkOrder(_ID: self.personalScheduleJSON["workOrder"][i]["ID"].stringValue, _statusID: self.personalScheduleJSON["workOrder"][i]["statusID"].stringValue, _date: self.personalScheduleJSON["workOrder"][i]["date"].stringValue, _firstItem: self.personalScheduleJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.personalScheduleJSON["workOrder"][i]["statusName"].stringValue, _customer: self.personalScheduleJSON["workOrder"][i]["customer"].stringValue, _type: self.personalScheduleJSON["workOrder"][i]["type"].stringValue, _progress: self.personalScheduleJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.personalScheduleJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.personalScheduleJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.personalScheduleJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.personalScheduleJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.personalScheduleJSON["workOrder"][i]["charge"].stringValue)
+                let workOrder = WorkOrder(_ID: self.personalScheduleJSON["workOrder"][i]["ID"].stringValue, _statusID: self.personalScheduleJSON["workOrder"][i]["statusID"].stringValue, _date: self.personalScheduleJSON["workOrder"][i]["date"].stringValue, _firstItem: self.personalScheduleJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.personalScheduleJSON["workOrder"][i]["statusName"].stringValue, _customer: self.personalScheduleJSON["workOrder"][i]["customer"].stringValue, _type: self.personalScheduleJSON["workOrder"][i]["type"].stringValue, _progress: self.personalScheduleJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.personalScheduleJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.personalScheduleJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.personalScheduleJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.personalScheduleJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.personalScheduleJSON["workOrder"][i]["charge"].stringValue, _title: self.personalScheduleJSON["workOrder"][i]["title"].stringValue, _customerName: self.personalScheduleJSON["workOrder"][i]["customerName"].stringValue)
                 
                 if(plowSort == "1"){
                     workOrder.plowPriority = self.personalScheduleJSON["workOrder"][i]["plowPriority"].stringValue
@@ -480,7 +481,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             //print("OK")
         }
         alertController.addAction(okAction)
-        self.present(alertController, animated: true, completion: nil)
+        self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         
         
         
@@ -554,7 +555,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             fullHistoryArray = []
             for i in 0 ..< workOrderCount {
                 // //print("ID: " + self.historyJSON["workOrder"][i]["ID"].stringValue)
-                let workOrder = WorkOrder(_ID: self.fullHistoryJSON["workOrder"][i]["ID"].stringValue, _statusID: self.fullHistoryJSON["workOrder"][i]["statusID"].stringValue, _date: self.fullHistoryJSON["workOrder"][i]["date"].stringValue, _firstItem: self.fullHistoryJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.fullHistoryJSON["workOrder"][i]["statusName"].stringValue, _customer: self.fullHistoryJSON["workOrder"][i]["customer"].stringValue, _type: self.fullHistoryJSON["workOrder"][i]["type"].stringValue, _progress: self.fullHistoryJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.fullHistoryJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.fullHistoryJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.fullHistoryJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.fullHistoryJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.fullHistoryJSON["workOrder"][i]["charge"].stringValue)
+                let workOrder = WorkOrder(_ID: self.fullHistoryJSON["workOrder"][i]["ID"].stringValue, _statusID: self.fullHistoryJSON["workOrder"][i]["statusID"].stringValue, _date: self.fullHistoryJSON["workOrder"][i]["date"].stringValue, _firstItem: self.fullHistoryJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.fullHistoryJSON["workOrder"][i]["statusName"].stringValue, _customer: self.fullHistoryJSON["workOrder"][i]["customer"].stringValue, _type: self.fullHistoryJSON["workOrder"][i]["type"].stringValue, _progress: self.fullHistoryJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.fullHistoryJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.fullHistoryJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.fullHistoryJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.fullHistoryJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.fullHistoryJSON["workOrder"][i]["charge"].stringValue, _title: self.fullHistoryJSON["workOrder"][i]["title"].stringValue, _customerName: self.fullHistoryJSON["workOrder"][i]["customerName"].stringValue)
                 
                 if(plowSort == "1"){
                     workOrder.plowPriority = self.fullHistoryJSON["workOrder"][i]["plowPriority"].stringValue
@@ -571,7 +572,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             //print("workOrderCount: \(workOrderCount)")
             personalHistoryArray = []
             for i in 0 ..< workOrderCount {
-                let workOrder = WorkOrder(_ID: self.personalHistoryJSON["workOrder"][i]["ID"].stringValue, _statusID: self.personalHistoryJSON["workOrder"][i]["statusID"].stringValue, _date: self.personalHistoryJSON["workOrder"][i]["date"].stringValue, _firstItem: self.personalHistoryJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.personalHistoryJSON["workOrder"][i]["statusName"].stringValue, _customer: self.personalHistoryJSON["workOrder"][i]["customer"].stringValue, _type: self.personalHistoryJSON["workOrder"][i]["type"].stringValue, _progress: self.personalHistoryJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.personalHistoryJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.personalHistoryJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.personalHistoryJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.personalHistoryJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.personalHistoryJSON["workOrder"][i]["charge"].stringValue)
+                let workOrder = WorkOrder(_ID: self.personalHistoryJSON["workOrder"][i]["ID"].stringValue, _statusID: self.personalHistoryJSON["workOrder"][i]["statusID"].stringValue, _date: self.personalHistoryJSON["workOrder"][i]["date"].stringValue, _firstItem: self.personalHistoryJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.personalHistoryJSON["workOrder"][i]["statusName"].stringValue, _customer: self.personalHistoryJSON["workOrder"][i]["customer"].stringValue, _type: self.personalHistoryJSON["workOrder"][i]["type"].stringValue, _progress: self.personalHistoryJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.personalHistoryJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.personalHistoryJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.personalHistoryJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.personalHistoryJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.personalHistoryJSON["workOrder"][i]["charge"].stringValue, _title: self.personalHistoryJSON["workOrder"][i]["title"].stringValue, _customerName: self.personalHistoryJSON["workOrder"][i]["customerName"].stringValue)
                 
                 if(plowSort == "1"){
                     workOrder.plowPriority = self.personalHistoryJSON["workOrder"][i]["plowPriority"].stringValue
@@ -731,8 +732,8 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 
                 let searchString = self.searchController.searchBar.text!.lowercased()
                 
-                let baseString:NSString = cell.workOrder.title as NSString
-                let highlightedText = NSMutableAttributedString(string: cell.workOrder.title!)
+                let baseString:NSString = cell.workOrder.customerTitleAndID as NSString
+                let highlightedText = NSMutableAttributedString(string: cell.workOrder.customerTitleAndID)
                 var error: NSError?
                 let regex: NSRegularExpression?
                 do {
@@ -783,7 +784,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     
                     cell.priceLbl.text = cell.workOrder.totalPrice!
                 }
-                cell.customerLbl.text = cell.workOrder.title
+                cell.customerLbl.text = cell.workOrder.customerTitleAndID
                 cell.setStatus(status: cell.workOrder.statusId)
                 cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
                 
@@ -810,8 +811,8 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 
                 let searchString = self.searchController.searchBar.text!.lowercased()
                 //text highlighting
-                let baseString:NSString = cell.workOrder.title as NSString
-                let highlightedText = NSMutableAttributedString(string: cell.workOrder.title!)
+                let baseString:NSString = cell.workOrder.customerTitleAndID as NSString
+                let highlightedText = NSMutableAttributedString(string: cell.workOrder.customerTitleAndID)
                 var error: NSError?
                 let regex: NSRegularExpression?
                 do {
@@ -859,7 +860,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 }else{
                     cell.layoutViews(_scheduleMode: "SCHEDULE")
                 }
-                cell.customerLbl.text = cell.workOrder.title
+                cell.customerLbl.text = cell.workOrder.customerTitleAndID
                 cell.setStatus(status: cell.workOrder.statusId)
                 
                 
@@ -947,12 +948,12 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 
                 
                 self.workOrdersSearchResults = self.fullScheduleArray.filter({( aWorkOrder: WorkOrder) -> Bool in
-                    return aWorkOrder.title!.lowercased().range(of:self.searchController.searchBar.text!.lowercased(), options:.regularExpression) != nil
+                    return aWorkOrder.customerTitleAndID.lowercased().range(of:self.searchController.searchBar.text!.lowercased(), options:.regularExpression) != nil
                 })
                 
             }else{
                 self.workOrdersSearchResults = self.personalScheduleArray.filter({( aWorkOrder: WorkOrder) -> Bool in
-                    return aWorkOrder.title!.lowercased().range(of:self.searchController.searchBar.text!.lowercased(), options:.regularExpression) != nil
+                    return aWorkOrder.customerTitleAndID.lowercased().range(of:self.searchController.searchBar.text!.lowercased(), options:.regularExpression) != nil
                 })
                 
             }
@@ -961,11 +962,11 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             if(self.personalMode == false){
                 //print("------FULL-------")
                 self.workOrdersSearchResults = self.fullHistoryArray.filter({( aWorkOrder: WorkOrder) -> Bool in
-                    return aWorkOrder.title!.lowercased().range(of:self.searchController.searchBar.text!.lowercased(), options:.regularExpression) != nil
+                    return aWorkOrder.customerTitleAndID.lowercased().range(of:self.searchController.searchBar.text!.lowercased(), options:.regularExpression) != nil
                 })
             }else{
                 self.workOrdersSearchResults = self.personalHistoryArray.filter({( aWorkOrder: WorkOrder) -> Bool in
-                    return aWorkOrder.title!.lowercased().range(of:self.searchController.searchBar.text!.lowercased(), options:.regularExpression) != nil
+                    return aWorkOrder.customerTitleAndID.lowercased().range(of:self.searchController.searchBar.text!.lowercased(), options:.regularExpression) != nil
                 })
                 
             }

@@ -158,7 +158,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                             print("result = \(response.result)")   // result of response serialization
                             
                             if("\(response.result)" == "FAILURE") {
-                                playErrorSound()
+                                self.layoutVars.playErrorSound()
                                self.progressLbl.text = "Failed"
                                 self.reloadBtn.isHidden = false
                                 self.progressLbl.textColor = UIColor.red
@@ -166,7 +166,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                             }
                             
                             if let result = response.result.value {
-                                playSaveSound()
+                                self.layoutVars.playSaveSound()
                                 let json = result as! NSDictionary
                                 let thumbBase = JSON(json)["thumbBase"].stringValue
                                 let mediumBase = JSON(json)["mediumBase"].stringValue

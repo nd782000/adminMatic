@@ -8,7 +8,7 @@
 
 import Foundation
 import UIKit
-import Nuke
+//import Nuke
 
 
 
@@ -61,12 +61,17 @@ class EmployeeTableViewCell: UITableViewCell {
     }
     
     func setImageUrl(_url:String){
+        
+        /*
         let imgURL:URL = URL(string: _url)!
         Nuke.loadImage(with: imgURL, into: self.employeeImageView){ 
             //print("nuke loadImage")
             self.employeeImageView.handle(response: $0, isFromMemoryCache: $1)
             self.activityView.stopAnimating()
         }
+ */
+        
+        
     }
     
     func setPhone(){

@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Nuke
+
 
 
 class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UIPickerViewDelegate {
@@ -935,42 +935,42 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         //name check
         if(equipmentService.name == ""){
             print("give a name")
-            simpleAlert(_vc: self, _title: "Incomplete Service", _message: "Give a Name")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Service", _message: "Give a Name")
             return false
         }
         
         //type check
         if(equipmentService.typeName == ""){
             print("select a type")
-            simpleAlert(_vc: self, _title: "Incomplete Service", _message: "Select a Type")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Service", _message: "Select a Type")
             return false
         }
         
         //frequency check
         if(equipmentService.type != "0" && equipmentService.frequency == "0"){
             print("give a frequency")
-            simpleAlert(_vc: self, _title: "Incomplete Service", _message: "Give a Frequency")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Service", _message: "Give a Frequency")
             return false
         }
         
         //current check
         if(equipmentService.type != "0" && equipmentService.currentValue == "0" && equipmentService.type != "1"){
             print("give a current value")
-            simpleAlert(_vc: self, _title: "Incomplete Service", _message: "Give a Current Value")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Service", _message: "Give a Current Value")
             return false
         }
         
         //next check
         if(equipmentService.type != "0" && equipmentService.nextValue == "0"){
             print("give a next value")
-            simpleAlert(_vc: self, _title: "Incomplete Service", _message: "Give a Next Value")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Service", _message: "Give a Next Value")
             return false
         }
         
         //instructions check
         if(equipmentService.instruction == ""){
             print("give some instructions")
-            simpleAlert(_vc: self, _title: "Incomplete Service", _message: "Give some Instructions")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Service", _message: "Give some Instructions")
             return false
         }
         
@@ -1013,13 +1013,13 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
                     self.json = JSON(json)
                     
                     if self.json["errorArray"][0]["error"].stringValue.count > 0{
-                        playErrorSound()
-                        simpleAlert(_vc: self, _title: "Error with Save", _message: self.json["errorArray"][0]["error"].stringValue)
+                        self.layoutVars.playErrorSound()
+                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Error with Save", _message: self.json["errorArray"][0]["error"].stringValue)
                         self.indicator.dismissIndicator()
                         return
                     }
                     
-                    playSaveSound()
+                    self.layoutVars.playSaveSound()
                     let newEquipmentServiceID = self.json["serviceID"].stringValue
                     //let creationDate = self.json["creationDate"].stringValue
                     
@@ -1073,7 +1073,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             
             _ = navigationController?.popViewController(animated: true)

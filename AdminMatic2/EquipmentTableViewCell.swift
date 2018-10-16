@@ -9,7 +9,7 @@
 
 import Foundation
 import UIKit
-import Nuke
+//import Nuke
 
 class EquipmentTableViewCell: UITableViewCell {
     var layoutVars:LayoutVars = LayoutVars()
@@ -132,11 +132,13 @@ class EquipmentTableViewCell: UITableViewCell {
     
     func setImageUrl(_url:String){
         let imgURL:URL = URL(string: _url)!
+        /*
         Nuke.loadImage(with: imgURL, into: self.equipmentImageView){
             //print("nuke loadImage")
             self.equipmentImageView.handle(response: $0, isFromMemoryCache: $1)
             self.activityView.stopAnimating()
         }
+ */
     }
     
     

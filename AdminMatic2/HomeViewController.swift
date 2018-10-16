@@ -9,7 +9,10 @@
 import Foundation
 import UIKit
 
-import Nuke
+//import Nuke
+
+import  Alamofire
+import  AlamofireImage
 
 
 import UIKit
@@ -94,6 +97,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             //image
             self.employeeImage = UIImageView()
             
+            /*
             let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!)
             
             print("imgURL = \(String(describing: imgUrl))")
@@ -105,6 +109,23 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                 //self.activityView.stopAnimating()
                 
             }
+            */
+            
+            
+            
+            Alamofire.request("https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!).responseImage { response in
+                debugPrint(response)
+                
+                print(response.request)
+                print(response.response)
+                debugPrint(response.result)
+                
+                if let image = response.result.value {
+                    print("image downloaded: \(image)")
+                    self.employeeImage.image = image
+                }
+            }
+            
             
         
             employeeImage.contentMode = .scaleAspectFill

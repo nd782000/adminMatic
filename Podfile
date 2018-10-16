@@ -1,17 +1,16 @@
 source 'https://github.com/CocoaPods/Specs.git'
-platform :ios, '11.1'
+platform :ios, '12.0'
 use_frameworks!
 
 target ‘AdminMatic2’ do 
 	pod 'Alamofire', '~> 4.6'
-    pod 'SwiftyJSON', :git => 'https://github.com/acegreen/SwiftyJSON.git', :branch => 'swift3'
-    pod 'ObjectMapper', '~> 3.1.0'
-    pod 'Nuke', '~> 5.2'
+    pod 'SwiftyJSON', '~> 4.0'
+    pod 'ObjectMapper'
+    pod 'AlamofireImage', '~> 3.4'
     pod 'DKImagePickerController'
-    pod 'AKImageCropperView', :git => 'https://github.com/artemkrachulov/AKImageCropperView.git'
-    
+    pod 'AKImageCropperView'
+    pod 'SwiftEntryKit', '0.8.2'
     
     
 end
-
 

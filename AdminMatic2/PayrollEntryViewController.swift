@@ -157,7 +157,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     
                     //error handling
                     if self.payrollJSON["errorArray"][0]["error"].stringValue.count > 0{
-                        simpleAlert(_vc: self, _title: "Error", _message: self.payrollJSON["errorArray"][0]["error"].stringValue)
+                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Error", _message: self.payrollJSON["errorArray"][0]["error"].stringValue)
                         self.indicator.dismissIndicator()
                         return
                     }
@@ -544,7 +544,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     startCell?.startTxtField.error()
                     stopCell?.stopTxtField.error()
                     
-                    simpleAlert(_vc: self, _title: "Time Error", _message: "Start time can not be later then stop time.")
+                    self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "Start time can not be later then stop time.")
                     
                     
                     return
@@ -564,7 +564,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                         payroll[row].lunch = "0"
                         breakTime = 0.0
                         
-                        simpleAlert(_vc: self, _title: "Time Error", _message: "Break time can not be equal or greater then total shift time.")
+                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "Break time can not be equal or greater then total shift time.")
                         return
                     }
                 }
@@ -604,7 +604,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     
                     cell?.startTxtField.error()
                     
-                    simpleAlert(_vc: self, _title: "Time Error", _message: "Start time can not be later then  stop time.")
+                    simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "Start time can not be later then  stop time.")
                     
                     
                     return
@@ -623,7 +623,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                         payroll[row - 2].lunch = "0"
                         breakTime = 0.0
                         
-                        simpleAlert(_vc: self, _title: "Time Error", _message: "Break time can not be equal or greater then total shift time.")
+                        simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "Break time can not be equal or greater then total shift time.")
                         
                     }
                 }
@@ -635,7 +635,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
             if start  <=  payroll[row - 2].startTime || start  <=  payroll[row - 2].stopTime{
                 cell?.startTxtField.error()
                 
-                simpleAlert(_vc: self, _title: "Time Error", _message: "Second shift start time can not be before or within first shift.")
+                simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "Second shift start time can not be before or within first shift.")
                 
                 
                 return
@@ -691,7 +691,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                 startCell?.startTxtField.error()
                 stopCell?.stopTxtField.error()
                 
-                simpleAlert(_vc: self, _title: "Time Error", _message: "Stop time can not be before the start time.")
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "Stop time can not be before the start time.")
                 
                 return
             }
@@ -710,7 +710,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     payroll[row - 1].lunch = "0"
                     breakTime = 0.0
                     
-                    simpleAlert(_vc: self, _title: "Time Error", _message: "Break time can not be equal or greater then total shift time.")
+                    self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "Break time can not be equal or greater then total shift time.")
                     return
                 }
             }
@@ -784,7 +784,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     payroll[row - 2].lunch = "0"
                     breakTime = 0.0
                     
-                    simpleAlert(_vc: self, _title: "Time Error", _message: "Break time can not be equal or greater then total shift time.")
+                    self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "Break time can not be equal or greater then total shift time.")
                     return
                 }
             }
@@ -880,7 +880,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     let returnJson = JSON(json)
                     
                     if returnJson["errorArray"][0]["error"].stringValue.count > 0{
-                        simpleAlert(_vc: self, _title: "Error with Save", _message: returnJson["errorArray"][0]["error"].stringValue)
+                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Error with Save", _message: returnJson["errorArray"][0]["error"].stringValue)
                         self.indicator.dismissIndicator()
                         return
                     }

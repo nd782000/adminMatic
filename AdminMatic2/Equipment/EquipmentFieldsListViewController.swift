@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Nuke
+
 
 
 
@@ -353,7 +353,7 @@ class EquipmentFieldsListViewController: ViewControllerWithMenu, UITableViewDele
             
             
             if currentCell.name == "N/A" || currentCell.name == "Other"{
-                simpleAlert(_vc: self, _title: "Unable to Delete", _message: "You can't delete the N/A or Other fields.")
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Unable to Delete", _message: "You can't delete the N/A or Other fields.")
                 return
             }
             
@@ -424,7 +424,7 @@ class EquipmentFieldsListViewController: ViewControllerWithMenu, UITableViewDele
                     
                     
                     if JSON(json)["errorArray"][0]["error"].stringValue.count > 0{
-                        simpleAlert(_vc: self, _title: "Error with Delete", _message: JSON(json)["errorArray"][0]["error"].stringValue)
+                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Error with Delete", _message: JSON(json)["errorArray"][0]["error"].stringValue)
                         self.indicator.dismissIndicator()
                         return
                     }

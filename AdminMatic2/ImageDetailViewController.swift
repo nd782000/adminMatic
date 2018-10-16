@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Nuke
+//import Nuke
 
 
 class ImageDetailViewController: UIViewController, UIDocumentInteractionControllerDelegate{
@@ -277,6 +277,8 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         print("image url = \(image.mediumPath)")
         
+        
+        /*
         Nuke.loadImage(with: imgUrl!, into: imageView){
             self.imageView?.handle(response: $0, isFromMemoryCache: $1)
             self.backgroundImageView.image = self.imageView.image
@@ -286,6 +288,9 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
             
             
         }
+ */
+        
+        
             self.blurredEffectView.frame = self.view.bounds
             self.backgroundImageView.addSubview(self.blurredEffectView)
         

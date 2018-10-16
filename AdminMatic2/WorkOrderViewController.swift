@@ -18,7 +18,7 @@ protocol WoDelegate{
 }
 
 
-class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UITextFieldDelegate, UIGestureRecognizerDelegate, WoDelegate {
+class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UITextFieldDelegate, UIGestureRecognizerDelegate, WoDelegate, StackDelegate, EditLeadDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -42,6 +42,9 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     var workOrderID:String!
     //var customerID:String!
     var customerName:String!
+    
+    var editLeadDelegate:EditLeadDelegate!
+    var stackController:StackController!
     
     var statusIcon:UIImageView = UIImageView()
     
@@ -131,6 +134,9 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     var costView:UIView!
     
     var tableCellID:Int? //used to store the cell ID of cell clicked to update status
+    
+    var leadTasksWaiting:String?
+    
     var performanceDelegate:PerformanceDelegate?
     
    
@@ -250,7 +256,9 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
                     //print(response.response ?? "") // URL response
                     //print(response.data ?? "")     // server data
                     print(response.result)   // result of response serialization
-                
+                    
+                    self.layoutVars.playSaveSound()
+                    
                      self.getWorkOrder()
                     
                     
@@ -259,7 +267,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
 
         }else{
             getWorkOrder()
@@ -338,7 +346,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     func parseJSON(){
         
         
-        //print(" parseJSON()")
+        print(" parseJSON()")
         
         self.workOrder.customer = self.json["customerID"].stringValue
         let mainAddr:String = self.json["customer"]["mainAddr"].stringValue
@@ -455,7 +463,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         let jsonCount = self.json["items"].count
         
         for i in 0 ..< jsonCount {
-            let woItem = WoItem( _ID: self.json["items"][i]["ID"].stringValue,_type: self.json["items"][i]["type"].stringValue, _sort: self.json["items"][i]["sort"].stringValue, _input: self.json["items"][i]["input"].stringValue, _est: self.json["items"][i]["est"].stringValue, _empDesc: self.json["items"][i]["empDesc"].stringValue, _itemStatus: self.json["items"][i]["itemStatus"].stringValue, _chargeID: self.json["items"][i]["chargeID"].stringValue, _act: self.json["items"][i]["act"].stringValue, _price: self.json["items"][i]["price"].stringValue, _total: self.json["items"][i]["total"].stringValue, _totalCost: self.json["items"][i]["totalCost"].stringValue, _usageQty:self.json["items"][i]["usageQty"].stringValue, _extraUsage:self.json["items"][i]["extraUsage"].stringValue, _unit:self.json["items"][i]["unitName"].stringValue)
+            let woItem = WoItem( _ID: self.json["items"][i]["ID"].stringValue,_type: self.json["items"][i]["type"].stringValue, _sort: self.json["items"][i]["sort"].stringValue, _name: self.json["items"][i]["input"].stringValue, _est: self.json["items"][i]["est"].stringValue, _empDesc: self.json["items"][i]["empDesc"].stringValue, _itemStatus: self.json["items"][i]["itemStatus"].stringValue, _chargeID: self.json["items"][i]["chargeID"].stringValue, _act: self.json["items"][i]["act"].stringValue, _price: self.json["items"][i]["price"].stringValue, _total: self.json["items"][i]["total"].stringValue, _totalCost: self.json["items"][i]["totalCost"].stringValue, _usageQty:self.json["items"][i]["usageQty"].stringValue, _extraUsage:self.json["items"][i]["extraUsage"].stringValue, _unit:self.json["items"][i]["unitName"].stringValue)
             
             if(woItem.ID == refreshWoID){
                 //print("refreshWoID = \(woItem)")
@@ -675,6 +683,13 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             self.woItemViewController?.saleRepName = self.salesRepValue
             self.woItemViewController?.layoutViews()
         }
+        
+        stackController = StackController()
+        stackController.delegate = self
+        stackController.getStack(_type:2,_ID:self.workOrder.ID)
+        self.view.addSubview(stackController)
+        
+        
         
         //statusIcon = UIImageView()
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
@@ -972,6 +987,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         //main views
         let viewsDictionary = [
+            "stackController":self.stackController,
             "statusIcon":self.statusIcon,
             "statusTxtField":self.statusTxtField,
             "customerBtn":self.customerBtn,
@@ -984,7 +1000,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         
         
-        
+         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[stackController]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[statusIcon(40)]-15-[customerBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
@@ -996,10 +1012,10 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[profitView]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(90)]-[attachments(40)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(90)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[customerBtn(40)]-[info(90)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         //auto layout group
         let infoDictionary = [
@@ -1261,6 +1277,9 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             //print(response.data ?? "")     // server data
             print(response.result)   // result of response serialization
             
+            
+            self.layoutVars.playSaveSound()
+            
             self.statusValue = self.statusValueToUpdate
             self.setStatus(status: self.statusValue)
           
@@ -1300,7 +1319,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             
             
             cell.setStatus(status: cell.woItem.itemStatus)
-            cell.nameLbl.text = cell.woItem.input
+            cell.nameLbl.text = cell.woItem.name
             cell.estLbl.text = cell.woItem.est
             cell.actLbl.text = cell.woItem.usageQty
         }
@@ -1326,6 +1345,10 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             let currentCell = tableView.cellForRow(at: indexPath!) as! WoItemTableViewCell;
             if(currentCell.woItem != nil && currentCell.woItem.ID != ""){
                 self.woItemViewController = WoItemViewController(_woID: self.workOrder.ID, _woItem: currentCell.woItem, _empsOnWo: self.empsOnWo, _woStatus: self.statusValue)
+                if self.workOrder.lead != nil{
+                    self.woItemViewController?.lead = self.workOrder.lead
+                }
+                woItemViewController?.leadDelegate = self
                 
                 //self.woItemViewController!.woItem = self.currentWoItem
                 self.woItemViewController?.customerID = self.workOrder.customer
@@ -1336,6 +1359,8 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
                 print("task count = \(currentCell.woItem.tasks.count)")
                 // print("task image  count = \(currentCell.woItem.tasks)")
                 self.woItemViewController?.tasks = currentCell.woItem.tasks
+                
+                self.woItemViewController?.leadTasksWaiting = self.leadTasksWaiting
                 self.woItemViewController?.layoutViews()
                 
                 navigationController?.pushViewController(self.woItemViewController!, animated: false )
@@ -1369,7 +1394,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
             return
         }
         
@@ -1445,15 +1470,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     
-    @objc func goBack(){
-        if((self.performanceDelegate) != nil){
-            if(self.tableCellID! >= 0){
-                self.performanceDelegate?.reDrawList(_index: self.tableCellID!, _status: self.statusValue)
-            }
-        }
-        _ = navigationController?.popViewController(animated: true)
-        
-    }
+    
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -1536,6 +1553,107 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
     
+    //Stack Delegates
+    func displayAlert(_title: String) {
+        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: _title, _message: "")
+    }
+    
+   
+    func newLeadView(_lead:Lead){
+        
+        let leadViewController:LeadViewController = LeadViewController(_lead: _lead)
+        //leadViewController
+        self.navigationController?.pushViewController(leadViewController, animated: false )
+        
+    }
+    
+    
+    func newContractView(_contract:Contract){
+        
+        let contractViewController:ContractViewController = ContractViewController(_contract: _contract)
+        contractViewController.editLeadDelegate = self
+        self.navigationController?.pushViewController(contractViewController, animated: false )
+        
+    }
+    
+    func newWorkOrderView(_workOrder:WorkOrder){
+        
+        //self.navigationController?.pushViewController(_view, animated: false )
+        //let workOrderViewController:WorkOrderViewController = WorkOrderViewController(_workOrder: _workOrder, _customerName: _workOrder.customerName)
+        //workOrderViewController.editLeadDelegate = self
+        //self.navigationController?.pushViewController(workOrderViewController, animated: false )
+        
+        
+    }
+    
+    func newInvoiceView(_invoice:Invoice){
+        
+        //self.navigationController?.pushViewController(_view, animated: false )
+        
+    }
+    
+    
+    func setLeadTasksWaiting(_leadTasksWaiting:String){
+        self.leadTasksWaiting = _leadTasksWaiting
+    
+    }
+    
+    //following 3 functions not used in this view
+    func suggestNewContractFromLead(){
+        print("suggestNewContractFromLead")
+    }
+    func suggestNewWorkOrderFromLead(){
+        print("suggestNewWorkOrderFromLead")
+    }
+    func suggestNewWorkOrderFromContract(){
+        print("suggestNewWorkOrderFromContract")
+    }
+    
+    
+    
+    /*
+    func getLead(_lead:Lead){
+        self.workOrder.lead = _lead
+    }
+ */
+    
+    
+    //lead Delegate
+    func updateLead(_lead:Lead,_newStatusValue:String){
+        print("updateLead in work order view")
+        self.workOrder.lead = _lead
+        self.editsMade = true
+        if self.editLeadDelegate != nil{
+            self.editLeadDelegate.updateLead(_lead: self.workOrder.lead!, _newStatusValue: (self.workOrder.lead?.statusId)!)
+        }
+        
+        
+        
+    }
+    
+    /*
+    func updateLead(_lead:Lead,_newStatusValue:String){
+        self.workOrder.lead = _lead
+        
+    }
+ */
+    
+    @objc func goBack(){
+        if((self.performanceDelegate) != nil){
+            if(self.tableCellID! >= 0){
+                self.performanceDelegate?.reDrawList(_index: self.tableCellID!, _status: self.statusValue)
+            }
+        }
+        
+        print("go back editsMade: \(self.editsMade)")
+        if editLeadDelegate != nil && self.editsMade == true{
+            editLeadDelegate.updateLead(_lead: self.workOrder.lead!, _newStatusValue: (self.workOrder.lead?.statusId!)!)
+        }
+        
+        
+        _ = navigationController?.popViewController(animated: true)
+        
+    }
     
     
     

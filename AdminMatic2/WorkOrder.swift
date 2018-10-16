@@ -42,7 +42,15 @@ class WorkOrder {
     var notes:String = ""
     
     
-    required init(_ID:String?, _statusID: String?, _date:String?, _firstItem:String?, _statusName:String?, _customer:String?, _type:String?, _progress:String?, _totalPrice:String?, _totalCost:String?, _totalPriceRaw:String?, _totalCostRaw:String?, _charge:String?) {
+    var titleAndID:String = ""
+    var IDAndTitle:String = ""
+    var customerTitleAndID:String = ""
+    
+    var lead:Lead?
+    var contract:Contract?
+    
+    
+    required init(_ID:String?, _statusID: String?, _date:String?, _firstItem:String?, _statusName:String?, _customer:String?, _type:String?, _progress:String?, _totalPrice:String?, _totalCost:String?, _totalPriceRaw:String?, _totalCostRaw:String?, _charge:String?,_title:String?, _customerName:String?) {
         //print(json)
         if _ID != nil {
             self.ID = _ID
@@ -117,11 +125,25 @@ class WorkOrder {
             self.charge = ""
         }
         
-        if self.ID! == "0"{
-            title = ""
+        
+        if _title != nil {
+            self.title = _title
+            
         }else{
-            title = "\(self.firstItem!)  \(self.customer!) #\(self.ID!)"
+            self.title = ""
         }
         
+        if _customerName != nil {
+            self.customerName = _customerName!
+            
+        }else{
+            self.customerName = ""
+        }
+        
+        // if _title != nil && ID != nil && customerName != nil{
+            self.titleAndID = "\(self.title!) #\(self.ID!)"
+            self.IDAndTitle = "\(self.ID!) #\(self.title!)"
+            self.customerTitleAndID = "\(self.customerName) \(self.titleAndID)"
+        //}
     }
 }

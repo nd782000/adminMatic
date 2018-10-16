@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Nuke
+//import Nuke
 
 
 
@@ -282,6 +282,8 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         employeeImage.addSubview(activityView)
         activityView.startAnimating()
         
+        
+        /*
         let imgURL:URL = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.employee.pic!)!
     
         Nuke.loadImage(with: imgURL, into: self.employeeImage!){ 
@@ -294,6 +296,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
             self.imageFullViewController = ImageFullViewController(_image: image)
             
         }
+ */
         
         self.tapBtn = Button()
         self.tapBtn.translatesAutoresizingMaskIntoConstraints = false
@@ -633,6 +636,8 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         
         //print("thumb = \(self.imageArray[indexPath.row].thumbPath!)")
         
+        
+        /*
         let imgURL:URL = URL(string: self.imageArray[indexPath.row].thumbPath!)!
         
         //print("imgURL = \(imgURL)")
@@ -645,6 +650,9 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
             cell.activityView.stopAnimating()
             
         }
+ */
+        
+        
         
         //print("view width = \(imageCollectionView?.frame.width)")
         //print("cell width = \(cell.frame.width)")

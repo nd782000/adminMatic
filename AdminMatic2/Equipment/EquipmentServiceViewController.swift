@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Nuke
+
 
 protocol EditEquipmentServiceDelegate{
     func updateEquipmentService(_equipmentService:EquipmentService)
@@ -911,7 +911,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         if(equipmentService.type == "2" || equipmentService.type == "3"){
             if(equipmentService.currentValue == "0"){
                 print("give a current Value")
-                simpleAlert(_vc: self, _title: "Incomplete Service", _message: "Give a Current Value")
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Service", _message: "Give a Current Value")
                 return false
             }
         }
@@ -988,13 +988,13 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
                         print("no alert necessary")
                         break
                     case "1":
-                        simpleAlert(_vc: self, _title: "New Service Added", _message: "A new \(self.equipmentService.typeName!) service has been added to be done on \(self.layoutVars.determineUpcomingDate(_equipmentService: self.equipmentService)).")
+                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "New Service Added", _message: "A new \(self.equipmentService.typeName!) service has been added to be done on \(self.layoutVars.determineUpcomingDate(_equipmentService: self.equipmentService)).")
                         break
                     case "2":
-                        simpleAlert(_vc: self, _title: "New Service Added", _message: "A new \(self.equipmentService.typeName!) service has been added to be done at \(self.equipmentService.nextValue!) Miles/Km..")
+                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "New Service Added", _message: "A new \(self.equipmentService.typeName!) service has been added to be done at \(self.equipmentService.nextValue!) Miles/Km..")
                         break
                     case "3":
-                        simpleAlert(_vc: self, _title: "New Service Added", _message: "A new \(self.equipmentService.typeName!) service has been added to be done at \(self.equipmentService.nextValue!) Engine Hours.")
+                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "New Service Added", _message: "A new \(self.equipmentService.typeName!) service has been added to be done at \(self.equipmentService.nextValue!) Engine Hours.")
                         break
                     default:
                         print("no alert necessary")
@@ -1003,7 +1003,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
                 }
                     
                 
-                playSaveSound()
+                self.layoutVars.playSaveSound()
                 
                 
                 }.responseString() {
@@ -1135,7 +1135,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
            
             _ = navigationController?.popViewController(animated: true)

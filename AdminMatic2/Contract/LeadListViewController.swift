@@ -77,6 +77,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     }
     
     func showLoadingScreen(){
+        print("showLoadingScreen")
         title = "Loading..."
         indicator = SDevIndicator.generate(self.view)!
         getLeads(_openNewLead:false)
@@ -365,6 +366,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         print("cellForRowAt")
+        print("leadsArray.count = \(self.leadsArray.count)")
         /*
         let cell:LeadTableViewCell = leadTableView.dequeueReusableCell(withIdentifier: "cell") as! LeadTableViewCell
         cell.lead = self.leadsArray[indexPath.row]
@@ -473,12 +475,13 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         tableView.deselectRow(at: indexPath!, animated: true)
         self.leadViewController.delegate = self
         self.searchTerm = self.searchController.searchBar.text!
-        navigationController?.pushViewController(self.leadViewController, animated: false )
-        
+       
         if(self.searchController.isActive == true){
             self.searchTerm = self.searchController.searchBar.text!
             self.searchController.isActive = false
         }
+        
+        navigationController?.pushViewController(self.leadViewController, animated: false )
         
         
     }
@@ -492,6 +495,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         //refreshFromTable = true
         //self.refreshControl.endRefreshing()
         //tableRefresh = true
+        self.searchController.delegate = nil
         shouldShowSearchResults = false
         showLoadingScreen()
         //getLeads(_openNewLead: false)
@@ -503,6 +507,18 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     
     @objc func addLead(){
         print("Add Lead")
+        
+        if(self.searchController.isActive == true){
+            print("search controller is active")
+            self.searchTerm = self.searchController.searchBar.text!
+            //self.searchController.isActive = false
+            //self.searchController.active = false
+            // or swift 4+
+            self.searchController.isActive = false
+            
+        }
+        
+        
         let editLeadViewController = NewEditLeadViewController()
         editLeadViewController.delegate = self
         navigationController?.pushViewController(editLeadViewController, animated: false )
@@ -540,7 +556,9 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         self.zoneID = _zoneID
         self.zoneName = _zoneName
         
-        self.getLeads(_openNewLead: false)
+        //self.getLeads(_openNewLead: false)
+        showLoadingScreen()
+        
     }
     
     

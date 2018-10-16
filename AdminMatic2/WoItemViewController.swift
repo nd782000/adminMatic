@@ -12,12 +12,12 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate{
+class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate, EditLeadDelegate{
     
     var layoutVars:LayoutVars = LayoutVars()
     
     var woDelegate:WoDelegate!
-    
+    var leadDelegate:EditLeadDelegate!
     
     var woID:String!
     var woItem:WoItem!
@@ -76,8 +76,17 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     var saleRepName:String = ""
     
+    
+    var json:JSON!
+    
+    var lead:Lead?
+    var leadTasksWaiting:String?
+    var leadTasksWaitingBtn:Button = Button(titleText: "Open LeadTasks to Assign...")
+    
     var imageUploadPrepViewController:ImageUploadPrepViewController!
     
+    
+    var editsMade:Bool = false
     
     init(_woID:String,_woItem:WoItem,_empsOnWo:[Employee],_woStatus:String){
         super.init(nibName:nil,bundle:nil)
@@ -200,7 +209,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[itemNameView(35)][chargeTypeView(25)][estimatedView(25)][profitView(25)][usageView(50)]", options: [], metrics: sizeVals, views: containersViewsDictionary))
 
         self.itemLbl = GreyLabel()
-        self.itemLbl.text = self.woItem.input
+        self.itemLbl.text = self.woItem.name
         self.itemLbl.font = layoutVars.labelFont
         self.itemNameView.addSubview(self.itemLbl)
         
@@ -447,6 +456,9 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         ///////////   Item Details Section   /////////////
         
+        self.leadTasksWaitingBtn.addTarget(self, action: #selector(ContractItemViewController.assignLeadTasks), for: UIControlEvents.touchUpInside)
+        self.detailsView.addSubview(self.leadTasksWaitingBtn)
+        
         
         self.itemDetailsTableView.delegate  =  self
         self.itemDetailsTableView.dataSource = self
@@ -459,18 +471,90 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         self.detailsView.addSubview(itemDetailsTableView)
         
         
+        if self.leadTasksWaiting! == "1" && self.woItem.type == "1"{
+            showLeadTaskBtn()
+        }else{
+            hideLeadTaskBtn()
+        }
+        
+        
+        
+        
+        /*
         //auto layout group
         let itemDetailsViewsDictionary = [
             
-            "view1":itemDetailsTableView
+            "view1":leadTasksWaitingBtn,
+            "view2":itemDetailsTableView
         ]  as [String:AnyObject]
         
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
         
-        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(fullHeight)]", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2]|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+        
+       // self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(fullHeight)]", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+        
+        print("leadTasksWaiting \(leadTasksWaiting)")
+        
+        if self.leadTasksWaiting! == "1" && self.woItem.type == "1"{
+            
+            print("leadTasksWaiting")
+            
+            self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(40)][view2]|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+            
+            //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Lead Tasks To Assign", _message: ""
+            //)
+        }else{
+            self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view2(fullHeight)]", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
+        }
+ */
         
         
     }
+    
+    
+    func showLeadTaskBtn(){
+        print("showLeadTaskBtn")
+        self.detailsView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        self.detailsView.addSubview(self.leadTasksWaitingBtn)
+        self.detailsView.addSubview(itemDetailsTableView)
+        
+        //auto layout group
+        let itemDetailsViewsDictionary = [
+            "view1":leadTasksWaitingBtn,
+            "view2":itemDetailsTableView
+            ]  as [String:AnyObject]
+        
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: nil, views: itemDetailsViewsDictionary))
+        
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2]|", options: [], metrics: nil, views: itemDetailsViewsDictionary))
+        
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(40)][view2]|", options: [], metrics: nil, views: itemDetailsViewsDictionary))
+        
+        
+    }
+    
+    func hideLeadTaskBtn(){
+        print("hideLeadTaskBtn")
+        self.detailsView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        self.detailsView.addSubview(itemDetailsTableView)
+        
+        let itemDetailsViewsDictionary = [
+            "view1":itemDetailsTableView
+            ]  as [String:AnyObject]
+        
+        
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: nil, views: itemDetailsViewsDictionary))
+        
+        
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1]|", options: [], metrics: nil, views: itemDetailsViewsDictionary))
+        
+    }
+    
+    
+    
+    
     
     
     
@@ -629,6 +713,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     func setTaskStatus(_ID:String,_status:String,_row:Int)->String{
         self.tasks[_row].status = _status
         self.itemDetailsTableView.reloadData()
+        editsMade = true
         var newItemStatus:String = "1"
         var parameters:[String:String]
         parameters = [
@@ -736,7 +821,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
                 print("OK")
             }
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
             return
         }
 
@@ -765,6 +850,9 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     func getTasks(){
         print("get tasks")
+        
+        
+        editsMade = true
         
         /*
         //cache buster
@@ -841,20 +929,119 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
     }
     
+    
+    @objc func assignLeadTasks(){
+        print("assign lead tasks")
+        let leadTaskAssignViewController:LeadTaskAssignViewController = LeadTaskAssignViewController(_leadFromWorkOrderItem: self.lead!, _workOrderItem:self.woItem)
+        leadTaskAssignViewController.editDelegate = self
+        self.navigationController?.pushViewController(leadTaskAssignViewController, animated: false)
+    }
+    
+    
     @objc func enterUsage(){
+        
+        editsMade = true
+        
         let usageEntryViewController = UsageEntryViewController(_workOrderID: woID,_workOrderItem:self.woItem,_empsOnWo:self.empsOnWo)
         navigationController?.pushViewController(usageEntryViewController, animated: false )
         
     }
     
     
+    
+    
+    
+    
+    
+    func updateLead(_lead: Lead, _newStatusValue:String){
+        print("update Lead")
+        editsMade = true
+        self.lead = _lead
+        
+        if self.lead?.statusId! == "3"{
+            self.hideLeadTaskBtn()
+        }
+        
+        getLead()
+    }
+    
+    func getLead() {
+        print(" GetLead  Lead Id \(self.lead!.ID)")
+        
+        
+        self.getTasks()
+        
+        
+        // Show Loading Indicator
+        //indicator = SDevIndicator.generate(self.view)!
+        //reset task array
+        self.lead!.tasksArray = []
+        let parameters:[String:String]
+        parameters = ["leadID": self.lead!.ID]
+        print("parameters = \(parameters)")
+        
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leadTasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("lead response = \(response)")
+            }
+            .responseJSON(){
+                response in
+                if let json = response.result.value {
+                    print("JSON: \(json)")
+                    self.json = JSON(json)
+                    self.parseJSON()
+                }
+                print(" dismissIndicator")
+                //self.indicator.dismissIndicator()
+        }
+    }
+    
+    
+    func parseJSON(){
+        //tasks
+        let taskCount = self.json["leadTasks"].count
+        for n in 0 ..< taskCount {
+            var taskImages:[Image] = []
+            
+            let imageCount = Int((self.json["leadTasks"][n]["images"].count))
+            print("imageCount: \(imageCount)")
+            for p in 0 ..< imageCount {
+                let fileName:String = (self.json["leadTasks"][n]["images"][p]["fileName"].stringValue)
+                let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
+                let mediumPath:String = "\(self.layoutVars.mediumBase)\(fileName)"
+                let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
+                print("rawPath = \(rawPath)")
+                
+                let image = Image(_id: self.json["leadTasks"][n]["images"][p]["ID"].stringValue,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: self.json["leadTasks"][n]["images"][p]["name"].stringValue,_width: self.json["leadTasks"][n]["images"][p]["width"].stringValue,_height: self.json["leadTasks"][n]["images"][p]["height"].stringValue,_description: self.json["leadTasks"][n]["images"][p]["description"].stringValue,_dateAdded: self.json["leadTasks"][n]["images"][p]["dateAdded"].stringValue,_createdBy: self.json["leadTasks"][n]["images"][p]["createdByName"].stringValue,_type: self.json["leadTasks"][n]["images"][p]["type"].stringValue)
+                image.customer = (self.json["leadTasks"][n]["images"][p]["customer"].stringValue)
+                image.tags = (self.json["leadTasks"][n]["images"][p]["tags"].stringValue)
+                print("appending image")
+                taskImages.append(image)
+            }
+            let task = Task(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue, _images:taskImages)
+            self.lead!.tasksArray.append(task)
+        }
+        //getStack()
+        // self.layoutViews()
+        
+        //call delegatemethod in contract view to update the lead
+    }
+    
+    
+    
     @objc func goBack(){
         _ = navigationController?.popViewController(animated: true)
-        if woDelegate != nil{
+        if woDelegate != nil && editsMade == true{
             woDelegate.refreshWo(_refeshWoID: self.woItem.ID, _newWoStatus: self.newWoStatus)
+        }
+        if leadDelegate != nil && editsMade == true{
+            leadDelegate.updateLead(_lead: self.lead!, _newStatusValue: (self.lead?.statusId)!)
         }
         
     }
+    
+    
     
     
     override func didReceiveMemoryWarning() {

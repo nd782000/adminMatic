@@ -38,12 +38,15 @@ class TermsViewController: UIViewController, UITextViewDelegate{
     var regenerateBtn:Button = Button(titleText: "Regenerate Terms")
     var json:JSON!
     
-    init(_terms:String, _contractID:String){
+    var editable:Bool!
+    
+    init(_terms:String, _contractID:String, _editable:Bool = true){
         
         
         super.init(nibName:nil,bundle:nil)
         self.terms = _terms
         self.contractID = _contractID
+        self.editable = _editable
     }
     
     
@@ -61,9 +64,7 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         
         super.viewDidLoad()
         
-        //print(currentReachabilityStatus) //true connected
-        //print(currentReachabilityStatus != .notReachable) //true connected
-        
+       
         // Do any additional setup after loading the view.
         view.backgroundColor = layoutVars.backgroundColor
         title = "Terms"
@@ -96,19 +97,13 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         self.termsView.layer.borderWidth = 1
         self.termsView.layer.borderColor = UIColor(hex:0x005100, op: 0.2).cgColor
         self.termsView.layer.cornerRadius = 4.0
-        //self.termsView.returnKeyType = .done
  
-        
-        
         self.termsView.text = self.terms
         
         self.termsView.delegate = self
         
-        
-        
         self.termsView.font = layoutVars.smallFont
-        self.termsView.isEditable = true
-        //self.termsView.delegate = self
+        self.termsView.isEditable = self.editable
         self.termsView.backgroundColor = UIColor.white
         self.termsView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.termsView)
@@ -140,26 +135,25 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         
         
         //////////////   auto layout position constraints   /////////////////////////////
-        
-        
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view1]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[regenBtn]-|", options: [], metrics: nil, views: viewsDictionary))
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-72-[view1]-220-[regenBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
-        
-        
-        
-        
+        if self.editable == true{
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view1]-|", options: [], metrics: nil, views: viewsDictionary))
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[regenBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+            
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-72-[view1]-220-[regenBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
+            
+        }else{
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view1]-|", options: [], metrics: nil, views: viewsDictionary))
+            
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-72-[view1]-10-|", options: [], metrics: nil, views: viewsDictionary))
+            
+        }
         
     }
     
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         print("shouldChangeTextInRange")
-        //if (text == "\n") {
-            //textView.resignFirstResponder()
-        //}
+        
         return true
     }
     
@@ -168,21 +162,7 @@ class TermsViewController: UIViewController, UITextViewDelegate{
     
     
     func textViewDidBeginEditing(_ textView: UITextView) {        print("textFieldDidBeginEditing")
-        
-        
         editsMade = true
-        //self.terms = self.termsView.text!
-        
-        /*
-        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-            self.view.frame.origin.y -= 250
-            
-            
-        }, completion: { finished in
-            print("Napkins opened!")
-        })
- */
-        
         
     }
     
@@ -191,16 +171,6 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         editsMade = true
         self.terms = self.termsView.text!
         
-        /*
-        if(self.view.frame.origin.y < 0){
-            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                self.view.frame.origin.y += 250
-                
-                
-            }, completion: { finished in
-            })
-        }
- */
     }
     
     @objc func closeTextView(){
@@ -210,9 +180,6 @@ class TermsViewController: UIViewController, UITextViewDelegate{
     
     
     @objc func regenerateTerms(){
-        //self.termsView.resignFirstResponder()
-        
-        
         
         let alertController = UIAlertController(title: "Regenerate Contract Terms?", message: "Would you like to regenerate the contract terms now based on current items?  All custom edits to terms will be overwritten.", preferredStyle: UIAlertControllerStyle.alert)
         let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
@@ -223,26 +190,20 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
             (result : UIAlertAction) -> Void in
             print("OK")
-            //_ = self.navigationController?.popViewController(animated: true)
-            
             
             self.editsMade = true
             
             
             self.indicator = SDevIndicator.generate(self.view)!
             
-            
             var parameters:[String:String]
             parameters = [
                 "contractID":self.contractID,
                 "refresh":"1"
                 
-                
             ]
             
             print("parameters = \(parameters)")
-            
-            
             
             self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contractTerms.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                 response in
@@ -251,32 +212,12 @@ class TermsViewController: UIViewController, UITextViewDelegate{
                 //print(response.data ?? "")     // server data
                 print(response.result)   // result of response serialization
                 
-                
-                
-                //self.checkForSalesRepSignature()
-                //self.getContract()
-                
-                //self.layoutViews()
-                //self.delegate.updateTerms(_terms: self.terms)
-                
-                //self.editsMade = false
-                
-                //self.goBack()
                 }.responseJSON(){
                     response in
                     if let json = response.result.value {
                         print("JSON: \(json)")
                         self.json = JSON(json)
                         let newTerms = self.json["newTerms"].stringValue
-                       // self.contract.terms = newTerms
-                        
-                        
-                        
-                        
-                        //self.itemsArray.remove(at: _row)
-                        
-                        
-                        //self.updateContract(_contract: self.contract)
                         self.terms = newTerms
                         self.termsView.text = newTerms
                         
@@ -290,19 +231,7 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)
-        self.present(alertController, animated: true, completion: nil)
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         
     }
     
@@ -314,7 +243,7 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         
         if editsMade == false{
             
-            simpleAlert(_vc: self, _title: "No Edits Made", _message: "")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "No Edits Made", _message: "")
         }else{
             
             self.terms = self.termsView.text
@@ -330,8 +259,6 @@ class TermsViewController: UIViewController, UITextViewDelegate{
             
             print("parameters = \(parameters)")
             
-            
-            
             self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contractTerms.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                 response in
                 print(response.request ?? "")  // original URL request
@@ -340,34 +267,19 @@ class TermsViewController: UIViewController, UITextViewDelegate{
                 print(response.result)   // result of response serialization
                 
                 
-                
-                //self.checkForSalesRepSignature()
-                //self.getContract()
-                
-                //self.layoutViews()
                 self.delegate.updateTerms(_terms: self.terms)
                 
                 self.editsMade = false
                 
                 self.goBack()
             }
-            
-            
-            
-        }
         
+        }
         
     }
    
     
-    
-    
-    
-    
-    
     @objc func goBack(){
-        //_ = navigationController?.popViewController(animated: true)
-        
         
         if(self.editsMade == true){
             print("editsMade = true")
@@ -385,13 +297,10 @@ class TermsViewController: UIViewController, UITextViewDelegate{
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             _ = navigationController?.popViewController(animated: true)
         }
-        
-        
-        
         
     }
     

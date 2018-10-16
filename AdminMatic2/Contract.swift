@@ -32,6 +32,13 @@ class Contract {
     var repSignature:String = "0"
     var customerSignature:String = "0"
     
+    var repSignaturePath:String = ""
+    var customerSignaturePath:String = ""
+    
+    
+    
+    var lead:Lead?
+    
     
     required init(_ID:String?, _title:String?, _status: String?, _statusName: String?, _chargeType:String?, _customer:String?, _customerName:String?, _notes:String?, _salesRep:String?, _repName:String?, _createdBy:String?, _createDate:String?, _subTotal:String?, _taxTotal:String?, _total:String?, _terms:String?, _daysAged:String?) {
         //print(json)

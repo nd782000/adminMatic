@@ -36,6 +36,8 @@ class Lead {
     
     var custNameAndZone:String!
     
+    var tasksArray:[Task] = []
+    
     
     required init(_ID:String?, _statusID: String?,_scheduleType:String?,  _date:String?,  _time:String?, _statusName:String?, _customer:String?, _customerName:String?, _urgent:String?, _description:String?, _rep:String?, _repName:String?, _deadline:String?, _requestedByCust:String?, _createdBy:String?, _daysAged:String?) {
         //print(json)

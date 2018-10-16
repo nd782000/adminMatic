@@ -35,14 +35,8 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
     
     var delegate:ScheduleDelegate!
     var editDelegate:WoDelegate!
-    
-    
-    /*
-    var statusIcon:UIImageView = UIImageView()
-    var statusTxtField:PaddedTextField!
-    var statusPicker: Picker!
-    var statusArray = ["Not Started","In Progress","Finished","Canceled","Waiting"]
-  */
+    var leadTaskDelegate:LeadTaskDelegate!
+    var editContractDelegate:EditContractDelegate!
     
     //customer search
     var customerLbl:GreyLabel!
@@ -120,7 +114,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         //print("lead init \(_leadID)")
         //for an empty lead to start things off
         
-        self.wo = WorkOrder(_ID: "0", _statusID: "1", _date: "", _firstItem: "", _statusName: "Not Started", _customer: "", _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "")
+        self.wo = WorkOrder(_ID: "0", _statusID: "1", _date: "", _firstItem: "", _statusName: "Not Started", _customer: "", _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "", _title:"", _customerName:"")
         
     }
     
@@ -128,8 +122,10 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
     init(_wo:WorkOrder){
         super.init(nibName:nil,bundle:nil)
         print("wo edit init \(_wo.ID)")
-        //for an empty lead to start things off
+        print("wo title \(_wo.title)")
+        print("wo custName \(_wo.customerName)")
         self.wo = _wo
+        
     }
     
     //new from customer view
@@ -139,7 +135,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         
         
         
-        self.wo = WorkOrder(_ID: "0", _statusID: "1", _date: "", _firstItem: "", _statusName: "Not Started", _customer: _customer, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "")
+        self.wo = WorkOrder(_ID: "0", _statusID: "1", _date: "", _firstItem: "", _statusName: "Not Started", _customer: _customer, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "", _title:"", _customerName:"")
         
     }
     
@@ -156,8 +152,8 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         self.lead = _lead
         self.taskArray = _tasks
         
-        self.wo = WorkOrder(_ID: "0", _statusID: "1", _date: "", _firstItem: "", _statusName: "Not Started", _customer: self.lead.customer, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "")
-        self.wo.customerName = self.lead.customerName
+        self.wo = WorkOrder(_ID: "0", _statusID: "1", _date: "", _firstItem: "", _statusName: "Not Started", _customer: self.lead.customer, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "", _title:"", _customerName:self.lead.customerName)
+        //self.wo.customerName = self.lead.customerName
         self.wo.rep = self.lead.rep
         self.wo.repName = self.lead.repName
         
@@ -168,22 +164,19 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
     
     
     //new from contract
-    init(_contract:Contract){
+    init(_contract:Contract, _wo:WorkOrder){
         super.init(nibName:nil,bundle:nil)
-        
         print("new work order from contract init")
-        
         self.contract = _contract
-        
-        
-        self.wo = WorkOrder(_ID: "0", _statusID: "1", _date: "", _firstItem: "", _statusName: "Not Started", _customer: self.contract.customer, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "")
-        
+        print("wo title \(_wo.title)")
+        print("wo custName \(_wo.customerName)")
+        self.wo = _wo
     }
     
     
     
     
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -436,15 +429,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         scheduleTypeToolBar.isUserInteractionEnabled = true
         scheduleTypeTxtField.inputAccessoryView = scheduleTypeToolBar
         
-        
-        /*
-        if(wo.scheduleType != ""){
-            scheduleTypeTxtField.text = scheduleTypeArray[Int(wo.scheduleType)! - 1]
-            self.scheduleTypePicker.selectRow(Int(self.wo.scheduleType)! - 1, inComponent: 0, animated: false)
-            
-            
-        }
- */
+       
         
         //If new, temporarily set schedule types to UnScheduled
         if wo.ID == nil || wo.ID == "0"{
@@ -501,7 +486,6 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         
         
         if(wo.department != ""){
-            //departmentTxtField.text = invoiceTypeArray[Int(wo.invoiceType!)! - 1]
             
             
             for dept in 0 ..< self.appDelegate.departments.count {
@@ -553,12 +537,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         
         
         if(wo.crew != ""){
-            //departmentTxtField.text = invoiceTypeArray[Int(wo.invoiceType!)! - 1]
-            
-            //crewTxtField.text = self.appDelegate.crews[Int(wo.crew)! - 1].name
-            
-            //self.crewPicker.selectRow(Int(self.wo.crew)! - 1, inComponent: 0, animated: false)
-            
+           
             for crew in 0 ..< self.appDelegate.crews.count {
                 if self.appDelegate.crews[crew].ID == wo.crew{
                     
@@ -589,7 +568,6 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         
         repSearchBar.placeholder = "Sales Rep..."
         repSearchBar.translatesAutoresizingMaskIntoConstraints = false
-        //customerSearchBar.layer.cornerRadius = 4
         
         repSearchBar.layer.borderWidth = 1
         repSearchBar.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
@@ -840,9 +818,29 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         self.notesView.resignFirstResponder()
     }
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+            self.view.frame.origin.y -= 250
+            
+            
+        }, completion: { finished in
+            print("Napkins opened!")
+        })
+    }
     
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        editsMade = true
+        if(self.view.frame.origin.y < 0){
+            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+                self.view.frame.origin.y += 250
+                
+                
+            }, completion: { finished in
+            })
+        }
+    }
     
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         print("shouldChangeTextInRange")
         if (text == "\n") {
             textView.resignFirstResponder()
@@ -987,21 +985,13 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
             //loop thru dept array and find id of selected row
             
             
-            //wo.department = "\(row + 1)"
             
             
-            //for dept in 0 ..< self.appDelegate.departments.count {
                wo.department = self.appDelegate.departments[row].ID
                 
-           // }
-            
-            
-            
-            
-            
+
             break
         case 5:
-            //wo.crew = "\(row + 1)"
             
             wo.crew = self.appDelegate.crews[row].ID
             
@@ -1012,76 +1002,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
     }
     
     
-    /*
-    func cancelPicker(){
-        //self.statusValueToUpdate = self.statusValue
-        //self.statusTxtField.resignFirstResponder()
-        
-        switch pickerView.tag {
-        case 1:
-            wo.charge = "\(row + 1)"
-            break
-        case 2:
-            wo.invoiceType = "\(row + 1)"
-            break
-        case 3:
-            wo.scheduleType = "\(row + 1)"
-            break
-        case 4:
-            wo.department = "\(row + 1)"
-            break
-        case 5:
-            wo.crew = "\(row + 1)"
-            break
-        default:
-            wo.charge = "\(row + 1)"
-        }
-    }
-    */
+   
     
-    
-    
-    /*
-    @objc func handleStatusChange(){
-       // self.statusTxtField.resignFirstResponder()
-        contract.status = "\(self.statusPicker.selectedRow(inComponent: 0))"
-        //self.statusValue = "\(self.statusPicker.selectedRow(inComponent: 0))"
-        setStatus(status: contract.status)
-        editsMade = true
-    }
-    
-    func setStatus(status: String) {
-        print("set status \(status)")
-        switch (status) {
-        case "1":
-            let statusImg = UIImage(named:"unDoneStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "2":
-            let statusImg = UIImage(named:"inProgressStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "3":
-            let statusImg = UIImage(named:"doneStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "4":
-            let statusImg = UIImage(named:"cancelStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "5":
-            let statusImg = UIImage(named:"waitingStatus.png")
-            statusIcon.image = statusImg
-            break;
-        default:
-            let statusImg = UIImage(named:"inProgressStatus.png")
-            statusIcon.image = statusImg
-            break;
-        }
-    }
-    
-    */
-    
+ 
     
     
     @objc func handleChargeTypeChange(){
@@ -1238,16 +1161,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
                 print("Napkins opened!")
             })
             
-            /*
-             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-             self.view.frame.origin.y -= self.repResultsTableView.frame.height - 30
-             
-             
-             }, completion: { finished in
-             // //print("Napkins opened!")
-             })
-             */
-            
+           
             
         }
         
@@ -1263,16 +1177,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
             
         }else{
             
-            /*
-             if(self.view.frame.origin.y < 0){
-             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-             self.view.frame.origin.y += self.repResultsTableView.frame.height - 30
-             
-             
-             }, completion: { finished in
-             })
-             }
-             */
+           
             
             if(self.view.frame.origin.y < 0){
                 UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
@@ -1303,7 +1208,6 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         }
         searchBar.resignFirstResponder()
         
-        // self.tableViewMode = "TASK"
         
     }
     
@@ -1467,6 +1371,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         return true
     }
     
+    
+    
+    
     func validateFields()->Bool{
         print("validate fields")
         if titleTxtField.text != ""{
@@ -1475,7 +1382,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         //customer check
         if(wo.customer == ""){
             print("select a customer")
-            simpleAlert(_vc: self, _title: "Incomplete Work Order", _message: "Select a Customer")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Work Order", _message: "Select a Customer")
             return false
         }
         
@@ -1484,21 +1391,21 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         //charge type check
         if(wo.charge == ""){
             print("select a charge type")
-            simpleAlert(_vc: self, _title: "Incomplete Work Order", _message: "Select a Charge Type")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Work Order", _message: "Select a Charge Type")
             return false
         }
         
         //invoice type check
         if(wo.invoiceType == ""){
             print("select a invoice type")
-            simpleAlert(_vc: self, _title: "Incomplete Work Order", _message: "Select a Invoice Type")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Work Order", _message: "Select a Invoice Type")
             return false
         }
         
         //schedule type check
         if(wo.scheduleType == ""){
             print("select a schedule type")
-            simpleAlert(_vc: self, _title: "Incomplete Work Order", _message: "Select a Schedule Type")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Work Order", _message: "Select a Schedule Type")
             return false
         }
         
@@ -1507,7 +1414,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         //rep check
         if(wo.rep == ""){
             print("select a sales rep")
-            simpleAlert(_vc: self, _title: "Incomplete Work Order", _message: "Select a Sales Rep.")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Work Order", _message: "Select a Sales Rep.")
             return false
         }
         
@@ -1515,7 +1422,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         //title check
         if(wo.title == ""){
             print("Add a Title")
-            simpleAlert(_vc: self, _title: "Incomplete Work Order", _message: "Provide a Title")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Work Order", _message: "Provide a Title")
             return false
         }
         
@@ -1529,10 +1436,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
     
     @objc func submit(){
         print("submit Work Order")
-        //var newWorkOrder:Bool = false
-        //if self.wo.ID == "0"{
-            //newWorkOrder = true
-        //}
+        
         
         if(!validateFields()){
             print("didn't pass validation")
@@ -1546,12 +1450,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         indicator = SDevIndicator.generate(self.view)!
         //reset task array
         
-        /*
-         php params
-         
-         
-         
-         */
+      
         
         
         
@@ -1572,70 +1471,145 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         }
         
         
-        /*
-         $charge = intval($_POST['charge']);
-         $customer = intval($_POST['customer']);
-         $notes = $_POST['notes'];
-         $salesRep = $_POST['salesRep'];
-         $items = $_POST['items'];
-         $leadID = intval($_POST['leadID']);
-         $contractID = intval($_POST['contractID']);
-         $createdBy = intval($_POST['createdBy']);
-         $createdByName = $_POST['createdByName'];
-         $title = $_POST['title'];
-         */
-        //print("loggedInID = \(self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId))")
+       
         let parameters:[String:String]
-        parameters = ["charge": wo.charge, "customer": self.wo.customer,  "notes":self.wo.notes, "salesRep": self.wo.rep, "leadID":leadID, "contractID":contractID, "createdBy": self.appDelegate.loggedInEmployee?.ID!, "createdByName": self.appDelegate.loggedInEmployee?.name!,     "title":self.wo.title, "crew":self.wo.crew, "crewName":self.wo.crewName, "departmentID":self.wo.department, "invoice":self.wo.invoiceType] as! [String : String]
+        parameters = ["woID": wo.ID,"charge": wo.charge, "customer": self.wo.customer,  "notes":self.wo.notes, "salesRep": self.wo.rep, "leadID":leadID, "contractID":contractID, "createdBy": self.appDelegate.loggedInEmployee?.ID!, "createdByName": self.appDelegate.loggedInEmployee?.name!,     "title":self.wo.title, "crew":self.wo.crew, "crewName":self.wo.crewName, "departmentID":self.wo.department, "invoice":self.wo.invoiceType] as! [String : String]
         
         
         print("parameters = \(parameters)")
         
-        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/new/workOrder.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
-            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
-            .responseString { response in
-                print("work order response = \(response)")
-            }
-            .responseJSON(){
-                response in
-                if let json = response.result.value {
-                    print("JSON: \(json)")
-                    self.json = JSON(json)
-                    let newWorkOrderID = self.json["workOrderID"].stringValue
-                    self.wo.ID = newWorkOrderID
-                    
-                    
-                    self.editsMade = false // avoids the back without saving check
-                    
-                    
-                    if(self.title == "New Work Order"){
-                        
-                        self.goBack()
-                        self.delegate.updateSchedule()
-                        
-                        //self.delegate.getLeads(_openNewLead: true)
-                        
-                    }else if(self.title == "New Customer Work Order"){
-                        //no delegate method
-                    }else{
-                        self.goBack()
-                        if self.editDelegate != nil{
-                            self.editDelegate.refreshWo()
-                        }
-                    }
-                    
-                    /*
-                     if newLead {
-                     simpleAlert(_vc: self, _title: "Add Tasks and Images", _message: "You can now add leat tasks and images to this lead.")
-                     }
-                     */
-                    
-                    
-                    
+        
+        
+        if self.wo.ID == "0"{
+            //NEW
+            layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/new/workOrder.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+                .responseString { response in
+                    print("work order response = \(response)")
                 }
-                print(" dismissIndicator")
-                self.indicator.dismissIndicator()
+                .responseJSON(){
+                    response in
+                    if let json = response.result.value {
+                        print("JSON: \(json)")
+                        self.json = JSON(json)
+                        let newWorkOrderID = self.json["newWoID"].stringValue
+                        self.wo.ID = newWorkOrderID
+                        
+                        
+                        print("new wo.ID: \(self.wo.ID)")
+                        
+                        
+                        self.layoutVars.playSaveSound()
+                        
+                        self.editsMade = false // avoids the back without saving check
+                        
+                        
+                        if(self.title == "New Work Order"){
+                            
+                            
+                            
+                            if self.leadTaskDelegate != nil{
+                                //self.leadTaskDelegate.updateItems()
+                                
+                                
+                                print("new wo.ID: \(self.wo.ID)")
+                                _ = self.navigationController?.popViewController(animated: false)
+                                
+                                self.leadTaskDelegate.handleNewWorkOrder(_workOrder: self.wo)
+                                
+                                return
+                               
+                            }
+                            
+                            
+                            
+                            
+                            if self.delegate != nil{
+                                self.delegate.updateSchedule()
+                            }
+                            
+                            
+                            self.goBack()
+                            
+                            
+                            //self.delegate.getLeads(_openNewLead: true)
+                            
+                        }else if(self.title == "New Customer Work Order"){
+                            //no delegate method
+                        }else{
+                            
+                            /*
+                            if self.editContractDelegate != nil{
+                                //self.leadTaskDelegate.updateItems()
+                                
+                                
+                                print("editContractDelegate")
+                                _ = self.navigationController?.popViewController(animated: false)
+                                
+                                self.editContractDelegate.updateContract(_contract: self.contract)
+                                
+                                return
+                                
+                            }
+                            */
+                            
+                            self.goBack()
+                            if self.editDelegate != nil{
+                                self.editDelegate.refreshWo()
+                            }
+                        }
+                        
+                       
+                        
+                    }
+                    print(" dismissIndicator")
+                    self.indicator.dismissIndicator()
+            }
+        }else{
+            //UPDATE
+            layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/workOrder.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+                .responseString { response in
+                    print("work order response = \(response)")
+                }
+                .responseJSON(){
+                    response in
+                    if let json = response.result.value {
+                        print("JSON: \(json)")
+                        self.json = JSON(json)
+                        
+                        self.layoutVars.playSaveSound()
+                        
+                       
+                        self.editsMade = false // avoids the back without saving check
+                        
+                        
+                        if self.editContractDelegate != nil{
+                            //self.leadTaskDelegate.updateItems()
+                            
+                            
+                            print("editContractDelegate")
+                            _ = self.navigationController?.popViewController(animated: false)
+                            
+                            self.editContractDelegate.updateContract(_contract: self.contract)
+                            
+                            return
+                            
+                        }
+                        
+                        
+                        self.goBack()
+                        
+                        
+                       
+                        
+                        
+                    }
+                    print(" dismissIndicator")
+                    self.indicator.dismissIndicator()
+            }
         }
+        
     }
     
     
@@ -1658,7 +1632,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             _ = navigationController?.popViewController(animated: true)
         }

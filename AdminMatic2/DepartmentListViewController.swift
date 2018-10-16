@@ -12,7 +12,6 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Nuke
 import MessageUI
 
 

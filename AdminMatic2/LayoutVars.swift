@@ -150,6 +150,12 @@ class LayoutVars: UIViewController {
     */
     
     
+    
+    
+    
+    
+    
+    
     var backgroundColor:UIColor = UIColor(hex:0xFFF8E6, op: 1)
     
     var backgroundLight:UIColor = UIColor(hex:0xFFFaF8, op: 1)
@@ -178,18 +184,43 @@ class LayoutVars: UIViewController {
     let mediumBase : String = "https://www.atlanticlawnandgarden.com/uploads/general/medium/"
     let thumbBase : String = "https://www.atlanticlawnandgarden.com/uploads/general/thumbs/"
     
-    
     /*
+    
     init(){
         super.init(nibName:nil,bundle:nil)
         
         
-        let number:Int = Int(arc4random_uniform(5))
-        print("background color number = \(number)")
         
-        self.backgroundColorArray = [backgroundColor1,backgroundColor2,backgroundColor3,backgroundColor4,backgroundColor5]
         
-        self.backgroundColor = self.backgroundColorArray[number]
+         
+         
+         
+         if UIDevice().userInterfaceIdiom == .phone {
+         switch UIScreen.main.nativeBounds.height {
+         case 1136:
+         print("iPhone 5 or 5S or 5C")
+         case 1334:
+         print("iPhone 6/6S/7/8")
+         case 2208:
+         print("iPhone 6+/6S+/7+/8+")
+         case 2436:
+         print("iPhone X")
+            navAndStatusBarHeight = navAndStatusBarHeight + 24
+         default:
+         print("unknown")
+         }
+         }
+         
+        
+        
+        
+        
+        //let number:Int = Int(arc4random_uniform(5))
+        //print("background color number = \(number)")
+        
+        //self.backgroundColorArray = [backgroundColor1,backgroundColor2,backgroundColor3,backgroundColor4,backgroundColor5]
+        
+        //self.backgroundColor = self.backgroundColorArray[number]
     }
     
     
@@ -199,6 +230,7 @@ class LayoutVars: UIViewController {
         super.init(coder: aDecoder)
     }
     */
+    
     
     
     
@@ -219,10 +251,29 @@ class LayoutVars: UIViewController {
         )
     }()
  
+    //var topController:UIViewController
     
    
     
-    
+    func simpleAlert(_vc:UIViewController,_title:String,_message:String?){
+        print("simpleAlert: \(String(describing: _message))")
+        let alertController = UIAlertController(title: _title, message: _message, preferredStyle: UIAlertControllerStyle.alert)
+        
+        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            (result : UIAlertAction) -> Void in
+            print("OK")
+        }
+        alertController.addAction(okAction)
+        
+        self.getTopController().present(alertController, animated: false, completion: nil)
+        
+        
+        
+        
+        
+        
+        
+    }
     
    
     
@@ -233,7 +284,7 @@ class LayoutVars: UIViewController {
         
         if (appDelegate.loggedInEmployee?.userLevel)! <= _level{
         
-            simpleAlert(_vc: _view, _title: "Access Denied", _message: "Your user level (\(appDelegate.loggedInEmployee!.userLevelName!)) does not allow access to this feature.")
+            self.simpleAlert(_vc: self.getTopController(), _title: "Access Denied", _message: "Your user level (\(appDelegate.loggedInEmployee!.userLevelName!)) does not allow access to this feature.")
             return true
         }else{
             return false
@@ -340,13 +391,174 @@ class LayoutVars: UIViewController {
  */
         
     }
+    
+    func getTopController() -> UIViewController{
+        var vc:UIViewController = UIViewController()
+        if var topController = UIApplication.shared.keyWindow?.rootViewController {
+        while let presentedViewController = topController.presentedViewController {
+        topController = presentedViewController
+        }
+    
+    // topController should now be your topmost view controller
+    
+    //topController.present(alertController, animated: true, completion: nil)
+            vc = topController
+        }
+        return vc
+    }
+    
+    
+    
+    
+    func playSaveSound(){
+        // create a sound ID, in this case its the tweet sound.
+        let systemSoundID: SystemSoundID = 1322
+        AudioServicesPlaySystemSound (systemSoundID)
+    }
+    
+    func playErrorSound(){
+        // create a sound ID, in this case its the tweet sound.
+        let systemSoundID: SystemSoundID = 1324
+        AudioServicesPlaySystemSound (systemSoundID)
+    }
+
+    
+    
+    
 }
+
+
+//helper functions
+
+func isValidEmail(testStr:String) -> Bool {
+    // print("validate calendar: \(testStr)")
+    let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+    
+    let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+    return emailTest.evaluate(with: testStr)
+}
+
+
+
+
+
+func cleanText(_ _text:String!)->String{
+    
+    var cleanText = ""
+    
+    // print("phone = \(_text)")
+    cleanText = _text!.replacingOccurrences(of: "\t", with: "", options: NSString.CompareOptions.literal, range: nil)
+    cleanText = cleanText.replacingOccurrences(of: "\n", with: "-", options: NSString.CompareOptions.literal, range: nil)
+    cleanText = cleanText.replacingOccurrences(of: "\r", with: "", options: NSString.CompareOptions.literal, range: nil)
+    cleanText = cleanText.replacingOccurrences(of: "\\", with: "", options: NSString.CompareOptions.literal, range: nil)
+    cleanText = cleanText.replacingOccurrences(of: "\0", with: "", options: NSString.CompareOptions.literal, range: nil)
+    cleanText = cleanText.replacingOccurrences(of: "^\\s*", with: "", options: NSString.CompareOptions.literal, range: nil)
+    
+    
+    cleanText = cleanText.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+    
+    print("Clean Text= \(cleanText)")
+    return cleanText
+}
+
+func cleanAddress(_ _dirtyString:String!)->String{
+    var cleanAddress = ""
+    
+    print("phone = \(_dirtyString)")
+    cleanAddress = _dirtyString!.replacingOccurrences(of: "(", with: "", options: NSString.CompareOptions.literal, range: nil)
+    cleanAddress = cleanAddress.replacingOccurrences(of: ")", with: "", options: NSString.CompareOptions.literal, range: nil)
+    print("address Clean = \(cleanAddress)")
+    
+    if(cleanAddress == ""){
+        cleanAddress = "No Address Saved"
+    }
+    return cleanAddress
+}
+
+
+
+
+func cleanPhoneNumber(_ _number:String!)->String{
+    print("clean phone number \(_number)")
+    let stringArray = _number.components(
+        separatedBy: CharacterSet.decimalDigits.inverted)
+    print("clean phone stringArray \(stringArray)")
+    let cleanPhone = stringArray.joined(separator: "")
+    print("cleanPhone \(cleanPhone)")
+    return cleanPhone
+}
+
+
+//phone number formatting
+
+
+
+func format(phoneNumber sourcePhoneNumber: String) -> String? {
+    
+    // Remove any character that is not a number
+    let numbersOnly = sourcePhoneNumber.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+    let length = numbersOnly.count
+    let hasLeadingOne = numbersOnly.hasPrefix("1")
+    
+    // Check for supported phone number length
+    guard length == 7 || length == 10 || (length == 11 && hasLeadingOne) else {
+        return nil
+    }
+    
+    let hasAreaCode = (length >= 10)
+    var sourceIndex = 0
+    
+    // Leading 1
+    var leadingOne = ""
+    if hasLeadingOne {
+        leadingOne = "1 "
+        sourceIndex += 1
+    }
+    
+    // Area code
+    var areaCode = ""
+    if hasAreaCode {
+        let areaCodeLength = 3
+        guard let areaCodeSubstring = numbersOnly.substring(start: sourceIndex, offsetBy: areaCodeLength) else {
+            return nil
+        }
+        areaCode = String(format: "(%@) ", areaCodeSubstring)
+        sourceIndex += areaCodeLength
+    }
+    
+    // Prefix, 3 characters
+    let prefixLength = 3
+    guard let prefix = numbersOnly.substring(start: sourceIndex, offsetBy: prefixLength) else {
+        return nil
+    }
+    sourceIndex += prefixLength
+    
+    // Suffix, 4 characters
+    let suffixLength = 4
+    guard let suffix = numbersOnly.substring(start: sourceIndex, offsetBy: suffixLength) else {
+        return nil
+    }
+    
+    return leadingOne + areaCode + prefix + "-" + suffix
+}
+
+
+func testFormat(sourcePhoneNumber: String) -> String {
+    if let formattedPhoneNumber = format(phoneNumber: sourcePhoneNumber) {
+        return formattedPhoneNumber
+    }
+    else {
+        return "Format Error"
+    }
+}
+
 
 
 
 class PaddedTextField: UITextField {
     
     var placeHolder:String!
+    var canPaste:Bool = true
     
     override init(frame:CGRect)
     {
@@ -361,6 +573,7 @@ class PaddedTextField: UITextField {
         self.font = inputFont
         self.returnKeyType = UIReturnKeyType.next
         self.translatesAutoresizingMaskIntoConstraints = false
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -379,6 +592,28 @@ class PaddedTextField: UITextField {
         newBounds.origin.x += leftMargin
         return newBounds
     }
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if self.canPaste == false{
+            if action == #selector(UIResponderStandardEditActions.increaseSize(_:)){
+                return false
+            }
+            if action == #selector(UIResponderStandardEditActions.paste(_:)) {
+                return false
+            }
+        }
+        return super.canPerformAction(action, withSender: sender)
+    }
+    /*
+    override func canPerformAction(action: Selector, withSender sender: AnyObject?) -> Bool {
+        if action == "paste:" {
+            return false
+        }
+        return super.canPerformAction(action, withSender: sender)
+    }
+ */
+    
+    
+    
     
     func reset() {
         self.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
@@ -470,6 +705,13 @@ class SegmentedControl:UISegmentedControl{
         fatalError("init(coder:) has not been implemented")
     }
 }
+
+
+
+
+
+
+
 
 class Label :UILabel{
     var valueMode:Bool!
@@ -842,6 +1084,7 @@ class SearchBarContainerView: UIView {
 
 /////////////////////    Helper Methods     //////////////////////////////////
 
+/*
 func simpleAlert(_vc:UIViewController,_title:String,_message:String?){
     print("simpleAlert: \(String(describing: _message))")
     let alertController = UIAlertController(title: _title, message: _message, preferredStyle: UIAlertControllerStyle.alert)
@@ -851,134 +1094,21 @@ func simpleAlert(_vc:UIViewController,_title:String,_message:String?){
         print("OK")
     }
     alertController.addAction(okAction)
-    _vc.present(alertController, animated: true, completion: nil)
+    
+    
+    
+    
+    
+    
+    
+    
     
 }
-
-func playSaveSound(){
-    // create a sound ID, in this case its the tweet sound.
-    let systemSoundID: SystemSoundID = 1322
-    AudioServicesPlaySystemSound (systemSoundID)
-}
-
-func playErrorSound(){
-    // create a sound ID, in this case its the tweet sound.
-    let systemSoundID: SystemSoundID = 1324
-    AudioServicesPlaySystemSound (systemSoundID)
-}
+ 
+ */
 
 
 
-
-func cleanText(_ _text:String!)->String{
-    
-    var cleanText = ""
-    
-       // print("phone = \(_text)")
-        cleanText = _text!.replacingOccurrences(of: "\t", with: "", options: NSString.CompareOptions.literal, range: nil)
-        cleanText = cleanText.replacingOccurrences(of: "\n", with: "-", options: NSString.CompareOptions.literal, range: nil)
-        cleanText = cleanText.replacingOccurrences(of: "\r", with: "", options: NSString.CompareOptions.literal, range: nil)
-        cleanText = cleanText.replacingOccurrences(of: "\\", with: "", options: NSString.CompareOptions.literal, range: nil)
-        cleanText = cleanText.replacingOccurrences(of: "\0", with: "", options: NSString.CompareOptions.literal, range: nil)
-        cleanText = cleanText.replacingOccurrences(of: "^\\s*", with: "", options: NSString.CompareOptions.literal, range: nil)
-        
-        
-        cleanText = cleanText.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-
-        print("Clean Text= \(cleanText)")
-    return cleanText
-}
-
-func cleanAddress(_ _dirtyString:String!)->String{
-    var cleanAddress = ""
-    
-        print("phone = \(_dirtyString)")
-        cleanAddress = _dirtyString!.replacingOccurrences(of: "(", with: "", options: NSString.CompareOptions.literal, range: nil)
-        cleanAddress = cleanAddress.replacingOccurrences(of: ")", with: "", options: NSString.CompareOptions.literal, range: nil)
-        print("address Clean = \(cleanAddress)")
-        
-        if(cleanAddress == ""){
-            cleanAddress = "No Address Saved"
-        }
-    return cleanAddress
-}
-
-
-
-
-func cleanPhoneNumber(_ _number:String!)->String{
-    print("clean phone number \(_number)")
-    let stringArray = _number.components(
-        separatedBy: CharacterSet.decimalDigits.inverted)
-    print("clean phone stringArray \(stringArray)")
-    let cleanPhone = stringArray.joined(separator: "")
-    print("cleanPhone \(cleanPhone)")
-    return cleanPhone
-}
-
-
-//phone number formatting
-
-
-
-func format(phoneNumber sourcePhoneNumber: String) -> String? {
-    
-    // Remove any character that is not a number
-    let numbersOnly = sourcePhoneNumber.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
-    let length = numbersOnly.count
-    let hasLeadingOne = numbersOnly.hasPrefix("1")
-    
-    // Check for supported phone number length
-    guard length == 7 || length == 10 || (length == 11 && hasLeadingOne) else {
-        return nil
-    }
-    
-    let hasAreaCode = (length >= 10)
-    var sourceIndex = 0
-    
-    // Leading 1
-    var leadingOne = ""
-    if hasLeadingOne {
-        leadingOne = "1 "
-        sourceIndex += 1
-    }
-    
-    // Area code
-    var areaCode = ""
-    if hasAreaCode {
-        let areaCodeLength = 3
-        guard let areaCodeSubstring = numbersOnly.substring(start: sourceIndex, offsetBy: areaCodeLength) else {
-            return nil
-        }
-        areaCode = String(format: "(%@) ", areaCodeSubstring)
-        sourceIndex += areaCodeLength
-    }
-    
-    // Prefix, 3 characters
-    let prefixLength = 3
-    guard let prefix = numbersOnly.substring(start: sourceIndex, offsetBy: prefixLength) else {
-        return nil
-    }
-    sourceIndex += prefixLength
-    
-    // Suffix, 4 characters
-    let suffixLength = 4
-    guard let suffix = numbersOnly.substring(start: sourceIndex, offsetBy: suffixLength) else {
-        return nil
-    }
-    
-    return leadingOne + areaCode + prefix + "-" + suffix
-}
-
-
-func testFormat(sourcePhoneNumber: String) -> String {
-    if let formattedPhoneNumber = format(phoneNumber: sourcePhoneNumber) {
-        return formattedPhoneNumber
-    }
-    else {
-        return "Format Error"
-    }
-}
 
 
 

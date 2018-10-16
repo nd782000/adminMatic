@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Nuke
+//import Nuke
 
 
 
@@ -196,7 +196,8 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
         activityView.center = CGPoint(x: self.imageView.frame.size.width / 2, y: self.imageView.frame.size.height / 2)
         imageView.addSubview(activityView)
-        activityView.startAnimating()
+        
+        /*activityView.startAnimating()
         
         let imgURL:URL = URL(string: self.image.thumbPath!)!
         
@@ -210,6 +211,7 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
             //self.imageFullViewController = ImageFullViewController(_image: image)
             
         }
+        */
         
         
         

@@ -969,7 +969,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)
-        self.present(alertController, animated: true, completion: nil)
+        self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
     }
     
     @objc func addImages(){
@@ -1050,7 +1050,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             multiPicker.maxSelectableCount = 1
         }
         
-        self.present(multiPicker, animated: true) {}
+        self.layoutVars.getTopController().present(multiPicker, animated: true) {}
         
         
         
@@ -1066,7 +1066,9 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 selectedAssets.append(assets[i])
                 //print(self.selectedAssets)
                 
-                assets[i].fetchOriginalImage(true, completeBlock: { image, info in
+                
+                //assets[i].fetchOriginalImage(completeBlock: <#T##(UIImage?, [AnyHashable : Any]?) -> Void#>)
+                assets[i].fetchOriginalImage(completeBlock: { image, info in
                     
                     
                     print("making image")
@@ -1130,7 +1132,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         multiPicker.maxSelectableCount = 1
        
         
-        self.present(multiPicker, animated: true) {}
+        self.layoutVars.getTopController().present(multiPicker, animated: true) {}
         
         
         
@@ -1146,7 +1148,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 selectedAssets.append(assets[i])
                 //print(self.selectedAssets)
                 
-                assets[i].fetchOriginalImage(true, completeBlock: { image, info in
+                assets[i].fetchOriginalImage(completeBlock: { image, info in
                     
                     
                     print("making image")
@@ -1430,7 +1432,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         
         if(imagesAdded.count == 0){
             if imageType == "Equipment"{
-                simpleAlert(_vc: self, _title: "No Images Picked", _message: "")
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "No Images Picked", _message: "")
             }else{
                 self.saveData()
             }
@@ -1611,7 +1613,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                         }
                         
                         alertController.addAction(okAction)
-                        self.present(alertController, animated: true, completion: nil)
+                        self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
                         return
                     }
                     
@@ -2087,7 +2089,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
                 alertController.addAction(cancelAction)
                 alertController.addAction(okAction)
-                self.present(alertController, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
             }
             
             
@@ -2152,7 +2154,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
                 alertController.addAction(yesAction)
                 alertController.addAction(noAction)
-                self.present(alertController, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
             }else{
                 images.remove(at: _indexPath.row)
                 self.imageCollectionView.reloadData()
@@ -2201,7 +2203,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             }
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            self.present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             _ = navigationController?.popViewController(animated: false)
         }

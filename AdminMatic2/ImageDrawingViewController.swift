@@ -92,7 +92,7 @@ class ImageDrawingViewController: UIViewController {
             //print("Dismiss")
         }
         alertController.addAction(DestructiveAction)
-        self.present(alertController, animated: true, completion: nil)
+        self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         
     }
     override func viewDidLoad() {
@@ -346,7 +346,7 @@ class ImageDrawingViewController: UIViewController {
         
         /////////////////  Auto Layout   ////////////////////////////////////////////////
      
-        
+        /*
          let viewsDictionary = [
          
          "red":self.redBtn,
@@ -366,7 +366,27 @@ class ImageDrawingViewController: UIViewController {
          "clear":self.clearBtn,
          "done":self.doneBtn
          ] as [String:Button]
- 
+ */
+        
+        
+        var viewsDictionary:[String:Button] = [:]
+        viewsDictionary["red"] = self.redBtn
+        viewsDictionary["orange"] = self.orangeBtn
+        viewsDictionary["yellow"] = self.yellowBtn
+        viewsDictionary["green"] = self.greenBtn
+        viewsDictionary["blue"] = self.blueBtn
+        viewsDictionary["purple"] = self.purpleBtn
+        viewsDictionary["pink"] = self.pinkBtn
+        viewsDictionary["brown"] = self.brownBtn
+        viewsDictionary["white"] = self.whiteBtn
+        viewsDictionary["gray"] = self.grayBtn
+        viewsDictionary["black"] = self.blackBtn
+        viewsDictionary["small"] = self.smallBrushBtn
+        viewsDictionary["medium"] = self.mediumBrushBtn
+        viewsDictionary["large"] = self.largeBrushBtn
+        viewsDictionary["clear"] = self.clearBtn
+        viewsDictionary["done"] = self.doneBtn
+        
         
          let sizeVals = ["colorBtnSize": layoutVars.colorBtnSize,"clearBtnSize": layoutVars.fullWidth/2]  as [String:CGFloat]
         

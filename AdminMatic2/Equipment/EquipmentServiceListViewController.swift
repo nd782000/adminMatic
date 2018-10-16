@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-import Nuke
+//import Nuke
 
 
 protocol ServiceListDelegate{
@@ -178,6 +178,8 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         equipmentImage.addSubview(activityView)
         activityView.startAnimating()
         
+        
+        /*
         let imgURL:URL = URL(string: self.equipment.image.thumbPath!)!
         
         print("imgURL = \(imgURL)")
@@ -189,6 +191,9 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
             
             self.imageFullViewController = ImageFullViewController(_image: self.equipment.image)
         }
+ */
+        
+        
         
         self.equipmentImage.layer.cornerRadius = 5.0
         self.equipmentImage.layer.borderWidth = 2
@@ -365,7 +370,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         
         switch n {
         case let x where x == 0:
-            //simpleAlert(_vc: self, _title: "No Services Due Now", _message: "")
+            //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "No Services Due Now", _message: "")
             
             
             if self.equipment.status == "1" || self.equipment.status == "2"{
@@ -386,10 +391,10 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
                 
                 alertController.addAction(cancelAction)
                 alertController.addAction(okAction)
-                self.present(alertController, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
                 
             }else{
-                simpleAlert(_vc: self, _title: "No Services Due Now", _message: "")
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "No Services Due Now", _message: "")
             }
             
             
@@ -417,10 +422,10 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
                 
                 alertController.addAction(cancelAction)
                 alertController.addAction(okAction)
-                self.present(alertController, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
                 
             }else{
-                simpleAlert(_vc: self, _title: "Service Due Now", _message: "There is 1 service due now.")
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Service Due Now", _message: "There is 1 service due now.")
             }
             
             
@@ -450,10 +455,10 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
                 
                 alertController.addAction(cancelAction)
                 alertController.addAction(okAction)
-                self.present(alertController, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
                 
             }else{
-                simpleAlert(_vc: self, _title: "Services Due Now", _message: "There are \(n) services due now.")
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Services Due Now", _message: "There are \(n) services due now.")
             }
             self.serviceSC.selectedSegmentIndex = 0
             self.tableViewMode = "CURRENT"
@@ -462,7 +467,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
             //need to set equipment status to Needs Repair/Service
             break
         default:
-            simpleAlert(_vc: self, _title: "No Services Due Now", _message: "")
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "No Services Due Now", _message: "")
             break
         }
         
@@ -487,7 +492,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         print("add service")
         /*
         if(currentValue == ""){
-            simpleAlert(_vc: self, _title: "Enter Mileage/Hours", _message: "")
+            simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Enter Mileage/Hours", _message: "")
             return
         }
  */
@@ -610,7 +615,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         
         /*
         if(currentValue == ""){
-            simpleAlert(_vc: self, _title: "Enter Mileage/Hours", _message: "")
+            simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Enter Mileage/Hours", _message: "")
             return
         }
  */
