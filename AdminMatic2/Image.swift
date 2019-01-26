@@ -20,7 +20,7 @@ class Image {
     var height: String!
     var description: String!
     
-    
+     
     
     var customer: String = "0"
     var customerName: String = "Unknown"

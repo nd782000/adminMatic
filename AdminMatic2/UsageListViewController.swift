@@ -13,7 +13,7 @@ import UIKit
 import Alamofire
 //import SwiftyJSON
 
-
+ 
 class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource{
     
     var layoutVars:LayoutVars = LayoutVars()

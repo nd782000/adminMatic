@@ -12,7 +12,7 @@ import Foundation
 import UIKit
 import Alamofire
 //import Nuke
-
+ 
 
 class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelegate, UITextViewDelegate {
     

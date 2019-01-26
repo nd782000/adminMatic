@@ -13,7 +13,7 @@ class ViewControllerWithMenu: UIViewController, UIActionSheetDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    
+   
     var homeButton:UIBarButtonItem!
     var delegate:MenuDelegate!
     

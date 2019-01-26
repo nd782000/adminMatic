@@ -13,7 +13,7 @@ import Alamofire
 import SwiftyJSON
 
 
-
+ 
 class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIScrollViewDelegate, EditContractDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!

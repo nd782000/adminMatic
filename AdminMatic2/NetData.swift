@@ -9,7 +9,7 @@
 
 import Foundation
 import UIKit
-
+ 
 enum MimeType: String {
     case ImageJpeg = "image/jpeg"
     case ImagePng = "image/png"

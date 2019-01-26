@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 import SwiftyJSON
 import  Alamofire
-
+ 
 protocol StackDelegate {
     func displayAlert(_title:String)
     func newLeadView(_lead:Lead)

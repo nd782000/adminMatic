@@ -13,7 +13,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 import DKImagePickerController
-
+ 
 
 class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate,  UIPickerViewDelegate, UIPickerViewDataSource{
     let appDelegate = UIApplication.shared.delegate as! AppDelegate

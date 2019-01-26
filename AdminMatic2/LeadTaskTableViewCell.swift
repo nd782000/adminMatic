@@ -12,7 +12,7 @@ import Foundation
 import UIKit
 import Alamofire
 //import Nuke
-
+ 
 class LeadTaskTableViewCell: UITableViewCell {
     
     var task:Task!

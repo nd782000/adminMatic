@@ -10,7 +10,7 @@ import UIKit
 
 class ImageCollectionViewCell: UICollectionViewCell {
     
-    
+     
     var textLabel: UILabel!
     var imageView: UIImageView!
     var layoutVars: LayoutVars = LayoutVars()

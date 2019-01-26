@@ -14,7 +14,7 @@ import Alamofire
 //import SwiftyJSON
 //import Nuke
 
-
+ 
 class ImageFullViewController: UIViewController, UIScrollViewDelegate{
    
     var layoutVars:LayoutVars = LayoutVars()

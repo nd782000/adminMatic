@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import SwiftyJSON
 
-
+ 
 class WoItemTableViewCell: UITableViewCell {
     
     var woItem:WoItem!

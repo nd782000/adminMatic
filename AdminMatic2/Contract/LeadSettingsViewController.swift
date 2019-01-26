@@ -12,7 +12,7 @@ import UIKit
 
 
 
-
+ 
 class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIScrollViewDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var layoutVars:LayoutVars = LayoutVars()

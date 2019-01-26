@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-
+ 
 class EmailTableViewCell: UITableViewCell,UITextFieldDelegate {
     
     var email:Contact!

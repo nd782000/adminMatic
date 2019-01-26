@@ -11,7 +11,7 @@ import UIKit
 import Alamofire
 //import SwiftyJSON
 
-
+ 
 enum SearchMode{
     case name
     case address

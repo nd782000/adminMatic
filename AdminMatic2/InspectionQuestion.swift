@@ -8,7 +8,7 @@
 
 
 
-
+ 
 import Foundation
 import SwiftyJSON
 import ObjectMapper

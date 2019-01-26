@@ -8,7 +8,7 @@
 // https://github.com/GJNilsen/YPDrawSignatureView/blob/master/README.md Project Contributors
 import UIKit
 import CoreGraphics
-
+ 
 // MARK: Class properties and initialization
 /// # Class: YPDrawSignatureView
 /// Accepts touches and draws an image to an UIView

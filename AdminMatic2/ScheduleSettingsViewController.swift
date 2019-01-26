@@ -9,7 +9,7 @@
 
 import Foundation
 import UIKit
-
+ 
 class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate{
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!

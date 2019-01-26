@@ -17,7 +17,7 @@ protocol EditContractItemDelegate{
     func updateContractItem(_contractItem:ContractItem)
 }
     
-
+ 
 
 class ContractItemViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate, EditLeadDelegate, EditContractItemDelegate{
     

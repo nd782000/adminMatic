@@ -17,7 +17,7 @@ protocol EditEquipmentServiceDelegate{
     func updateEquipmentService(_equipmentService:EquipmentService)
 }
 
-
+ 
 class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UIPickerViewDelegate, EditEquipmentServiceDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var layoutVars:LayoutVars = LayoutVars()

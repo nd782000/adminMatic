@@ -12,7 +12,7 @@ import UIKit
 import Alamofire
 
 
-
+ 
 class ImageDetailViewController: UIViewController, UIDocumentInteractionControllerDelegate{
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var delegate:ImageViewDelegate!

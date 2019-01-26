@@ -13,7 +13,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-
+ 
 class TermsViewController: UIViewController, UITextViewDelegate{
     
     var layoutVars:LayoutVars = LayoutVars()

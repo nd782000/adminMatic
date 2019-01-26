@@ -12,7 +12,7 @@ import UIKit
 import Alamofire
 //import SwiftyJSON
 
-
+ 
 
 class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating{
     var indicator: SDevIndicator!

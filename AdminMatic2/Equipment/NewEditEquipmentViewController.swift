@@ -16,7 +16,7 @@ protocol UpdateEquipmentImageDelegate{
     func updateImage(_image:Image)
 }
 
-
+ 
 
 class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UITextViewDelegate, UpdateEquipmentImageDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate

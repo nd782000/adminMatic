@@ -21,7 +21,7 @@ protocol UsageDelegate{
     func editCost(row:Int,cost:Double)
     func showHistory()
 }
-
+ 
 protocol UpdateReceiptImageDelegate{
     func receiptBtnTapped(_usage:Usage,_index:Int)
     func updateImage(_image:Image,_usageIndex:Int)

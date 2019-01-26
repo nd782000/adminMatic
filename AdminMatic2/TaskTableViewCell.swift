@@ -12,7 +12,7 @@ import Alamofire
 //import Nuke
 
 class TaskTableViewCell: UITableViewCell {
-    
+     
     
     var task:Task!
     var thumbView:UIImageView = UIImageView()

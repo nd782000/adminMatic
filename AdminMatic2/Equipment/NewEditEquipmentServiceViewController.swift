@@ -12,7 +12,7 @@ import Alamofire
 import SwiftyJSON
 
 
-
+ 
 class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!

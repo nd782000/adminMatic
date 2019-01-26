@@ -21,7 +21,7 @@ protocol EquipmentFieldListDelegate{
 
 
 
-
+ 
 class EquipmentFieldsListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, EquipmentFieldListDelegate{
     var indicator: SDevIndicator!
     

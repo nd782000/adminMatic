@@ -11,7 +11,7 @@
 import Foundation
 import UIKit
 import SwiftyJSON
-
+ 
 
 class ContractItemTableViewCell: UITableViewCell {
     

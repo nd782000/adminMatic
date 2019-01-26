@@ -18,7 +18,7 @@ class Shift {
     var comment: String!
     var qty: String!
     
-    
+     
     required init(_ID:String?, _empID: String?, _startTime:Date?, _stopTime:Date?, _status:String?, _comment:String?, _qty:String?) {
         //print(json)
         if _ID != nil {

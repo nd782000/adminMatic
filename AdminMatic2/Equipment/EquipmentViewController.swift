@@ -17,7 +17,7 @@ protocol EditEquipmentDelegate{
     func updateEquipment(_equipment:Equipment)
 }
 
-
+ 
 class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, EditEquipmentDelegate {
     
     var layoutVars:LayoutVars = LayoutVars()

@@ -17,7 +17,7 @@ class Item {
     var typeID: String?
     var totalRemainingQty: String?
     
-    
+     
     //var desc: String!
     //var cost: String!
     // var vendor: String!

@@ -18,7 +18,7 @@ protocol ImageViewDelegate{
     func refreshImages(_images:[Image], _scoreAdjust:Int)
     func showCustomerImages(_customer:String)
 }
-
+ 
 protocol ImageSettingsDelegate{
     func updateSettings(_uploadedBy:String,_portfolio:String,_attachment:String,_task:String,_order:String,_customer:String)
 }

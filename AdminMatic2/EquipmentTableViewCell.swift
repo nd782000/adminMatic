@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 import Alamofire
 //import Nuke
-
+ 
 class EquipmentTableViewCell: UITableViewCell {
     var layoutVars:LayoutVars = LayoutVars()
     var equipment:Equipment!

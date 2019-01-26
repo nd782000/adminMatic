@@ -19,7 +19,7 @@ protocol EquipmentInspectionDelegate{
     func updateInspection(_index:Int,_answer:String)
 }
 
-
+ 
 
 class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, EquipmentInspectionDelegate{
     var indicator: SDevIndicator!

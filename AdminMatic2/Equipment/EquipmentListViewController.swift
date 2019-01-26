@@ -18,7 +18,7 @@ protocol EquipmentListDelegate{
     func disableSearch()
 }
 
-
+ 
 
 class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating, EquipmentListDelegate{
     var indicator: SDevIndicator!

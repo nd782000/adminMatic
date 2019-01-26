@@ -12,7 +12,7 @@ import Alamofire
 import SwiftyJSON
 import DKImagePickerController
 
-
+ 
 class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate{
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var layoutVars:LayoutVars = LayoutVars()

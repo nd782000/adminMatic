@@ -14,7 +14,7 @@ import SwiftyJSON
 import MapKit
 import CoreLocation
 
-
+ 
 
 class VendorViewController: ViewControllerWithMenu, CLLocationManagerDelegate{
     

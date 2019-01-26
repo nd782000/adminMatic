@@ -8,7 +8,7 @@
 
 import Foundation
 import UIKit
-
+ 
 class ItemTableViewCell: UITableViewCell {
     
     var item:Item!

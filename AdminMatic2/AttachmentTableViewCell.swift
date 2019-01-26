@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 import Alamofire
 //import Nuke
-
+ 
 class AttachmentTableViewCell: UITableViewCell {
     
     var attachment:Attachment!

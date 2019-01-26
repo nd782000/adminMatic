@@ -13,7 +13,7 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-
+ 
 
 protocol EmailDelegate{
     func showLoadingView()

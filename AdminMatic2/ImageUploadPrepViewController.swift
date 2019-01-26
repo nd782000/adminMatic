@@ -15,7 +15,7 @@ import Alamofire
 //import SwiftyJSON
 import DKImagePickerController
 
-
+ 
 protocol ImageUploadPrepDelegate {
     func scrollToCell(_indexPath:IndexPath)
     func updateDescription(_index:Int, _description:String)

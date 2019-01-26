@@ -14,7 +14,7 @@ import SwiftyJSON
 import MapKit
 import CoreLocation
 
-
+ 
 
 class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate{
     

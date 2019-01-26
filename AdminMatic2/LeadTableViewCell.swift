@@ -19,7 +19,7 @@ class LeadTableViewCell: UITableViewCell {
     var descriptionLbl: UILabel!
     var daysAgedLbl: UILabel!
     
-    
+     
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)

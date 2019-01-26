@@ -15,7 +15,7 @@ class Zone {
     var name: String!
     
     
-    
+     
     
     required init(_ID:String?, _name: String?) {
         //print(json)

@@ -12,7 +12,7 @@ import Alamofire
 import SwiftyJSON
 //import Nuke
 
-
+ 
 protocol ServiceListDelegate{
     func updateServiceList()
     func updateEquipmentStatus(_equipment:Equipment)

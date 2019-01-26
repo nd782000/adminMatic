@@ -12,7 +12,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-
+ 
 class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!

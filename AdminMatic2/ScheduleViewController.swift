@@ -11,7 +11,7 @@ import UIKit
 import Alamofire
 //import SwiftyJSON
 
-
+ 
 // updates status icons without getting new db data
 protocol ScheduleDelegate{
     func updateSchedule() //from edit/new view for new work orders made

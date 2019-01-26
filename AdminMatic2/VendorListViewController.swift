@@ -14,7 +14,7 @@ import Alamofire
 //import SwiftyJSON
 
 //extension String: SequenceType {}
-
+ 
 
 class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating{
     var indicator: SDevIndicator!
