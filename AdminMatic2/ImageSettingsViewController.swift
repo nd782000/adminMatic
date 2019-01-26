@@ -88,9 +88,9 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         title = "Image Settings"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(ImageSettingsViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(ImageSettingsViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -132,9 +132,9 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         filterToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         filterToolBar.sizeToFit()
         
-        let filterCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ImageSettingsViewController.cancelFilter))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let filterSelectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ImageSettingsViewController.filter))
+        let filterCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ImageSettingsViewController.cancelFilter))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let filterSelectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ImageSettingsViewController.filter))
         
         filterToolBar.setItems([filterCloseButton, spaceButton, filterSelectButton], animated: false)
         filterToolBar.isUserInteractionEnabled = true
@@ -169,8 +169,8 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         orderToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         orderToolBar.sizeToFit()
         
-        let orderCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ImageSettingsViewController.cancelOrder))
-        let orderSelectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ImageSettingsViewController.setOrder))
+        let orderCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ImageSettingsViewController.cancelOrder))
+        let orderSelectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ImageSettingsViewController.setOrder))
         
         orderToolBar.setItems([orderCloseButton, spaceButton, orderSelectButton], animated: false)
         orderToolBar.isUserInteractionEnabled = true
@@ -179,7 +179,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         print("layoutViews 2")
         
         
-        self.clearFiltersBtn.addTarget(self, action: #selector(ImageSettingsViewController.clearFilters), for: UIControlEvents.touchUpInside)
+        self.clearFiltersBtn.addTarget(self, action: #selector(ImageSettingsViewController.clearFilters), for: UIControl.Event.touchUpInside)
         
        // self.addImageBtn.frame = CGRect(x:0, y: self.view.frame.height - 50, width: self.view.frame.width - 100, height: 50)
         self.clearFiltersBtn.translatesAutoresizingMaskIntoConstraints = false

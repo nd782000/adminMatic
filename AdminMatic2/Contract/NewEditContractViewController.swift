@@ -13,7 +13,8 @@ import Alamofire
 import SwiftyJSON
 
 
-class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIScrollViewDelegate, EditContractDelegate {
+
+class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIScrollViewDelegate, EditContractDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
@@ -36,7 +37,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
     var statusIcon:UIImageView = UIImageView()
     var statusTxtField:PaddedTextField!
     var statusPicker: Picker!
-    var statusArray = ["New","Sent","Accepted","Declined","Waiting","Canceled"]
+    var statusArray  = ["New","Sent","Awarded","Scheduled","Declined","Waiting","Canceled"]
     
     //customer search
     var customerSearchBar:UISearchBar = UISearchBar()
@@ -96,6 +97,8 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         //print("lead init \(_leadID)")
         //for an empty lead to start things off
         self.contract = _contract
+        
+        print("contract status = \(contract.status)")
     }
     
     //new from customer view
@@ -137,9 +140,9 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(NewEditContractViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(NewEditContractViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -230,8 +233,9 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         self.statusPicker = Picker()
         self.statusPicker.tag = 1
         self.statusPicker.delegate = self
+        self.statusPicker.dataSource = self
         //set status
-        self.statusPicker.selectRow(Int(self.contract.status)! - 1, inComponent: 0, animated: false)
+       self.statusPicker.selectRow(Int(self.contract.status)! - 1, inComponent: 0, animated: false)
         self.statusTxtField = PaddedTextField(placeholder: "")
         self.statusTxtField.textAlignment = NSTextAlignment.center
         self.statusTxtField.translatesAutoresizingMaskIntoConstraints = false
@@ -245,9 +249,9 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         statusToolBar.barStyle = UIBarStyle.default
         statusToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         statusToolBar.sizeToFit()
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditContractViewController.cancelStatusInput))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setStatusButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditContractViewController.handleStatusChange))
+        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelStatusInput))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let setStatusButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.handleStatusChange))
         statusToolBar.setItems([closeButton, spaceButton, setStatusButton], animated: false)
         statusToolBar.isUserInteractionEnabled = true
         statusTxtField.inputAccessoryView = statusToolBar
@@ -266,7 +270,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         
         customerSearchBar.backgroundColor = UIColor.white
         customerSearchBar.barTintColor = UIColor.white
-        customerSearchBar.searchBarStyle = UISearchBarStyle.default
+        customerSearchBar.searchBarStyle = UISearchBar.Style.default
         customerSearchBar.delegate = self
         customerSearchBar.tag = 1
         self.view.addSubview(customerSearchBar)
@@ -275,7 +279,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         custToolBar.barStyle = UIBarStyle.default
         custToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         custToolBar.sizeToFit()
-        let closeCustButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditContractViewController.cancelCustInput))
+        let closeCustButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelCustInput))
         
         custToolBar.setItems([closeCustButton], animated: false)
         custToolBar.isUserInteractionEnabled = true
@@ -327,6 +331,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         
         self.chargeTypePicker = Picker()
         self.chargeTypePicker.delegate = self
+        self.chargeTypePicker.dataSource = self
         self.chargeTypePicker.tag = 2
         
         
@@ -341,9 +346,9 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         chargeTypeToolBar.barStyle = UIBarStyle.default
         chargeTypeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         chargeTypeToolBar.sizeToFit()
-        let closeChargeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditContractViewController.cancelChargeTypeInput))
+        let closeChargeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelChargeTypeInput))
         
-        let setChargeTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditContractViewController.handleChargeTypeChange))
+        let setChargeTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.handleChargeTypeChange))
         chargeTypeToolBar.setItems([closeChargeTypeButton, spaceButton, setChargeTypeButton], animated: false)
         chargeTypeToolBar.isUserInteractionEnabled = true
         chargeTypeTxtField.inputAccessoryView = chargeTypeToolBar
@@ -385,7 +390,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         
         repSearchBar.backgroundColor = UIColor.white
         repSearchBar.barTintColor = UIColor.white
-        repSearchBar.searchBarStyle = UISearchBarStyle.default
+        repSearchBar.searchBarStyle = UISearchBar.Style.default
         repSearchBar.delegate = self
         repSearchBar.tag = 2
         self.view.addSubview(repSearchBar)
@@ -395,7 +400,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         repToolBar.barStyle = UIBarStyle.default
         repToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         repToolBar.sizeToFit()
-        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditContractViewController.cancelRepInput))
+        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelRepInput))
         
         repToolBar.setItems([closeRepButton], animated: false)
         repToolBar.isUserInteractionEnabled = true
@@ -449,7 +454,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         notesToolBar.barStyle = UIBarStyle.default
         notesToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         notesToolBar.sizeToFit()
-        let closeNotesButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditContractViewController.cancelNotesInput))
+        let closeNotesButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelNotesInput))
         
         notesToolBar.setItems([closeNotesButton], animated: false)
         notesToolBar.isUserInteractionEnabled = true
@@ -596,6 +601,11 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         super.viewDidLayoutSubviews()
     }
     
+    // Number of columns of data
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
     // returns the number of 'columns' to display.
     func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
         return 1
@@ -636,13 +646,19 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
                 myImageView.image = UIImage(named:"inProgressStatus.png")
                 break
             case 2:
+                myImageView.image = UIImage(named:"acceptedStatus.png")
+                break;
+            case 3:
                 myImageView.image = UIImage(named:"doneStatus.png")
                 break
-            case 3:
+            case 4:
                 myImageView.image = UIImage(named:"cancelStatus.png")
                 break
-            case 4:
+            case 5:
                 myImageView.image = UIImage(named:"waitingStatus.png")
+                break
+            case 6:
+                myImageView.image = UIImage(named:"cancelStatus.png")
                 break
             default:
                 myImageView.image = nil
@@ -697,16 +713,20 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         setStatus(status: contract.status)
         editsMade = true
     }
-    
+    //["New","Sent","Accepted","Scheduled","Declined","Waiting","Canceled"]
     func setStatus(status: String) {
         print("set status \(status)")
         switch (status) {
-        case "1":
+        case "0":
             let statusImg = UIImage(named:"unDoneStatus.png")
             statusIcon.image = statusImg
             break;
-        case "2":
+        case "1":
             let statusImg = UIImage(named:"inProgressStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "2":
+            let statusImg = UIImage(named:"acceptedStatus.png")
             statusIcon.image = statusImg
             break;
         case "3":
@@ -719,6 +739,10 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
             break;
         case "5":
             let statusImg = UIImage(named:"waitingStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "6":
+            let statusImg = UIImage(named:"cancelStatus.png")
             statusIcon.image = statusImg
             break;
         default:
@@ -736,14 +760,14 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
         
         //warn users about items being set to $0 on change to NC
         if "\(self.chargeTypePicker.selectedRow(inComponent: 0) + 1)" == "1" && self.contract.ID != "0"{
-            let alertController = UIAlertController(title: "Set All Items to NO CHARGE?", message: "Setting the contract to NO CHARGE will force all items to be no charge.  Do you wish to proceed?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Set All Items to NO CHARGE?", message: "Setting the contract to NO CHARGE will force all items to be no charge.  Do you wish to proceed?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("NO")
                 return
             }
             
-            let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("YES")
                 
@@ -962,7 +986,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
                 print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
             }
             cell.nameLbl.attributedText = highlightedText
@@ -997,7 +1021,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
                 print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
             }
             cell.nameLbl.attributedText = highlightedText
@@ -1126,10 +1150,10 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
     
     @objc func submit(){
         print("submit Contract")
-        var newContract:Bool = false
-        if self.contract.ID == "0"{
-            newContract = true
-        }
+       // var newContract:Bool = false
+        //if self.contract.ID == "0"{
+            //newContract = true
+        //}
         
         if(!validateFields()){
             print("didn't pass validation")
@@ -1251,13 +1275,13 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
     @objc func goBack(){
         if(self.editsMade == true){
             print("editsMade = true")
-            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("Cancel")
             }
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
                 _ = self.navigationController?.popViewController(animated: true)
@@ -1327,14 +1351,14 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
             if appDelegate.loggedInEmployee?.ID == contract.salesRep{
                 //your contract, you = the rep
                 
-                let alertController = UIAlertController(title: "No Sales Rep Signature", message: "Do you want to add your signature now?", preferredStyle: UIAlertControllerStyle.alert)
-                let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+                let alertController = UIAlertController(title: "No Sales Rep Signature", message: "Do you want to add your signature now?", preferredStyle: UIAlertController.Style.alert)
+                let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
                     (result : UIAlertAction) -> Void in
                     //NO  proceed with get contract
                     // self.getContract()
                     self.contract.repSignature = "0"
                 }
-                let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+                let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
                     (result : UIAlertAction) -> Void in
                     //YES  go to signature page
                     
@@ -1358,10 +1382,10 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
             }else{
                 print("this is not your contract")
                 
-                let alertController = UIAlertController(title: "Not Your Contract", message: "You are not the sales rep assigned to this contract.  You may want to change it and provide your signature.", preferredStyle: UIAlertControllerStyle.alert)
+                let alertController = UIAlertController(title: "Not Your Contract", message: "You are not the sales rep assigned to this contract.  You may want to change it and provide your signature.", preferredStyle: UIAlertController.Style.alert)
                 
                 
-                let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+                let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                     (result : UIAlertAction) -> Void in
                     print("OK")
                     //_ = self.navigationController?.popViewController(animated: true)
@@ -1492,7 +1516,10 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIT
     }
     
     
-    
+    func updateContract(_contractItem: ContractItem){
+        print("updateContract Item")
+       
+    }
     
     func suggestStatusChange(_emailCount:Int) {
         print("suggestStatusChange")

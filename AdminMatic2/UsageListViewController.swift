@@ -11,17 +11,20 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 
 
 class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource{
     
     var layoutVars:LayoutVars = LayoutVars()
     var workOrderItemID:String!
+    var type:String!
+    var indicator: SDevIndicator!
+    
     var units:String!
     var total:String!
     var usageListTableView: TableView!
-    var usageJSON: JSON!
+    //var usageJSON: JSON!
     var usages: [Usage] = []
     var usageTotalLbl: Label!
     let shortDateFormatter = DateFormatter()
@@ -30,11 +33,15 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     let nameTH: THead = THead(text: "Employee")
     let dateTH: THead = THead(text: "Date")
     let qtyTH: THead = THead(text: "Qty.")
+    let unitCostTH: THead = THead(text: "Cost")
+    let totalCostTH: THead = THead(text: "Total")
+    let receiptTH: THead = THead(text: "Rec.")
    
-    init(_workOrderItemID:String,_units:String){
+    init(_workOrderItemID:String,_units:String,_type:String){
         super.init(nibName:nil,bundle:nil)
         self.workOrderItemID = _workOrderItemID
         self.units = _units
+        self.type = _type
         //self.total = _total
     }
     
@@ -47,36 +54,17 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         view.backgroundColor = layoutVars.backgroundColor
         title = "Full Usage History"
         
-         self.shortDateFormatter.dateFormat = "MM/dd/yy"
+         self.shortDateFormatter.dateFormat = "MM/dd"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(UsageListViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(UsageListViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
-        
-        tableHead.backgroundColor = layoutVars.buttonTint
-        tableHead.layer.cornerRadius = 4.0
-        tableHead.translatesAutoresizingMaskIntoConstraints = false
-        tableHead.addSubview(nameTH)
-        tableHead.addSubview(dateTH)
-        tableHead.addSubview(qtyTH)
-        self.view.addSubview(tableHead)
-        
-        self.usageListTableView =  TableView()
-        self.usageListTableView.delegate  =  self
-        self.usageListTableView.dataSource  =  self
-        self.usageListTableView.register(UsageTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.usageListTableView)
-        
-        self.usageTotalLbl = Label()
-        self.usageTotalLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
-        self.usageTotalLbl.textAlignment = NSTextAlignment.right
-        self.view.addSubview(self.usageTotalLbl)
         
         
         /////////  Auto Layout   //////////////////////////////////////
@@ -94,6 +82,8 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     func getAllUsage(){
         print("get all usage")
         
+        self.indicator = SDevIndicator.generate(self.view)!
+        
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
@@ -105,105 +95,177 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             print("response = \(response)")
             if let json = response.result.value {
                 print("usage JSON: \(json)")
-                self.usageJSON = JSON(json)
-                self.parseUsageJSON()
+                
+                
+                //native way
+                
+                do {
+                    if let data = response.data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        
+                        let usages = json["usage"] as? [[String: Any]]{
+                        
+                        let usageCount = usages.count
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                        
+                        self.total = json["total"] as! String
+                        
+                        for n in 0 ..< usageCount {
+                            let startDate = dateFormatter.date(from: usages[n]["start"] as! String)!
+                            
+                            
+                            let usage:Usage!
+                            
+                            
+                            if(usages[n]["stop"] as! String != "0000-00-00 00:00:00"){
+                                let stopDate = dateFormatter.date(from: usages[n]["stop"] as! String)!
+                                
+                                usage = Usage(_ID: usages[n]["ID"] as? String,
+                                              _empID: usages[n]["empID"] as? String,
+                                              _depID: usages[n]["depID"] as? String,
+                                              _woID: usages[n]["woID"] as? String,
+                                              _start: startDate,
+                                              _stop: stopDate,
+                                              _lunch: usages[n]["lunch"] as? String,
+                                              _qty: usages[n]["qty"] as? String,
+                                              _empName: usages[n]["empName"] as? String,
+                                              _type: usages[n]["type"] as? String,
+                                              _itemID: usages[n]["woItemID"] as? String,
+                                              _unitPrice: usages[n]["unitPrice"] as? String,
+                                              _totalPrice: usages[n]["totalPrice"] as? String,
+                                              _vendor: usages[n]["vendor"] as? String,
+                                              _unitCost: usages[n]["unitCost"] as? String,
+                                              _totalCost: usages[n]["totalCost"] as? String,
+                                              _chargeType: usages[n]["chargeID"] as? String,
+                                              _override: usages[n]["override"] as? String,
+                                              _empPic: usages[n]["empPic"] as? String,
+                                              _locked: true,
+                                              _addedBy: usages[n]["addedBy"] as? String,
+                                              _del: ""
+                                )
+                                
+                                if usages[n]["hasReceipt"] as? String == "1"{
+                                    usage.hasReceipt = "1"
+                                    /*
+                                    usage.receipt = Image(_id: usages[n]["receipt"]["ID"] as? String, _thumbPath:"https://www.atlanticlawnandgarden.com/uploads/general/thumbs/\(usages[n]["receipt"]["fileName"] as? String)", _mediumPath: "https://www.atlanticlawnandgarden.com/uploads/general/medium/\(usages[n]["receipt"]["fileName"] as? String)", _rawPath: "https://www.atlanticlawnandgarden.com/uploads/general/\(usages[n]["receipt"]["fileName"] as? String)", _name: usages[n]["receipt"]["name"] as? String, _width: usages[n]["receipt"]["width"] as? String, _height: usages[n]["receipt"]["height"] as? String, _description: usages[n]["description"]["ID"] as? String, _dateAdded: usages[n]["receipt"]["dateAdded"] as? String, _createdBy: usages[n]["receipt"]["createdBy"] as? String, _type: usages[n]["receipt"]["type"] as? String)
+ */
+                                    
+                                    
+                                }else{
+                                    usage.hasReceipt = "0"
+                                }
+                                
+                            }else{
+                                
+                                usage = Usage(_ID: usages[n]["ID"] as? String,
+                                              _empID: usages[n]["empID"] as? String,
+                                              _depID: usages[n]["depID"] as? String,
+                                              _woID: usages[n]["woID"] as? String,
+                                              _start: startDate,
+                                              _lunch: usages[n]["lunch"] as? String,
+                                              _qty: usages[n]["qty"] as? String,
+                                              _empName: usages[n]["empName"] as? String,
+                                              _type: usages[n]["type"] as? String,
+                                              _itemID: usages[n]["woItemID"] as? String,
+                                              _unitPrice: usages[n]["unitPrice"] as? String,
+                                              _totalPrice: usages[n]["totalPrice"] as? String,
+                                              _vendor: usages[n]["vendor"] as? String,
+                                              _unitCost: usages[n]["unitCost"] as? String,
+                                              _totalCost: usages[n]["totalCost"] as? String,
+                                              _chargeType: usages[n]["chargeID"] as? String,
+                                              _override: usages[n]["override"] as? String,
+                                              _empPic: usages[n]["empPic"] as? String,
+                                              _locked: true,
+                                              _addedBy: usages[n]["addedBy"] as? String,
+                                              _del: ""
+                                )
+                                if usages[n]["hasReceipt"] as? String == "1"{
+                                    usage.hasReceipt = "1"
+                                }else{
+                                    usage.hasReceipt = "0"
+                                }
+                                
+                                
+                            }
+                            
+                            self.usages.append(usage)
+                        }
+                        // Close Indicator
+                        self.indicator.dismissIndicator()
+                        
+                        if self.type == "1"{
+                            self.layoutLaborView()
+                        }else{
+                            self.layoutMaterialView()
+                        }
+                        
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                } catch {
+                    print("Error deserializing JSON: \(error)")
+                }
+                
+                
+                
                 
             }
         }
     }
     
-    func parseUsageJSON(){
+    
+    func layoutLaborView(){
+        //self.total = self.usageJSON["total"].stringValue
+        
+        print("layoutLaborView")
+        
+        tableHead.backgroundColor = layoutVars.buttonTint
+        tableHead.layer.cornerRadius = 4.0
+        tableHead.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.view.addSubview(tableHead)
+        
+        self.usageListTableView =  TableView()
+        self.usageListTableView.delegate  =  self
+        self.usageListTableView.dataSource  =  self
+        self.usageListTableView.register(UsageTableViewCell.self, forCellReuseIdentifier: "cell")
+        self.view.addSubview(self.usageListTableView)
+        
+        self.usageTotalLbl = Label()
+        self.usageTotalLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
+        self.usageTotalLbl.textAlignment = NSTextAlignment.right
+        self.view.addSubview(self.usageTotalLbl)
         
         
-        print("parse usageJSON: \(self.usageJSON)")
+        
+        tableHead.addSubview(nameTH)
+        tableHead.addSubview(dateTH)
+        tableHead.addSubview(qtyTH)
         
         
-        let usageCount = self.usageJSON["usage"].count
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        
-        
-        for n in 0 ..< usageCount {
-            let startDate = dateFormatter.date(from: self.usageJSON["usage"][n]["start"].string!)!
-            
-            
-            let usage:Usage!
-            
-            
-            if(self.usageJSON["usage"][n]["stop"].string != "0000-00-00 00:00:00"){
-                let stopDate = dateFormatter.date(from: self.usageJSON["usage"][n]["stop"].string!)!
-                
-                usage = Usage(_ID: self.usageJSON["usage"][n]["ID"].stringValue,
-                                  _empID: self.usageJSON["usage"][n]["empID"].stringValue,
-                                  _depID: self.usageJSON["usage"][n]["depID"].stringValue,
-                                  _woID: self.usageJSON["usage"][n]["woID"].stringValue,
-                                  _start: startDate,
-                                  _stop: stopDate,
-                                  _lunch: self.usageJSON["usage"][n]["lunch"].stringValue,
-                                  _qty: self.usageJSON["usage"][n]["qty"].stringValue,
-                                  _empName: self.usageJSON["usage"][n]["empName"].stringValue,
-                                  _type: self.usageJSON["usage"][n]["type"].stringValue,
-                                  _itemID: self.usageJSON["usage"][n]["woItemID"].stringValue,
-                                  _unitPrice: self.usageJSON["usage"][n]["unitPrice"].stringValue,
-                                  _totalPrice: self.usageJSON["usage"][n]["totalPrice"].stringValue,
-                                  _vendor: self.usageJSON["usage"][n]["vendor"].stringValue,
-                                  _unitCost: self.usageJSON["usage"][n]["unitCost"].stringValue,
-                                  _totalCost: self.usageJSON["usage"][n]["totalCost"].stringValue,
-                                  _chargeType: self.usageJSON["usage"][n]["chargeID"].stringValue,
-                                  _override: self.usageJSON["usage"][n]["override"].stringValue,
-                                  _empPic: self.usageJSON["usage"][n]["empPic"].stringValue,
-                                  _locked: true,
-                                  _addedBy: self.usageJSON["usage"][n]["addedBy"].stringValue,
-                                  _del: ""
-                )
-                
-            }else{
-                
-                usage = Usage(_ID: self.usageJSON["usage"][n]["ID"].stringValue,
-                                  _empID: self.usageJSON["usage"][n]["empID"].stringValue,
-                                  _depID: self.usageJSON["usage"][n]["depID"].stringValue,
-                                  _woID: self.usageJSON["usage"][n]["woID"].stringValue,
-                                  _start: startDate,
-                                  _lunch: self.usageJSON["usage"][n]["lunch"].stringValue,
-                                  _qty: self.usageJSON["usage"][n]["qty"].stringValue,
-                                  _empName: self.usageJSON["usage"][n]["empName"].stringValue,
-                                  _type: self.usageJSON["usage"][n]["type"].stringValue,
-                                  _itemID: self.usageJSON["usage"][n]["woItemID"].stringValue,
-                                  _unitPrice: self.usageJSON["usage"][n]["unitPrice"].stringValue,
-                                  _totalPrice: self.usageJSON["usage"][n]["totalPrice"].stringValue,
-                                  _vendor: self.usageJSON["usage"][n]["vendor"].stringValue,
-                                  _unitCost: self.usageJSON["usage"][n]["unitCost"].stringValue,
-                                  _totalCost: self.usageJSON["usage"][n]["totalCost"].stringValue,
-                                  _chargeType: self.usageJSON["usage"][n]["chargeID"].stringValue,
-                                  _override: self.usageJSON["usage"][n]["override"].stringValue,
-                                  _empPic: self.usageJSON["usage"][n]["empPic"].stringValue,
-                                  _locked: true,
-                                  _addedBy: self.usageJSON["usage"][n]["addedBy"].stringValue,
-                                  _del: ""
-                )
-                
-                
-            }
-
-            self.usages.append(usage)
-        }
-        self.total = self.usageJSON["total"].stringValue
-        self.usageTotalLbl.text = "Total: \(self.total!) \(self.units!)(s)"
+        self.usageTotalLbl.text = "Total: \(total!) \(self.units!)(s)"
         
         let metricsDictionary = ["fullWidth": self.view.frame.size.width - 30,"fullHeight":self.view.frame.size.height-126] as [String:Any]
         
         // Tablehead
         let thDictionary = [
             
-            "name":nameTH,
-            "date":dateTH,
-            "qty":qtyTH
+            "name":self.nameTH,
+            "date":self.dateTH,
+            "qty":self.qtyTH
             ] as [String:AnyObject]
         
-        tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[name]-15-[date(75)]-[qty(100)]-5-|", options: [], metrics: metricsDictionary, views: thDictionary))
-        tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[name(20)]", options: [], metrics: metricsDictionary, views: thDictionary))
-        tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[date(20)]", options: [], metrics: metricsDictionary, views: thDictionary))
-        tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[qty(20)]", options: [], metrics: metricsDictionary, views: thDictionary))
+        self.tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[name]-15-[date(75)]-[qty(100)]-5-|", options: [], metrics: metricsDictionary, views: thDictionary))
+        self.tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[name(20)]", options: [], metrics: metricsDictionary, views: thDictionary))
+        self.tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[date(20)]", options: [], metrics: metricsDictionary, views: thDictionary))
+        self.tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[qty(20)]", options: [], metrics: metricsDictionary, views: thDictionary))
         
         
         let usageViewsDictionary = ["th":self.tableHead,"view1": self.usageListTableView,"view2": self.usageTotalLbl] as [String:Any]
@@ -216,9 +278,80 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view1(fullWidth)]-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-77-[th(40)][view1]-[view2(30)]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         
-
+        
         self.usageListTableView.reloadData()
+        
     }
+    
+    
+    func layoutMaterialView(){
+        //self.total = self.usageJSON["total"].stringValue
+        
+        print("layoutMaterialView")
+        
+        tableHead.backgroundColor = layoutVars.buttonTint
+        tableHead.layer.cornerRadius = 4.0
+        tableHead.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.view.addSubview(tableHead)
+        
+        self.usageListTableView =  TableView()
+        self.usageListTableView.delegate  =  self
+        self.usageListTableView.dataSource  =  self
+        self.usageListTableView.register(UsageTableViewCell.self, forCellReuseIdentifier: "cell")
+        self.view.addSubview(self.usageListTableView)
+        
+        self.usageTotalLbl = Label()
+        self.usageTotalLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
+        self.usageTotalLbl.textAlignment = NSTextAlignment.right
+        self.view.addSubview(self.usageTotalLbl)
+        
+        
+        
+        tableHead.addSubview(dateTH)
+        tableHead.addSubview(qtyTH)
+        tableHead.addSubview(unitCostTH)
+        tableHead.addSubview(totalCostTH)
+        tableHead.addSubview(receiptTH)
+        
+        self.usageTotalLbl.text = "Total: \(total!) \(self.units!)(s)"
+        print("layoutMaterialView 1")
+        let metricsDictionary = ["fullWidth": self.view.frame.size.width - 30,"fullHeight":self.view.frame.size.height-126] as [String:Any]
+        
+        // Tablehead
+        let thDictionary = [
+            
+            "date":self.dateTH,
+            "qty":self.qtyTH,
+            "cost":self.unitCostTH,
+            "total":self.totalCostTH,
+            "rec":self.receiptTH
+            ] as [String:AnyObject]
+        
+        print("layoutMaterialView 2")
+        self.tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[date(65)]-[qty(50)]-[cost(75)]-[total(100)]-[rec(50)]-5-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: thDictionary))
+        print("layoutMaterialView 3")
+        self.tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[date(20)]", options: [], metrics: metricsDictionary, views: thDictionary))
+        
+        
+        print("layoutMaterialView 4")
+        let usageViewsDictionary = ["th":self.tableHead,"view1": self.usageListTableView,"view2": self.usageTotalLbl] as [String:Any]
+        
+        
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[th]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        print("layoutMaterialView 5")
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(fullWidth)]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view1(fullWidth)]-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        print("layoutMaterialView 6")
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-77-[th(40)][view1]-[view2(30)]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        
+        
+        self.usageListTableView.reloadData()
+        
+    }
+    
+    
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
@@ -228,24 +361,64 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell:UsageTableViewCell = usageListTableView.dequeueReusableCell(withIdentifier: "cell") as! UsageTableViewCell
+        if self.type == "1"{
+            cell.layoutForLabor()
+            cell.usageNameLbl.text = usages[indexPath.row].empName
+            cell.usageDateLbl.text = self.shortDateFormatter.string(from: usages[indexPath.row].start!)
+            cell.usageTotalLbl.text = "\(usages[indexPath.row].qty!) \(self.units!)(s)"
+        }else{
+            cell.layoutForMaterial()
+            cell.usageDateLbl.text = self.shortDateFormatter.string(from: usages[indexPath.row].start!)
+            cell.usageQtyLbl.text = "\(usages[indexPath.row].qty!) \(self.units!)(s)"
+            cell.usageUnitCostLbl.text = "$\(usages[indexPath.row].unitCost!)"
+            cell.usageTotalLbl.text = "$\(usages[indexPath.row].totalCost!)"
+            if usages[indexPath.row].hasReceipt == "1"{
+                //cell.usageReceiptLbl.text = usages[indexPath.row].
+                 cell.setCheck()
+            }else{
+                cell.unSetCheck()
+            }
+            
+            
+            
+            
+        }
         
-         cell.layoutForHistory()
-        
-        cell.usageNameLbl.text = usages[indexPath.row].empName
-        
-        
-        cell.usageDateLbl.text = self.shortDateFormatter.string(from: usages[indexPath.row].start!)
-        
-        
-        print("usages[indexPath.row].qty = \(String(describing: usages[indexPath.row].qty))")
-        print("self.units = \(self.units)")
-        cell.usageTotalLbl.text = "\(usages[indexPath.row].qty!) \(self.units!)(s)"
-        
+        cell.selectionStyle = .none
         //cell.setStatus(status: usages[indexPath.row].woStatus!)
         
         
         return cell;
     }
+    
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        
+        /*
+        let currentCell = tableView.cellForRow(at: indexPath) as! UsageTableViewCell
+        let customerViewController = CustomerViewController(_customerID: currentCell.id,_customerName: currentCell.name)
+        customerViewController.customerListDelegate = self
+        navigationController?.pushViewController(customerViewController, animated: false )
+        */
+        
+        /*
+        if usages[indexPath.row].hasReceipt == "1"{
+            let imageFullViewController = ImageFullViewController(_image: usages[indexPath.row].receipt!)
+            self.navigationController?.pushViewController(imageFullViewController, animated: false )
+         //   tableView.deselectRow(at: indexPath, animated: true)
+        }
+        */
+        
+        
+        
+        
+        
+        
+        
+    }
+    
+    
    
     
     @objc func goBack(){

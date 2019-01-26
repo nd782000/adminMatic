@@ -35,7 +35,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
     
@@ -58,10 +58,10 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
         
         self.reloadBtn = Button()
         self.reloadBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.reloadBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.center
+        self.reloadBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.center
         
-        self.reloadBtn.setTitle("Reload", for: UIControlState.normal)
-        self.reloadBtn.addTarget(self, action: #selector(ImageUploadProgressTableViewCell.handleReload), for: UIControlEvents.touchUpInside)
+        self.reloadBtn.setTitle("Reload", for: UIControl.State.normal)
+        self.reloadBtn.addTarget(self, action: #selector(ImageUploadProgressTableViewCell.handleReload), for: UIControl.Event.touchUpInside)
         self.contentView.addSubview(self.reloadBtn)
         self.reloadBtn.isHidden = true
         
@@ -79,7 +79,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[pic(50)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[progressBar(6)]-|", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[progressLbl(200)]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[progressLbl(200)]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[reloadBtn(80)]-|", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[reloadBtn(30)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[progressBar]-|", options: [], metrics: nil, views: viewsDictionary))
@@ -117,7 +117,9 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                     "task":imageData.taskID,
                     "woID":imageData.woID,
                     "equipmentID":imageData.equipmentID,
-                    "albumID":imageData.albumID
+                    "albumID":imageData.albumID,
+                    "usageID":imageData.usageID,
+                    "vendorID":imageData.vendorID
                 ]
                 print("parameters = \(parameters)")
                 
@@ -129,7 +131,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                         multipartFormData.append(value.data(using: String.Encoding.utf8)!, withName: key)
                     }
                     
-                    if  let imageData = UIImageJPEGRepresentation(self.imageData.image!.fixedOrientation(), 0.85) {
+                    if  let imageData = self.imageData.image!.fixedOrientation().jpegData(compressionQuality: 0.85) {
                         multipartFormData.append(imageData, withName: "pic", fileName: "swift_file.jpeg", mimeType: "image/jpeg")
                         
                     }

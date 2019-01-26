@@ -10,7 +10,7 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 
 
 protocol EquipmentListDelegate{
@@ -38,7 +38,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
     var sections : [(index: Int, length :Int, title: String)] = Array()
     var statusNames :[String] = ["Online", "Needs Repair", "Broken", "Winterized"]
     
-    var equipment: JSON!
+    //var equipment: JSON!
     var equipmentArray:[Equipment] = []
     var equipmentSearchResults:[Equipment] = []
     var shouldShowSearchResults:Bool = false
@@ -87,20 +87,116 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
             }
             .responseJSON(){
                 response in
-                if let json = response.result.value {
+                
+                
+                //native way
+                
+                do {
+                    if let data = response.data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        let equip = json["equipment"] as? [[String: Any]] {
+                        
+                        let equipmentCount = equip.count
+                        print("equipment count = \(equipmentCount)")
+                        
+                        
+                        for i in 0 ..< equipmentCount {
+                            
+                            
+                            //create an object
+                            print("create a equipment object \(i)")
+                            
+                            let equipment = Equipment(_ID: equip[i]["equipID"] as? String, _name: equip[i]["eName"] as? String, _make: equip[i]["make"] as? String, _model: equip[i]["model"] as? String, _serial: equip[i]["serial"] as? String, _crew: equip[i]["crew"] as? String, _crewName: equip[i]["crewName"] as? String, _status: equip[i]["status"] as? String, _type: equip[i]["type"] as? String, _typeName: equip[i]["typeName"] as? String, _fuelType: equip[i]["fuelType"] as? String, _fuelTypeName: equip[i]["fuelName"] as? String, _engineType: equip[i]["engineType"] as? String, _engineTypeName: equip[i]["engineName"] as? String, _mileage: equip[i]["mileage"] as? String, _dealer: equip[i]["vendorID"] as? String, _dealerName: equip[i]["vendorName"] as? String, _purchaseDate: equip[i]["purchaseDate"] as? String, _description: equip[i]["description"] as? String)
+                            
+                            
+                            if equip[i]["pic"] as? String == "0"{
+                                let image:Image = Image(_ID: "0", _noPicPath: equip[i]["picInfo"] as? String)
+                                equipment.image = image
+                            }else{
+                                let image:Image = Image(_ID: equip[i]["pic"] as? String)
+                                equipment.image = image
+                                
+                                // print("pic path = \(equipment.image.thumbPath)")
+                            }
+                            
+                            
+                            self.equipmentArray.append(equipment)
+                            
+                        }
+                        
+                        self.createSections()
+                    }
                     
-                    print(" dismissIndicator")
+                    
+                    /*
+                    // build sections based on first letter(json is already sorted alphabetically)
+                    
+                    var index = 0;
+                    var firstCharacterArray:[String] = [" "]
+                    
+                    for i in 0 ..< self.itemsArray.count {
+                        let stringToTest = self.itemsArray[i].name.uppercased()
+                        let firstCharacter = String(stringToTest[stringToTest.startIndex])
+                        if(i == 0){
+                            firstCharacterArray.append(firstCharacter)
+                        }
+                        
+                        
+                        
+                        
+                        if !firstCharacterArray.contains(firstCharacter) {
+                            
+                            //print("new")
+                            let title = firstCharacterArray[firstCharacterArray.count - 1]
+                            firstCharacterArray.append(firstCharacter)
+                            
+                            let newSection = (index: index, length: i - index, title: title)
+                            self.sections.append(newSection)
+                            index = i;
+                        }
+                        
+                        if(i == self.itemsArray.count - 1){
+                            let title = firstCharacterArray[firstCharacterArray.count - 1]
+                            let newSection = (index: index, length: i - index + 1, title: title)
+                            self.sections.append(newSection)
+                        }
+                        
+                        
+                    }*/
+                    
+                    
                     self.indicator.dismissIndicator()
                     
                     
-                    //print("JSON: \(json)")
-                    self.equipment = JSON(json)
-                    self.parseJSON()
+                    self.layoutViews()
+                    
+                    
+                    
+                    
+                    
+                } catch {
+                    print("Error deserializing JSON: \(error)")
                 }
+                
+                
+                
+                
+                //if let json = response.result.value {
+                    
+                    //print(" dismissIndicator")
+                    //self.indicator.dismissIndicator()
+                    
+                    
+                    //print("JSON: \(json)")
+                    //self.equipment = JSON(json)
+                    //self.parseJSON()
+                //}
                 
         }
         
     }
+    
+    /*
     func parseJSON(){
         let jsonCount = self.equipment["equipment"].count
         self.totalEquipment = jsonCount
@@ -117,7 +213,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
                 let image:Image = Image(_ID: self.equipment["equipment"][i]["pic"].stringValue)
                 equipment.image = image
                 
-                print("pic path = \(equipment.image.thumbPath)")
+               // print("pic path = \(equipment.image.thumbPath)")
             }
             
             
@@ -131,6 +227,10 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         self.layoutViews()
         
     }
+ 
+ */
+    
+    
     
     func createSections(){
         sections = []
@@ -323,7 +423,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         
         equipmentTableView.addSubview(refresher)
         
-        refresher.addTarget(self, action: #selector(self.refresh(_:)), for: UIControlEvents.valueChanged)
+        refresher.addTarget(self, action: #selector(self.refresh(_:)), for: UIControl.Event.valueChanged)
         
         
         self.countView = UIView()
@@ -337,10 +437,10 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         self.countView.addSubview(self.countLbl)
         
         
-        self.addEquipmentBtn.addTarget(self, action: #selector(EquipmentListViewController.addEquipment), for: UIControlEvents.touchUpInside)
+        self.addEquipmentBtn.addTarget(self, action: #selector(EquipmentListViewController.addEquipment), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.addEquipmentBtn)
         
-        self.editFieldsBtn.addTarget(self, action: #selector(EquipmentListViewController.editFields), for: UIControlEvents.touchUpInside)
+        self.editFieldsBtn.addTarget(self, action: #selector(EquipmentListViewController.editFields), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.editFieldsBtn)
         
         
@@ -600,7 +700,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
                 print("Oh no! \(regexError1)")
             } else {
                 for match in (regex1?.matches(in: baseString1 as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString1.length)))! as [NSTextCheckingResult] {
-                    highlightedText1.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText1.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
                 
             }
@@ -623,7 +723,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
                 print("Oh no! \(regexError2)")
             } else {
                 for match in (regex2?.matches(in: baseString2 as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString2.length)))! as [NSTextCheckingResult] {
-                    highlightedText2.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText2.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
                 
             }
@@ -636,7 +736,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
             
         } else {
             print("cell should not show search results")
-            print("cell name = \(self.equipmentArray[indexPath.row].name)")
+           // print("cell name = \(self.equipmentArray[indexPath.row].name)")
             
             switch self.currentSortMode {
             case "CREW":
@@ -762,7 +862,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         }
         
         print("row = \(indexPath.row)")
-        print("ID = \(ID)")
+        //print("ID = \(ID)")
         
         //indexPath
         let deActivate = UITableViewRowAction(style: .normal, title: "deactivate") { action, index in
@@ -783,14 +883,14 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         }else{
             
             
-            let alertController = UIAlertController(title: "De-Activate Equipment?", message: "Are you sure you want to de-activate this equipment?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "De-Activate Equipment?", message: "Are you sure you want to de-activate this equipment?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("No")
                 return
             }
             
-            let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("Yes")
                 

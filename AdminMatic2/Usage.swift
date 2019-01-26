@@ -39,6 +39,10 @@ class Usage:Mappable{
     
     var custName:String?
     var woStatus:String?
+    
+    //one reciept image per usage entry
+    var hasReceipt:String?
+    var receipt:Image?
    
     
     //init with stop

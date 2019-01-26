@@ -26,7 +26,7 @@ class ContactTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         
@@ -59,7 +59,7 @@ class ContactTableViewCell: UITableViewCell {
         
         
         
-        let viewsConstraint_V2:[NSLayoutConstraint] = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(18)]-6-[detail(14)]", options: NSLayoutFormatOptions.alignAllLeft, metrics: nil, views: viewsDictionary)
+        let viewsConstraint_V2:[NSLayoutConstraint] = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(18)]-6-[detail(14)]", options: NSLayoutConstraint.FormatOptions.alignAllLeft, metrics: nil, views: viewsDictionary)
         
         let viewsConstraint_H:[NSLayoutConstraint] = NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[icon(30)]-[name]-|", options: [], metrics: nil, views: viewsDictionary)
         

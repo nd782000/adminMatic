@@ -103,9 +103,9 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
         view.backgroundColor = layoutVars.backgroundColor
         // Do any additional setup after loading the view.
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(WorkOrderViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(WorkOrderViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -169,7 +169,7 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
             
             let email = Contact(_ID: self.emailJSON["contacts"][i]["ID"].stringValue, _value: self.emailJSON["contacts"][i]["value"].stringValue)
             
-            print("email  = \(email.value)")
+            //print("email  = \(email.value)")
         
             self.emails.append(email)
             self.selectedEmails.append(true)
@@ -250,7 +250,7 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         //sendBtn
         self.sendBtn = Button(titleText: "Send")
-        self.sendBtn.addTarget(self, action: #selector(EmailViewController.send), for: UIControlEvents.touchUpInside)
+        self.sendBtn.addTarget(self, action: #selector(EmailViewController.send), for: UIControl.Event.touchUpInside)
         self.view.addSubview(sendBtn)
     
         /////////  Auto Layout   //////////////////////////////////////
@@ -491,15 +491,15 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
         
         
-        let alertController = UIAlertController(title: "Delete Customer Email?", message: "Do you want to permenantly delete this email from the customer file?", preferredStyle: UIAlertControllerStyle.alert)
-        let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+        let alertController = UIAlertController(title: "Delete Customer Email?", message: "Do you want to permenantly delete this email from the customer file?", preferredStyle: UIAlertController.Style.alert)
+        let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
             print("No")
             
             
         }
         
-        let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+        let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
             print("Yes")
             
@@ -648,10 +648,10 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     let emails:String = emailsToSend.joined(separator: ", ")
     
-    print("docID = \(self.docID)")
+    //print("docID = \(self.docID)")
     print("title = \(self.titleTxt.text!)")
     print("emails = \(emails)")
-    print("message = \(self.messageTxt.text)")
+    //print("message = \(self.messageTxt.text)")
     print("pdf = \(self.convertToPDF)")
                     
     parameters = ["contractID": self.docID!, "emails":emails,  "title":self.titleTxt.text!, "message":self.messageTxt.text!, "pdf":self.convertToPDF, "senderID": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId)!]

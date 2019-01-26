@@ -10,6 +10,7 @@
 
 import Foundation
 import UIKit
+import Alamofire
 //import Nuke
 
 
@@ -62,37 +63,48 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
         self.contentView.addSubview(self.selectedImageView)
         
         
-        activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        activityView = UIActivityIndicatorView(style: .whiteLarge)
         activityView.center = CGPoint(x: self.contentView.frame.size.width / 2, y: self.contentView.frame.size.height / 2)
         contentView.addSubview(activityView)
         
         
         
         
-        print("self.imageData.ID = \(self.imageData.ID)")
+        //print("self.imageData.ID = \(self.imageData.ID)")
         if(self.imageData.ID == "0"){
             self.selectedImageView.image = self.imageData.image
             self.activityView.stopAnimating()
         }else{
             
             
-            let imgURL:URL = URL(string: self.imageData.mediumPath)!
+           // let imgURL:URL = URL(string: self.imageData.mediumPath)!
             
-            print("imgURL = \(imgURL)")
+            //print("imgURL = \(imgURL)")
             
             if(imageLoaded == false){
                 self.activityView.startAnimating()
             }
             
-            /*
-            Nuke.loadImage(with: imgURL, into: self.selectedImageView){ 
-                //print("nuke loadImage")
-                self.selectedImageView.handle(response: $0, isFromMemoryCache: $1)
-                self.activityView.stopAnimating()
-                self.imageLoaded = true
+            Alamofire.request(self.imageData.mediumPath).responseImage { response in
+                debugPrint(response)
                 
+                //print(response.request)
+                //print(response.response)
+                debugPrint(response.result)
+                
+                if let image = response.result.value {
+                    print("image downloaded: \(image)")
+                    
+                    self.selectedImageView.image = image
+                    
+                    
+                    
+                    self.activityView.stopAnimating()
+                    self.imageLoaded = true
+                    
+                    
+                }
             }
-*/
             
             
             
@@ -165,9 +177,9 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
         
         
         
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic]-10-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic]-10-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
       
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[desc]-10-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[desc]-10-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[pic(250)][desc]-|", options: [], metrics: nil, views: viewsDictionary))
         
@@ -177,7 +189,7 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
         
         
         
-        selectedImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[editIcon(20)]-[editIcon2(20)]-[editLbl(100)]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
+        selectedImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[editIcon(20)]-[editIcon2(20)]-[editLbl(100)]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
         
         
         selectedImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[editIcon(20)]-|", options: [], metrics: nil, views: viewsDictionary2))
@@ -210,7 +222,7 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
         */
         
         let viewsDictionary = ["addBtn":self.addImagesLbl] as [String : Any]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[addBtn]-10-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[addBtn]-10-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[addBtn(40)]", options: [], metrics: nil, views: viewsDictionary))
         

@@ -11,7 +11,7 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 //import Nuke
 
 
@@ -24,6 +24,8 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
     var imageView:UIImageView!
     var image:Image!
     var delegate:ImageViewDelegate!
+    
+   
     
     init(_image:Image){
         super.init(nibName:nil,bundle:nil)
@@ -40,9 +42,9 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
         view.backgroundColor = layoutVars.backgroundColor
        
         
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(ImageFullViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(ImageFullViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -57,7 +59,7 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
          title = self.image.name
         
         scrollView=UIScrollView()
-        scrollView.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:self.view.frame.height)
+        scrollView.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:self.view.frame.height - 40)
         
         
         scrollView.minimumZoomScale=1
@@ -69,6 +71,8 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
         
         imageView=UIImageView()
         imageView.backgroundColor = UIColor.darkGray
+        //imageView.translatesAutoresizingMaskIntoConstraints = false
+
         imageView.frame = CGRect(x:0, y:0, width:scrollView.frame.width, height:scrollView.frame.height)
         
         
@@ -80,44 +84,92 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
         
        
         
-        activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        activityView = UIActivityIndicatorView(style: .whiteLarge)
         activityView.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
         self.view.addSubview(activityView)
-        //activityView.startAnimating()
+        activityView.startAnimating()
         
         
-        //let imgUrl = URL(string: image.rawPath)
-        
-        
-        //Nuke.loadImage(with: imgUrl!, into: imageView){ [weak view] in
-        //Nuke.loadImage(with: , into: <#T##ImageDisplayingView#>)
-        
-        //Nuke.loadImage(with: imgUrl!, into: self.imageView)
-        
-        //self.activityView.stopAnimating()
-        
-        /*
-        Nuke.loadImage(with: imgUrl!, into: imageView){
-            self.imageView?.handle(response: $0, isFromMemoryCache: $1)
-            self.activityView.stopAnimating()
-            let shareBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.action, target: self, action: #selector(ImageFullViewController.share))
-            self.navigationItem.rightBarButtonItem = shareBtn
+        Alamofire.request(image.rawPath).responseImage { response in
+            debugPrint(response)
+            
+            print(response.request!)
+            print(response.response!)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                
+                self.imageView.image = image
+                
+                self.activityView.stopAnimating()
+                
+            }
         }
- */
+        
+        
+        
         
         
         setZoomScale()
         setupGestureRecognizer()
         
         let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(ImageFullViewController.swiped(_:)))
-        swipeRight.direction = UISwipeGestureRecognizerDirection.right
+        swipeRight.direction = UISwipeGestureRecognizer.Direction.right
         self.imageView.addGestureRecognizer(swipeRight)
         
         let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(ImageFullViewController.swiped(_:)))
-        swipeLeft.direction = UISwipeGestureRecognizerDirection.left
+        swipeLeft.direction = UISwipeGestureRecognizer.Direction.left
         self.imageView.addGestureRecognizer(swipeLeft)
+        
+        
+        
+        
 
     }
+    
+    /*
+    func setUpViews(){
+        
+        
+        print("set up views")
+        
+        self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        // _ = ["navHeight":self.layoutVars.navAndStatusBarHeight, "landscapeNavHeight":self.layoutVars.navAndStatusBarHeight - self.layoutVars.statusBarHeight] as [String : Any]
+        
+        //print("navHeight = \(self.layoutVars.navAndStatusBarHeight)  statusBarHeight = \(self.layoutVars.statusBarHeight) ")
+        
+        if(self.scrollView != nil){
+            self.scrollView.subviews.forEach({ $0.removeFromSuperview() })
+        }
+        //if(self.likesView != nil){
+        // self.likesView.subviews.forEach({ $0.removeFromSuperview() })
+        // }
+        
+        
+        self.view.addSubview(self.scrollView)
+        self.scrollView.addSubview(self.imageView)
+       
+        
+        
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[scrollView]|", options: [], metrics: nil, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[scrollView]|", options: [], metrics: nil, views: viewsDictionary))
+        self.scrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[imageView]|", options: [], metrics: nil, views: viewsDictionary2))
+        self.scrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[imageView]|", options: [], metrics: nil, views: viewsDictionary2))
+        
+        
+        
+        
+        
+        
+    }
+    
+    */
+    
+    
+    
     
     
     @objc func swiped(_ gesture: UIGestureRecognizer){
@@ -130,14 +182,14 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
                 
                 if let swipeGesture = gesture as? UISwipeGestureRecognizer{
                     switch swipeGesture.direction {
-                    case UISwipeGestureRecognizerDirection.right:
+                    case UISwipeGestureRecognizer.Direction.right:
                         print("right swipe")
                         
                         
                             _ = delegate.getPrevNextImage(_next: false)
                         
                         
-                    case UISwipeGestureRecognizerDirection.left:
+                    case UISwipeGestureRecognizer.Direction.left:
                         print("left swipe")
                        
                         
@@ -158,9 +210,11 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
   //Scroll Methods
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         print("viewForZooming")
+       // self.navigationController?.isNavigationBarHidden = true
         return self.imageView
-        self.navigationController?.isNavigationBarHidden = true
+        
     }
+   
     
     override func viewWillLayoutSubviews() {
         print("viewWillLayoutSubviews")
@@ -169,9 +223,13 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
         scrollView.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:self.view.frame.height)
         imageView.frame = CGRect(x:0, y:0, width:scrollView.frame.width, height:scrollView.frame.height)
         
+        //setUpViews()
+        
         
         setZoomScale()
     }
+ 
+    
     
     func setZoomScale() {
         print("setZoomScale")
@@ -220,7 +278,7 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
         }else{
             self.dismiss(animated: true, completion: {
                 let activity = UIActivityViewController(activityItems: [self.image!], applicationActivities: nil)
-                self.present(activity, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(activity, animated: true, completion: nil)
             })
         }
     }

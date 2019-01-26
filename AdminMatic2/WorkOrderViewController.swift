@@ -1,7 +1,6 @@
 //
 //  WorkOrderViewController.swift
 //  AdminMatic2
-//
 //  Created by Nick on 1/7/17.
 //  Copyright © 2017 Nick. All rights reserved.
 //
@@ -18,13 +17,12 @@ protocol WoDelegate{
 }
 
 
-class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UITextFieldDelegate, UIGestureRecognizerDelegate, WoDelegate, StackDelegate, EditLeadDelegate {
+class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate, UIGestureRecognizerDelegate, WoDelegate, StackDelegate, EditLeadDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
-    //var editMode:Bool = false
     
     
     var editButton:UIBarButtonItem!
@@ -56,7 +54,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     var statusValue: String!
     var statusValueToUpdate: String!
     
-    
+    var workOrderView:UIView!
     var customerBtn: Button!
     var locationValue:String?
     var infoMode:Int! = 0
@@ -141,7 +139,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
    
     
-    var customerDelegate:CustomerDelegate!
+    //var customerDelegate:CustomerDelegate!
     
     
     init(_workOrderID:String,_customerName:String){
@@ -149,10 +147,12 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         //init(_workOrderID:String,_customerName:String){
         
         super.init(nibName:nil,bundle:nil)
-        print("workorder init")
+        print("workorder init ID = \(_workOrderID) custName = \(_customerName)")
         self.workOrderID = _workOrderID
         //self.workOrderID = _workOrderID
         self.customerName = _customerName
+        
+        self.workOrder = WorkOrder(_ID: self.workOrderID, _customerName: self.customerName)
         
     }
     
@@ -188,7 +188,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func refreshWo(_refeshWoID _refreshWoID:String, _newWoStatus:String){
         print("refreshWo")
-        print("current status = \(self.statusValue)")
+       // print("current status = \(self.statusValue)")
         print("_newWoStatus = \(_newWoStatus)")
         
         
@@ -227,15 +227,15 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             
             
             
-            let alertController = UIAlertController(title: "Set Work Order to \(statusName)", message: "", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Set Work Order to \(statusName)", message: "", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 
                 self.getWorkOrder()
                 
             }
             
-            let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 
                 
@@ -283,9 +283,9 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         view.backgroundColor = layoutVars.backgroundColor
         // Do any additional setup after loading the view.
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(WorkOrderViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(WorkOrderViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -307,7 +307,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //sends request for wo Data
     func getWorkOrder() {
-        print(" GetWo  Work Order Id \(self.workOrder.ID)")
+       // print(" GetWo  Work Order Id \(self.workOrder.ID)")
         
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -318,8 +318,13 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         let timeStamp = Int(timeInterval)
         
       
-        
-        Alamofire.request(API.Router.workOrder(["woID":self.workOrder.ID as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
+        let id:String
+        if self.workOrder == nil{
+            id = self.workOrderID
+        }else{
+            id = self.workOrder.ID
+        }
+        Alamofire.request(API.Router.workOrder(["woID":id as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
             
             response in
             // ////print(response.request)  // original URL request
@@ -330,12 +335,16 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             if let json = response.result.value {
                 // Close Indicator
                 self.indicator.dismissIndicator()
-                /*
+                
+                
+                
+                self.json = JSON(json)["woInfo"]
+                
                 print("----------------")
                 print("Work Order  JSON: \(json)")
                 print("----------------")
-                */
-                self.json = JSON(json)["woInfo"]
+                
+                
                 self.parseJSON()
             }
         }
@@ -344,9 +353,20 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
     func parseJSON(){
-        
+        //(_ID:String?, _statusID: String?, _date:String?, _firstItem:String?, _statusName:String?, _customer:String?, _type:String?, _progress:String?, _totalPrice:String?, _totalCost:String?, _totalPriceRaw:String?, _totalCostRaw:String?, _charge:String?,_title:String?, _customerName:String?)
         
         print(" parseJSON()")
+        self.workOrder.statusId = self.json["statusID"].stringValue
+        self.workOrder.date = self.json["date"].stringValue
+        
+        self.workOrder.type = self.json["type"].stringValue
+        self.workOrder.progress = self.json["progress"].stringValue
+        self.workOrder.totalPrice = self.json["totalPrice"].stringValue
+        self.workOrder.totalCost = self.json["totalCost"].stringValue
+        
+        self.workOrder.charge = self.json["charge"].stringValue
+        self.workOrder.title = self.json["title"].stringValue
+        
         
         self.workOrder.customer = self.json["customerID"].stringValue
         let mainAddr:String = self.json["customer"]["mainAddr"].stringValue
@@ -478,7 +498,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 
             }
-            print("usageQty = \(woItem.usageQty)")
+            //print("usageQty = \(woItem.usageQty)")
             
             //tasks
             
@@ -592,7 +612,18 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
                                       _addedBy: appDelegate.loggedInEmployee?.ID,
                                       _del: ""
                     )
+                    
+                    
                 }
+                
+                if self.json["items"][i]["usage"][n]["hasReceipt"].stringValue == "1"{
+                    usage.hasReceipt = "1"
+                    usage.receipt = Image(_id: self.json["items"][i]["usage"][n]["receipt"]["ID"].stringValue, _thumbPath:"https://www.atlanticlawnandgarden.com/uploads/general/thumbs/\(self.json["items"][i]["usage"][n]["receipt"]["fileName"].stringValue)", _mediumPath: "https://www.atlanticlawnandgarden.com/uploads/general/medium/\(self.json["items"][i]["usage"][n]["receipt"]["fileName"].stringValue)", _rawPath: "https://www.atlanticlawnandgarden.com/uploads/general/\(self.json["items"][i]["usage"][n]["receipt"]["fileName"].stringValue)", _name: self.json["items"][i]["usage"][n]["receipt"]["name"].stringValue, _width: self.json["items"][i]["usage"][n]["receipt"]["width"].stringValue, _height: self.json["items"][i]["usage"][n]["receipt"]["height"].stringValue, _description: self.json["items"][i]["usage"][n]["description"]["ID"].stringValue, _dateAdded: self.json["items"][i]["usage"][n]["receipt"]["dateAdded"].stringValue, _createdBy: self.json["items"][i]["usage"][n]["receipt"]["createdBy"].stringValue, _type: self.json["items"][i]["usage"][n]["receipt"]["type"].stringValue)
+                }else{
+                    usage.hasReceipt = "0"
+                }
+                
+                
                 woItem.usages.append(usage)
             }
             self.woItemsArray.append(woItem)
@@ -684,10 +715,14 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             self.woItemViewController?.layoutViews()
         }
         
+        self.workOrderView = UIView()
+        self.workOrderView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(self.workOrderView)
+        
         stackController = StackController()
         stackController.delegate = self
         stackController.getStack(_type:2,_ID:self.workOrder.ID)
-        self.view.addSubview(stackController)
+        self.workOrderView.addSubview(stackController)
         
         
         
@@ -695,16 +730,17 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
-        self.view.addSubview(statusIcon)
+        self.workOrderView.addSubview(statusIcon)
         setStatus(status: self.json["status"].stringValue)
         
         
         //status picker
         self.statusPicker = Picker()
-        print("statusValue : \(statusValue)")
+        //print("statusValue : \(statusValue)")
         print("set picker position : \(Int(self.statusValue)! - 1)")
         
         self.statusPicker.delegate = self
+        self.statusPicker.dataSource = self
         
         self.statusPicker.selectRow(Int(self.statusValue)! - 1, inComponent: 0, animated: false)
         
@@ -717,16 +753,16 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.statusTxtField.backgroundColor = UIColor.clear
         self.statusTxtField.inputView = statusPicker
         self.statusTxtField.layer.borderWidth = 0
-        self.view.addSubview(self.statusTxtField)
+        self.workOrderView.addSubview(self.statusTxtField)
         
         let toolBar = UIToolbar()
         toolBar.barStyle = UIBarStyle.default
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(WorkOrderViewController.cancelPicker))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItemStyle.plain, target: self, action: #selector(WorkOrderViewController.handleStatusChange))
+        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(WorkOrderViewController.cancelPicker))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let setButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(WorkOrderViewController.handleStatusChange))
         
         toolBar.setItems([closeButton, spaceButton, setButton], animated: false)
         toolBar.isUserInteractionEnabled = true
@@ -744,17 +780,17 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         custIcon.image = custImg
         self.customerBtn.addSubview(custIcon)
         self.customerBtn.contentEdgeInsets = UIEdgeInsets(top: 0, left: 35, bottom: 0, right: 10)
-        self.customerBtn.addTarget(self, action: #selector(WorkOrderViewController.showCustInfo), for: UIControlEvents.touchUpInside)
+        self.customerBtn.addTarget(self, action: #selector(self.showCustInfo), for: UIControl.Event.touchUpInside)
         
         
-        self.view.addSubview(customerBtn)
+        self.workOrderView.addSubview(customerBtn)
         
         
         // Info Window
         self.infoView.translatesAutoresizingMaskIntoConstraints = false
         self.infoView.backgroundColor = UIColor(hex:0xFFFFFc, op: 0.8)
         self.infoView.layer.cornerRadius = 4
-        self.view.addSubview(infoView)
+        self.workOrderView.addSubview(infoView)
         
         
         //schedule
@@ -816,12 +852,13 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.infoView.addSubview(salesRep)
         
         
+        /*
         // Field Notes Window
         
         self.attachmentsView.translatesAutoresizingMaskIntoConstraints = false
         self.attachmentsView.backgroundColor = UIColor(hex:0xFFFFFc, op: 0.8)
         self.attachmentsView.layer.cornerRadius = 4
-        self.view.addSubview(attachmentsView)
+        self.workOrderView.addSubview(attachmentsView)
         
         
         let smallCameraIcon:UIImageView = UIImageView()
@@ -857,6 +894,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(WorkOrderViewController.showAttachmentsList))
         attachmentsView.addGestureRecognizer(tapGesture)
+        */
         
         
         let tableHead:UIView! = UIView()
@@ -872,7 +910,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         tableHead.addSubview(estTH)
         tableHead.addSubview(actTH)
         
-        self.view.addSubview(tableHead)
+        self.workOrderView.addSubview(tableHead)
         
         self.itemsTableView  =   TableView()
         self.itemsTableView.autoresizesSubviews = true
@@ -880,7 +918,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.itemsTableView.dataSource  =  self
         self.itemsTableView.layer.cornerRadius = 0
         self.itemsTableView.register(WoItemTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.itemsTableView)
+        self.workOrderView.addSubview(self.itemsTableView)
         
     
         
@@ -890,7 +928,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.profitView.backgroundColor = UIColor(hex:0xFFFFFc, op: 0.8)
         self.profitView.layer.cornerRadius = 4
         
-        self.view.addSubview(self.profitView)
+        self.workOrderView.addSubview(self.profitView)
         
         
         self.priceLbl = GreyLabel(icon: false)
@@ -981,7 +1019,12 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         /////////  Auto Layout   //////////////////////////////////////
         
-
+        self.workOrderView.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        self.workOrderView.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        self.workOrderView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+       // self.workOrderView.heightAnchor.constraint(equalToConstant: 250).isActive = true
+        self.workOrderView.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
         
         let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30, "nameWidth": layoutVars.fullWidth - 150] as [String:Any]
         
@@ -992,7 +1035,6 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             "statusTxtField":self.statusTxtField,
             "customerBtn":self.customerBtn,
             "info":self.infoView,
-            "attachments":self.attachmentsView,
             "th":tableHead,
             "table":self.itemsTableView,
             "profitView":self.profitView,
@@ -1000,22 +1042,22 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         
         
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[stackController]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[statusIcon(40)]-15-[customerBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+         self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[stackController]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[statusIcon(40)]-15-[customerBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[info]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[info]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[attachments]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[table]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[th]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[profitView]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[table]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[th]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[profitView]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(90)]-[attachments(40)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[customerBtn(40)]-[info(90)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(90)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         //auto layout group
         let infoDictionary = [
@@ -1041,7 +1083,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[scheduleLbl(22)]-[chargeLbl(22)]-[salesRepLbl(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[scheduleLbl(22)]-[charge(22)]-[salesRep(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
         
-        
+        /*
         //auto layout group
         let attachmentsDictionary = [
             "attachmentsLbl":self.attachmentsLbl,
@@ -1052,6 +1094,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.attachmentsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[attachmentsLbl(130)]-[attachmentsTxt]-10-|", options: [], metrics: metricsDictionary, views: attachmentsDictionary))
         self.attachmentsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[attachmentsLbl]", options: [], metrics: metricsDictionary, views: attachmentsDictionary))
         self.attachmentsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[attachmentsTxt]", options: [], metrics: metricsDictionary, views: attachmentsDictionary))
+        */
         
         
         // Tablehead
@@ -1136,13 +1179,13 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @objc func showAttachmentsList(){
-        if(scheduleDelegate != nil){
+        /*if(scheduleDelegate != nil){
             scheduleDelegate.cancelSearch()
         }
         if(customerDelegate != nil){
             customerDelegate.cancelSearch()
         }
-        
+        */
         
         
         let attachmentsListViewControler:AttachmentListViewController = AttachmentListViewController(_workOrderID: self.workOrder.ID,_customerID: self.workOrder.customer, _attachments: self.attachments)
@@ -1185,6 +1228,13 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+    }
+    
+    
+    //picker methods
+    // Number of columns of data
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
     }
     
     
@@ -1329,13 +1379,15 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        
+        /*
         if(scheduleDelegate != nil){
             scheduleDelegate.cancelSearch()
         }
         if(customerDelegate != nil){
             customerDelegate.cancelSearch()
         }
+ */
+        
         
         
         if(indexPath.row == self.woItemsArray.count){
@@ -1384,10 +1436,10 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             }else{
                 message = "Contact the office to add items to this work order."
             }
-            let alertController = UIAlertController(title: "Flat Price Work Order", message: message, preferredStyle: UIAlertControllerStyle.alert)
+            let alertController = UIAlertController(title: "Flat Price Work Order", message: message, preferredStyle: UIAlertController.Style.alert)
             
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
                 //self.popView()

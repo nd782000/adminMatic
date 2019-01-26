@@ -116,9 +116,9 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         
         
         //custom back button
-        backButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(NewWoItemViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        backButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(NewWoItemViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -201,7 +201,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         itemSearchBar.clipsToBounds = true
         itemSearchBar.backgroundColor = UIColor.white
         itemSearchBar.barTintColor = UIColor.clear
-        itemSearchBar.searchBarStyle = UISearchBarStyle.minimal
+        itemSearchBar.searchBarStyle = UISearchBar.Style.minimal
         itemSearchBar.delegate = self
         self.view.addSubview(itemSearchBar)
         
@@ -226,13 +226,13 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         
         self.view.addSubview(self.estQtyTxtField)
         
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
         let estQtyToolBar = UIToolbar()
         estQtyToolBar.barStyle = UIBarStyle.default
         estQtyToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         estQtyToolBar.sizeToFit()
-        let setEstQtyButton = UIBarButtonItem(title: "Set Qty", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewWoItemViewController.handleEstQty))
+        let setEstQtyButton = UIBarButtonItem(title: "Set Qty", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewWoItemViewController.handleEstQty))
         estQtyToolBar.setItems([spaceButton, setEstQtyButton], animated: false)
         estQtyToolBar.isUserInteractionEnabled = true
         estQtyTxtField.inputAccessoryView = estQtyToolBar
@@ -254,13 +254,13 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         
         self.view.addSubview(self.priceTxtField)
         
-        let spaceButton2 = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let spaceButton2 = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
         let priceToolBar = UIToolbar()
         priceToolBar.barStyle = UIBarStyle.default
         priceToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         priceToolBar.sizeToFit()
-        let setPriceButton = UIBarButtonItem(title: "Set Price", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewWoItemViewController.handlePrice))
+        let setPriceButton = UIBarButtonItem(title: "Set Price", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewWoItemViewController.handlePrice))
         priceToolBar.setItems([spaceButton2, setPriceButton], animated: false)
         priceToolBar.isUserInteractionEnabled = true
         priceTxtField.inputAccessoryView = priceToolBar
@@ -297,7 +297,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         
         
         
-        self.submitBtn.addTarget(self, action: #selector(NewWoItemViewController.submit), for: UIControlEvents.touchUpInside)
+        self.submitBtn.addTarget(self, action: #selector(NewWoItemViewController.submit), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.submitBtn)
         
         
@@ -599,10 +599,10 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         if(self.selectedID == ""){
            
             
-            let alertController = UIAlertController(title: "Select an Item", message: "", preferredStyle: UIAlertControllerStyle.alert)
+            let alertController = UIAlertController(title: "Select an Item", message: "", preferredStyle: UIAlertController.Style.alert)
             
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
                 //self.popView()

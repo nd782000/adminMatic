@@ -70,9 +70,9 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
         view.backgroundColor = layoutVars.backgroundColor
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(DepartmentListViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(DepartmentListViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -136,7 +136,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
             
             let department = Department(_ID: self.departments["departments"][i]["id"].stringValue, _name: self.departments["departments"][i]["name"].stringValue, _status: self.departments["departments"][i]["status"].stringValue, _color: self.departments["departments"][i]["color"].stringValue, _depHead: self.departments["departments"][i]["depHead"].stringValue)
             
-            print("department name = \(department.name)")
+           // print("department name = \(department.name)")
             
             let empCount = self.departments["departments"][i]["employees"].count
             //self.totalItems = jsonCount
@@ -149,7 +149,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
                 employee.deptName = department.name!
                 employee.deptColor = department.color!
                 
-                print("employee.deptColor = \(employee.deptColor)")
+               // print("employee.deptColor = \(employee.deptColor)")
                 
                 self.employeeArray.append(employee)
                 department.employeeArray.append(employee)
@@ -243,7 +243,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
         self.countView.addSubview(self.countLbl)
         
         
-        self.addDepartmentBtn.addTarget(self, action: #selector(DepartmentListViewController.addDepartment), for: UIControlEvents.touchUpInside)
+        self.addDepartmentBtn.addTarget(self, action: #selector(DepartmentListViewController.addDepartment), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.addDepartmentBtn)
         
         
@@ -393,7 +393,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
             //print("call button tapped")
             //callPhoneNumber(currentCell.employee.phone)
             if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
-                UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: [:], completionHandler: nil)
+                UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
             }
             tableView.setEditing(false, animated: true)
         }
@@ -462,3 +462,8 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
 }
 
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+}

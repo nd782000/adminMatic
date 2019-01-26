@@ -25,7 +25,7 @@ protocol PayrollDelegate{
 
 
 
-class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIPickerViewDelegate, PayrollDelegate{
+class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, PayrollDelegate{
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -46,7 +46,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     
     
     var payrollTableView: TableView!
-    var payrollJSON: JSON!
+    var payrollJSON: JSON?
     var payroll: [Payroll] = []
     
     //var payrollToLog:Payroll!
@@ -93,9 +93,9 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         title = "Payroll Entry"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(PayrollEntryViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(PayrollEntryViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -156,8 +156,8 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     self.payrollJSON = JSON(json)
                     
                     //error handling
-                    if self.payrollJSON["errorArray"][0]["error"].stringValue.count > 0{
-                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Error", _message: self.payrollJSON["errorArray"][0]["error"].stringValue)
+                    if (self.payrollJSON!["errorArray"][0]["error"].stringValue.count) > 0{
+                        self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Error", _message: self.payrollJSON!["errorArray"][0]["error"].stringValue)
                         self.indicator.dismissIndicator()
                         return
                     }
@@ -174,20 +174,20 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     func parsePayrollJSON(){
         
         
-        print("parse payrollJSON: \(self.payrollJSON)")
+       // print("parse payrollJSON: \(self.payrollJSON)")
         
         self.payroll = []
         numberOfValidShifts = 0
         self.totalHours = 0.0
         
-        let payrollCount = self.payrollJSON["payroll"].count
+       // let payrollCount = self.payrollJSON!["payroll"].count
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         
-        print("shift count = \(payrollCount)")
+        //print("shift count = \(payrollCount)")
         
         
-        let dayOfWeek = layoutVars.getDayOfWeek(self.dateFormatterDB.string(from: Date()))
+        let dayOfWeek = layoutVars.getDayOfWeek(self.dateFormatterDB.string(from: Date()))!
         
         print("dayOfWeek = \(String(describing: dayOfWeek))")
         
@@ -196,47 +196,57 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
             
             print("day = \(day)")
             if dayOfWeek == day{
-                if self.payrollJSON["payroll"]["\(day)"] != nil{
+                
+                 print("payroll day = \(String(describing: self.payrollJSON!["payroll"]["\(day)"]))")
+                
+                let i = 0
+                
+                print("payroll day = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["date"].string))")
+                
+                if self.payrollJSON?["payroll"]["\(day)"][i]["date"].string != nil{
                     
                     // following code for multiple shifts
                     
                     //let payrollShiftCount = self.payrollJSON["payroll"]["\(day)"].count
                     
-                   // print("payrollShiftCount = \(payrollShiftCount)")
+                    
+                    
+                    
+                    print("payrollDate = \(self.payrollJSON!["payroll"]["\(day)"][i]["date"].string!)")
                     
                     //for i in 0 ..< payrollShiftCount {
                     
                     
-                       let i = 0
                     
-                    let date = dateFormatter.date(from: "\(self.payrollJSON["payroll"]["\(day)"][i]["date"].string!) 00:00:00")!
+                    
+                    let date = dateFormatter.date(from: "\( self.payrollJSON!["payroll"]["\(day)"][i]["date"].string!) 00:00:00")!
                     
                     
                     print("date = \(date)")
-                    print("ID = \(self.payrollJSON["payroll"]["\(day)"][i]["ID"].string!)")
-                    print("empID = \(self.payrollJSON["payroll"]["\(day)"][i]["empID"].string!)")
-                    print("lunch = \(self.payrollJSON["payroll"]["\(day)"][i]["lunch"].string!)")
-                    print("total = \(self.payrollJSON["payroll"]["\(day)"][i]["total"].string!)")
-                    print("verified = \(self.payrollJSON["payroll"]["\(day)"][i]["verified"].string!)")
-                    print("createdBy = \(self.payrollJSON["payroll"]["\(day)"][i]["createdBy"].string!)")
+                    print("ID = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["ID"].string!))")
+                    print("empID = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["empID"].string!))")
+                    print("lunch = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["lunch"].string!))")
+                    print("total = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["total"].string!))")
+                    print("verified = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["verified"].string!))")
+                    print("createdBy = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["createdBy"].string!))")
                     
                     
                     let payroll:Payroll!
                     
-                    payroll = Payroll(_ID: self.payrollJSON["payroll"]["\(day)"][i]["ID"].string!, _empID: self.payrollJSON["payroll"]["\(day)"][i]["empID"].string!, _lunch: self.payrollJSON["payroll"]["\(day)"][i]["lunch"].string!, _date: date, _total: self.payrollJSON["payroll"]["\(day)"][i]["total"].string!, _verified: self.payrollJSON["payroll"]["\(day)"][i]["verified"].string!, _createdBy: self.payrollJSON["payroll"]["\(day)"][i]["createdBy"].string!)
+                    payroll = Payroll(_ID: self.payrollJSON!["payroll"]["\(day)"][i]["ID"].string!, _empID: self.payrollJSON!["payroll"]["\(day)"][i]["empID"].string!, _lunch: self.payrollJSON!["payroll"]["\(day)"][i]["lunch"].string!, _date: date, _total: self.payrollJSON!["payroll"]["\(day)"][i]["total"].string!, _verified: self.payrollJSON!["payroll"]["\(day)"][i]["verified"].string!, _createdBy: self.payrollJSON!["payroll"]["\(day)"][i]["createdBy"].string!)
                     
                     
                     
                     var startTime:Date!
                     var stopTime:Date!
-                    if self.payrollJSON["payroll"]["\(day)"][i]["startTime"].string != "No Time"{
-                         startTime = dateFormatter.date(from: self.payrollJSON["payroll"]["\(day)"][i]["startTime"].string!)!
-                        print("startTime = \(startTime)")
+                    if self.payrollJSON!["payroll"]["\(day)"][i]["startTime"].string != "No Time"{
+                        startTime = dateFormatter.date(from: (self.payrollJSON!["payroll"]["\(day)"][i]["startTime"].string!))!
+                        //print("startTime = \(startTime)")
                         payroll.startTime = startTime
                     }
-                    if self.payrollJSON["payroll"]["\(day)"][i]["stopTime"].string! != "No Time"{
-                        stopTime = dateFormatter.date(from: self.payrollJSON["payroll"]["\(day)"][i]["stopTime"].string!)!
-                        print("stopime = \(stopTime)")
+                    if self.payrollJSON!["payroll"]["\(day)"][i]["stopTime"].string! != "No Time"{
+                        stopTime = dateFormatter.date(from: (self.payrollJSON!["payroll"]["\(day)"][i]["stopTime"].string!))!
+                        //print("stopime = \(stopTime)")
                         payroll.stopTime = stopTime
                     }
                     
@@ -249,10 +259,11 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                         
                         
                         self.payroll.append(payroll)
-                        if Float(self.payrollJSON["payroll"]["\(day)"][i]["total"].string!)! > 0.0{
+                   // var payrollTotal:String = (self.payrollJSON!["payroll"]["\(day)"][i]["total"].string!)!
+                    if Float((self.payrollJSON!["payroll"]["\(day)"][i]["total"].floatValue)) > 0.0{
                             numberOfValidShifts += 1
                             
-                            self.totalHours += Float(self.payrollJSON["payroll"]["\(day)"][i]["total"].floatValue)
+                        self.totalHours += Float((self.payrollJSON!["payroll"]["\(day)"][i]["total"].floatValue))
                         }
                     //}
                     
@@ -275,7 +286,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         
         
         print("payroll count \(self.payroll.count)")
-        if self.payrollJSON["week"]["pending"].stringValue == "1"{
+        if self.payrollJSON!["week"]["pending"].stringValue == "1"{
             self.payrollTotalLbl.text = "Today's total hours: Pending"
         }else{
             self.payrollTotalLbl.text = "Today's total hours: \(self.totalHours)"
@@ -317,12 +328,14 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         //employee picker
         self.employeePicker = Picker()
         self.employeePicker.delegate = self
+        self.employeePicker.dataSource = self
         self.employeeTxtField = PaddedTextField()
         self.employeeTxtField.leftMargin = 0.0
         self.employeeTxtField.text = self.employee.name
         self.employeeTxtField.textAlignment = NSTextAlignment.center
         self.employeeTxtField.tag = 1
         self.employeeTxtField.delegate = self
+        
         self.employeeTxtField.tintColor = UIColor.clear
         self.employeeTxtField.inputView = employeePicker
         self.view.addSubview(self.employeeTxtField)
@@ -332,9 +345,9 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(PayrollEntryViewController.cancelPicker))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let selectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItemStyle.plain, target: self, action: #selector(PayrollEntryViewController.selectEmployee))
+        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryViewController.cancelPicker))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let selectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryViewController.selectEmployee))
         
         toolBar.setItems([closeButton, spaceButton, selectButton], animated: false)
         toolBar.isUserInteractionEnabled = true
@@ -398,8 +411,33 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         navigationController?.pushViewController(payrollSummaryViewController, animated: false )
     }
     
+    //picker methods
+    // Number of columns of data
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    // The number of rows of data
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        //return pickerData.count
+        //print("picker count = \(self.weekArray.count)")
+        
+        return appDelegate.employeeArray.count + 1
+    }
+    
+    // The data to return fopr the row and component (column) that's being passed in
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        //return pickerData[row]
+       // print("picker title = \(self.weekArray[row])")
+        return appDelegate.employeeArray[row].name
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.employeeValue = appDelegate.employeeArray[row].name
+    }
     
     
+    /*
     
     public func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
@@ -413,6 +451,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
         return 60
     }
+ 
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return appDelegate.employeeArray[row].name
@@ -422,7 +461,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         
     }
     
-    
+    */
     
     
     
@@ -511,24 +550,32 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         print("row = \(row)")
         print("edit start \(start)")
         
-        print("start for \(row) =  \(payroll[row].startTime)")
-        print("stop for \(row) =  \(payroll[row].stopTime)")
-        print("break for \(row) =  \(payroll[row].lunch)")
+        //print("start for \(row) =  \(payroll[row].startTime)")
+        //print("stop for \(row) =  \(payroll[row].stopTime)")
+        //print("break for \(row) =  \(payroll[row].lunch)")
         
         
         let startIndexPath = IndexPath(row: row, section: 0)
         let stopIndexPath = IndexPath(row: row + 1, section: 0)
         let breakIndexPath = IndexPath(row: row + 2, section: 0)
+        /*
         let startCell = payrollTableView.cellForRow(at: startIndexPath) as! PayrollEntryTableViewCell!
         let stopCell = payrollTableView.cellForRow(at: stopIndexPath) as! PayrollEntryTableViewCell!
         let breakCell = payrollTableView.cellForRow(at: breakIndexPath) as! PayrollEntryTableViewCell!
-        startCell?.startTxtField.reset()
-        stopCell?.stopTxtField.reset()
-        breakCell?.breakTxtField.reset()
+ */
+        
+        let startCell:PayrollEntryTableViewCell = payrollTableView.cellForRow(at: startIndexPath) as! PayrollEntryTableViewCell
+        let stopCell:PayrollEntryTableViewCell = payrollTableView.cellForRow(at: stopIndexPath) as! PayrollEntryTableViewCell
+        let breakCell:PayrollEntryTableViewCell = payrollTableView.cellForRow(at: breakIndexPath) as! PayrollEntryTableViewCell
+        
+        
+        startCell.startTxtField.reset()
+        stopCell.stopTxtField.reset()
+        breakCell.breakTxtField.reset()
         
         //need userLevel greater then 1 to access this
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
-            startCell?.startTxtField.text = ""
+            startCell.startTxtField.text = ""
             return
         }
         
@@ -541,8 +588,8 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                 if start  >  payroll[row].stopTime{
                     //start is after stop
                     
-                    startCell?.startTxtField.error()
-                    stopCell?.stopTxtField.error()
+                    startCell.startTxtField.error()
+                    stopCell.stopTxtField.error()
                     
                     self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "Start time can not be later then stop time.")
                     
@@ -558,8 +605,8 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     breakTime = Double(payroll[row].lunch)! * 60
                     if(breakTime >= qtySeconds){
                         
-                        startCell?.startTxtField.error()
-                        breakCell?.breakTxtField.error()
+                        startCell.startTxtField.error()
+                        breakCell.breakTxtField.error()
                         
                         payroll[row].lunch = "0"
                         breakTime = 0.0
@@ -658,24 +705,24 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         
         print("row = \(row)")
         print("edit stop \(stop)")
-        print("start for \(row - 1) =  \(payroll[row - 1].startTime)")
-        print("stop for \(row - 1 ) =  \(payroll[row - 1].stopTime)")
-        print("break for \(row - 1) =  \(payroll[row - 1].lunch)")
+        //print("start for \(row - 1) =  \(payroll[row - 1].startTime)")
+        //print("stop for \(row - 1 ) =  \(payroll[row - 1].stopTime)")
+        //print("break for \(row - 1) =  \(payroll[row - 1].lunch)")
         
         
         let startIndexPath = IndexPath(row: row - 1, section: 0)
         let stopIndexPath = IndexPath(row: row, section: 0)
         let breakIndexPath = IndexPath(row: row + 1, section: 0)
-        let startCell = payrollTableView.cellForRow(at: startIndexPath) as! PayrollEntryTableViewCell!
-        let stopCell = payrollTableView.cellForRow(at: stopIndexPath) as! PayrollEntryTableViewCell!
-        let breakCell = payrollTableView.cellForRow(at: breakIndexPath) as! PayrollEntryTableViewCell!
-        startCell?.startTxtField.reset()
-        stopCell?.stopTxtField.reset()
-        breakCell?.breakTxtField.reset()
+        let startCell:PayrollEntryTableViewCell = payrollTableView.cellForRow(at: startIndexPath) as! PayrollEntryTableViewCell
+        let stopCell:PayrollEntryTableViewCell = payrollTableView.cellForRow(at: stopIndexPath) as! PayrollEntryTableViewCell
+        let breakCell:PayrollEntryTableViewCell = payrollTableView.cellForRow(at: breakIndexPath) as! PayrollEntryTableViewCell
+        startCell.startTxtField.reset()
+        stopCell.stopTxtField.reset()
+        breakCell.breakTxtField.reset()
         
         //need userLevel greater then 1 to access this
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
-            stopCell?.stopTxtField.text = ""
+            stopCell.stopTxtField.text = ""
             return
         }
         
@@ -688,8 +735,8 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
             if stop  <  payroll[row - 1].startTime{
                 //start is after stop
                 
-                startCell?.startTxtField.error()
-                stopCell?.stopTxtField.error()
+                startCell.startTxtField.error()
+                stopCell.stopTxtField.error()
                 
                 self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "Stop time can not be before the start time.")
                 
@@ -704,8 +751,8 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                 breakTime = Double(payroll[row - 1].lunch)! * 60
                 if(breakTime >= qtySeconds){
                     
-                    stopCell?.stopTxtField.error()
-                    breakCell?.breakTxtField.error()
+                    stopCell.stopTxtField.error()
+                    breakCell.breakTxtField.error()
                     
                     payroll[row - 1].lunch = "0"
                     breakTime = 0.0
@@ -739,24 +786,24 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         
         print("row = \(row)")
         print("edit break \(lunch)")
-        print("start for \(row - 2) =  \(payroll[row - 2].startTime)")
-        print("stop for \(row - 2 ) =  \(payroll[row - 2].stopTime)")
-        print("break for \(row - 2) =  \(payroll[row - 2].lunch)")
+       // print("start for \(row - 2) =  \(String(describing: payroll[row - 2].startTime))")
+       // print("stop for \(row - 2 ) =  \(payroll[row - 2].stopTime)")
+       // print("break for \(row - 2) =  \(payroll[row - 2].lunch)")
         
         
         let startIndexPath = IndexPath(row: row - 2, section: 0)
         let stopIndexPath = IndexPath(row: row - 1, section: 0)
         let breakIndexPath = IndexPath(row: row, section: 0)
-        let startCell = payrollTableView.cellForRow(at: startIndexPath) as! PayrollEntryTableViewCell!
-        let stopCell = payrollTableView.cellForRow(at: stopIndexPath) as! PayrollEntryTableViewCell!
-        let breakCell = payrollTableView.cellForRow(at: breakIndexPath) as! PayrollEntryTableViewCell!
-        startCell?.startTxtField.reset()
-        stopCell?.stopTxtField.reset()
-        breakCell?.breakTxtField.reset()
+        let startCell = payrollTableView.cellForRow(at: startIndexPath) as! PayrollEntryTableViewCell
+        let stopCell = payrollTableView.cellForRow(at: stopIndexPath) as! PayrollEntryTableViewCell
+        let breakCell = payrollTableView.cellForRow(at: breakIndexPath) as! PayrollEntryTableViewCell
+        startCell.startTxtField.reset()
+        stopCell.stopTxtField.reset()
+        breakCell.breakTxtField.reset()
         
         //need userLevel greater then 1 to access this
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
-            breakCell?.breakTxtField.text = "0"
+            breakCell.breakTxtField.text = "0"
             return
         }
         
@@ -779,7 +826,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                 if(breakTime >= qtySeconds){
                     
                     
-                    breakCell?.breakTxtField.error()
+                    breakCell.breakTxtField.error()
                     
                     payroll[row - 2].lunch = "0"
                     breakTime = 0.0
@@ -805,29 +852,29 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         print("resetShift")
 
         print("row = \(row)")
-        print("start for \(row - 3) =  \(payroll[row - 3].startTime)")
-        print("stop for \(row - 3 ) =  \(payroll[row - 3].stopTime)")
-        print("break for \(row - 3) =  \(payroll[row - 3].lunch)")
+        print("start for \(row - 3) =  \(String(describing: payroll[row - 3].startTime))")
+        print("stop for \(row - 3 ) =  \(String(describing: payroll[row - 3].stopTime))")
+        print("break for \(row - 3) =  \(String(describing: payroll[row - 3].lunch))")
         
         
         let startIndexPath = IndexPath(row: row - 3, section: 0)
         let stopIndexPath = IndexPath(row: row - 2, section: 0)
         let breakIndexPath = IndexPath(row: row - 1, section: 0)
-        let startCell = payrollTableView.cellForRow(at: startIndexPath) as! PayrollEntryTableViewCell!
-        let stopCell = payrollTableView.cellForRow(at: stopIndexPath) as! PayrollEntryTableViewCell!
-        let breakCell = payrollTableView.cellForRow(at: breakIndexPath) as! PayrollEntryTableViewCell!
-        startCell?.startTxtField.reset()
-        stopCell?.stopTxtField.reset()
-        breakCell?.breakTxtField.reset()
+        let startCell = payrollTableView.cellForRow(at: startIndexPath) as! PayrollEntryTableViewCell
+        let stopCell = payrollTableView.cellForRow(at: stopIndexPath) as! PayrollEntryTableViewCell
+        let breakCell = payrollTableView.cellForRow(at: breakIndexPath) as! PayrollEntryTableViewCell
+        startCell.startTxtField.reset()
+        stopCell.stopTxtField.reset()
+        breakCell.breakTxtField.reset()
         
         //need userLevel greater then 1 to access this
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
         }
         
-        startCell?.startTxtField.text = ""
-        stopCell?.stopTxtField.text = ""
-        breakCell?.breakTxtField.text = "0"
+        startCell.startTxtField.text = ""
+        stopCell.stopTxtField.text = ""
+        breakCell.breakTxtField.text = "0"
         
         payroll[row - 3].del = "1"
         

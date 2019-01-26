@@ -18,6 +18,7 @@ import SwiftyJSON
 
 protocol EditContractDelegate{
     func updateContract(_contract:Contract)
+    func updateContract(_contractItem:ContractItem)
     func updateContract(_contract:Contract, _status:String)
     //func updateContractLead(_lead:Lead)
     func suggestStatusChange(_emailCount:Int)
@@ -27,7 +28,7 @@ protocol EditContractDelegate{
 
 
 
-class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFieldDelegate, UIGestureRecognizerDelegate, UITableViewDelegate, UITableViewDataSource, EditContractDelegate, EditTermsDelegate, StackDelegate, EditLeadDelegate {
+class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate, UIGestureRecognizerDelegate, UITableViewDelegate, UITableViewDataSource, EditContractDelegate, EditTermsDelegate, StackDelegate, EditLeadDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
@@ -36,7 +37,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     var delegate:ContractListDelegate!
     
     var editLeadDelegate:EditLeadDelegate!
-    
+    var sortEditsMade:Bool = false
     
     var stackController:StackController!
     
@@ -45,7 +46,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     var statusIcon:UIImageView = UIImageView()
     var statusTxtField:PaddedTextField!
     var statusPicker: Picker!
-    var statusArray = ["New","Sent","Accepted","Scheduled","Declined","Waiting","Canceled"]
+    var statusArray = ["New","Sent","Awarded","Scheduled","Declined","Waiting","Canceled"]
     var statusValue: String!
     var statusValueToUpdate: String!
     var customerBtn: Button!
@@ -68,7 +69,9 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     var itemsLbl:GreyLabel!
     var items: JSON!
     var itemsArray:[ContractItem] = []
+    var itemIDArray:[String] = []
     //var signatureArray:[Signature] = []
+    var itemRowToEdit:Int?
     
     var customerSignature:Signature!
     var itemsTableView: TableView!
@@ -97,7 +100,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         super.init(nibName:nil,bundle:nil)
         
         self.contract = _contract
-        print("contract init - total = \(contract.total)")
+        //print("contract init - total = \(contract.total)")
     }
     
     
@@ -111,9 +114,9 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(ContractViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(ContractViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -131,7 +134,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     
     //sends request for lead tasks
     func getContract() {
-        print(" GetContract  Contract Id \(self.contract.ID)")
+        //print(" GetContract  Contract Id \(self.contract.ID)")
         
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -229,7 +232,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             
             
             
-            let item = ContractItem(_ID: self.json["items"][i]["ID"].stringValue, _chargeType: self.json["items"][i]["chargeType"].stringValue, _contractID: self.contract.ID, _createDate: self.json["items"][i]["createDate"].stringValue, _itemID:self.json["items"][i]["itemID"].stringValue, _name:self.json["items"][i]["name"].stringValue, _price:self.json["items"][i]["price"].stringValue, _qty:self.json["items"][i]["qty"].stringValue, _totalImages:self.json["items"][i]["totalImages"].stringValue, _total:self.json["items"][i]["total"].stringValue, _type: self.json["items"][i]["type"].stringValue, _taxCode: self.json["items"][i]["taxType"].stringValue, _subcontractor: self.json["items"][i]["subcontractor"].stringValue)
+            let item = ContractItem(_ID: self.json["items"][i]["ID"].stringValue, _chargeType: self.json["items"][i]["chargeType"].stringValue, _contractID: self.contract.ID, _createDate: self.json["items"][i]["createDate"].stringValue, _itemID:self.json["items"][i]["itemID"].stringValue, _name:self.json["items"][i]["name"].stringValue, _price:self.json["items"][i]["price"].stringValue, _qty:self.json["items"][i]["qty"].stringValue, _totalImages:self.json["items"][i]["totalImages"].stringValue, _total:self.json["items"][i]["total"].stringValue, _type: self.json["items"][i]["type"].stringValue, _taxCode: self.json["items"][i]["taxType"].stringValue, _subcontractor: self.json["items"][i]["subcontractor"].stringValue, _hideUnits: self.json["items"][i]["hideUnits"].stringValue)
             
             
                 item.tasks = contractTasks
@@ -237,6 +240,12 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
              self.itemsArray.append(item)
             
             
+        }
+        
+        self.itemIDArray = []
+        for item in itemsArray{
+            let ID = item.ID!
+            self.itemIDArray.append(ID)
         }
         
         
@@ -284,10 +293,11 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         
         //picker
         self.statusPicker = Picker()
-        print("statusValue : \(contract.status)")
+        //print("statusValue : \(contract.status)")
         print("set picker position : \(Int(contract.status)!)")
         
         self.statusPicker.delegate = self
+        self.statusPicker.dataSource = self
         
         
         self.statusPicker.selectRow(Int(contract.status)!, inComponent: 0, animated: false)
@@ -307,9 +317,9 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ContractViewController.cancelPicker))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ContractViewController.handleStatusChange))
+        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ContractViewController.cancelPicker))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let setButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ContractViewController.handleStatusChange))
         
         toolBar.setItems([closeButton, spaceButton, setButton], animated: false)
         toolBar.isUserInteractionEnabled = true
@@ -326,7 +336,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         custIcon.image = custImg
         self.customerBtn.addSubview(custIcon)
         self.customerBtn.contentEdgeInsets = UIEdgeInsets(top: 0, left: 35, bottom: 0, right: 10)
-        self.customerBtn.addTarget(self, action: #selector(WorkOrderViewController.showCustInfo), for: UIControlEvents.touchUpInside)
+        self.customerBtn.addTarget(self, action: #selector(self.showCustInfo), for: UIControl.Event.touchUpInside)
         
         self.view.addSubview(customerBtn)
         
@@ -409,7 +419,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         self.itemsTableView.rowHeight = 90
         self.itemsTableView.register(ContractItemTableViewCell.self, forCellReuseIdentifier: "cell")
         
-        self.itemsTableView.rowHeight = UITableViewAutomaticDimension
+        self.itemsTableView.rowHeight = UITableView.automaticDimension
         self.itemsTableView.estimatedRowHeight = 60
         
         
@@ -417,7 +427,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         
         
         
-        self.signBtn.addTarget(self, action: #selector(ContractViewController.sign), for: UIControlEvents.touchUpInside)
+        self.signBtn.addTarget(self, action: #selector(ContractViewController.sign), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.signBtn)
         
         
@@ -451,9 +461,9 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         
         self.tapBtn = Button()
         self.tapBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.tapBtn.addTarget(self, action: #selector(ContractViewController.showSignatureOptions), for: UIControlEvents.touchUpInside)
+        self.tapBtn.addTarget(self, action: #selector(ContractViewController.showSignatureOptions), for: UIControl.Event.touchUpInside)
         self.tapBtn.backgroundColor = UIColor.clear
-        self.tapBtn.setTitle("", for: UIControlState.normal)
+        self.tapBtn.setTitle("", for: UIControl.State.normal)
         self.view.addSubview(self.tapBtn)
         
         
@@ -571,7 +581,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[salesRepLbl(80)]-[salesRep]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         
        
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesLbl]-|", options: NSLayoutFormatOptions.alignAllTop, metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllTop, metrics: metricsDictionary, views: infoDictionary))
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notes]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)][chargeTypeLbl(22)][salesRepLbl(22)][notesLbl(22)][notes]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
@@ -584,14 +594,14 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Add Items", _message: "You should add items to this contract.")
         
         
-        let alertController = UIAlertController(title: "Add Items?", message: "This contract has no items.  Add items now?", preferredStyle: UIAlertControllerStyle.alert)
-        let cancelAction = UIAlertAction(title: "Not Now", style: UIAlertActionStyle.destructive) {
+        let alertController = UIAlertController(title: "Add Items?", message: "This contract has no items.  Add items now?", preferredStyle: UIAlertController.Style.alert)
+        let cancelAction = UIAlertAction(title: "Not Now", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
             print("No")
             return
         }
         
-        let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+        let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
             print("Yes")
         
@@ -603,7 +613,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         
     }
     
-    func showCustInfo() {
+    @objc func showCustInfo() {
         ////print("SHOW CUST INFO")
         let customerViewController = CustomerViewController(_customerID: self.contract.customer,_customerName: self.contract.customerName)
         navigationController?.pushViewController(customerViewController, animated: false )
@@ -619,10 +629,16 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         super.viewDidLayoutSubviews()
     }
     
+    // Number of columns of data
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
     // returns the number of 'columns' to display.
     func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
         return 1
     }
+    
     
     
     // returns the # of rows in each component..
@@ -700,26 +716,35 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         var count:Int!
-        count = self.itemsArray.count + 1
+        if tableView.isEditing{
+            count = self.itemsArray.count
+        }else{
+            count = self.itemsArray.count + 1
+        }
+        
         
         return count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell:ContractItemTableViewCell = itemsTableView.dequeueReusableCell(withIdentifier: "cell") as! ContractItemTableViewCell
-        if(indexPath.row == self.itemsArray.count){
-            //cell add btn mode
-            cell.layoutAddBtn()
-        }else{
-            cell.contractItem = self.itemsArray[indexPath.row]
-            cell.layoutViews()
-            cell.contractItem.tasks = self.itemsArray[indexPath.row].tasks
-        }
+        
+            if(indexPath.row == self.itemsArray.count){
+                //cell add btn mode
+                cell.layoutAddBtn()
+            }else{
+                cell.contractItem = self.itemsArray[indexPath.row]
+                cell.layoutViews()
+                cell.contractItem.tasks = self.itemsArray[indexPath.row].tasks
+            }
+        
+       
         return cell;
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if(indexPath.row == self.itemsArray.count){
+            tableView.deselectRow(at: indexPath, animated: false)
             self.addItem()
         }else{
             
@@ -743,24 +768,14 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
                
                 self.contractItemViewController?.layoutViews()
                 
+               self.itemRowToEdit = indexPath!.row
+                
                 navigationController?.pushViewController(self.contractItemViewController!, animated: false )
                 tableView.deselectRow(at: indexPath!, animated: true)
             }
-            
-            
-            
-            
-            
         }
         
-        
-        
-       
-        
     }
-    
-    
-    
     
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -771,10 +786,6 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         }
         
     }
-    
-    
-    
-    
     
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
@@ -797,6 +808,27 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         return [delete, edit]
     }
     
+    //reorder cells
+    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        
+        //let indexPath = tableView.indexPathForSelectedRow;
+        //let currentCell = tableView.cellForRow(at: indexPath!) as! ContractItemTableViewCell;
+        
+        let ID = self.itemsArray[sourceIndexPath.row].ID!
+        self.itemIDArray.remove(at: sourceIndexPath.row)
+        self.itemIDArray.insert(ID, at: destinationIndexPath.row)
+        
+        //let item:ContractItem = currentCell.contractItem
+        //self.itemsArray.remove(at: sourceIndexPath.row)
+        //self.itemsArray.insert(item, at: destinationIndexPath.row)
+        
+        
+        sortEditsMade = true
+    }
     
     
     
@@ -809,14 +841,14 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
         }else{
-            let alertController = UIAlertController(title: "Delete Item?", message: "Are you sure you want to delete this contract item?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Delete Item?", message: "Are you sure you want to delete this contract item?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("No")
                 return
             }
             
-            let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("Yes")
                 
@@ -875,8 +907,8 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
                             
                             if shouldRefreshTerms == true{
                                 print("refresh terms")
-                                let alertController2 = UIAlertController(title: "Regenerate Contract Terms", message: "This item had contract terms, would you like to regenerate the contract terms now based on current items?  All custom edits to terms will be overwritten.", preferredStyle: UIAlertControllerStyle.alert)
-                                let cancelAction2 = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                                let alertController2 = UIAlertController(title: "Regenerate Contract Terms", message: "This item had contract terms, would you like to regenerate the contract terms now based on current items?  All custom edits to terms will be overwritten.", preferredStyle: UIAlertController.Style.alert)
+                                let cancelAction2 = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                                     (result : UIAlertAction) -> Void in
                                     print("No")
                                     
@@ -889,7 +921,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
                                     return
                                 }
                                 
-                                let okAction2 = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                                let okAction2 = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                                     (result : UIAlertAction) -> Void in
                                     print("Yes")
                                     
@@ -1004,22 +1036,46 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
         }else{
-            let newEditContractItemViewController:NewEditContractItemViewController = NewEditContractItemViewController(_contract:self.contract,_itemID:itemsArray[_row].ID,_itemName:itemsArray[_row].name,_itemType:itemsArray[_row].type,_est:itemsArray[_row].qty,_price:itemsArray[_row].price,_originalID:itemsArray[_row].itemID)
-            
-            newEditContractItemViewController.delegate = self
             
             
-           
-            let now = Date()
-            let timeInterval = now.timeIntervalSince1970
-            let timeStamp = Int(timeInterval)
+            if self.contract.status == "1" || self.contract.status == "2" || self.contract.status == "3" || self.contract.status == "4"{
+                let alertController = UIAlertController(title: "Edit Item?", message: "The customer may have already seen this contract. Are you sure you want to edit this item?", preferredStyle: UIAlertController.Style.alert)
+                let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
+                    (result : UIAlertAction) -> Void in
+                    print("Cancel")
+                }
+                
+                let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
+                    (result : UIAlertAction) -> Void in
+                    print("OK")
+                    self.displayEditItemView(_row:_row)
+                }
+                
+                alertController.addAction(cancelAction)
+                alertController.addAction(okAction)
+                layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+            }else{
+               displayEditItemView(_row:_row)
+            }
             
-            newEditContractItemViewController.loadLinkList(_linkType: "items", _loadScript: API.Router.itemList(["cb":timeStamp as AnyObject]))
-            
-            
-            
-            self.navigationController?.pushViewController(newEditContractItemViewController, animated: false )
         }
+    }
+    
+    func displayEditItemView(_row:Int){
+        
+        self.itemRowToEdit = _row
+        
+        //let newEditContractItemViewController:NewEditContractItemViewController = NewEditContractItemViewController(_contract:self.contract,_itemID:self.itemsArray[_row].ID,_itemName:self.itemsArray[_row].name,_itemType:self.itemsArray[_row].type,_est:self.itemsArray[_row].qty,_price:self.itemsArray[_row].price,_originalID:self.itemsArray[_row].itemID,_hideUnits:self.itemsArray[_row].hideUnits)
+        let contractItem:ContractItem = ContractItem(_ID: self.itemsArray[_row].ID, _chargeType: self.itemsArray[_row].chargeType, _contractID: self.contract.ID, _itemID: self.itemsArray[_row].itemID, _name: self.itemsArray[_row].name, _price: self.itemsArray[_row].price, _qty: self.itemsArray[_row].qty, _total: self.itemsArray[_row].total, _type: self.itemsArray[_row].type, _taxCode: self.itemsArray[_row].taxCode, _subcontractor: self.itemsArray[_row].subcontractor, _hideUnits: self.itemsArray[_row].hideUnits)
+        
+        let newEditContractItemViewController:NewEditContractItemViewController = NewEditContractItemViewController(_contract: self.contract, _contractItem: contractItem)
+        newEditContractItemViewController.delegate = self
+        let now = Date()
+        let timeInterval = now.timeIntervalSince1970
+        let timeStamp = Int(timeInterval)
+        
+        newEditContractItemViewController.loadLinkList(_linkType: "items", _loadScript: API.Router.itemList(["cb":timeStamp as AnyObject]))
+        self.navigationController?.pushViewController(newEditContractItemViewController, animated: false )
     }
     
     
@@ -1028,22 +1084,48 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
         }else{
-            let newEditContractItemViewController:NewEditContractItemViewController = NewEditContractItemViewController(_contract: self.contract,_itemCount:self.itemsArray.count)
-            
-            newEditContractItemViewController.delegate = self
             
             
+            if self.contract.status == "1" || self.contract.status == "2" || self.contract.status == "3" || self.contract.status == "4"{
+                let alertController = UIAlertController(title: "Add Item?", message: "The customer may have already seen this contract. Are you sure you want to add an item?", preferredStyle: UIAlertController.Style.alert)
+                let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
+                    (result : UIAlertAction) -> Void in
+                    print("Cancel")
+                }
+                
+                let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
+                    (result : UIAlertAction) -> Void in
+                    print("OK")
+                    self.displayAddItemView()
+                }
+                
+                alertController.addAction(cancelAction)
+                alertController.addAction(okAction)
+                layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+            }else{
+                displayAddItemView()
+            }
             
-            let now = Date()
-            let timeInterval = now.timeIntervalSince1970
-            let timeStamp = Int(timeInterval)
-            
-            newEditContractItemViewController.loadLinkList(_linkType: "items", _loadScript: API.Router.itemList(["cb":timeStamp as AnyObject]))
             
             
             
-            self.navigationController?.pushViewController(newEditContractItemViewController, animated: false )
+            
+            
+            
         }
+        
+    }
+    
+    func displayAddItemView(){
+        let newEditContractItemViewController:NewEditContractItemViewController = NewEditContractItemViewController(_contract: self.contract,_itemCount:self.itemsArray.count)
+        
+        newEditContractItemViewController.delegate = self
+        let now = Date()
+        let timeInterval = now.timeIntervalSince1970
+        let timeStamp = Int(timeInterval)
+        
+        newEditContractItemViewController.loadLinkList(_linkType: "items", _loadScript: API.Router.itemList(["cb":timeStamp as AnyObject]))
+        self.navigationController?.pushViewController(newEditContractItemViewController, animated: false )
         
     }
     
@@ -1066,22 +1148,27 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             return
         }else{
         
-            let actionSheet = UIAlertController(title: "Contract Options", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+            let actionSheet = UIAlertController(title: "Contract Options", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
             actionSheet.view.backgroundColor = UIColor.white
             actionSheet.view.layer.cornerRadius = 5;
             
-            actionSheet.addAction(UIAlertAction(title: "Edit Contract", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            actionSheet.addAction(UIAlertAction(title: "Edit Contract", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                 print("display Edit View")
                 self.displayEditView()
             }))
             
-            actionSheet.addAction(UIAlertAction(title: "Edit Terms", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            actionSheet.addAction(UIAlertAction(title: "Edit Terms", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                 print("display Edit View")
                 self.displayTermsView()
             }))
             
+            actionSheet.addAction(UIAlertAction(title: "Sort Items", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
+                print("Sort Items")
+                self.sortItems()
+            }))
             
-            actionSheet.addAction(UIAlertAction(title: "Send Contract", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            
+            actionSheet.addAction(UIAlertAction(title: "Send Contract", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                 print("Send Contract")
                 
                 self.sendContract()
@@ -1093,7 +1180,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             
             
             
-            actionSheet.addAction(UIAlertAction(title: "Schedule Contract", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            actionSheet.addAction(UIAlertAction(title: "Schedule Contract", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                 print("schedule contract")
                 
                 //turn contract into workorder
@@ -1110,15 +1197,15 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             }))
             
             
-            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
+            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: { (alert:UIAlertAction!) -> Void in
             }))
             
             
             
             switch UIDevice.current.userInterfaceIdiom {
             case .phone:
-                self.present(actionSheet, animated: true, completion: nil)
-                
+                //self.present(actionSheet, animated: true, completion: nil)
+                layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
                 break
             // It's an iPhone
             case .pad:
@@ -1129,13 +1216,15 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
                 popover?.sourceView = self.view
                 popover?.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
                 
-                self.present(nav, animated: true, completion: nil)
+                //self.present(nav, animated: true, completion: nil)
+                layoutVars.getTopController().present(nav, animated: true, completion: nil)
                 break
             // It's an iPad
             case .unspecified:
                 break
             default:
-                self.present(actionSheet, animated: true, completion: nil)
+                //self.present(actionSheet, animated: true, completion: nil)
+                layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
                 break
                 
                 // Uh, oh! What could it be?
@@ -1157,6 +1246,71 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         let termsViewController:TermsViewController = TermsViewController(_terms: self.contract.terms, _contractID: self.contract.ID)
         termsViewController.delegate = self
         navigationController?.pushViewController(termsViewController, animated: false )
+    }
+    
+    func sortItems(){
+        print("sort items")
+        
+        itemsTableView.isEditing = !itemsTableView.isEditing
+        
+        optionsButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(ContractViewController.saveSort))
+        navigationItem.rightBarButtonItem = optionsButton
+        self.itemsTableView.reloadData()
+        
+    }
+    
+    @objc func saveSort(_leave:Bool = false){
+        print("save sort")
+        
+        
+        itemsTableView.isEditing = !itemsTableView.isEditing
+        optionsButton = UIBarButtonItem(title: "Options", style: .plain, target: self, action: #selector(ContractViewController.displayContractOptions))
+        navigationItem.rightBarButtonItem = optionsButton
+        
+        if sortEditsMade{
+            
+        
+            indicator = SDevIndicator.generate(self.view)!
+            
+            
+            
+            
+            
+            let parameters = [
+                "dataBase":"projects",
+                "table": "contractItems",
+                "IDs": NSArray(array: self.itemIDArray)
+                ] as [String : Any]
+            
+            
+            
+            
+            print("parameters = \(parameters)")
+            
+            layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/itemSort.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+                .responseString { response in
+                    print("response = \(response)")
+                }
+                .responseJSON(){
+                    response in
+                    self.sortEditsMade = false
+                    
+                    if _leave{
+                        self.indicator.dismissIndicator()
+                        _ = self.navigationController?.popViewController(animated: true)
+                    }else{
+                        self.getContract()
+                    }
+                    
+                    
+                    
+                    
+            }
+        }
+        
+        //self.itemsTableView.reloadData()
+        
     }
     
     func updateTerms(_terms:String){
@@ -1189,9 +1343,9 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         if self.contract.status == "3"{
             
             
-            let alertController = UIAlertController(title: "Contract Already Scheduled", message: "This contract has already been scheduled.", preferredStyle: UIAlertControllerStyle.alert)
+            let alertController = UIAlertController(title: "Contract Already Scheduled", message: "This contract has already been scheduled.", preferredStyle: UIAlertController.Style.alert)
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 
                 
@@ -1228,18 +1382,18 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
                     
                     
                     
-                    if self.contract.status == "0" || self.contract.status == "1" || self.contract.status == "2" || self.contract.status == "4" || self.contract.status == "5"{
+                    if self.contract.status == "0" || self.contract.status == "1" || self.contract.status == "2" || self.contract.status == "4" || self.contract.status == "5" || self.contract.status == "6"{
                         self.indicator.dismissIndicator()
                         
-                        let alertController = UIAlertController(title: "Update Contract Status?", message: "Do you want to set the contract to SCHEDULED?", preferredStyle: UIAlertControllerStyle.alert)
-                        let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+                        let alertController = UIAlertController(title: "Update Contract Status?", message: "Do you want to set the contract to SCHEDULED?", preferredStyle: UIAlertController.Style.alert)
+                        let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
                             (result : UIAlertAction) -> Void in
                             
                             
                             self.goToNewWorkOrder(_newWoID:newWoID)
                         
                         }
-                        let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+                        let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
                             (result : UIAlertAction) -> Void in
                             
                             self.indicator = SDevIndicator.generate(self.view)!
@@ -1296,8 +1450,8 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         
         
         
-        let alertController = UIAlertController(title: "Finish Setting Up New Work Order?", message: "Do you want to go to the new work order to add and edit its fields?", preferredStyle: UIAlertControllerStyle.alert)
-        let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+        let alertController = UIAlertController(title: "Finish Setting Up New Work Order?", message: "Do you want to go to the new work order to add and edit its fields?", preferredStyle: UIAlertController.Style.alert)
+        let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
             print("No")
             self.getContract()
@@ -1305,7 +1459,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             return
         }
         
-        let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+        let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
             print("Yes")
             
@@ -1409,27 +1563,27 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         
         print("showSignatureOptions")
         
-        let actionSheet = UIAlertController(title: "Signature Options", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        let actionSheet = UIAlertController(title: "Signature Options", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         actionSheet.view.backgroundColor = UIColor.white
         actionSheet.view.layer.cornerRadius = 5;
         
-        actionSheet.addAction(UIAlertAction(title: "Delete Signature", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+        actionSheet.addAction(UIAlertAction(title: "Delete Signature", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
             self.deleteSignature()
         }))
         
         
         
-        actionSheet.addAction(UIAlertAction(title: "Change Signature", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+        actionSheet.addAction(UIAlertAction(title: "Change Signature", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
             self.sign()
         }))
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: { (alert:UIAlertAction!) -> Void in
         }))
         
         
         
         switch UIDevice.current.userInterfaceIdiom {
         case .phone:
-            self.present(actionSheet, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
             
             break
         // It's an iPhone
@@ -1447,7 +1601,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         case .unspecified:
             break
         default:
-            self.present(actionSheet, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
             break
             
             // Uh, oh! What could it be?
@@ -1460,20 +1614,20 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
     @objc func deleteSignature(){
         
         print("delete signature")
-        print("contract status = \(self.contract.status)")
+       // print("contract status = \(self.contract.status)")
         
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
         }else{
         
-            let alertController = UIAlertController(title: "Delete Signature?", message: "Are you sure you want to delete this signature?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Delete Signature?", message: "Are you sure you want to delete this signature?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("No")
                 return
             }
             
-            let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("Yes")
                 
@@ -1506,13 +1660,13 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
                         
                         self.getContract()
                     }else{
-                        let alertController = UIAlertController(title: "Update Contract Status?", message: "Do you want to set the contract back to NEW?", preferredStyle: UIAlertControllerStyle.alert)
-                        let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+                        let alertController = UIAlertController(title: "Update Contract Status?", message: "Do you want to set the contract back to NEW?", preferredStyle: UIAlertController.Style.alert)
+                        let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
                             (result : UIAlertAction) -> Void in
                             
                             self.getContract()
                         }
-                        let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+                        let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
                             (result : UIAlertAction) -> Void in
                             
                             
@@ -1586,9 +1740,9 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
         //if self.contract.salesRep == "" || self.contract.salesRep == "0"{
             
             
-            let alertController = UIAlertController(title: "No Sales Rep Assigned", message: "Please link a sales rep to this contract", preferredStyle: UIAlertControllerStyle.alert)
+            let alertController = UIAlertController(title: "No Sales Rep Assigned", message: "Please link a sales rep to this contract", preferredStyle: UIAlertController.Style.alert)
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 //YES  go to signature page
                 
@@ -1621,8 +1775,8 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             
             
             
-            let alertController = UIAlertController(title: messageString, message:  "Set contract status to SENT?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: messageString, message:  "Set contract status to SENT?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 
                 //self.getContract()
@@ -1630,7 +1784,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
                 
                 
             }
-            let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 
                 
@@ -1718,6 +1872,12 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             
         }
     
+    }
+    
+    func updateContract(_contractItem: ContractItem){
+        print("updateContract Item")
+        //self.itemsArray[itemRowToEdit!] = _contractItem
+        self.getContract()
     }
     
     
@@ -1841,14 +2001,14 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
             return
         }else{
             
-            let alertController = UIAlertController(title: "No Work Order Exists", message: "Would you like to link a new WorkOrder now?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "No Work Order Exists", message: "Would you like to link a new WorkOrder now?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("No")
                 //_ = self.navigationController?.popViewController(animated: true)
             }
             
-            let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("Yes")
                 
@@ -1882,6 +2042,31 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UITextFiel
    
     
     @objc func goBack(){
+        
+        if sortEditsMade == true{
+            print("sortEditsMade = true")
+            let alertController = UIAlertController(title: "Sort Change", message: "Leave without saving?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Don't Save", style: UIAlertAction.Style.destructive) {
+                (result : UIAlertAction) -> Void in
+                print("Cancel")
+                //_ = self.navigationController?.popViewController(animated: true)
+                //return
+            }
+            
+            let okAction = UIAlertAction(title: "Save", style: UIAlertAction.Style.default) {
+                (result : UIAlertAction) -> Void in
+                print("OK")
+                self.saveSort(_leave:true)
+                // _ = self.navigationController?.popViewController(animated: true)
+            }
+            
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+        }
+        
+        
+        
         if(editsMade == true){
             if delegate != nil{
                 delegate.getContracts(_openNewContract: false)

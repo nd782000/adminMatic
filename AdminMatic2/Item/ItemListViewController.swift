@@ -10,7 +10,7 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 
 
 
@@ -30,7 +30,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var layoutVars:LayoutVars = LayoutVars()
     
     var sections : [(index: Int, length :Int, title: String)] = Array()
-    var items: JSON!
+    //var items: JSON!
     var itemsArray:[Item] = []
     var itemsSearchResults:[Item] = []
     var shouldShowSearchResults:Bool = false
@@ -68,16 +68,99 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             //print(response.data ?? "")     // server data
             //print(response.result)   // result of response serialization
             
-            if let json = response.result.value {
+            //if let json = response.result.value {
                 //print("JSON: \(json)")
-                self.items = JSON(json)
-                self.parseJSON()
+               // self.items = JSON(json)
+                //self.parseJSON()
                 
-            }
+                
+                //native way
+                
+                do {
+                    if let data = response.data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        let items = json["items"] as? [[String: Any]] {
+                        
+                        let itemCount = items.count
+                        print("item count = \(itemCount)")
+                        
+                        
+                        for i in 0 ..< itemCount {
+                            
+                            
+                            //create an object
+                            print("create a item object \(i)")
+                            
+                            
+                            let item = Item( _name: items[i]["name"] as? String, _id: items[i]["ID"] as? String, _type: items[i]["type"] as? String, _price: items[i]["price"] as? String, _units: items[i]["unit"] as? String, _description: items[i]["description"] as? String, _taxable: items[i]["taxable"] as? String)
+                            
+                            self.itemsArray.append(item)
+                            
+                            
+                            
+                        }
+                    }
+                    
+                    
+                 
+                    // build sections based on first letter(json is already sorted alphabetically)
+                    
+                    var index = 0;
+                    var firstCharacterArray:[String] = [" "]
+                    
+                    for i in 0 ..< self.itemsArray.count {
+                        let stringToTest = self.itemsArray[i].name.uppercased()
+                        let firstCharacter = String(stringToTest[stringToTest.startIndex])
+                        if(i == 0){
+                            firstCharacterArray.append(firstCharacter)
+                        }
+                        
+                        
+                        
+                        
+                        if !firstCharacterArray.contains(firstCharacter) {
+                            
+                            //print("new")
+                            let title = firstCharacterArray[firstCharacterArray.count - 1]
+                            firstCharacterArray.append(firstCharacter)
+                            
+                            let newSection = (index: index, length: i - index, title: title)
+                            self.sections.append(newSection)
+                            index = i;
+                        }
+                        
+                        if(i == self.itemsArray.count - 1){
+                            let title = firstCharacterArray[firstCharacterArray.count - 1]
+                            let newSection = (index: index, length: i - index + 1, title: title)
+                            self.sections.append(newSection)
+                        }
+                        
+                        
+                    }
+                    
+                    self.indicator.dismissIndicator()
+                    
+                    
+                    self.layoutViews()
+                    
+                    
+                   
+                    
+                    
+                } catch {
+                    print("Error deserializing JSON: \(error)")
+                }
+                
+                
+                
+                
+           // }
         }
         
         
     }
+    
+    /*
     func parseJSON(){
         let jsonCount = self.items["items"].count
         self.totalItems = jsonCount
@@ -135,6 +218,9 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.layoutViews()
         
     }
+ */
+    
+    
     
     
     func layoutViews(){
@@ -423,7 +509,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
             }
             

@@ -31,7 +31,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         super.init(nibName:nil,bundle:nil)
         
         title = "Home v \(self.appDelegate.appVersion)"
-        homeBtnData = [("employeesIcon","Employees"),("customersIcon","Customers"),("vendorsIcon","Vendors"),("itemsIcon","Items"),("scheduleIcon","Schedule"),("performanceIcon","Performance"),("imagesIcon","Images"),("equipmentIcon","Equipment"),("leadsIcon","Leads"),("contractsIcon","Contracts")]
+        homeBtnData = [("employeesIcon","Employees"),("customersIcon","Customers"),("vendorsIcon","Vendors"),("itemsIcon","Items"),("leadsIcon","Leads"),("contractsIcon","Contracts"),("scheduleIcon","Work Orders"),("performanceIcon","Performance"),("imagesIcon","Images"),("equipmentIcon","Equipment")]
         self.view.backgroundColor = layoutVars.backgroundColor
     }
     
@@ -61,37 +61,51 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             self.setLoggedInUserBtn()
         }
         
-        self.loggedInBtn.translatesAutoresizingMaskIntoConstraints = true
-        self.loggedInBtn.frame = CGRect(x: 10, y:layoutVars.navAndStatusBarHeight + 10, width: self.view.frame.width - 20, height: 40)
-        self.loggedInBtn.addTarget(self, action: #selector(HomeViewController.showLoggedInUser), for: UIControlEvents.touchUpInside)
+        
+        //self.loggedInBtn.frame = CGRect(x: 10, y:layoutVars.navAndStatusBarHeight + 10, width: self.view.frame.width - 20, height: 40)
+        self.loggedInBtn.addTarget(self, action: #selector(HomeViewController.showLoggedInUser), for: UIControl.Event.touchUpInside)
         
         self.view.addSubview(self.loggedInBtn)
     
+        self.loggedInBtn.translatesAutoresizingMaskIntoConstraints = false
+        self.loggedInBtn.leftAnchor.constraint(equalTo: view.safeLeftAnchor, constant: 10.0).isActive = true
+        self.loggedInBtn.topAnchor.constraint(equalTo: view.safeTopAnchor, constant: 10.0).isActive = true
+        self.loggedInBtn.widthAnchor.constraint(equalToConstant: self.view.frame.width - 20).isActive = true
+        self.loggedInBtn.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        
         
         // Do any additional setup after loading the view, typically from a nib.
         layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         layout.itemSize = CGSize(width: layoutVars.fullWidth/2-15, height: layoutVars.fullWidth/2-15)
         
-         homeCollectionView = UICollectionView(frame: CGRect(x: 0, y: layoutVars.navAndStatusBarHeight + 50, width: self.view.frame.width, height: self.view.frame.height - 50 - layoutVars.navAndStatusBarHeight), collectionViewLayout: layout)
+        homeCollectionView = UICollectionView(frame: CGRect(x: 0, y: layoutVars.navAndStatusBarHeight + 50, width: self.view.frame.width, height: self.view.frame.height - 50 - layoutVars.navAndStatusBarHeight), collectionViewLayout: layout)
+        homeCollectionView!.translatesAutoresizingMaskIntoConstraints = false
         
-
-        homeCollectionView?.dataSource = self
-        homeCollectionView?.delegate = self
-        homeCollectionView?.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+       
+        homeCollectionView!.dataSource = self
+        homeCollectionView!.delegate = self
+        homeCollectionView!.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         
         
+        homeCollectionView!.backgroundColor = UIColor.white
+       self.view.addSubview(homeCollectionView!)
         
-        
-        homeCollectionView?.backgroundColor = UIColor.white
-        self.view.addSubview(homeCollectionView!)
+        self.homeCollectionView!.translatesAutoresizingMaskIntoConstraints = false
+        self.homeCollectionView!.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        self.homeCollectionView!.topAnchor.constraint(equalTo: view.safeTopAnchor, constant: 60.0).isActive = true
+        //self.loggedInBtn.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        self.homeCollectionView!.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        self.homeCollectionView!.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor).isActive = true
     }
+    
     
     func setLoggedInUserBtn(){
 
         if(appDelegate.loggedInEmployee != nil){
             //print("logged in emp is not nil")
-            self.loggedInBtn = Button(titleText: "Welcome \(appDelegate.loggedInEmployee!.fname!)!")
+            self.loggedInBtn.setTitle("Welcome \(appDelegate.loggedInEmployee!.fname!)!", for: .normal)
             self.loggedInBtn.contentHorizontalAlignment = .left
             
             //image
@@ -103,10 +117,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             print("imgURL = \(String(describing: imgUrl))")
             
             
-            Nuke.loadImage(with: imgUrl!, into: self.employeeImage!){ 
-                print("nuke loadImage")
-                self.employeeImage?.handle(response: $0, isFromMemoryCache: $1)
-                //self.activityView.stopAnimating()
+            
                 
             }
             */
@@ -116,8 +127,8 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             Alamofire.request("https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!).responseImage { response in
                 debugPrint(response)
                 
-                print(response.request)
-                print(response.response)
+                //print(response.request)
+                //print(response.response)
                 debugPrint(response.result)
                 
                 if let image = response.result.value {
@@ -132,10 +143,10 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             employeeImage.frame = CGRect(x: 5, y: 5, width: 30, height: 30)
             self.loggedInBtn.addSubview(self.employeeImage)
     
-            self.loggedInBtn.translatesAutoresizingMaskIntoConstraints = true
-            self.loggedInBtn.frame = CGRect(x: 10, y:layoutVars.navAndStatusBarHeight + 10, width: self.view.frame.width - 20, height: 40)
+            //self.loggedInBtn.translatesAutoresizingMaskIntoConstraints = true
+            //self.loggedInBtn.frame = CGRect(x: 10, y:layoutVars.navAndStatusBarHeight + 10, width: self.view.frame.width - 20, height: 40)
             self.loggedInBtn.contentEdgeInsets = UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 10)
-            self.loggedInBtn.addTarget(self, action: #selector(HomeViewController.showLoggedInUser), for: UIControlEvents.touchUpInside)
+            self.loggedInBtn.addTarget(self, action: #selector(HomeViewController.showLoggedInUser), for: UIControl.Event.touchUpInside)
             self.view.addSubview(self.loggedInBtn)
             
         }else{
@@ -143,9 +154,9 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             self.loggedInBtn = Button(titleText: "Log In")
             self.loggedInBtn.contentHorizontalAlignment = .center
             
-            self.loggedInBtn.translatesAutoresizingMaskIntoConstraints = true
-            self.loggedInBtn.frame = CGRect(x: 10, y:layoutVars.navAndStatusBarHeight + 10, width: self.view.frame.width - 20, height: 40)
-            self.loggedInBtn.addTarget(self, action: #selector(HomeViewController.showLoggedInUser), for: UIControlEvents.touchUpInside)
+            //self.loggedInBtn.translatesAutoresizingMaskIntoConstraints = true
+            //self.loggedInBtn.frame = CGRect(x: 10, y:layoutVars.navAndStatusBarHeight + 10, width: self.view.frame.width - 20, height: 40)
+            self.loggedInBtn.addTarget(self, action: #selector(HomeViewController.showLoggedInUser), for: UIControl.Event.touchUpInside)
             
             self.view.addSubview(self.loggedInBtn)
             
@@ -200,26 +211,10 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             appDelegate.menuChange(3)
             break
         case 4:
-            //schedule
+            //leads
             appDelegate.menuChange(4)
             break
         case 5:
-            //performance
-            appDelegate.menuChange(5)
-            break
-        case 6:
-            //images
-            appDelegate.menuChange(6)
-            break
-        case 7:
-            //equipment
-            appDelegate.menuChange(7)
-            break
-        case 8:
-            //leads
-            appDelegate.menuChange(8)
-            break
-        case 9:
             //contracts
             
             //need userLevel greater then 1 to access this
@@ -227,8 +222,25 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                 return
             }
             
+            appDelegate.menuChange(5)
+            break
+        case 6:
+            //schedule
+            appDelegate.menuChange(6)
+            break
+        case 7:
+            //performance
+            appDelegate.menuChange(7)
+            break
+        case 8:
+            //images
+            appDelegate.menuChange(8)
+            break
+        case 9:
+            //equipment
             appDelegate.menuChange(9)
             break
+        
         default:
             break
             

@@ -15,6 +15,7 @@ import SwiftyJSON
 
 protocol ServiceListDelegate{
     func updateServiceList()
+    func updateEquipmentStatus(_equipment:Equipment)
 }
 
 class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ServiceListDelegate {
@@ -25,7 +26,8 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
     var editEquipmentDelegate:EditEquipmentDelegate!
     var equipmentIndex:Int!
     
-    var equipmentJSON: JSON!
+    var equipmentServiceJSON: JSON!
+    var equipmentHistoryJSON: JSON!
     
     var equipment:Equipment!
     
@@ -34,13 +36,13 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
     let items = ["Current","History"]
     
     var serviceCurrentArray:[EquipmentService] = []
-    var serviceCurrent:JSON!
+    //var serviceCurrent:JSON!
     
     var serviceHistoryArray:[EquipmentService] = []
-    var serviceHistory:JSON!
+    //var serviceHistory:JSON!
     
     var equipmentImage:UIImageView!
-    var activityView:UIActivityIndicatorView!
+    //var activityView:UIActivityIndicatorView!
     
     var tapBtn:Button!
     
@@ -52,10 +54,10 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
     
     
     var serviceSC:SegmentedControl!
-    var serviceTableView:TableView = TableView()
+    var serviceTableView:TableView! // = TableView()
     var addServiceButton:Button = Button(titleText: "Add Service")
     
-    var shouldUpdateTable:Bool = false
+   // var shouldUpdateTable:Bool = false
     
     let dateFormatter = DateFormatter()
     
@@ -63,8 +65,8 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
     
     init(_equipment:Equipment){
         super.init(nibName:nil,bundle:nil)
-        print("init Service List with equipmentID = \(_equipment.ID)")
-        print("init Service List with equipment status = \(_equipment.status)")
+        //print("init Service List with equipmentID = \(_equipment.ID)")
+        //print("init Service List with equipment status = \(_equipment.status)")
         self.equipment = _equipment
         
         
@@ -75,9 +77,9 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         title = "Service List"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -129,35 +131,70 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
             }
             .responseJSON() {
                 response in
-                if let json = response.result.value {
-                    
-                    self.serviceCurrent = JSON(json)
-                    
-                    let currentJsonCount = self.serviceCurrent["services"].count
-                    print("currentJsonCount: \(currentJsonCount)")
-                    for i in 0 ..< currentJsonCount {
+                
+                
+                
+                
+                //native way
+               
+                do {
+                    if let data = response.data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        let currentServices = json["services"] as? [[String: Any]],
+                    let serviceHistory = json["serviceHistory"] as? [[String: Any]] {
                         
-                        let equipmentService = EquipmentService(_ID: self.serviceCurrent["services"][i]["ID"].stringValue, _name: self.serviceCurrent["services"][i]["name"].stringValue, _type: self.serviceCurrent["services"][i]["type"].stringValue, _typeName: self.serviceCurrent["services"][i]["typeName"].stringValue, _frequency: self.serviceCurrent["services"][i]["frequency"].stringValue, _instruction: self.serviceCurrent["services"][i]["instructions"].stringValue, _creationDate: self.serviceCurrent["services"][i]["createDate"].stringValue, _createdBy: self.serviceCurrent["services"][i]["addedByName"].stringValue, _completionDate: self.serviceCurrent["services"][i]["completionDate"].stringValue, _completionMileage: self.serviceCurrent["services"][i]["completionMileage"].stringValue, _completedBy: self.serviceCurrent["services"][i]["completedByName"].stringValue, _notes: self.serviceCurrent["services"][i]["notes"].stringValue, _status: self.serviceCurrent["services"][i]["status"].stringValue, _currentValue: self.serviceCurrent["services"][i]["currentValue"].stringValue, _nextValue: self.serviceCurrent["services"][i]["nextValue"].stringValue, _equipmentID: self.serviceCurrent["services"][i]["equipmentID"].stringValue)
                         
-                        self.serviceCurrentArray.append(equipmentService)
-                    }
-                    
-                    
-                    self.serviceHistory = JSON(json)
-                    
-                    let historyJsonCount = self.serviceHistory["serviceHistory"].count
-                    print("historyJsonCount: \(historyJsonCount)")
-                    for i in 0 ..< historyJsonCount {
+                       
                         
-                        let equipmentService = EquipmentService(_ID: self.serviceHistory["serviceHistory"][i]["ID"].stringValue, _name: self.serviceHistory["serviceHistory"][i]["name"].stringValue, _type: self.serviceHistory["serviceHistory"][i]["type"].stringValue, _typeName: self.serviceCurrent["services"][i]["typeName"].stringValue, _frequency: self.serviceHistory["serviceHistory"][i]["frequency"].stringValue, _instruction: self.serviceHistory["serviceHistory"][i]["instructions"].stringValue, _creationDate: self.serviceHistory["serviceHistory"][i]["createDate"].stringValue, _createdBy: self.serviceHistory["serviceHistory"][i]["addedByName"].stringValue, _completionDate: self.serviceHistory["serviceHistory"][i]["completionDate"].stringValue, _completionMileage: self.serviceHistory["serviceHistory"][i]["completionMileage"].stringValue, _completedBy: self.serviceHistory["serviceHistory"][i]["completedByName"].stringValue, _notes: self.serviceHistory["serviceHistory"][i]["notes"].stringValue, _status: self.serviceHistory["serviceHistory"][i]["status"].stringValue, _currentValue: self.serviceCurrent["serviceHistory"][i]["currentValue"].stringValue, _nextValue: self.serviceCurrent["serviceHistory"][i]["nextValue"].stringValue, _equipmentID: self.serviceCurrent["services"][i]["equipmentID"].stringValue)
+                        let currentServiceCount = currentServices.count
+                        //print("currentServices count = \(currentServices)")
+                        
+                        
+                        for i in 0 ..< currentServiceCount{
+                            
+                            let equipmentService = EquipmentService(_ID: currentServices[i]["ID"] as? String, _name: currentServices[i]["name"] as? String, _type: currentServices[i]["type"] as? String, _typeName: currentServices[i]["typeName"] as? String, _frequency: currentServices[i]["frequency"] as? String, _instruction: currentServices[i]["instructions"] as? String, _creationDate: currentServices[i]["createDate"] as? String, _createdBy: currentServices[i]["addedByName"] as? String, _completionDate: currentServices[i]["completionDate"] as? String, _completionMileage: currentServices[i]["completionMileage"] as? String, _completedBy: currentServices[i]["completedByName"] as? String, _notes: currentServices[i]["completionNotes"] as? String, _status: currentServices[i]["status"] as? String, _currentValue: currentServices[i]["currentValue"] as? String, _nextValue: currentServices[i]["nextValue"] as? String, _equipmentID: currentServices[i]["equipmentID"] as? String)
+                            
+                            self.serviceCurrentArray.append(equipmentService)
+                        }
+                    
+                    
+                    
+                    let serviceHistoryCount = serviceHistory.count
+                    //print("serviceHistoryCount = \(serviceHistoryCount)")
+                    
+                    
+                    for i in 0 ..< serviceHistoryCount{
+                        
+                        let equipmentService = EquipmentService(_ID: serviceHistory[i]["ID"] as? String, _name: serviceHistory[i]["name"] as? String, _type: serviceHistory[i]["type"] as? String, _typeName: serviceHistory[i]["typeName"] as? String, _frequency: serviceHistory[i]["frequency"] as? String, _instruction: serviceHistory[i]["instructions"] as? String, _creationDate: serviceHistory[i]["createDate"] as? String, _createdBy: serviceHistory[i]["addedByName"] as? String, _completionDate: serviceHistory[i]["completionDate"] as? String, _completionMileage: serviceHistory[i]["completionMileage"] as? String, _completedBy: serviceHistory[i]["completedByName"] as? String, _notes: serviceHistory[i]["completionNotes"] as? String, _status: serviceHistory[i]["status"] as? String, _currentValue: serviceHistory[i]["currentValue"] as? String, _nextValue: serviceHistory[i]["nextValue"] as? String, _equipmentID: serviceHistory[i]["equipmentID"] as? String)
                         
                         self.serviceHistoryArray.append(equipmentService)
                     }
-                    
                 
+                    
+                    }
+                    
+                    
+                    
+                 
                     self.indicator.dismissIndicator()
                     self.layoutViews()
+                    
+                    
+                  
+                    
+                    
+                    
+                    
+                    
+                } catch {
+                    print("Error deserializing JSON: \(error)")
                 }
+                
+                
+                
+                
+                
+                
         }
         
     }
@@ -168,30 +205,27 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         
         print("layoutViews")
         
-        
+        self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         //image
         self.equipmentImage = UIImageView()
         
-        activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
-        activityView.center = CGPoint(x: self.equipmentImage.frame.size.width / 2, y: self.equipmentImage.frame.size.height / 2)
-        equipmentImage.addSubview(activityView)
-        activityView.startAnimating()
         
-        
-        /*
-        let imgURL:URL = URL(string: self.equipment.image.thumbPath!)!
-        
-        print("imgURL = \(imgURL)")
-        
-        Nuke.loadImage(with: imgURL, into: self.equipmentImage!){
-            print("nuke loadImage")
-            self.equipmentImage?.handle(response: $0, isFromMemoryCache: $1)
-            self.activityView.stopAnimating()
+        Alamofire.request(self.equipment.image.thumbPath!).responseImage { response in
+            debugPrint(response)
             
-            self.imageFullViewController = ImageFullViewController(_image: self.equipment.image)
+            print(response.request!)
+            print(response.response!)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                self.imageFullViewController = ImageFullViewController(_image: self.equipment.image)
+                // cell.imageView.image = image
+                self.equipmentImage.image = image
+            }
         }
- */
+        
         
         
         
@@ -206,10 +240,10 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         self.tapBtn = Button()
         self.tapBtn.translatesAutoresizingMaskIntoConstraints = false
         if equipment.image.ID != "0" {
-            self.tapBtn.addTarget(self, action: #selector(EquipmentServiceListViewController.showFullScreenImage), for: UIControlEvents.touchUpInside)
+            self.tapBtn.addTarget(self, action: #selector(EquipmentServiceListViewController.showFullScreenImage), for: UIControl.Event.touchUpInside)
         }
         self.tapBtn.backgroundColor = UIColor.clear
-        self.tapBtn.setTitle("", for: UIControlState.normal)
+        self.tapBtn.setTitle("", for: UIControl.State.normal)
         self.view.addSubview(self.tapBtn)
         
         
@@ -236,8 +270,8 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         mileageToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         mileageToolBar.sizeToFit()
         
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setMileageButton = UIBarButtonItem(title: "Set Mileage", style: UIBarButtonItemStyle.plain, target: self, action: #selector(EquipmentServiceListViewController.handleSetMileage))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let setMileageButton = UIBarButtonItem(title: "Set Mileage", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceListViewController.handleSetMileage))
         mileageToolBar.setItems([spaceButton, setMileageButton], animated: false)
         mileageToolBar.isUserInteractionEnabled = true
         mileageTxtField.inputAccessoryView = mileageToolBar
@@ -245,7 +279,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         
         
         
-        self.mileageButton.addTarget(self, action: #selector(EquipmentServiceListViewController.checkForServices), for: UIControlEvents.touchUpInside)
+        self.mileageButton.addTarget(self, action: #selector(EquipmentServiceListViewController.checkForServices), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.mileageButton)
         
         
@@ -257,18 +291,20 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         serviceSC.addTarget(self, action: #selector(self.changeServiceView(sender:)), for: .valueChanged)
         self.view.addSubview(serviceSC)
         
+        
+        self.serviceTableView = TableView()
         self.serviceTableView.delegate  =  self
         self.serviceTableView.dataSource = self
         self.serviceTableView.rowHeight = 60.0
         self.serviceTableView.register(EquipmentServiceTableViewCell.self, forCellReuseIdentifier: "cell")
         self.view.addSubview(serviceTableView)
-        if shouldUpdateTable {
-            self.serviceTableView.reloadData()
-            shouldUpdateTable = false
-        }
+        //if shouldUpdateTable {
+            //self.serviceTableView.reloadData()
+           // shouldUpdateTable = false
+       // }
         
         
-        self.addServiceButton.addTarget(self, action: #selector(EquipmentServiceListViewController.addService), for: UIControlEvents.touchUpInside)
+        self.addServiceButton.addTarget(self, action: #selector(EquipmentServiceListViewController.addService), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.addServiceButton)
         
         
@@ -287,11 +323,11 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
             ] as [String:Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(40)]-[mileageLbl]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(40)]-[mileageLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapBtn(40)]", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[mileageTxt]-[mileageBtn(80)]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[mileageTxt]-[mileageBtn(80)]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceSegmentedControl]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceSegmentedControl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceTable]-|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[addServiceBtn]-|", options: [], metrics: nil, views: viewsDictionary))
         
@@ -376,13 +412,13 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
             if self.equipment.status == "1" || self.equipment.status == "2"{
                 print("update equipment status")
                 
-                let alertController = UIAlertController(title: "No Services Due Now", message: "\(self.equipment.name!) looks good, would you like to update its status to \"Online\"?", preferredStyle: UIAlertControllerStyle.alert)
-                let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                let alertController = UIAlertController(title: "No Services Due Now", message: "\(self.equipment.name!) looks good, would you like to update its status to \"Online\"?", preferredStyle: UIAlertController.Style.alert)
+                let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                     (result : UIAlertAction) -> Void in
                     print("No")
                 }
                 
-                let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                     (result : UIAlertAction) -> Void in
                     print("Yes")
                     self.equipment.status = "0"
@@ -407,13 +443,13 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
             if self.equipment.status == "0"{
                 print("update equipment status")
                 
-                let alertController = UIAlertController(title: "1 Service Due Now", message: "\(self.equipment.name!) needs service now, would you like to update its status to \"Needs Service\"?", preferredStyle: UIAlertControllerStyle.alert)
-                let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                let alertController = UIAlertController(title: "1 Service Due Now", message: "\(self.equipment.name!) needs service now, would you like to update its status to \"Needs Service\"?", preferredStyle: UIAlertController.Style.alert)
+                let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                     (result : UIAlertAction) -> Void in
                     print("No")
                 }
                 
-                let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                     (result : UIAlertAction) -> Void in
                     print("Yes")
                     self.equipment.status = "1"
@@ -440,13 +476,13 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
             if self.equipment.status == "0"{
                 print("update equipment status")
                 
-                let alertController = UIAlertController(title: "\(n) Services Due Now", message: "\(self.equipment.name!) needs service now, would you like to update its status to \"Needs Service\"?", preferredStyle: UIAlertControllerStyle.alert)
-                let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                let alertController = UIAlertController(title: "\(n) Services Due Now", message: "\(self.equipment.name!) needs service now, would you like to update its status to \"Needs Service\"?", preferredStyle: UIAlertController.Style.alert)
+                let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                     (result : UIAlertAction) -> Void in
                     print("No")
                 }
                 
-                let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                     (result : UIAlertAction) -> Void in
                     print("Yes")
                     self.equipment.status = "1"
@@ -475,8 +511,6 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         
         serviceTableView.reloadData()
         
-        print("self.equipment.status = \(self.equipment.status) n = \(n)")
-        //update equipment status if services are needed
         
     }
     
@@ -490,12 +524,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
     
     @objc func addService(){
         print("add service")
-        /*
-        if(currentValue == ""){
-            simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Enter Mileage/Hours", _message: "")
-            return
-        }
- */
+       
         if self.mileageTxtField.text == ""{
             self.currentValue = "0"
         }else{
@@ -532,7 +561,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
     
     @objc func keyboardWillShow(notification: NSNotification) {
         
-        if let keyboardFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as AnyObject).cgRectValue {
+        if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as AnyObject).cgRectValue {
             if(!keyBoardShown){
                 UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                     self.view.frame.origin.y -= keyboardFrame.height
@@ -556,8 +585,8 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
     }
     func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardDidHide, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
     }
     
     
@@ -613,13 +642,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //print("You selected cell #\(indexPath.row)!")
         
-        /*
-        if(currentValue == ""){
-            simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Enter Mileage/Hours", _message: "")
-            return
-        }
- */
-        
+       
         
         let indexPath = tableView.indexPathForSelectedRow
         let currentCell = tableView.cellForRow(at: indexPath!) as! EquipmentServiceTableViewCell
@@ -633,14 +656,19 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         
         if(currentCell.equipmentService.frequency != "0" && currentCell.equipmentService.currentValue != "0" && Int(currentCell.equipmentService.type)! > 1){
             currentCell.equipmentService.nextValue = "\(Int(currentCell.equipmentService.frequency)! + Int(currentCell.equipmentService.currentValue)!)"
-            print("next value = \(currentCell.equipmentService.nextValue)")
+            //print("next value = \(currentCell.equipmentService.nextValue)")
         }
  
+        if currentCell.equipmentService.type == "4"{
+            let equipmentInspectionViewController = EquipmentInspectionViewController(_equipment: self.equipment,_equipmentService:currentCell.equipmentService)
+            navigationController?.pushViewController(equipmentInspectionViewController, animated: false )
+            equipmentInspectionViewController.serviceListDelegate = self
+        }else{
+            let equipmentServiceViewController = EquipmentServiceViewController(_equipmentService: currentCell.equipmentService)
+            navigationController?.pushViewController(equipmentServiceViewController, animated: false )
+            equipmentServiceViewController.serviceListDelegate = self
+        }
         
-        let equipmentServiceViewController = EquipmentServiceViewController(_equipmentService: currentCell.equipmentService)
-        navigationController?.pushViewController(equipmentServiceViewController, animated: false )
-        //equipmentViewController.equipmentDelegate = self
-        equipmentServiceViewController.serviceListDelegate = self
         
         
         tableView.deselectRow(at: indexPath!, animated: true)
@@ -681,11 +709,17 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
     
     func updateServiceList() {
         print("updateServiceList")
-        shouldUpdateTable = true
+       // shouldUpdateTable = true
         getEquipmentServiceInfo()
     }
     
-    
+    func updateEquipmentStatus(_equipment:Equipment){
+        print("updateEquipmentStatus \(String(describing: _equipment.status))")
+        self.equipment = _equipment
+        
+        self.editEquipmentDelegate.updateEquipment(_equipment: self.equipment)
+        
+    }
     
     
     @objc func goBack(){

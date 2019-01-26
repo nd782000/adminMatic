@@ -124,6 +124,68 @@ extension MKPinAnnotationView {
 }
 
 
+extension UIView{
+    
+    func pinToEdges(view:UIView){
+        self.topAnchor.constraint(equalTo:view.topAnchor).isActive = true
+        self.leftAnchor.constraint(equalTo:view.leftAnchor).isActive = true
+        self.rightAnchor.constraint(equalTo:view.rightAnchor).isActive = true
+        self.bottomAnchor.constraint(equalTo:view.bottomAnchor).isActive = true
+    }
+    
+    func anchor(top:NSLayoutYAxisAnchor?, left:NSLayoutXAxisAnchor?, right:NSLayoutXAxisAnchor?, bottom:NSLayoutYAxisAnchor?, topPadding:CGFloat, leftPadding:CGFloat, rightPadding:CGFloat, bottomPadding:CGFloat, width:CGFloat = 0, height:CGFloat = 0){
+        self.translatesAutoresizingMaskIntoConstraints = false
+        
+        if let top = top{
+            self.topAnchor.constraint(equalTo: top, constant: topPadding).isActive = true
+        }
+        if let left = left{
+            self.leftAnchor.constraint(equalTo: left, constant: leftPadding).isActive = true
+        }
+        if let right = right{
+            self.rightAnchor.constraint(equalTo: right, constant: rightPadding).isActive = true
+        }
+        if let bottom = bottom{
+            self.bottomAnchor.constraint(equalTo: bottom, constant: bottomPadding).isActive = true
+        }
+        if width != 0{
+            self.widthAnchor.constraint(equalToConstant: width).isActive = true
+        }
+        if height != 0{
+            self.heightAnchor.constraint(equalToConstant: height).isActive = true
+        }
+    }
+    
+    var safeTopAnchor:NSLayoutYAxisAnchor{
+        if #available(iOS 11.0, *){
+            return safeAreaLayoutGuide.topAnchor
+        }
+        return topAnchor
+    }
+    
+    var safeLeftAnchor:NSLayoutXAxisAnchor{
+        if #available(iOS 11.0, *){
+            return safeAreaLayoutGuide.leftAnchor
+        }
+        return leftAnchor
+    }
+    
+    var safeRightAnchor:NSLayoutXAxisAnchor{
+        if #available(iOS 11.0, *){
+            return safeAreaLayoutGuide.rightAnchor
+        }
+        return rightAnchor
+    }
+    
+    var safeBottomAnchor:NSLayoutYAxisAnchor{
+        if #available(iOS 11.0, *){
+            return safeAreaLayoutGuide.bottomAnchor
+        }
+        return bottomAnchor
+    }
+}
+
+
 
 
 
@@ -257,9 +319,9 @@ class LayoutVars: UIViewController {
     
     func simpleAlert(_vc:UIViewController,_title:String,_message:String?){
         print("simpleAlert: \(String(describing: _message))")
-        let alertController = UIAlertController(title: _title, message: _message, preferredStyle: UIAlertControllerStyle.alert)
+        let alertController = UIAlertController(title: _title, message: _message, preferredStyle: UIAlertController.Style.alert)
         
-        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+        let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
             print("OK")
         }
@@ -334,9 +396,9 @@ class LayoutVars: UIViewController {
         
         
         
-        print("equipmentService.nextValue = \(_equipmentService.nextValue)")
-        print("equipmentService.creationDate = \(_equipmentService.creationDate)")
-        print("dbDate = \(String(describing: dbDate))")
+        //print("equipmentService.nextValue = \(_equipmentService.nextValue)")
+        //print("equipmentService.creationDate = \(_equipmentService.creationDate)")
+       // print("dbDate = \(String(describing: dbDate))")
         
         
         
@@ -464,7 +526,7 @@ func cleanText(_ _text:String!)->String{
 func cleanAddress(_ _dirtyString:String!)->String{
     var cleanAddress = ""
     
-    print("phone = \(_dirtyString)")
+   // print("phone = \(_dirtyString)")
     cleanAddress = _dirtyString!.replacingOccurrences(of: "(", with: "", options: NSString.CompareOptions.literal, range: nil)
     cleanAddress = cleanAddress.replacingOccurrences(of: ")", with: "", options: NSString.CompareOptions.literal, range: nil)
     print("address Clean = \(cleanAddress)")
@@ -479,7 +541,7 @@ func cleanAddress(_ _dirtyString:String!)->String{
 
 
 func cleanPhoneNumber(_ _number:String!)->String{
-    print("clean phone number \(_number)")
+    //print("clean phone number \(_number)")
     let stringArray = _number.components(
         separatedBy: CharacterSet.decimalDigits.inverted)
     print("clean phone stringArray \(stringArray)")
@@ -632,7 +694,7 @@ class PaddedTextField: UITextField {
     convenience init(placeholder:String!) {
         self.init()
         self.placeHolder = placeholder
-        self.attributedPlaceholder = NSAttributedString(string:placeholder,attributes:[NSAttributedStringKey.foregroundColor: UIColor(hex:0x333333, op: 0.75)])
+        self.attributedPlaceholder = NSAttributedString(string:placeholder,attributes:[NSAttributedString.Key.foregroundColor: UIColor(hex:0x333333, op: 0.75)])
     }
     
     convenience init(textValue:String!) {
@@ -650,14 +712,14 @@ class TableView: UITableView {
     
       
     
-    override init(frame: CGRect, style: UITableViewStyle) {
+    override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
         self.layer.borderWidth = 1
         self.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
         self.layer.cornerRadius = 4.0
         self.backgroundColor = UIColor(hex:0xFFFFFF, op: 0.8)
         self.separatorColor = UIColor(hex:0x005100, op: 0.6)
-        self.separatorStyle = UITableViewCellSeparatorStyle.singleLine
+        self.separatorStyle = UITableViewCell.SeparatorStyle.singleLine
         self.separatorInset = UIEdgeInsets.zero
         self.rowHeight = 40
         
@@ -685,8 +747,8 @@ class SegmentedControl:UISegmentedControl{
         let layoutVars:LayoutVars = LayoutVars()
         self.selectedSegmentIndex = 0
         self.backgroundColor = UIColor(hex:0xFFFFFF, op: 1)
-        let attr = NSDictionary(object: UIFont(name: "Avenir Next", size: 16.0)!, forKey: NSAttributedStringKey.font as NSCopying)
-        self.setTitleTextAttributes(attr as? [AnyHashable: Any], for: UIControlState())
+        let attr = NSDictionary(object: UIFont(name: "Avenir Next", size: 16.0)!, forKey: NSAttributedString.Key.font as NSCopying)
+        self.setTitleTextAttributes((attr as? [AnyHashable: Any] as! [NSAttributedString.Key : Any]), for: UIControl.State())
         self.layer.cornerRadius = 0  // Don't let background bleed
        
         self.tintColor = layoutVars.buttonTint
@@ -855,7 +917,7 @@ class GreyLabel:UILabel {
     }
     
     override func drawText(in rect: CGRect) {
-        super.drawText(in: UIEdgeInsetsInsetRect(rect, insets))
+        super.drawText(in: rect.inset(by: insets))
     }
 }
 
@@ -931,7 +993,7 @@ class Button:UIButton{
         super.init(frame: frame)
         self.backgroundColor = UIColor(hex:0x005100, op: 1.0)
         self.titleLabel!.font = UIFont(name: "Helvetica Neue", size: 16)!
-        self.setTitleColor(UIColor.white, for: UIControlState())
+        self.setTitleColor(UIColor.white, for: UIControl.State())
         self.layer.cornerRadius = 5.0
         self.translatesAutoresizingMaskIntoConstraints = false
         
@@ -939,7 +1001,7 @@ class Button:UIButton{
     
     convenience init(titleText:String!) {
         self.init()
-        self.setTitle(titleText, for: UIControlState())
+        self.setTitle(titleText, for: UIControl.State())
     }
 }
 
@@ -1042,7 +1104,7 @@ class Cell:UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.separatorInset = UIEdgeInsets.zero
         self.layoutMargins = UIEdgeInsets.zero
@@ -1142,7 +1204,7 @@ func callPhoneNumber(_ _number:String){
     
     if (cleanPhoneNumber(_number) != "No Number Saved"){
         
-        UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(_number))")! as URL, options: [:], completionHandler: nil)
+        UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(_number))")! as URL, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
     }
 }
 
@@ -1165,7 +1227,7 @@ func sendEmail(_ _email:String){
     print("send Email to \(_email)")
     let url = URL(string: "mailto:\(_email)")
     print("url: \(String(describing: url))")
-    UIApplication.shared.open(url!, options: [:], completionHandler: nil)
+    UIApplication.shared.open(url!, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
     
 }
 
@@ -1212,7 +1274,7 @@ func openMapForPlace(_ _name:String,_lat:NSString,_lng:NSString) {
     
     let regionDistance:CLLocationDistance = 100000
     let coordinates = CLLocationCoordinate2DMake(latitute, longitute)
-    let regionSpan = MKCoordinateRegionMakeWithDistance(coordinates, regionDistance, regionDistance)
+    let regionSpan = MKCoordinateRegion.init(center: coordinates, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
     let options = [
         MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: regionSpan.center),
         MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: regionSpan.span)
@@ -1226,7 +1288,7 @@ func openMapForPlace(_ _name:String,_lat:NSString,_lng:NSString) {
 
 func openWebLink(_ _url:String){
     print("openWebLink url: \(_url)")
-    UIApplication.shared.open(URL(string: "http://\(_url)")!, options: [:], completionHandler: nil)
+    UIApplication.shared.open(URL(string: "http://\(_url)")!, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
 }
 
 
@@ -1278,7 +1340,7 @@ class SDevIndicator : UIView {
         self.layoutVars = LayoutVars()
         super.init(frame: frame)
         self.backgroundColor = UIColor.clear
-        spinner = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
+        spinner = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.whiteLarge)
         spinnerParentView = UIView(frame: CGRect(x: 0, y: 0, width: layoutVars.fullWidth, height: layoutVars.fullHeight))
         spinnerParentView.backgroundColor = layoutVars.buttonTint
         spinnerParentView.alpha = 0.8
@@ -1306,7 +1368,7 @@ class SDevIndicator : UIView {
     }
     
     func dismissIndicator() -> Void {
-        UIView.animate(withDuration: 0.3, delay: 0, options: UIViewAnimationOptions.curveEaseOut, animations: {
+        UIView.animate(withDuration: 0.3, delay: 0, options: UIView.AnimationOptions.curveEaseOut, animations: {
             self.alpha = 0
             }, completion: {
                 finished in
@@ -1332,38 +1394,38 @@ extension UIImage {
         //print("fixedOrientation")
          //print("imageOrientation = \(imageOrientation.rawValue)")
         
-        if imageOrientation == UIImageOrientation.up {
+        if imageOrientation == UIImage.Orientation.up {
             return self
         }
         
         var transform: CGAffineTransform = CGAffineTransform.identity
         
         switch imageOrientation {
-        case UIImageOrientation.down, UIImageOrientation.downMirrored:
+        case UIImage.Orientation.down, UIImage.Orientation.downMirrored:
             transform = transform.translatedBy(x: size.width, y: size.height)
             transform = transform.rotated(by: CGFloat.pi)
             break
-        case UIImageOrientation.left, UIImageOrientation.leftMirrored:
+        case UIImage.Orientation.left, UIImage.Orientation.leftMirrored:
             transform = transform.translatedBy(x: size.width, y: 0)
             transform = transform.rotated(by: CGFloat.pi)
             break
-        case UIImageOrientation.right, UIImageOrientation.rightMirrored:
+        case UIImage.Orientation.right, UIImage.Orientation.rightMirrored:
             transform = transform.translatedBy(x: 0, y: size.height)
             transform = transform.rotated(by: CGFloat(-Double.pi / 2))
             break
-        case UIImageOrientation.up, UIImageOrientation.upMirrored:
+        case UIImage.Orientation.up, UIImage.Orientation.upMirrored:
             break
         }
         
         switch imageOrientation {
-        case UIImageOrientation.upMirrored, UIImageOrientation.downMirrored:
+        case UIImage.Orientation.upMirrored, UIImage.Orientation.downMirrored:
             transform.translatedBy(x: size.width, y: 0)
             transform.scaledBy(x: -1, y: 1)
             break
-        case UIImageOrientation.leftMirrored, UIImageOrientation.rightMirrored:
+        case UIImage.Orientation.leftMirrored, UIImage.Orientation.rightMirrored:
             transform.translatedBy(x: size.height, y: 0)
             transform.scaledBy(x: -1, y: 1)
-        case UIImageOrientation.up, UIImageOrientation.down, UIImageOrientation.left, UIImageOrientation.right:
+        case UIImage.Orientation.up, UIImage.Orientation.down, UIImage.Orientation.left, UIImage.Orientation.right:
             break
         }
         
@@ -1378,7 +1440,7 @@ extension UIImage {
         ctx.concatenate(transform)
         
         switch imageOrientation {
-        case UIImageOrientation.left, UIImageOrientation.leftMirrored, UIImageOrientation.right, UIImageOrientation.rightMirrored:
+        case UIImage.Orientation.left, UIImage.Orientation.leftMirrored, UIImage.Orientation.right, UIImage.Orientation.rightMirrored:
             ctx.draw(self.cgImage!, in: CGRect(x: 0, y: 0, width: size.height, height: size.width))
         default:
             ctx.draw(self.cgImage!, in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
@@ -1658,3 +1720,8 @@ extension Date {
 }
  */
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+}

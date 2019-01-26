@@ -31,7 +31,7 @@ class NewWoItemTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         
@@ -47,7 +47,7 @@ class NewWoItemTableViewCell: UITableViewCell {
         
         let viewsDictionary = ["name":nameLbl,"unit":unitLbl] as [String : Any]
         
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(18)]-6-[unit(14)]", options: NSLayoutFormatOptions.alignAllLeft, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(18)]-6-[unit(14)]", options: NSLayoutConstraint.FormatOptions.alignAllLeft, metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[name]-|", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[unit]-|", options: [], metrics: nil, views: viewsDictionary))
     }

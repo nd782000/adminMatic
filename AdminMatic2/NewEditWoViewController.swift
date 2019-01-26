@@ -13,7 +13,7 @@ import Alamofire
 import SwiftyJSON
 
 
-class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIScrollViewDelegate {
+class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerViewDataSource, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIScrollViewDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
@@ -121,9 +121,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
     //init for edit
     init(_wo:WorkOrder){
         super.init(nibName:nil,bundle:nil)
-        print("wo edit init \(_wo.ID)")
-        print("wo title \(_wo.title)")
-        print("wo custName \(_wo.customerName)")
+        //print("wo edit init \(_wo.ID)")
+        //print("wo title \(_wo.title)")
+        //print("wo custName \(_wo.customerName)")
         self.wo = _wo
         
     }
@@ -135,7 +135,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         
         
         
-        self.wo = WorkOrder(_ID: "0", _statusID: "1", _date: "", _firstItem: "", _statusName: "Not Started", _customer: _customer, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "", _title:"", _customerName:"")
+        self.wo = WorkOrder(_ID: "0", _statusID: "1", _date: "", _firstItem: "", _statusName: "Not Started", _customer: _customer, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "", _title:"", _customerName:_customerName)
         
     }
     
@@ -168,7 +168,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         super.init(nibName:nil,bundle:nil)
         print("new work order from contract init")
         self.contract = _contract
-        print("wo title \(_wo.title)")
+        //print("wo title \(_wo.title)")
         print("wo custName \(_wo.customerName)")
         self.wo = _wo
     }
@@ -186,9 +186,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(NewEditWoViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(NewEditWoViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -290,16 +290,20 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         
         customerSearchBar.backgroundColor = UIColor.white
         customerSearchBar.barTintColor = UIColor.white
-        customerSearchBar.searchBarStyle = UISearchBarStyle.default
+        customerSearchBar.searchBarStyle = UISearchBar.Style.default
         customerSearchBar.delegate = self
         customerSearchBar.tag = 1
         self.view.addSubview(customerSearchBar)
+        
+        if self.wo.customer != ""{
+            self.customerSearchBar.text = self.wo.customerName
+        }
         
         let custToolBar = UIToolbar()
         custToolBar.barStyle = UIBarStyle.default
         custToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         custToolBar.sizeToFit()
-        let closeCustButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.cancelCustInput))
+        let closeCustButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelCustInput))
         
         custToolBar.setItems([closeCustButton], animated: false)
         custToolBar.isUserInteractionEnabled = true
@@ -333,6 +337,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         
         self.chargeTypePicker = Picker()
         self.chargeTypePicker.delegate = self
+        self.chargeTypePicker.dataSource = self
         self.chargeTypePicker.tag = 1
         
         
@@ -347,10 +352,10 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         chargeTypeToolBar.barStyle = UIBarStyle.default
         chargeTypeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         chargeTypeToolBar.sizeToFit()
-        let closeChargeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.cancelChargeTypeInput))
+        let closeChargeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelChargeTypeInput))
         
-        let setChargeTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.handleChargeTypeChange))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let setChargeTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleChargeTypeChange))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         chargeTypeToolBar.setItems([closeChargeTypeButton, spaceButton, setChargeTypeButton], animated: false)
         chargeTypeToolBar.isUserInteractionEnabled = true
         chargeTypeTxtField.inputAccessoryView = chargeTypeToolBar
@@ -372,6 +377,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         
         self.invoiceTypePicker = Picker()
         self.invoiceTypePicker.delegate = self
+        self.invoiceTypePicker.dataSource = self
         self.invoiceTypePicker.tag = 2
         
         
@@ -386,9 +392,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         invoiceTypeToolBar.barStyle = UIBarStyle.default
         invoiceTypeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         invoiceTypeToolBar.sizeToFit()
-        let closeInvoiceTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.cancelInvoiceTypeInput))
+        let closeInvoiceTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelInvoiceTypeInput))
         
-        let setInvoiceTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.handleInvoiceTypeChange))
+        let setInvoiceTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleInvoiceTypeChange))
         invoiceTypeToolBar.setItems([closeInvoiceTypeButton, spaceButton, setInvoiceTypeButton], animated: false)
         invoiceTypeToolBar.isUserInteractionEnabled = true
         invoiceTypeTxtField.inputAccessoryView = invoiceTypeToolBar
@@ -408,6 +414,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         
         self.scheduleTypePicker = Picker()
         self.scheduleTypePicker.delegate = self
+        self.scheduleTypePicker.dataSource = self
         self.scheduleTypePicker.tag = 3
         
         
@@ -422,9 +429,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         scheduleTypeToolBar.barStyle = UIBarStyle.default
         scheduleTypeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         scheduleTypeToolBar.sizeToFit()
-        let closeScheduleTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.cancelScheduleTypeInput))
+        let closeScheduleTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelScheduleTypeInput))
         
-        let setScheduleTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.handleScheduleTypeChange))
+        let setScheduleTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleScheduleTypeChange))
         scheduleTypeToolBar.setItems([closeScheduleTypeButton, spaceButton, setScheduleTypeButton], animated: false)
         scheduleTypeToolBar.isUserInteractionEnabled = true
         scheduleTypeTxtField.inputAccessoryView = scheduleTypeToolBar
@@ -449,7 +456,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         //self.scheduleOptionsBtn.titleLabel?.textColor = UIColor.black
         self.scheduleOptionsBtn.setTitleColor(UIColor.black, for: .normal)
         
-        self.scheduleOptionsBtn.addTarget(self, action: #selector(NewEditWoViewController.scheduleOptions), for: UIControlEvents.touchUpInside)
+        self.scheduleOptionsBtn.addTarget(self, action: #selector(NewEditWoViewController.scheduleOptions), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.scheduleOptionsBtn)
         
         //temporarily disable options btn
@@ -463,6 +470,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         
         self.departmentPicker = Picker()
         self.departmentPicker.delegate = self
+        self.departmentPicker.dataSource = self
         self.departmentPicker.tag = 4
         
         
@@ -477,9 +485,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         departmentToolBar.barStyle = UIBarStyle.default
         departmentToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         departmentToolBar.sizeToFit()
-        let closeDepartmentButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.cancelDepartmentInput))
+        let closeDepartmentButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelDepartmentInput))
         
-        let setDepartmentButton = UIBarButtonItem(title: "Set Dept.", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.handleDepartmentChange))
+        let setDepartmentButton = UIBarButtonItem(title: "Set Dept.", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleDepartmentChange))
         departmentToolBar.setItems([closeDepartmentButton, spaceButton, setDepartmentButton], animated: false)
         departmentToolBar.isUserInteractionEnabled = true
         departmentTxtField.inputAccessoryView = departmentToolBar
@@ -514,6 +522,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         
         self.crewPicker = Picker()
         self.crewPicker.delegate = self
+        self.crewPicker.dataSource = self
         self.crewPicker.tag = 5
         
         
@@ -528,9 +537,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         crewToolBar.barStyle = UIBarStyle.default
         crewToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         crewToolBar.sizeToFit()
-        let closeCrewButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.cancelCrewInput))
+        let closeCrewButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelCrewInput))
         
-        let setCrewButton = UIBarButtonItem(title: "Set Crew", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.handleCrewChange))
+        let setCrewButton = UIBarButtonItem(title: "Set Crew", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleCrewChange))
         crewToolBar.setItems([closeCrewButton, spaceButton, setCrewButton], animated: false)
         crewToolBar.isUserInteractionEnabled = true
         crewTxtField.inputAccessoryView = crewToolBar
@@ -578,7 +587,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         
         repSearchBar.backgroundColor = UIColor.white
         repSearchBar.barTintColor = UIColor.white
-        repSearchBar.searchBarStyle = UISearchBarStyle.default
+        repSearchBar.searchBarStyle = UISearchBar.Style.default
         repSearchBar.delegate = self
         repSearchBar.tag = 2
         self.view.addSubview(repSearchBar)
@@ -588,7 +597,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         repToolBar.barStyle = UIBarStyle.default
         repToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         repToolBar.sizeToFit()
-        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.cancelRepInput))
+        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelRepInput))
         
         repToolBar.setItems([closeRepButton], animated: false)
         repToolBar.isUserInteractionEnabled = true
@@ -639,7 +648,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         titleToolBar.barStyle = UIBarStyle.default
         titleToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         titleToolBar.sizeToFit()
-        let closeTitleButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.cancelTitleInput))
+        let closeTitleButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelTitleInput))
         
         titleToolBar.setItems([closeTitleButton], animated: false)
         titleToolBar.isUserInteractionEnabled = true
@@ -668,7 +677,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         notesToolBar.barStyle = UIBarStyle.default
         notesToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         notesToolBar.sizeToFit()
-        let closeNotesButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditWoViewController.cancelNotesInput))
+        let closeNotesButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelNotesInput))
         
         notesToolBar.setItems([closeNotesButton], animated: false)
         notesToolBar.isUserInteractionEnabled = true
@@ -724,24 +733,24 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
         
         
        
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerLbl(80)]-[customerSearchBar]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerLbl(80)]-[customerSearchBar]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
         
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeLbl(halfWidth)]-[invoiceTypeLbl]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeTxtField(halfWidth)]-[invoiceTypeTxtField]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeLbl(halfWidth)]-[invoiceTypeLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeTxtField(halfWidth)]-[invoiceTypeTxtField]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scheduleTypeLbl(halfWidth)]", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scheduleTypeTxtField(halfWidth)]-[scheduleOptions]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scheduleTypeTxtField(halfWidth)]-[scheduleOptions]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[departmentLbl(halfWidth)]-[crewLbl]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[departmentTxtField(halfWidth)]-[crewTxtField]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[departmentLbl(halfWidth)]-[crewLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[departmentTxtField(halfWidth)]-[crewTxtField]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
         
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repLbl(80)]-[repSearchBar]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repLbl(80)]-[repSearchBar]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
@@ -880,6 +889,14 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
     }
+    
+    
+    //picker methods
+    // Number of columns of data
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
     
     // returns the number of 'columns' to display.
     func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
@@ -1266,7 +1283,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
                 print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
             }
             cell.nameLbl.attributedText = highlightedText
@@ -1301,7 +1318,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
                 print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
             }
             cell.nameLbl.attributedText = highlightedText
@@ -1496,7 +1513,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
                         self.wo.ID = newWorkOrderID
                         
                         
-                        print("new wo.ID: \(self.wo.ID)")
+                        //print("new wo.ID: \(self.wo.ID)")
                         
                         
                         self.layoutVars.playSaveSound()
@@ -1512,7 +1529,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
                                 //self.leadTaskDelegate.updateItems()
                                 
                                 
-                                print("new wo.ID: \(self.wo.ID)")
+                                //print("new wo.ID: \(self.wo.ID)")
                                 _ = self.navigationController?.popViewController(animated: false)
                                 
                                 self.leadTaskDelegate.handleNewWorkOrder(_workOrder: self.wo)
@@ -1618,13 +1635,13 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate, UITextFie
     @objc func goBack(){
         if(self.editsMade == true){
             print("editsMade = true")
-            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("Cancel")
             }
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
                 _ = self.navigationController?.popViewController(animated: true)

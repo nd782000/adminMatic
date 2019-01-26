@@ -75,8 +75,8 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
     
     init(_equipmentService:EquipmentService){
         super.init(nibName:nil,bundle:nil)
-        print("init _equipmentService.ID = \(_equipmentService.ID)")
-        print("init current = \(_equipmentService.currentValue)")
+        //print("init _equipmentService.ID = \(_equipmentService.ID)")
+        //print("init current = \(_equipmentService.currentValue)")
         self.equipmentService = _equipmentService
         
     }
@@ -102,9 +102,9 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         title = "Service"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(self.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -134,9 +134,9 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         
         print("layoutViews")
         
-        print("self.equipmentService.frequency = \(self.equipmentService.frequency)")
-        print("self.equipmentService.currentValue = \(self.equipmentService.currentValue)")
-        print("self.equipmentService.nextValue = \(self.equipmentService.nextValue)")
+        //print("self.equipmentService.frequency = \(self.equipmentService.frequency)")
+        //print("self.equipmentService.currentValue = \(self.equipmentService.currentValue)")
+        //print("self.equipmentService.nextValue = \(self.equipmentService.nextValue)")
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
@@ -178,9 +178,9 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(EquipmentServiceViewController.cancelPicker))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItemStyle.plain, target: self, action: #selector(EquipmentServiceViewController.handleStatusChange))
+        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.cancelPicker))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let setButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.handleStatusChange))
         toolBar.setItems([closeButton, spaceButton, setButton], animated: false)
         toolBar.isUserInteractionEnabled = true
         
@@ -205,7 +205,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         let creationDateFormatter:DateFormatter = DateFormatter()
         creationDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         let creationDate = creationDateFormatter.date(from: self.equipmentService.creationDate!)
-        print("creation date = \(creationDate)")
+        //print("creation date = \(creationDate)")
         //created on/by
         self.creationOnByLbl = GreyLabel()
         self.creationOnByLbl.text = "By: \(self.equipmentService.createdBy!) on \(self.dateFormatter.string(from: creationDate!))"
@@ -244,8 +244,8 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         currentToolBar.barStyle = UIBarStyle.default
         currentToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         currentToolBar.sizeToFit()
-        let closeCurrentButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(EquipmentServiceViewController.cancelCurrentInput))
-        let setCurrentButton = UIBarButtonItem(title: "Set", style: UIBarButtonItemStyle.plain, target: self, action: #selector(EquipmentServiceViewController.handleCurrentChange))
+        let closeCurrentButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.cancelCurrentInput))
+        let setCurrentButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.handleCurrentChange))
         
         currentToolBar.setItems([closeCurrentButton,spaceButton,setCurrentButton], animated: false)
         currentToolBar.isUserInteractionEnabled = true
@@ -270,8 +270,8 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         nextToolBar.barStyle = UIBarStyle.default
         nextToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         nextToolBar.sizeToFit()
-        let closeNextButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(EquipmentServiceViewController.cancelNextInput))
-        let setNextButton = UIBarButtonItem(title: "Set", style: UIBarButtonItemStyle.plain, target: self, action: #selector(EquipmentServiceViewController.handleNextChange))
+        let closeNextButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.cancelNextInput))
+        let setNextButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.handleNextChange))
         nextToolBar.setItems([closeNextButton,spaceButton,setNextButton], animated: false)
         nextToolBar.isUserInteractionEnabled = true
         
@@ -301,8 +301,8 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         completionNotesToolBar.barStyle = UIBarStyle.default
         completionNotesToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         completionNotesToolBar.sizeToFit()
-        let closeCompletionNotesButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(EquipmentServiceViewController.cancelCompletionNotesInput))
-        let setCompletionNotesButton = UIBarButtonItem(title: "Set", style: UIBarButtonItemStyle.plain, target: self, action: #selector(EquipmentServiceViewController.handleCompletionNotesChange))
+        let closeCompletionNotesButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.cancelCompletionNotesInput))
+        let setCompletionNotesButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.handleCompletionNotesChange))
         completionNotesToolBar.setItems([closeCompletionNotesButton,spaceButton,setCompletionNotesButton], animated: false)
         completionNotesToolBar.isUserInteractionEnabled = true
         self.completionNotesView.inputAccessoryView = completionNotesToolBar
@@ -407,7 +407,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             self.currentTxtField.isEnabled = false
             
             nextDatePicker = DatePicker()
-            nextDatePicker.datePickerMode = UIDatePickerMode.date
+            nextDatePicker.datePickerMode = UIDatePicker.Mode.date
             
             self.nextTxtField = PaddedTextField()
             self.view.addSubview(self.nextTxtField)
@@ -705,8 +705,8 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         print("textFieldDidEndEditing")
         print("textField.tag = \(textField.tag)")
         
-        print("frequency = \(equipmentService.frequency)")
-        print("currentValue = \(equipmentService.currentValue)")
+        //print("frequency = \(equipmentService.frequency)")
+        //print("currentValue = \(equipmentService.currentValue)")
         
         
         if(equipmentService.type != "1"){
@@ -782,7 +782,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
     
     @objc func keyboardWillShow(notification: NSNotification) {
         
-        if let keyboardFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as AnyObject).cgRectValue {
+        if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as AnyObject).cgRectValue {
             if(!keyBoardShown){
                 UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                     self.view.frame.origin.y -= keyboardFrame.height
@@ -806,8 +806,8 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
     }
     func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardDidHide, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
     }
     
     
@@ -933,7 +933,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
     
     @objc func handleStatusChange(){
         
-        print("statusValueToUpdate = \(self.statusValueToUpdate)")
+        //print("statusValueToUpdate = \(self.statusValueToUpdate)")
         
         self.statusTxtField.resignFirstResponder()
         self.statusTxtField2.resignFirstResponder()
@@ -1118,13 +1118,13 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         
         if(self.editsMade == true){
             print("editsMade = true")
-            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?  Change Status to save any changes.", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?  Change Status to save any changes.", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("Cancel")
             }
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
                 //self.submit()

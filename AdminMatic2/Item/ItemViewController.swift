@@ -81,9 +81,9 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         title = "Item"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(ItemViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(ItemViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -117,6 +117,72 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
                 response in
                 if let json = response.result.value {
                     
+                    
+                    /*
+                    
+                    //native way
+                    
+                    do {
+                        if let data = response.data,
+                            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                            let item = json["item"] as? [[String: Any]] {
+                            
+                            //let itemCount = item.count
+                            //print("item count = \(itemCount)")
+                            
+                            
+                            
+                            self.item.description = item[0]["description"] as? String
+                            self.item.taxable = item[0]["tax"] as? String
+                            self.item.typeID = item[0]["type"] as? String
+                            self.item.totalRemainingQty = item[0]["remQty"] as? String
+                            
+                            let vendorCount = Int((item[0]["vendors"].count))
+                            print("vendorCount: \(vendorCount)")
+                            for i in 0 ..< vendorCount {
+                                let vendor = Vendor(_name: item["vendors"][i]["name"] as? String, _id: item["vendors"][i]["vendorID"] as? String, _address: item["vendors"][i]["adname"] as? String, _phone: item["vendors"][i]["phone"] as? String, _website: item["vendors"][i]["website"] as? String, _balance: item["vendors"][i]["balance"] as? String, _lng: item["vendors"][i]["address"][0]["lng"] as? String, _lat: item["vendors"][i]["address"][0]["lat"] as? String)
+                                vendor.itemCost = item["vendors"][i]["cost"] as? String
+                                vendor.itemPreffered = item["vendors"][i]["preffered"] as? String
+                                itemVendorArray.append(vendor)
+                            }
+                            
+                            let workOrderCount = Int((item["workOrders"].count))
+                            print("workOrderCount: \(workOrderCount)")
+                            for n in 0 ..< workOrderCount {
+                                let workOrder = WorkOrder(_ID: item["workOrders"][n]["ID"] as? String, _statusID: item["workOrders"][n]["status"] as? String, _date: "", _firstItem: item["workOrders"][n]["title"] as? String, _statusName: "", _customer: item["workOrders"][n]["custName"] as? String, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "", _title: item["workOrders"][n]["title"] as? String, _customerName: item["workOrders"][n]["customerName"] as? String)
+                                workOrder.itemRemQty = item["workOrders"][n]["remQty"] as? String
+                                itemWorkOrderArray.append(workOrder)
+                            }
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                           
+                        }
+                        
+                        
+
+                        
+                        self.indicator.dismissIndicator()
+                        
+                        
+                        self.layoutViews()
+                        
+                        
+                        
+                        
+                        
+                    } catch {
+                        print("Error deserializing JSON: \(error)")
+                    }
+                    
+                    */
+                    
+                    
+                    
                     print(" dismissIndicator")
                     self.indicator.dismissIndicator()
                     
@@ -134,6 +200,8 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         
        
     }
+    
+    
     
     func parseItemJSON(){
         
@@ -319,7 +387,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
                             longitude: Double(vendor.lng)!
                         )
                     
-                        let span = MKCoordinateSpanMake(0.5, 0.5)
+                        let span = MKCoordinateSpan.init(latitudeDelta: 0.5, longitudeDelta: 0.5)
                         let region = MKCoordinateRegion(center: location, span: span)
                     
                         locateView.setRegion(region, animated: true)
@@ -338,14 +406,14 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
                 locateView.showsUserLocation = true
                 locateView.showAnnotations(locateView.annotations, animated: true)
                 
-                var zoomRect:MKMapRect = MKMapRectNull
+                var zoomRect:MKMapRect = MKMapRect.null
                 for  annotation in locateView.annotations {
-                    let annotationPoint:MKMapPoint = MKMapPointForCoordinate(annotation.coordinate)
-                    let pointRect:MKMapRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0, 0);
-                    if (MKMapRectIsNull(zoomRect)) {
+                    let annotationPoint:MKMapPoint = MKMapPoint.init(annotation.coordinate)
+                    let pointRect:MKMapRect = MKMapRect.init(x: annotationPoint.x, y: annotationPoint.y, width: 0, height: 0);
+                    if (zoomRect.isNull) {
                         zoomRect = pointRect;
                     } else {
-                        zoomRect = MKMapRectUnion(zoomRect, pointRect);
+                        zoomRect = zoomRect.union(pointRect);
                     }
                 }
                 
@@ -366,7 +434,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
                 }else{
                     print("location not available")
                     
-                    locateView.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(50, 50, 50, 50), animated: true)
+                    locateView.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsets.init(top: 50, left: 50, bottom: 50, right: 50), animated: true)
                 }
         }
         
@@ -442,7 +510,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         
             //labor type
         
-        print("item.typeID = \(item.typeID)")
+       // print("item.typeID = \(item.typeID)")
         if(item.typeID == "1"){
             segmentedControl.isEnabled = false
             segmentedControl.selectedSegmentIndex = 2
@@ -496,18 +564,18 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         
         print("didUpdateLocations \(foundLocation)")
         if(foundLocation == false){
-            var zoomRect:MKMapRect = MKMapRectNull
+            var zoomRect:MKMapRect = MKMapRect.null
             for  annotation in locateView.annotations {
-                let annotationPoint:MKMapPoint = MKMapPointForCoordinate(annotation.coordinate)
-                let pointRect:MKMapRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0, 0);
-                if (MKMapRectIsNull(zoomRect)) {
+                let annotationPoint:MKMapPoint = MKMapPoint.init(annotation.coordinate)
+                let pointRect:MKMapRect = MKMapRect.init(x: annotationPoint.x, y: annotationPoint.y, width: 0, height: 0);
+                if zoomRect.isNull {
                     zoomRect = pointRect;
                 } else {
-                    zoomRect = MKMapRectUnion(zoomRect, pointRect);
+                    zoomRect = zoomRect.union(pointRect);
                 }
             }
             
-            locateView.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(50, 50, 50, 50), animated: true)
+            locateView.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsets.init(top: 50, left: 50, bottom: 50, right: 50), animated: true)
             foundLocation = true
         }
     }
@@ -634,7 +702,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         case "VENDOR":
             let cell = vendorTableView.dequeueReusableCell(withIdentifier: "vendorCell") as! VendorTableViewCell
             cell.id = itemVendorArray[indexPath.row].ID
-            print("vendor name = \(itemVendorArray[indexPath.row].name)")
+           // print("vendor name = \(itemVendorArray[indexPath.row].name)")
             cell.name = itemVendorArray[indexPath.row].name
             cell.nameLbl.text = itemVendorArray[indexPath.row].name
             cell.itemCostLbl.text = "$\(itemVendorArray[indexPath.row].itemCost!)/\(self.item.units!)"

@@ -46,14 +46,14 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
     
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         self.selectionStyle = .none
         //startStopFormatter.dateFormat = "hh:mm a"
         
         self.metricsDictionary = ["halfWidth": layoutVars.halfWidth]
-        self.spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        self.spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
         
         let theDateFormat = DateFormatter.Style.none
@@ -78,11 +78,11 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         self.startBtn = Button(titleText: "Start")
         self.startBtn.backgroundColor = UIColor(hex:0x005100, op:1)
         self.contentView.addSubview(startBtn)
-        self.startBtn.addTarget(self, action: #selector(PayrollEntryTableViewCell.startTime), for: UIControlEvents.touchUpInside)
+        self.startBtn.addTarget(self, action: #selector(PayrollEntryTableViewCell.startTime), for: UIControl.Event.touchUpInside)
         
         
         startPicker = DatePicker()
-        startPicker.datePickerMode = UIDatePickerMode.time
+        startPicker.datePickerMode = UIDatePicker.Mode.time
         
         self.startTxtField = PaddedTextField()
         self.startTxtField.leftMargin = 0.0
@@ -101,7 +101,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         startToolBar.sizeToFit()
         //let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
        
-        let setStartButton = UIBarButtonItem(title: "Set Start", style: UIBarButtonItemStyle.plain, target: self, action: #selector(PayrollEntryTableViewCell.handleStartPicker))
+        let setStartButton = UIBarButtonItem(title: "Set Start", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryTableViewCell.handleStartPicker))
         startToolBar.setItems([spaceButton, setStartButton], animated: false)
         startToolBar.isUserInteractionEnabled = true
         startTxtField.inputAccessoryView = startToolBar
@@ -149,11 +149,11 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         self.stopBtn = Button(titleText: "Stop")
         self.stopBtn.backgroundColor = UIColor.red
         self.contentView.addSubview(stopBtn)
-        self.stopBtn.addTarget(self, action: #selector(PayrollEntryTableViewCell.stopTime), for: UIControlEvents.touchUpInside)
+        self.stopBtn.addTarget(self, action: #selector(PayrollEntryTableViewCell.stopTime), for: UIControl.Event.touchUpInside)
         
         
         stopPicker = DatePicker()
-        stopPicker.datePickerMode = UIDatePickerMode.time
+        stopPicker.datePickerMode = UIDatePicker.Mode.time
         
         
         self.stopTxtField = PaddedTextField()
@@ -172,7 +172,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         stopToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         stopToolBar.sizeToFit()
         //let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setStopButton = UIBarButtonItem(title: "Set Stop", style: UIBarButtonItemStyle.plain, target: self, action: #selector(PayrollEntryTableViewCell.handleStopPicker))
+        let setStopButton = UIBarButtonItem(title: "Set Stop", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryTableViewCell.handleStopPicker))
         
         stopToolBar.setItems([spaceButton, setStopButton], animated: false)
         stopToolBar.isUserInteractionEnabled = true
@@ -238,7 +238,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         breakToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         breakToolBar.sizeToFit()
         //let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setBreakButton = UIBarButtonItem(title: "Set Break", style: UIBarButtonItemStyle.plain, target: self, action: #selector(PayrollEntryTableViewCell.handleBreakSet))
+        let setBreakButton = UIBarButtonItem(title: "Set Break", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryTableViewCell.handleBreakSet))
         breakToolBar.setItems([spaceButton, setBreakButton], animated: false)
         breakToolBar.isUserInteractionEnabled = true
         breakTxtField.inputAccessoryView = breakToolBar
@@ -301,7 +301,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         self.resetBtn = Button(titleText: "Reset Shift")
         self.resetBtn.backgroundColor = UIColor.darkGray
         self.contentView.addSubview(resetBtn)
-        self.resetBtn.addTarget(self, action: #selector(PayrollEntryTableViewCell.resetShift), for: UIControlEvents.touchUpInside)
+        self.resetBtn.addTarget(self, action: #selector(PayrollEntryTableViewCell.resetShift), for: UIControl.Event.touchUpInside)
         
         
         /////////  Auto Layout   //////////////////////////////////////
@@ -363,13 +363,13 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         }
         
         
-        let alertController = UIAlertController(title: "Reset Shift?", message: "Are you sure you want to reset this shift?", preferredStyle: UIAlertControllerStyle.alert)
-        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+        let alertController = UIAlertController(title: "Reset Shift?", message: "Are you sure you want to reset this shift?", preferredStyle: UIAlertController.Style.alert)
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
             print("Cancel")
         }
         
-        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+        let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
             print("OK")
             self.delegate.resetShift(row: self.row)

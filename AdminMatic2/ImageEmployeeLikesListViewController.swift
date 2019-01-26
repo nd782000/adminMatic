@@ -63,7 +63,7 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
     
     init(_image:Image){
         super.init(nibName:nil,bundle:nil)
-        print("init _image.ID = \(_image.ID)")
+        //print("init _image.ID = \(_image.ID)")
         self.image = _image
         
     }
@@ -78,9 +78,9 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         view.backgroundColor = layoutVars.backgroundColor
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(DepartmentListViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(DepartmentListViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -193,7 +193,7 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         self.imageView = UIImageView()
         
         
-        activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        activityView = UIActivityIndicatorView(style: .whiteLarge)
         activityView.center = CGPoint(x: self.imageView.frame.size.width / 2, y: self.imageView.frame.size.height / 2)
         imageView.addSubview(activityView)
         
@@ -212,6 +212,32 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
             
         }
         */
+        
+        
+        Alamofire.request(self.image.thumbPath!).responseImage { response in
+            debugPrint(response)
+            
+            print(response.request!)
+            print(response.response!)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                
+                
+                self.imageView.image = image
+                
+                
+                self.activityView.stopAnimating()
+                
+                
+            }
+        }
+        
+        
+        
+        
+        
         
         
         
@@ -360,7 +386,7 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         
         cell.employee = self.employeeArray[indexPath.row]
         
-        print("cell.employee.ID = \(cell.employee.ID)")
+        //print("cell.employee.ID = \(cell.employee.ID)")
         
         cell.activityView.startAnimating()
         cell.nameLbl.text = cell.employee.name
@@ -378,7 +404,7 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         let currentCell = tableView.cellForRow(at: indexPath!) as! EmployeeTableViewCell
         
         
-        print("currentCell.employee.ID = \(currentCell.employee.ID)")
+        //print("currentCell.employee.ID = \(currentCell.employee.ID)")
         
         self.employeeViewController = EmployeeViewController(_employee: currentCell.employee)
         tableView.deselectRow(at: indexPath!, animated: true)

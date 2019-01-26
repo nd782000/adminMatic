@@ -79,7 +79,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     
     init(_equipment:Equipment){
         super.init(nibName:nil,bundle:nil)
-        print("init _equipmentID = \(_equipment.ID)")
+        //print("init _equipmentID = \(_equipment.ID)")
         self.equipment = _equipment
     }
     
@@ -104,9 +104,9 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         title = "Equipment"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -139,8 +139,11 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         //image
         self.equipmentImage = UIImageView()
     
-        activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
-        activityView.center = CGPoint(x: self.equipmentImage.frame.size.width / 2, y: self.equipmentImage.frame.size.height / 2)
+        activityView = UIActivityIndicatorView(style: .whiteLarge)
+        //activityView.center = CGPoint(x: self.equipmentImage.frame.size.width / 2, y: self.equipmentImage.frame.size.height / 2)
+        
+        activityView.translatesAutoresizingMaskIntoConstraints = false
+        
         equipmentImage.addSubview(activityView)
         activityView.startAnimating()
         
@@ -159,6 +162,27 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         */
         
         
+        Alamofire.request(self.equipment.image.thumbPath!).responseImage { response in
+            debugPrint(response)
+            
+            print(response.request!)
+            print(response.response!)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                self.imageFullViewController = ImageFullViewController(_image: self.equipment.image)
+                self.equipmentImage.image = image
+                //cell.imageView.image = image
+                self.activityView.stopAnimating()
+            }
+        }
+        
+        
+        
+        
+        
+        
         self.equipmentImage.layer.cornerRadius = 5.0
         self.equipmentImage.layer.borderWidth = 2
         self.equipmentImage.layer.borderColor = layoutVars.borderColor
@@ -170,10 +194,10 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.tapBtn = Button()
         self.tapBtn.translatesAutoresizingMaskIntoConstraints = false
         if equipment.image.ID != "0" {
-            self.tapBtn.addTarget(self, action: #selector(EquipmentViewController.showFullScreenImage), for: UIControlEvents.touchUpInside)
+            self.tapBtn.addTarget(self, action: #selector(EquipmentViewController.showFullScreenImage), for: UIControl.Event.touchUpInside)
         }
         self.tapBtn.backgroundColor = UIColor.clear
-        self.tapBtn.setTitle("", for: UIControlState.normal)
+        self.tapBtn.setTitle("", for: UIControl.State.normal)
         self.view.addSubview(self.tapBtn)
         
         //name
@@ -208,9 +232,9 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(WorkOrderViewController.cancelPicker))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItemStyle.plain, target: self, action: #selector(WorkOrderViewController.handleStatusChange))
+        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(WorkOrderViewController.cancelPicker))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let setButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(WorkOrderViewController.handleStatusChange))
         toolBar.setItems([closeButton, spaceButton, setButton], animated: false)
         toolBar.isUserInteractionEnabled = true
         
@@ -261,17 +285,17 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         //dealer value (vendor btn)
         self.dealerValueBtn = Button()
         self.dealerValueBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.dealerValueBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
+        self.dealerValueBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
         
-        self.dealerValueBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+        self.dealerValueBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         self.dealerValueBtn.backgroundColor = UIColor.clear
         //self.dealerValueBtn.titleLabel?.textColor = layoutVars.buttonBackground
         
         if equipment.dealer != "0"{
-            self.dealerValueBtn.addTarget(self, action: #selector(EquipmentViewController.showVendorView), for: UIControlEvents.touchUpInside)
-            self.dealerValueBtn.setTitle(equipment.dealerName!, for: UIControlState.normal)
+            self.dealerValueBtn.addTarget(self, action: #selector(EquipmentViewController.showVendorView), for: UIControl.Event.touchUpInside)
+            self.dealerValueBtn.setTitle(equipment.dealerName!, for: UIControl.State.normal)
         }else{
-            self.dealerValueBtn.setTitle("No Dealer on File", for: UIControlState.normal)
+            self.dealerValueBtn.setTitle("No Dealer on File", for: UIControl.State.normal)
         }
         
        
@@ -327,7 +351,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         //dealer value (vendor btn)
         self.serviceBtn = Button(titleText: "View Service Lists")
         self.serviceBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.serviceBtn.addTarget(self, action: #selector(EquipmentViewController.showServiceListView), for: UIControlEvents.touchUpInside)
+        self.serviceBtn.addTarget(self, action: #selector(EquipmentViewController.showServiceListView), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.serviceBtn)
         
         
@@ -341,6 +365,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         //auto layout group
         let equipmentViewsDictionary = [
             "image":self.equipmentImage,
+            "activity":self.activityView,
             "tapBtn":self.tapBtn,
             "name":self.nameLbl,
             "statusIcon":self.statusIcon,
@@ -361,7 +386,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[name]-[statusIcon(40)]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapBtn(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
-        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activity(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[name]-[statusTxtField(40)]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[makeModel]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
@@ -372,15 +397,17 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[fuel]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[engine]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[dealer(80)][dealerValue]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[dealer(80)][dealerValue]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[purchaseDate]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceBtn]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceBtn]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
         
         
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[image(80)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tapBtn(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activity(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
+        
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusIcon(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusTxtField(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][makeModel(40)]-[description(40)][type(30)][serial(30)][crew(30)][fuel(30)][engine(30)][dealer(30)][purchaseDate(30)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
@@ -421,7 +448,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     
     
     @objc func showVendorView(){
-        print("vendor = \(equipment.dealer)")
+        //print("vendor = \(equipment.dealer)")
         let vendorViewController = VendorViewController(_vendorID: equipment.dealer)
         navigationController?.pushViewController(vendorViewController, animated: false )
     }
@@ -441,7 +468,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     
     @objc func keyboardWillShow(notification: NSNotification) {
         
-        if let keyboardFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as AnyObject).cgRectValue {
+        if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as AnyObject).cgRectValue {
             if(!keyBoardShown){
                 UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                     self.view.frame.origin.y -= keyboardFrame.height
@@ -465,8 +492,8 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     }
     func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardDidHide, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
     }
     
     

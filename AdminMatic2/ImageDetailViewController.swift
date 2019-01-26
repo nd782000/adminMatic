@@ -10,8 +10,7 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
-//import Nuke
+
 
 
 class ImageDetailViewController: UIViewController, UIDocumentInteractionControllerDelegate{
@@ -35,13 +34,8 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
     var likesImageView:UIImageView = UIImageView()
     var likesBtn:Button!
     
-   // var liked = "0
-    //var likes = 0
-
-    //var createdByLbl:Label!
-    //var customerLbl:Label!
+   
     var customerBtn:Button!
-    //var dateAddedLbl:Label!
     var descriptionLbl:UITextView!
     var tagsLbl:Label!
     
@@ -63,17 +57,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
     
     var imageFullViewController:ImageFullViewController!
     
-   // var mode:String = ""
-    
-    //var likesView:UIView = UIView()
-    
-    /*
-    var plusVoteBtn:Button = Button(titleText: "+")
-    var minusVoteBtn:Button = Button(titleText: "-")
-    var myVotesValueLbl:Label = Label()
-    var totalVotesLbl:Label = Label()
-    var totalVotesValueLbl:Label = Label()
-    */
+   
     
     var documentController: UIDocumentInteractionController!
     
@@ -99,9 +83,9 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(ImageDetailViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(ImageDetailViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -123,11 +107,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
             self.backgroundImageView.subviews.forEach({ $0.removeFromSuperview() })
         }
         
-        //if(self.mode == "Top Image"){
-           // print("detail view for Top Image")
-        //}
-        
-        
+       
         
         
         title = self.image.name
@@ -135,7 +115,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         self.backgroundImageView = UIImageView()
         
         self.backgroundImageView.clipsToBounds = true
-        self.backgroundImageView.contentMode = UIViewContentMode.scaleAspectFill
+        self.backgroundImageView.contentMode = UIView.ContentMode.scaleAspectFill
         self.backgroundImageView.alpha = 0.5
         self.backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
         self.backgroundImageView.isUserInteractionEnabled = false
@@ -149,7 +129,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         
         self.imageView.clipsToBounds = true
-        self.imageView.contentMode = UIViewContentMode.scaleAspectFit
+        self.imageView.contentMode = UIView.ContentMode.scaleAspectFit
         self.imageView.translatesAutoresizingMaskIntoConstraints = false
         self.imageView.isUserInteractionEnabled = true
         self.imageView.image = nil
@@ -159,15 +139,15 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         
         let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(ImageDetailViewController.swiped(_:)))
-        swipeRight.direction = UISwipeGestureRecognizerDirection.right
+        swipeRight.direction = UISwipeGestureRecognizer.Direction.right
         self.imageView.addGestureRecognizer(swipeRight)
         
         let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(ImageDetailViewController.swiped(_:)))
-        swipeLeft.direction = UISwipeGestureRecognizerDirection.left
+        swipeLeft.direction = UISwipeGestureRecognizer.Direction.left
         self.imageView.addGestureRecognizer(swipeLeft)
         
         
-        activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        activityView = UIActivityIndicatorView(style: .whiteLarge)
         activityView.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
         
         
@@ -187,7 +167,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         likesImageView.contentMode = .scaleAspectFill
         likesImageView.translatesAutoresizingMaskIntoConstraints = false
-        self.likeBtn.addTarget(self, action: #selector(ImageDetailViewController.handleLike), for: UIControlEvents.touchUpInside)
+        self.likeBtn.addTarget(self, action: #selector(ImageDetailViewController.handleLike), for: UIControl.Event.touchUpInside)
         
       
         /*
@@ -198,20 +178,20 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         self.likesBtn = Button()
         self.likesBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.likesBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
-        self.likesBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+        self.likesBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
+        self.likesBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         self.likesBtn.backgroundColor = UIColor.clear
         self.likesBtn.titleLabel?.textColor = UIColor.white
         
         //self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControlState.normal)
         
         if self.image.likes == "1"{
-            self.likesBtn.setTitle("x\(self.image.likes) Like", for: UIControlState.normal)
+            self.likesBtn.setTitle("x\(self.image.likes) Like", for: UIControl.State.normal)
         }else{
-            self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControlState.normal)
+            self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControl.State.normal)
         }
         
-        self.likesBtn.addTarget(self, action: #selector(ImageDetailViewController.showLikesList), for: UIControlEvents.touchUpInside)
+        self.likesBtn.addTarget(self, action: #selector(ImageDetailViewController.showLikesList), for: UIControl.Event.touchUpInside)
         
         if self.image.likes == "0"{
             self.likesBtn.isEnabled = false
@@ -221,16 +201,15 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         self.customerBtn = Button()
         self.customerBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.customerBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.right
-        self.customerBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+        self.customerBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.right
+        self.customerBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         self.customerBtn.backgroundColor = UIColor.clear
         self.customerBtn.titleLabel?.textColor = UIColor.white
         
-        self.customerBtn.setTitle(image.customerName, for: UIControlState.normal)
-        self.customerBtn.addTarget(self, action: #selector(ImageDetailViewController.showCustomerView), for: UIControlEvents.touchUpInside)
+        self.customerBtn.setTitle(image.customerName, for: UIControl.State.normal)
+        self.customerBtn.addTarget(self, action: #selector(ImageDetailViewController.showCustomerView), for: UIControl.Event.touchUpInside)
         
         
-        //self.customerView.addSubview(self.allContactsBtn)
         
         
         
@@ -250,11 +229,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         let addedByDate = shortDateFormatter.string(from: date)
         
         
-        //self.dateAddedLbl = Label(text:  "\(addedByDate)")
-       // self.dateAddedLbl.textAlignment = NSTextAlignment.right
-       
-        //self.dateAddedLbl.textColor = UIColor.white
-        //self.textView.addSubview(self.dateAddedLbl)
+        
         
         self.descriptionLbl = UITextView()
         self.descriptionLbl.text = "Uploaded by \(self.image.createdBy!) on \(addedByDate) - \(self.image.description!)"
@@ -273,23 +248,34 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
 
         activityView.startAnimating()
         
-         let imgUrl = URL(string: image.mediumPath)
-        
-        print("image url = \(image.mediumPath)")
         
         
-        /*
-        Nuke.loadImage(with: imgUrl!, into: imageView){
-            self.imageView?.handle(response: $0, isFromMemoryCache: $1)
-            self.backgroundImageView.image = self.imageView.image
-            self.activityView.stopAnimating()
-            let shareBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.action, target: self, action: #selector(ImageDetailViewController.share))
-            self.navigationItem.rightBarButtonItem = shareBtn
+        
+        Alamofire.request(image.mediumPath).responseImage { response in
+            debugPrint(response)
             
+            print(response.request!)
+            print(response.response!)
+            debugPrint(response.result)
             
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                //self.imageFullViewController = ImageFullViewController(_image: //self.equipment.image)
+                // cell.imageView.image = image
+               // self.equipmentImage.image = image
+                
+                self.imageView.image = image
+                self.backgroundImageView.image = self.imageView.image
+                self.activityView.stopAnimating()
+                
+                let shareBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.action, target: self, action: #selector(ImageDetailViewController.share))
+                self.navigationItem.rightBarButtonItem = shareBtn
+                
+            }
         }
- */
         
+        
+       
         
             self.blurredEffectView.frame = self.view.bounds
             self.backgroundImageView.addSubview(self.blurredEffectView)
@@ -318,79 +304,82 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
     @objc func showCustomerView(){
         print("customer = \(image.customer)")
         
+        if(self.image.customer != "0"){
         
-        
-        let actionSheet = UIAlertController(title: "Customer Option", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-        actionSheet.view.backgroundColor = UIColor.white
-        actionSheet.view.layer.cornerRadius = 5;
-        
-        
-        actionSheet.addAction(UIAlertAction(title: "Customer View", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
-            //print("show cam 1")
+            let actionSheet = UIAlertController(title: "Customer Option", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+            actionSheet.view.backgroundColor = UIColor.white
+            actionSheet.view.layer.cornerRadius = 5;
             
-            if(self.image.customer != "0"){
-                let customerViewController = CustomerViewController(_customerID: self.image.customer, _customerName: self.image.customerName, _imageView: true)
-                //let customerViewController = CustomerViewController(_customerID: image.customer,_customerName: image.customerName)
-                self.navigationController?.pushViewController(customerViewController, animated: false )
-                //customerViewController.showImages()
+            
+            actionSheet.addAction(UIAlertAction(title: "Customer View", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
+                //print("show cam 1")
+                
+                
+                    let customerViewController = CustomerViewController(_customerID: self.image.customer, _customerName: self.image.customerName, _imageView: true)
+                    //let customerViewController = CustomerViewController(_customerID: image.customer,_customerName: image.customerName)
+                    self.navigationController?.pushViewController(customerViewController, animated: false )
+                    //customerViewController.showImages()
+                
+                
+            }))
+            
+            actionSheet.addAction(UIAlertAction(title: "Customer Images", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
+                
+                self.delegate.showCustomerImages(_customer: self.image.customer)
+                self.goBack()
+              
+            }))
+            
+            
+            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: { (alert:UIAlertAction!) -> Void in
+                
+               
+                
+            }))
+            
+            
+            switch UIDevice.current.userInterfaceIdiom {
+            case .phone:
+                self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
+                break
+            // It's an iPhone
+            case .pad:
+                let nav = UINavigationController(rootViewController: actionSheet)
+                nav.modalPresentationStyle = UIModalPresentationStyle.popover
+                
+                let popover:UIPopoverPresentationController = nav.popoverPresentationController! 
+                
+                //let popover = nav.popoverPresentationController as! UIPopoverPresentationController
+                actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
+                popover.sourceView = self.view
+                popover.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
+                
+                self.present(nav, animated: true, completion: nil)
+                break
+            // It's an iPad
+            case .unspecified:
+                break
+            default:
+                self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
+                break
+                
+                // Uh, oh! What could it be?
             }
             
-        }))
-        
-        actionSheet.addAction(UIAlertAction(title: "Customer Images", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
-            
-            self.delegate.showCustomerImages(_customer: self.image.customer)
-            self.goBack()
-          
-        }))
         
         
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
-            
-           
-            
-        }))
+       
         
         
-        switch UIDevice.current.userInterfaceIdiom {
-        case .phone:
-            self.present(actionSheet, animated: true, completion: nil)
-            break
-        // It's an iPhone
-        case .pad:
-            let nav = UINavigationController(rootViewController: actionSheet)
-            nav.modalPresentationStyle = UIModalPresentationStyle.popover
-            let popover = nav.popoverPresentationController as UIPopoverPresentationController!
-            actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
-            popover?.sourceView = self.view
-            popover?.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
-            
-            self.present(nav, animated: true, completion: nil)
-            break
-        // It's an iPad
-        case .unspecified:
-            break
-        default:
-            self.present(actionSheet, animated: true, completion: nil)
-            break
-            
-            // Uh, oh! What could it be?
+        
         }
-        
-        
-        
-       
-        
-        
-        
-       
         
         
     }
     
     
     @objc func showLikesList(){
-        print("show likes list w/ ID = \(image.ID)")
+        //print("show likes list w/ ID = \(image.ID)")
         let imageLikesListViewController = ImageEmployeeLikesListViewController(_image: self.image)
         self.navigationController?.pushViewController(imageLikesListViewController, animated: false )
     }
@@ -411,10 +400,10 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         //print("swiped")
         if let swipeGesture = gesture as? UISwipeGestureRecognizer{
             switch swipeGesture.direction {
-            case UISwipeGestureRecognizerDirection.right:
+            case UISwipeGestureRecognizer.Direction.right:
                 //print("right swipe")
                 _ = delegate.getPrevNextImage(_next: false)
-            case UISwipeGestureRecognizerDirection.left:
+            case UISwipeGestureRecognizer.Direction.left:
                 //print("left swipe")
                 _ = delegate.getPrevNextImage(_next: true)
             default:
@@ -431,7 +420,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         }else{
             self.dismiss(animated: true, completion: {
                 let activity = UIActivityViewController(activityItems: [self.image!], applicationActivities: nil)
-                self.present(activity, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(activity, animated: true, completion: nil)
             })
         }
     }
@@ -471,7 +460,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
        // _ = ["navHeight":self.layoutVars.navAndStatusBarHeight, "landscapeNavHeight":self.layoutVars.navAndStatusBarHeight - self.layoutVars.statusBarHeight] as [String : Any]
         
-        print("navHeight = \(self.layoutVars.navAndStatusBarHeight)  statusBarHeight = \(self.layoutVars.statusBarHeight) ")
+        //print("navHeight = \(self.layoutVars.navAndStatusBarHeight)  statusBarHeight = \(self.layoutVars.statusBarHeight) ")
         
         if(self.textView != nil){
             self.textView.subviews.forEach({ $0.removeFromSuperview() })
@@ -519,7 +508,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
 
         
         
-        if UIInterfaceOrientationIsLandscape(UIApplication.shared.statusBarOrientation) {
+        if UIApplication.shared.statusBarOrientation.isLandscape {
             //here you can do the logic for the cell size if phone is in landscape
             print("landscape")
             
@@ -527,7 +516,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
             
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(40)]|", options: [], metrics: nil, views: viewsDictionary))
             
-            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likeBtn(30)][likesBtn(80)]-[customerLbl]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likeBtn(30)][likesBtn(80)]-[customerLbl]-|", options: [NSLayoutConstraint.FormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
             
             
             
@@ -549,7 +538,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
           
             
             
-            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likeBtn(30)][likesBtn(80)]-[customerLbl]-|", options: [NSLayoutFormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
+            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likeBtn(30)][likesBtn(80)]-[customerLbl]-|", options: [NSLayoutConstraint.FormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
             
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likeBtn(30)]-[descriptionLbl]-[tagsLbl(25)]-|", options: [], metrics: nil, views: viewsDictionary2))
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[likeBtn(30)]-[descriptionLbl]-|", options: [], metrics: nil, views: viewsDictionary2))
@@ -609,19 +598,46 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
                 .responseJSON(){
                     response in
                     
-                    if let json = response.result.value {
-                        print("JSON: \(json)")
-                        let returnJSON = JSON(json)
-                        self.image.likes = returnJSON["newLikes"].stringValue
-                        //self.likesBtn.text = "x\(self.image.likes)"
-                        if self.image.likes == "1"{
-                            self.likesBtn.setTitle("x\(self.image.likes) Like", for: UIControlState.normal)
-                        }else{
-                            self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControlState.normal)
-                        }
-                        self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: returnJSON["newLikes"].stringValue)
+                    
+                    //native way
+                    
+                    do {
+                        if let data = response.data,
+                            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                            
                         
+                        
+                       // print("newLikes = \(json["newLikes"] as? Int)")
+                        
+                        
+                            let imageLikes = json["newLikes"] as? String{
+                            
+                                self.image.likes = "\(imageLikes)"
+                            
+                            
+                                print("self.image.likes = \(self.image.likes)")
+                            
+                                if self.image.likes == "1"{
+                                    self.likesBtn.setTitle("x\(self.image.likes) Like", for: UIControl.State.normal)
+                                }else{
+                                    self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControl.State.normal)
+                                }
+                            self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: json["newLikes"] as! String)
+                                
+                           
+                        }
+                        
+                        
+                        
+                       
+                        
+                    } catch {
+                        print("Error deserializing JSON: \(error)")
                     }
+                    
+                    
+                    
+                   
                     
                     self.indicator.dismissIndicator()
                     
@@ -661,21 +677,43 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
                 .responseJSON(){
                     response in
                     
-                    if let json = response.result.value {
-                        print("JSON: \(json)")
-                        let returnJSON = JSON(json)
-                        self.image.likes = returnJSON["newLikes"].stringValue
-                        //self.likesBtn.text = "x\(self.image.likes)"
-                        //self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControlState.normal)
-                        if self.image.likes == "1"{
-                            self.likesBtn.setTitle("x\(self.image.likes) Like", for: UIControlState.normal)
-                        }else{
-                            self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControlState.normal)
+                    
+                    
+                    //native way
+                    
+                    do {
+                        if let data = response.data,
+                            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                            
+                            
+                            
+                            
+                            let imageLikes = json["newLikes"] as? String{
+                            
+                            self.self.image.likes = imageLikes
+                            
+                            if self.image.likes == "1"{
+                                self.likesBtn.setTitle("x\(self.image.likes) Like", for: UIControl.State.normal)
+                            }else{
+                                self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControl.State.normal)
+                            }
+                            self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: json["newLikes"] as! String)
+                            
+                            
                         }
                         
-                        self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: returnJSON["newLikes"].stringValue)
                         
+                        
+                       
+                        
+                    } catch {
+                        print("Error deserializing JSON: \(error)")
                     }
+                    
+                    
+                    
+                   
+                    
                     
                     self.indicator.dismissIndicator()
                     
@@ -687,12 +725,6 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
             }
 
             
-            
-            
-            
-           
-            
-            
         }
         
         
@@ -701,45 +733,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
     }
     
     
-    /*
-    //instagram sharing
-    
-    func shareInstagram(_ sender: Any) {
-        
-        DispatchQueue.main.async {
-            
-            //Share To Instagram:
-            let instagramURL = URL(string: "instagram://app")
-            if UIApplication.shared.canOpenURL(instagramURL!) {
-                
-                let imageData = UIImageJPEGRepresentation(self.image.image!, 100)
-                let writePath = (NSTemporaryDirectory() as NSString).appendingPathComponent("instagram.igo")
-                
-                do {
-                    try imageData?.write(to: URL(fileURLWithPath: writePath), options: .atomic)
-                } catch {
-                    print(error)
-                }
-                
-                let fileURL = URL(fileURLWithPath: writePath)
-                self.documentController = UIDocumentInteractionController(url: fileURL)
-                self.documentController.delegate = self
-                self.documentController.uti = "com.instagram.exlusivegram"
-                
-                if UIDevice.current.userInterfaceIdiom == .phone {
-                    self.documentController.presentOpenInMenu(from: self.view.bounds, in: self.view, animated: true)
-                } else {
-                   // self.documentController.presentOpenInMenu(from: self.IGBarButton, animated: true)
-                }
-            } else {
-                print(" Instagram is not installed ")
-            }
-        }
-    }
-
-*/
-    
-    
+   
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

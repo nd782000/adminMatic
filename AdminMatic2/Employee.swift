@@ -105,7 +105,7 @@ class Employee {
             self.userLevelName = ""
         }
         
-        print("init emp ID = \(ID)")
+        //print("init emp ID = \(ID)")
     }
     
     //simple initializer

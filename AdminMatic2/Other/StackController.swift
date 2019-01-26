@@ -28,7 +28,7 @@ protocol StackDelegate {
 
 
 
-class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate{
+class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
     
     
     
@@ -95,7 +95,7 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate{
         self.type = _type
         
         
-        self.leadBtn.addTarget(self, action: #selector(StackController.handleLead), for: UIControlEvents.touchUpInside)
+        self.leadBtn.addTarget(self, action: #selector(StackController.handleLead), for: UIControl.Event.touchUpInside)
         self.leadBtn.layer.cornerRadius = 0.0
         self.leadBtn.backgroundColor = UIColor.lightGray
         self.leadBtn.layer.borderColor = layoutVars.buttonColor1.cgColor
@@ -104,7 +104,7 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate{
         self.leadBtn.setTitleColor(layoutVars.buttonColor1, for: .normal)
         self.addSubview(self.leadBtn)
         
-        self.contractBtn.addTarget(self, action: #selector(StackController.handleContract), for: UIControlEvents.touchUpInside)
+        self.contractBtn.addTarget(self, action: #selector(StackController.handleContract), for: UIControl.Event.touchUpInside)
         self.contractBtn.layer.cornerRadius = 0.0
         self.contractBtn.backgroundColor = UIColor.lightGray
         self.contractBtn.layer.borderColor = layoutVars.buttonColor1.cgColor
@@ -120,6 +120,7 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate{
     //print("set picker position : \(Int(self.contractValue)!)")
         
         self.contractPicker.delegate = self
+        self.contractPicker.dataSource = self
         self.contractPicker.tag = 1
         
         
@@ -143,9 +144,9 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate{
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let contractCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(StackController.cancelPicker))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setButton = UIBarButtonItem(title: "Go To Contract", style: UIBarButtonItemStyle.plain, target: self, action: #selector(StackController.handleContractChange))
+        let contractCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.cancelPicker))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let setButton = UIBarButtonItem(title: "Go To Contract", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.handleContractChange))
         
         toolBar.setItems([contractCloseButton, spaceButton, setButton], animated: false)
         toolBar.isUserInteractionEnabled = true
@@ -157,7 +158,7 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate{
         
         
         
-        self.workOrderBtn.addTarget(self, action: #selector(StackController.handleWorkOrder), for: UIControlEvents.touchUpInside)
+        self.workOrderBtn.addTarget(self, action: #selector(StackController.handleWorkOrder), for: UIControl.Event.touchUpInside)
         self.workOrderBtn.layer.cornerRadius = 0.0
         self.workOrderBtn.backgroundColor = UIColor.lightGray
         self.workOrderBtn.layer.borderColor = layoutVars.buttonColor1.cgColor
@@ -172,6 +173,7 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate{
        // print("set picker position : \(Int(self.workOrderValue)! - 1)")
         
         self.workOrderPicker.delegate = self
+        self.workOrderPicker.dataSource = self
         self.workOrderPicker.tag = 2
         
        // self.workOrderPicker.selectRow(Int(self.workOrderValue)! - 1, inComponent: 0, animated: false)
@@ -193,8 +195,8 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate{
         workOrderToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         workOrderToolBar.sizeToFit()
         
-        let workOrderCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(StackController.cancelPicker))
-        let workOrderSetButton = UIBarButtonItem(title: "Go To WorkOrder", style: UIBarButtonItemStyle.plain, target: self, action: #selector(StackController.handleWorkOrderChange))
+        let workOrderCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.cancelPicker))
+        let workOrderSetButton = UIBarButtonItem(title: "Go To WorkOrder", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.handleWorkOrderChange))
         
         workOrderToolBar.setItems([workOrderCloseButton, spaceButton, workOrderSetButton], animated: false)
         workOrderToolBar.isUserInteractionEnabled = true
@@ -205,7 +207,7 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate{
         
         
         
-        self.invoiceBtn.addTarget(self, action: #selector(StackController.handleInvoice), for: UIControlEvents.touchUpInside)
+        self.invoiceBtn.addTarget(self, action: #selector(StackController.handleInvoice), for: UIControl.Event.touchUpInside)
         self.invoiceBtn.layer.cornerRadius = 0.0
         self.invoiceBtn.backgroundColor = UIColor.lightGray
         self.invoiceBtn.layer.borderColor = layoutVars.buttonColor1.cgColor
@@ -221,6 +223,7 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate{
         //print("set picker position : \(Int(self.invoiceValue)! - 1)")
         
         self.invoicePicker.delegate = self
+        self.invoicePicker.dataSource = self
          self.invoicePicker.tag = 3
         //self.invoicePicker.selectRow(Int(self.invoiceValue)! - 1, inComponent: 0, animated: false)
         
@@ -241,9 +244,9 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate{
         invoiceToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         invoiceToolBar.sizeToFit()
         
-        let invoiceCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(StackController.cancelPicker))
+        let invoiceCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.cancelPicker))
         //let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let invoiceSetButton = UIBarButtonItem(title: "Go To Invoice", style: UIBarButtonItemStyle.plain, target: self, action: #selector(StackController.handleInvoiceChange))
+        let invoiceSetButton = UIBarButtonItem(title: "Go To Invoice", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.handleInvoiceChange))
         
         invoiceToolBar.setItems([invoiceCloseButton, spaceButton, invoiceSetButton], animated: false)
         invoiceToolBar.isUserInteractionEnabled = true
@@ -551,8 +554,30 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate{
     }
     
     
+    public func numberOfComponents(in pickerView: UIPickerView) -> Int
+    {
+        return 1
+    }
     
     
+    // returns the # of rows in each component..
+    
+    public func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
+        switch pickerView.tag {
+        case 1:
+            return self.contracts.count
+        case 2:
+            return self.workOrders.count
+        case 3:
+            return self.invoices.count
+            
+        default:
+            return self.contracts.count
+        }
+    }
+    
+    
+    /*
     
     // returns the number of 'columns' to display.
     func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
@@ -578,6 +603,8 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate{
             return self.contracts.count
         }
     }
+    */
+    
     
     
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {

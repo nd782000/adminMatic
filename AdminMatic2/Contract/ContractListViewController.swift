@@ -52,6 +52,9 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     var contractsArray:[Contract] = []
     var names = [String]()
     
+    var methodStart:Date!
+    var methodFinish:Date!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -72,7 +75,10 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     func getContracts(_openNewContract:Bool){
         print("getContracts")
         
+        methodStart = Date()
+        
         self.contractsArray = []
+        self.names = []
         
         //cache buster
         let now = Date()
@@ -91,6 +97,87 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
             }
             .responseJSON() {
                 response in
+                
+                
+                //native way
+                
+                do {
+                    if let data = response.data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        let contracts = json["contracts"] as? [[String: Any]] {
+                        
+                        let contractCount = contracts.count
+                        print("contract count = \(contractCount)")
+                        
+                        
+                        for i in 0 ..< contractCount {
+                            
+                            
+                            //create an object
+                            print("create a contract object \(i)")
+                            
+                            
+                            //as! String
+                            let contract = Contract(_ID: contracts[i]["ID"] as? String, _title: contracts[i]["title"] as? String, _status: contracts[i]["status"] as? String, _statusName: contracts[i]["statusName"] as? String, _chargeType: contracts[i]["chargeType"] as? String, _customer: contracts[i]["customer"] as? String, _customerName: contracts[i]["custName"] as? String, _notes: contracts[i]["notes"] as? String, _salesRep: contracts[i]["salesRep"] as? String, _repName: contracts[i]["repName"] as? String, _createdBy: contracts[i]["createdBy"] as? String, _createDate: contracts[i]["createDate"] as? String, _subTotal: contracts[i]["subTotal"] as? String, _taxTotal: contracts[i]["taxTotal"] as? String, _total: contracts[i]["total"] as? String, _terms: contracts[i]["termsDescription"] as? String, _daysAged: contracts[i]["daysAged"] as? String)
+                            
+                            
+                            
+                            
+                            contract.custNameAndID = "\(contract.customerName!) #\(contract.ID!)"
+                            
+                            //contract.repSignature  = contracts[i]["companySigned"] as! String
+                            contract.customerSignature  = contracts[i]["customerSigned"]as! String
+                            
+                            
+                            
+                            self.contractsArray.append(contract)
+                            self.names.append("\(contract.customerName!) #\(contract.ID!)")
+                            
+                            
+                            
+                            
+                        }
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    self.methodFinish = Date()
+                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
+                    print("Execution time: \(executionTime)")
+                    
+                    
+                    self.indicator.dismissIndicator()
+                    
+                    
+                    self.layoutViews()
+                    
+                    /*
+                    
+                    if _openNewLead {
+                        print("open new lead")
+                        
+                        
+                        self.leadViewController = LeadViewController(_lead: self.leadsArray[0])
+                        self.leadViewController.delegate = self
+                        self.navigationController?.pushViewController(self.leadViewController, animated: false )
+                        
+                        
+                    }
+                    */
+                    
+                    
+                } catch {
+                    print("Error deserializing JSON: \(error)")
+                }
+                
+                
+                /*
+                
+                //swifty way
+                
                 if let json = response.result.value {
                     self.contracts = JSON(json)
                     
@@ -117,6 +204,13 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
                         self.names.append("\(contract.customerName!) #\(contract.ID!)")
                         
                     }
+                    
+                    self.methodFinish = Date()
+                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
+                    print("Execution time: \(executionTime)")
+                    
+                    
+                    
                     self.indicator.dismissIndicator()
                     self.layoutViews()
                     
@@ -132,6 +226,10 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
                     }
                     
                 }
+                */
+                
+                
+                
         }
         
     }
@@ -174,7 +272,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         refreshControl = UIRefreshControl()
         refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
         contractTableView.addSubview(refreshControl)
-        refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: UIControlEvents.valueChanged)
+        refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: UIControl.Event.valueChanged)
         
         
         
@@ -189,12 +287,12 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         
         self.addContractBtn.layer.borderColor = UIColor.white.cgColor
         self.addContractBtn.layer.borderWidth = 1.0
-        self.addContractBtn.addTarget(self, action: #selector(ContractListViewController.addContract), for: UIControlEvents.touchUpInside)
+        self.addContractBtn.addTarget(self, action: #selector(ContractListViewController.addContract), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.addContractBtn)
         
         
         
-        self.contractSettingsBtn.addTarget(self, action: #selector(ContractListViewController.contractSettings), for: UIControlEvents.touchUpInside)
+        self.contractSettingsBtn.addTarget(self, action: #selector(ContractListViewController.contractSettings), for: UIControl.Event.touchUpInside)
         
        // self.contractSettingsBtn.frame = CGRect(x:self.view.frame.width - 50, y: self.view.frame.height - 50, width: 50, height: 50)
         //self.contractSettingsBtn.translatesAutoresizingMaskIntoConstraints = true
@@ -202,7 +300,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         self.contractSettingsBtn.layer.borderWidth = 1.0
         self.view.addSubview(self.contractSettingsBtn)
         
-        self.contractSettingsBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
+        self.contractSettingsBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
         
         
         
@@ -345,7 +443,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
                 print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
             }
             
@@ -369,7 +467,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
                 print("Oh no! \(regexError2)")
             } else {
                 for match in (regex2?.matches(in: baseString2 as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString2.length)))! as [NSTextCheckingResult] {
-                    highlightedText2.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText2.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
                 
             }

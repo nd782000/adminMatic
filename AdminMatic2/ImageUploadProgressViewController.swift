@@ -38,7 +38,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
     var imageBatchOffset:Int = 1
     var imagesBatch:[Image] = [Image]() //temp image array for uploading
     var i = 1//index of image being uploaded
-    var saveURLString: String = "https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php" //php file to save/update
+    //var saveURLString: String = "https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php" //php file to save/update
     var uploadedImages:[Image] = [Image]() //upload successes that will go back to collectionView
     var scoreAdjust:Int = 0
     var uploadPrepDelegate:ImageUploadPrepDelegate!
@@ -70,9 +70,9 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
         title = "Uploading..."
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(ImageUploadProgressViewController.cancel), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Cancel", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(ImageUploadProgressViewController.cancel), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Cancel", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -94,8 +94,8 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
         Alamofire.request("https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!).responseImage { response in
             debugPrint(response)
             
-            print(response.request)
-            print(response.response)
+            //print(response.request)
+           // print(response.response)
             debugPrint(response.result)
             
             if let image = response.result.value {
@@ -117,6 +117,28 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
             self.employeeImageView.handle(response: $0, isFromMemoryCache: $1)
         }
         */
+        
+        
+        Alamofire.request("https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!).responseImage { response in
+            debugPrint(response)
+            
+            print(response.request!)
+            print(response.response!)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                
+                self.employeeImageView.image = image
+                
+                //self.activityView.stopAnimating()
+                
+            }
+        }
+        
+        
+        
+        
         
         
         employeeImageView.contentMode = .scaleAspectFill
@@ -246,9 +268,9 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
     @objc func cancel(){
         
         
-        let alertController = UIAlertController(title: "All uploads didn't Finish", message: "Leave this page?", preferredStyle: UIAlertControllerStyle.alert)
+        let alertController = UIAlertController(title: "All uploads didn't Finish", message: "Leave this page?", preferredStyle: UIAlertController.Style.alert)
         
-        let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+        let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
             print("Yes")
             self.uploadPrepDelegate.uploadComplete(_images: self.uploadedImages, _scoreAdjust: self.scoreAdjust)
@@ -258,7 +280,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
 
         }
         
-        let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+        let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
             print("No")
         }

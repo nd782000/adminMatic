@@ -77,6 +77,9 @@
 		01A1F2E61E0704FF00DCCB39 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01A1F2E51E0704FF00DCCB39 /* Assets.xcassets */; };
 		01A1F2F41E0704FF00DCCB39 /* AdminMatic2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A1F2F31E0704FF00DCCB39 /* AdminMatic2Tests.swift */; };
 		01A1F2FF1E0704FF00DCCB39 /* AdminMatic2UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A1F2FE1E0704FF00DCCB39 /* AdminMatic2UITests.swift */; };
+		01A23AC821F7DD7C00C872FC /* EquipmentInspectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A23AC721F7DD7900C872FC /* EquipmentInspectionViewController.swift */; };
+		01A23ACA21F7F18800C872FC /* EquipmentInspectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A23AC921F7F18800C872FC /* EquipmentInspectionTableViewCell.swift */; };
+		01A23ACC21F90A9700C872FC /* InspectionQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A23ACB21F90A9700C872FC /* InspectionQuestion.swift */; };
 		01A81E5A1E92FC090089B55F /* GroupMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A81E591E92FC090089B55F /* GroupMessageViewController.swift */; };
 		01A9DDD41FE0B59C0075AC72 /* EquipmentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A9DDD31FE0B59C0075AC72 /* EquipmentListViewController.swift */; };
 		01A9DDDD1FE0BAD60075AC72 /* Equipment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A9DDDC1FE0BAD60075AC72 /* Equipment.swift */; };
@@ -93,7 +96,6 @@
 		01C43C572027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */; };
 		01C43C602037251B0068A5E0 /* DepartmentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C5F203725150068A5E0 /* DepartmentListViewController.swift */; };
 		01C43C62203725DD0068A5E0 /* Department.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C61203725DD0068A5E0 /* Department.swift */; };
-		01C43C6420372FBE0068A5E0 /* DepartmentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C6320372FBE0068A5E0 /* DepartmentTableViewCell.swift */; };
 		01C43C662037AE8C0068A5E0 /* CrewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C652037AE8C0068A5E0 /* CrewListViewController.swift */; };
 		01C43C682037AFB20068A5E0 /* Crew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C672037AFB20068A5E0 /* Crew.swift */; };
 		01C43C6A2039F0500068A5E0 /* ShiftsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C692039F04F0068A5E0 /* ShiftsViewController.swift */; };
@@ -143,7 +145,6 @@
 		01F33DCF203F3E1E00C43EFD /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A1F31F1E07084C00DCCB39 /* Alamofire.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		01F33DE1203F44E500C43EFD /* AKImageCropperView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01F33DE0203F44E500C43EFD /* AKImageCropperView.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		01F33DE2203F44E800C43EFD /* DKImagePickerController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01E01C371E7E05F600385B86 /* DKImagePickerController.framework */; settings = {ATTRIBUTES = (Required, ); }; };
-		01F33DE3203F44EC00C43EFD /* Nuke.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01D9AD8C1E554E8200BD35AE /* Nuke.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		01F33DE4203F44EF00C43EFD /* ObjectMapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CC8E21E539C9B00D48A26 /* ObjectMapper.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		01F33DE5203F44F200C43EFD /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A1F3231E07084C00DCCB39 /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		F927ADDEFEB19ED7A80575A6 /* Pods_AdminMatic2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4075364696C1C40435E111F /* Pods_AdminMatic2.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -213,6 +214,13 @@
 			remoteGlobalIDString = 0003E52B1DE5A2EC0820F41996B9A5E6;
 			remoteInfo = SwiftEntryKit;
 		};
+		012EBEB62176464800819791 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F4C59E89AA937BD276EB5619B7292FA5;
+			remoteInfo = AlamofireImage;
+		};
 		014CC8E11E539C9B00D48A26 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
@@ -255,13 +263,6 @@
 			remoteGlobalIDString = 29F9CA3F564FDAD0791545217EAE3089;
 			remoteInfo = SwiftyJSON;
 		};
-		01D9AD8B1E554E8200BD35AE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 64148415D9A6BE48A2554970DE718A7E;
-			remoteInfo = Nuke;
-		};
 		01E01C361E7E05F600385B86 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
@@ -283,13 +284,6 @@
 			remoteGlobalIDString = 85AFB28C35335580EACC4B3EBC23EBF7;
 			remoteInfo = DKImagePickerController;
 		};
-		01F33DD2203F3FDD00C43EFD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 42B95F4ED4978CA37B02F88E100B0A31;
-			remoteInfo = Nuke;
-		};
 		01F33DD4203F3FE300C43EFD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
@@ -301,14 +295,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 7EEE7D8E0077EE1CCF21CCCBF6C80792;
+			remoteGlobalIDString = 93BDFCB897A4904B2427AFF68A0F3788;
 			remoteInfo = "Pods-AdminMatic2";
 		};
 		01F33DD8203F3FEE00C43EFD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 47AD76E9BB3DFB7C878D5F592F9899D6;
+			remoteGlobalIDString = 73DE99130DBA974A9BF650E9D64EF24A;
 			remoteInfo = SwiftyJSON;
 		};
 		01F33DDF203F44E500C43EFD /* PBXContainerItemProxy */ = {
@@ -405,6 +399,9 @@
 		01A1F2FE1E0704FF00DCCB39 /* AdminMatic2UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminMatic2UITests.swift; sourceTree = "<group>"; };
 		01A1F3001E0704FF00DCCB39 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
+		01A23AC721F7DD7900C872FC /* EquipmentInspectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentInspectionViewController.swift; sourceTree = "<group>"; };
+		01A23AC921F7F18800C872FC /* EquipmentInspectionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentInspectionTableViewCell.swift; sourceTree = "<group>"; };
+		01A23ACB21F90A9700C872FC /* InspectionQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectionQuestion.swift; sourceTree = "<group>"; };
 		01A81E591E92FC090089B55F /* GroupMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMessageViewController.swift; sourceTree = "<group>"; };
 		01A9DDD31FE0B59C0075AC72 /* EquipmentListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentListViewController.swift; sourceTree = "<group>"; };
 		01A9DDDC1FE0BAD60075AC72 /* Equipment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Equipment.swift; sourceTree = "<group>"; };
@@ -421,7 +418,6 @@
 		01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditEquipmentServiceViewController.swift; sourceTree = "<group>"; };
 		01C43C5F203725150068A5E0 /* DepartmentListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepartmentListViewController.swift; sourceTree = "<group>"; };
 		01C43C61203725DD0068A5E0 /* Department.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Department.swift; sourceTree = "<group>"; };
-		01C43C6320372FBE0068A5E0 /* DepartmentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepartmentTableViewCell.swift; sourceTree = "<group>"; };
 		01C43C652037AE8C0068A5E0 /* CrewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrewListViewController.swift; sourceTree = "<group>"; };
 		01C43C672037AFB20068A5E0 /* Crew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crew.swift; sourceTree = "<group>"; };
 		01C43C692039F04F0068A5E0 /* ShiftsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShiftsViewController.swift; sourceTree = "<group>"; };
@@ -481,7 +477,6 @@
 			files = (
 				01F33DE5203F44F200C43EFD /* SwiftyJSON.framework in Frameworks */,
 				01F33DE4203F44EF00C43EFD /* ObjectMapper.framework in Frameworks */,
-				01F33DE3203F44EC00C43EFD /* Nuke.framework in Frameworks */,
 				01F33DE2203F44E800C43EFD /* DKImagePickerController.framework in Frameworks */,
 				01F33DE1203F44E500C43EFD /* AKImageCropperView.framework in Frameworks */,
 				01F33DCF203F3E1E00C43EFD /* Alamofire.framework in Frameworks */,
@@ -567,6 +562,7 @@
 			children = (
 				01F33DE0203F44E500C43EFD /* AKImageCropperView.framework */,
 				01A1F31F1E07084C00DCCB39 /* Alamofire.framework */,
+				012EBEB72176464800819791 /* AlamofireImage.framework */,
 				012EBE992175157500819791 /* CLImageEditor.framework */,
 				012EBE9B2175157500819791 /* DKCamera.framework */,
 				01E01C371E7E05F600385B86 /* DKImagePickerController.framework */,
@@ -574,7 +570,6 @@
 				012EBE9F2175157500819791 /* DKPhotoGallery.framework */,
 				012EBEA12175157500819791 /* DKPhotoGallery.bundle */,
 				012EBEA32175157500819791 /* FLAnimatedImage.framework */,
-				01D9AD8C1E554E8200BD35AE /* Nuke.framework */,
 				014CC8E21E539C9B00D48A26 /* ObjectMapper.framework */,
 				01A1F3211E07084C00DCCB39 /* Pods_AdminMatic2.framework */,
 				012EBEA52175157500819791 /* QuickLayout.framework */,
@@ -712,6 +707,7 @@
 				01A9DDE01FE409A80075AC72 /* EquipmentViewController.swift */,
 				015EB55D1FF9611B000CA2A7 /* EquipmentServiceListViewController.swift */,
 				015EB55F2002E31F000CA2A7 /* EquipmentServiceViewController.swift */,
+				01A23AC721F7DD7900C872FC /* EquipmentInspectionViewController.swift */,
 				01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */,
 				01A9DDE61FE9868F0075AC72 /* NewEditEquipmentViewController.swift */,
 			);
@@ -778,6 +774,7 @@
 				01C43C61203725DD0068A5E0 /* Department.swift */,
 				01C43C672037AFB20068A5E0 /* Crew.swift */,
 				01A9DDE21FE430C90075AC72 /* EquipmentService.swift */,
+				01A23ACB21F90A9700C872FC /* InspectionQuestion.swift */,
 				014B029B1E21585A002A41DE /* Customer.swift */,
 				014B02A31E2168C6002A41DE /* Employee.swift */,
 				014B02A51E2168D3002A41DE /* Attachment.swift */,
@@ -813,8 +810,8 @@
 				01634B532084F09B00D22832 /* ContractTableViewCell.swift */,
 				01634B592086E35700D22832 /* ContractItemTableViewCell.swift */,
 				01A9DDDE1FE0D4480075AC72 /* EquipmentTableViewCell.swift */,
-				01C43C6320372FBE0068A5E0 /* DepartmentTableViewCell.swift */,
 				01A9DDE41FE715E20075AC72 /* EquipmentServiceTableViewCell.swift */,
+				01A23AC921F7F18800C872FC /* EquipmentInspectionTableViewCell.swift */,
 				01EE1B2D1E20105A00E5E061 /* HomeCollectionViewCell.swift */,
 				014B029D1E215DB5002A41DE /* CustomerTableViewCell.swift */,
 				0160A1B71E89F98200C2AB4A /* BugTableViewCell.swift */,
@@ -824,8 +821,8 @@
 				014B02B71E26A8E6002A41DE /* AttachmentTableViewCell.swift */,
 				015B9AEF1E27D4C50020FB58 /* TaskTableViewCell.swift */,
 				01D86713212B1853005379E1 /* ContractTaskTableViewCell.swift */,
-				01DC793D1E2805200022566C /* UsageTableViewCell.swift */,
 				01DC793F1E2805590022566C /* UsageEntryTableViewCell.swift */,
+				01DC793D1E2805200022566C /* UsageTableViewCell.swift */,
 				016634161E33F496002F7763 /* ContactTableViewCell.swift */,
 				016634231E340F91002F7763 /* ItemTableViewCell.swift */,
 				016634251E3415DF002F7763 /* VendorTableViewCell.swift */,
@@ -876,7 +873,6 @@
 				01F33DD9203F3FEE00C43EFD /* PBXTargetDependency */,
 				01F33DD7203F3FE900C43EFD /* PBXTargetDependency */,
 				01F33DD5203F3FE300C43EFD /* PBXTargetDependency */,
-				01F33DD3203F3FDD00C43EFD /* PBXTargetDependency */,
 				01F33DD1203F3FD800C43EFD /* PBXTargetDependency */,
 				01F33DC8203F3DFA00C43EFD /* PBXTargetDependency */,
 			);
@@ -928,26 +924,26 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0820;
-				LastUpgradeCheck = 0910;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = Nick;
 				TargetAttributes = {
 					01A1F2DA1E0704FF00DCCB39 = {
 						CreatedOnToolsVersion = 8.2;
 						DevelopmentTeam = Q78B4XEVQ4;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					01A1F2EE1E0704FF00DCCB39 = {
 						CreatedOnToolsVersion = 8.2;
 						DevelopmentTeam = Q78B4XEVQ4;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 01A1F2DA1E0704FF00DCCB39;
 					};
 					01A1F2F91E0704FF00DCCB39 = {
 						CreatedOnToolsVersion = 8.2;
 						DevelopmentTeam = Q78B4XEVQ4;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 01A1F2DA1E0704FF00DCCB39;
 					};
@@ -1043,6 +1039,13 @@
 			remoteRef = 012EBEA82175157500819791 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		012EBEB72176464800819791 /* AlamofireImage.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AlamofireImage.framework;
+			remoteRef = 012EBEB62176464800819791 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		014CC8E21E539C9B00D48A26 /* ObjectMapper.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -1069,13 +1072,6 @@
 			fileType = wrapper.framework;
 			path = SwiftyJSON.framework;
 			remoteRef = 01A1F3221E07084C00DCCB39 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		01D9AD8C1E554E8200BD35AE /* Nuke.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Nuke.framework;
-			remoteRef = 01D9AD8B1E554E8200BD35AE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		01E01C371E7E05F600385B86 /* DKImagePickerController.framework */ = {
@@ -1189,6 +1185,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01A23ACA21F7F18800C872FC /* EquipmentInspectionTableViewCell.swift in Sources */,
 				019B24621EB82EC5008D4475 /* NewWoItemTableViewCell.swift in Sources */,
 				014B02B21E2690AC002A41DE /* WoItemTableViewCell.swift in Sources */,
 				014B02951E21577D002A41DE /* CustomerListViewController.swift in Sources */,
@@ -1210,6 +1207,7 @@
 				01D86714212B1853005379E1 /* ContractTaskTableViewCell.swift in Sources */,
 				01C0F19D21654BF80018300E /* EmailViewController.swift in Sources */,
 				0160A1B21E873F3D00C2AB4A /* ImageSettingsViewController.swift in Sources */,
+				01A23AC821F7DD7C00C872FC /* EquipmentInspectionViewController.swift in Sources */,
 				010937BE1E802313007865FB /* ImageUploadProgressTableViewCell.swift in Sources */,
 				01DC793E1E2805200022566C /* UsageTableViewCell.swift in Sources */,
 				010937B61E801B91007865FB /* ImageUploadProgressViewController.swift in Sources */,
@@ -1224,11 +1222,11 @@
 				014B029E1E215DB5002A41DE /* CustomerTableViewCell.swift in Sources */,
 				0125B6D91E26B10E00BAC949 /* ImageDrawingViewController.swift in Sources */,
 				0125B6D41E26AE2500BAC949 /* NetData.swift in Sources */,
-				01C43C6420372FBE0068A5E0 /* DepartmentTableViewCell.swift in Sources */,
 				01C0F1A121663CBF0018300E /* EmailTableViewCell.swift in Sources */,
 				014CC8EA1E53F4E000D48A26 /* ImageFullViewController.swift in Sources */,
 				014B02A21E21685A002A41DE /* WorkOrderViewController.swift in Sources */,
 				01C8B9741FB26ED800ADF284 /* LeadListViewController.swift in Sources */,
+				01A23ACC21F90A9700C872FC /* InspectionQuestion.swift in Sources */,
 				01D86708211B3936005379E1 /* SignatureViewController.swift in Sources */,
 				01C43C662037AE8C0068A5E0 /* CrewListViewController.swift in Sources */,
 				01C43C6A2039F0500068A5E0 /* ShiftsViewController.swift in Sources */,
@@ -1359,11 +1357,6 @@
 			name = DKImagePickerController;
 			targetProxy = 01F33DD0203F3FD800C43EFD /* PBXContainerItemProxy */;
 		};
-		01F33DD3203F3FDD00C43EFD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Nuke;
-			targetProxy = 01F33DD2203F3FDD00C43EFD /* PBXContainerItemProxy */;
-		};
 		01F33DD5203F3FE300C43EFD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ObjectMapper;
@@ -1400,6 +1393,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1407,6 +1401,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -1458,6 +1453,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1465,6 +1461,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -1508,14 +1505,13 @@
 				DEVELOPMENT_TEAM = Q78B4XEVQ4;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AdminMatic2/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -1531,14 +1527,13 @@
 				DEVELOPMENT_TEAM = Q78B4XEVQ4;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AdminMatic2/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -1552,8 +1547,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AdminMatic2.app/AdminMatic2";
 			};
 			name = Debug;
@@ -1568,8 +1562,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AdminMatic2.app/AdminMatic2";
 			};
 			name = Release;
@@ -1583,8 +1576,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2UITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TEST_TARGET_NAME = AdminMatic2;
 			};
 			name = Debug;
@@ -1598,8 +1590,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2UITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TEST_TARGET_NAME = AdminMatic2;
 			};
 			name = Release;

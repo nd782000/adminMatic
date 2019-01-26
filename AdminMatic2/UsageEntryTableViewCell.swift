@@ -9,14 +9,16 @@
 
 import Foundation
 import UIKit
-//import Nuke
+import Alamofire
+
 
 class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
-    
     
     var layoutVars:LayoutVars = LayoutVars()
     
     var delegate:UsageDelegate!
+    var receiptDelegate:UpdateReceiptImageDelegate!
+    
     
     var row:Int!
     var empID:String!
@@ -63,20 +65,38 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     
     
     var totalCostLbl:Label!
+    var totalCostTxtField: PaddedTextField!
     
     var historyBtn:Button!
     
     var locked:Bool = false
     var lockIcon:UIImageView!
     
+    //images for receipts
+    var receiptLbl:Label!
+    //var receiptLbl2:Label!
+    var receiptView:UIImageView = UIImageView()
+    
+    var tapBtn:Button!
+    @objc var tapAction : ((UITableViewCell) -> Void)?
+    
+    var imageUploadPrepViewController:ImageUploadPrepViewController!
+
+    var usage:Usage?
+    var index:Int?
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        self.selectionStyle = UITableViewCellSelectionStyle.none
+        self.selectionStyle = UITableViewCell.SelectionStyle.none
+    }
+    
+    func buttonTap(sender:AnyObject){
+        tapAction?(self)
     }
     
     func displayLaborMode(){
@@ -90,7 +110,7 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         self.contentView.addSubview(self.employeeImageView)
         
         
-        activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        activityView = UIActivityIndicatorView(style: .gray)
         activityView.translatesAutoresizingMaskIntoConstraints = false
         //activityView.center = CGPoint(x: self.employeeImageView.frame.size.width / 2, y: self.employeeImageView.frame.size.height / 2)
         employeeImageView.addSubview(activityView)
@@ -113,14 +133,14 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         self.contentView.addSubview(lockIcon)
         
         
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
         //start
         self.startLbl = Label(text: "Start")
         self.contentView.addSubview(self.startLbl)
         
         startPickerView = DatePicker()
-        startPickerView.datePickerMode = UIDatePickerMode.time
+        startPickerView.datePickerMode = UIDatePicker.Mode.time
         
         
         
@@ -130,7 +150,6 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         
         startStopFormatter.dateFormat = "MM/dd/yyyy"
         
-        //startPickerView.setDate(self, animated: <#T##Bool#>)
         
         self.startTxtField = PaddedTextField()
         
@@ -138,15 +157,15 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         self.startTxtField.delegate = self
         self.startTxtField.tag = 8
         self.startTxtField.inputView = self.startPickerView
-        self.startTxtField.attributedPlaceholder = NSAttributedString(string:"---",attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
+        self.startTxtField.attributedPlaceholder = NSAttributedString(string:"---",attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
         self.contentView.addSubview(self.startTxtField)
         
         let startToolBar = UIToolbar()
         startToolBar.barStyle = UIBarStyle.default
         startToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         startToolBar.sizeToFit()
-        let closeStartButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.closeStartPicker))
-        let setStartButton = UIBarButtonItem(title: "Set Start Time", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStartPicker))
+        let closeStartButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeStartPicker))
+        let setStartButton = UIBarButtonItem(title: "Set Start Time", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStartPicker))
         startToolBar.setItems([closeStartButton, spaceButton, setStartButton], animated: false)
         startToolBar.isUserInteractionEnabled = true
         startTxtField.inputAccessoryView = startToolBar
@@ -156,22 +175,22 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         self.contentView.addSubview(self.stopLbl)
         
         stopPickerView = DatePicker()
-        stopPickerView.datePickerMode = UIDatePickerMode.time
+        stopPickerView.datePickerMode = UIDatePicker.Mode.time
         
         self.stopTxtField = PaddedTextField()
         self.stopTxtField.returnKeyType = UIReturnKeyType.next
         self.stopTxtField.delegate = self
         self.stopTxtField.tag = 8
         self.stopTxtField.inputView = self.stopPickerView
-        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:"---",attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
+        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:"---",attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
         self.contentView.addSubview(self.stopTxtField)
         
         let stopToolBar = UIToolbar()
         stopToolBar.barStyle = UIBarStyle.default
         stopToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         stopToolBar.sizeToFit()
-        let closeStopButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.closeStopPicker))
-        let setStopButton = UIBarButtonItem(title: "Set Stop Time", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
+        let closeStopButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeStopPicker))
+        let setStopButton = UIBarButtonItem(title: "Set Stop Time", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
         stopToolBar.setItems([closeStopButton, spaceButton, setStopButton], animated: false)
         stopToolBar.isUserInteractionEnabled = true
         stopTxtField.inputAccessoryView = stopToolBar
@@ -194,8 +213,8 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         breakToolBar.barStyle = UIBarStyle.default
         breakToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         breakToolBar.sizeToFit()
-        let closeBreakButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.closeBreak))
-        let setBreakButton = UIBarButtonItem(title: "Set Break Time", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleBreakTime))
+        let closeBreakButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeBreak))
+        let setBreakButton = UIBarButtonItem(title: "Set Break Time", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleBreakTime))
         breakToolBar.setItems([closeBreakButton, spaceButton, setBreakButton], animated: false)
         breakToolBar.isUserInteractionEnabled = true
         breakTxtField.inputAccessoryView = breakToolBar
@@ -211,21 +230,21 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         let viewsDictionary = ["pic":self.employeeImageView,"name":nameLbl,"qty":qtyLbl,"lockIcon":lockIcon,"startLbl":startLbl,"startTxtField":startTxtField,"stopLbl":stopLbl,"stopTxtField":stopTxtField,"breakLbl":breakLbl,"breakTxtField":breakTxtField] as [String:AnyObject]
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[pic(40)]", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(40)]-10-[name]-10-[qty]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(40)]-10-[name]-10-[qty]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[lockIcon(20)]", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[lockIcon(20)]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[lockIcon(20)]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
         
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[startLbl(40)]|", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[startLbl][startTxtField(70)][stopLbl][stopTxtField(70)][breakLbl][breakTxtField(50)]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[startLbl][startTxtField(70)][stopLbl][stopTxtField(70)][breakLbl][breakTxtField(50)]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
         
         let viewsDictionary2 = ["activityView":activityView] as [String : Any]
         
         employeeImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activityView]-|", options: [], metrics: nil, views: viewsDictionary2))
-        employeeImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activityView]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
+        employeeImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activityView]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
         
     }
     
@@ -237,7 +256,8 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         self.selectionStyle = .none
         
         //qty
-        self.qtyLbl = Label(text: "Qty")
+        self.qtyLbl = Label(text: "Quantity:")
+        self.qtyLbl.textAlignment = .right
         self.contentView.addSubview(self.qtyLbl)
         
         self.qtyTxtField = PaddedTextField()
@@ -248,14 +268,14 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         
         self.contentView.addSubview(self.qtyTxtField)
         
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
         let qtyToolBar = UIToolbar()
         qtyToolBar.barStyle = UIBarStyle.default
         qtyToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         qtyToolBar.sizeToFit()
-        let closeQtyButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.closeQty))
-        let setQtyButton = UIBarButtonItem(title: "Set Qty", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleQty))
+        let closeQtyButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeQty))
+        let setQtyButton = UIBarButtonItem(title: "Set Qty", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleQty))
         qtyToolBar.setItems([closeQtyButton, spaceButton, setQtyButton], animated: false)
         qtyToolBar.isUserInteractionEnabled = true
         qtyTxtField.inputAccessoryView = qtyToolBar
@@ -273,7 +293,8 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         self.contentView.addSubview(lockIcon)
         
         //vendor
-        self.vendorLbl = Label(text: "Vendor")
+        self.vendorLbl = Label(text: "Vendor:")
+        self.vendorLbl.textAlignment = .right
         self.contentView.addSubview(self.vendorLbl)
         
         self.vendorTxtField = PaddedTextField()
@@ -294,15 +315,16 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         vendorToolBar.barStyle = UIBarStyle.default
         vendorToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         vendorToolBar.sizeToFit()
-        let closeVendorButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.closeVendor))
-        let setVendorButton = UIBarButtonItem(title: "Set Vendor", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleVendor))
+        let closeVendorButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeVendor))
+        let setVendorButton = UIBarButtonItem(title: "Set Vendor", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleVendor))
         vendorToolBar.setItems([closeVendorButton, spaceButton, setVendorButton], animated: false)
         vendorToolBar.isUserInteractionEnabled = true
         vendorTxtField.inputAccessoryView = vendorToolBar
         
         
         //cost
-        self.costLbl = Label(text: "Unit Cost")
+        self.costLbl = Label(text: "Unit Cost: $")
+        self.costLbl.textAlignment = .right
         self.contentView.addSubview(self.costLbl)
         
         self.costTxtField = PaddedTextField()
@@ -319,41 +341,98 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         costToolBar.barStyle = UIBarStyle.default
         costToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         costToolBar.sizeToFit()
-        let closeCostButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.closeCost))
+        let closeCostButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeCost))
         
-        let setCostButton = UIBarButtonItem(title: "Set Cost", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleCost))
+        let setCostButton = UIBarButtonItem(title: "Set Cost", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleCost))
         costToolBar.setItems([closeCostButton, spaceButton, setCostButton], animated: false)
         costToolBar.isUserInteractionEnabled = true
         costTxtField.inputAccessoryView = costToolBar
         
         
         //total cost
-        self.totalCostLbl = Label(text: "Total Cost")
+        self.totalCostLbl = Label(text: "Total Cost: $")
+        self.totalCostLbl.textAlignment = .right
         self.contentView.addSubview(self.totalCostLbl)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(UsageEntryTableViewCell.keyboardWillShow(sender:)), name:NSNotification.Name.UIKeyboardWillShow, object: nil);
+        self.totalCostTxtField = PaddedTextField()
+        self.totalCostTxtField.isEnabled = false
+        self.totalCostTxtField.alpha = 0.5
+        self.contentView.addSubview(self.totalCostTxtField)
+        
+        //images for receipts
+        
+        self.receiptLbl = Label(text: "Receipt:")
+        self.receiptLbl.textAlignment = .right
+        self.contentView.addSubview(self.receiptLbl)
+        
+        
+        self.receiptView.clipsToBounds = true
+        self.receiptView.layer.borderWidth = 1
+        self.receiptView.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
+        self.receiptView.layer.cornerRadius = 4.0
+        self.receiptView.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(self.receiptView)
+        self.setBlankImage()
+        
+        //self.receiptLbl2 = Label(text: "Swipe to Manage")
+        //self.receiptLbl2.textAlignment = .left
+       // self.contentView.addSubview(self.receiptLbl2)
+        
+        
+        activityView = UIActivityIndicatorView(style: .gray)
+        activityView.translatesAutoresizingMaskIntoConstraints = false
+        //activityView.center = CGPoint(x: self.thumbView.frame.size.width, y: self.thumbView.frame.size.height)
+        receiptView.addSubview(activityView)
+        
+        self.tapBtn = Button()
+        tapBtn.backgroundColor = UIColor.clear
+        //self.tapBtn.addTarget(self, action: #selector(getter: self.tapAction), for: UIControl.Event.allTouchEvents)
+        self.tapBtn.addTarget(self, action: #selector(self.receiptTap), for: UIControl.Event.touchUpInside)
+        contentView.addSubview(tapBtn)
+        
+        
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(UsageEntryTableViewCell.keyboardWillShow(sender:)), name:UIResponder.keyboardWillShowNotification, object: nil);
         
         self.separatorInset = UIEdgeInsets.zero
         self.layoutMargins = UIEdgeInsets.zero
         self.preservesSuperviewLayoutMargins = false
         
-        let viewsDictionary = ["qtyLbl":qtyLbl,"qtyText":qtyTxtField,"unitsLbl":unitsLbl, "lockIcon":lockIcon,"vendorLbl":vendorLbl,"vendorTxtField":vendorTxtField,"costLbl":costLbl,"costTxtField":costTxtField,"totalCostLbl":totalCostLbl] as [String:AnyObject]
+        //print("1")
+        let viewsDictionary = ["qtyLbl":qtyLbl,"qtyText":qtyTxtField,"unitsLbl":unitsLbl, "lockIcon":lockIcon,"vendorLbl":vendorLbl,"vendorTxtField":vendorTxtField,"costLbl":costLbl,"costTxtField":costTxtField,"totalCostLbl":totalCostLbl,"totalCostTxtField":totalCostTxtField,"receiptLbl":receiptLbl,"receipt":receiptView,"tapBtn":tapBtn] as [String:AnyObject]
         
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[qtyLbl(20)]", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[qtyLbl]-[qtyText(80)]-[unitsLbl(100)]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+       
         
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[vendorLbl(100)]-[vendorTxtField(200)]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        //print("2")
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[qtyLbl(100)]-[qtyText(80)]-[unitsLbl(100)]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[costLbl(100)]-[costTxtField(80)]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[totalCostLbl(100)]-[totalCostTxtField(80)]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[vendorLbl(40)][qtyLbl(40)][costLbl(40)][totalCostLbl(40)]", options: [], metrics: nil, views: viewsDictionary))
+        //contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[receipt(50)]-36-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[receiptLbl(100)]-[receipt(80)]", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[receiptLbl(100)]-[tapBtn(80)]", options: [], metrics: nil, views: viewsDictionary))
+        
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[receiptLbl(40)]-28-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[receipt(80)]-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[tapBtn(80)]-|", options: [], metrics: nil, views: viewsDictionary))
+        //contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[receiptLbl2(40)]-28-|", options: [], metrics: nil, views: viewsDictionary))
+        //print("4")
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[lockIcon(20)]", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[lockIcon(20)]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[lockIcon(20)]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
         
         
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-25-[vendorLbl(40)]", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[vendorLbl][vendorTxtField(120)]-[costLbl][costTxtField(80)]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
-        
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-50-[totalCostLbl(40)]", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[totalCostLbl(220)]", options: [], metrics: nil, views: viewsDictionary))
+        let viewsDictionary2 = ["activityView":activityView] as [String : Any]
+        //print("5")
+        receiptView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activityView]-|", options: [], metrics: nil, views: viewsDictionary2))
+        receiptView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activityView]-|", options: [], metrics: nil, views: viewsDictionary2))
         
     }
+    
     
     func displayHistoryMode(){
         //print("displayHistoryMode")
@@ -367,13 +446,13 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         self.historyBtn = Button(titleText: "Show All Usage")
         self.contentView.addSubview(historyBtn)
         
-        historyBtn.setTitleColor(UIColor(hex:0x005100, op:1), for: UIControlState.normal)
+        historyBtn.setTitleColor(UIColor(hex:0x005100, op:1), for: UIControl.State.normal)
         historyBtn.backgroundColor = UIColor.clear
         historyBtn.layer.borderWidth = 1.0
         historyBtn.layer.borderColor = UIColor(hex:0x005100, op:1).cgColor
         historyBtn.layer.cornerRadius = cornerRadius
         
-        self.historyBtn.addTarget(self, action:#selector(UsageEntryTableViewCell.handleShowHistory), for: UIControlEvents.touchUpInside)
+        self.historyBtn.addTarget(self, action:#selector(UsageEntryTableViewCell.handleShowHistory), for: UIControl.Event.touchUpInside)
         
         self.separatorInset = UIEdgeInsets.zero
         self.layoutMargins = UIEdgeInsets.zero
@@ -381,37 +460,80 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         
         let viewsDictionary = ["historyBtn":historyBtn] as [String:AnyObject]
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-15-[historyBtn]-15-|", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[historyBtn]-20-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[historyBtn]-20-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
     }
 
     
     
-    func setImageUrl(_url:String){
-        let imgURL:URL = URL(string: _url)!
-       /* Nuke.loadImage(with: imgURL, into: self.employeeImageView){
-            //print("nuke loadImage")
-            self.employeeImageView.handle(response: $0, isFromMemoryCache: $1)
-            self.activityView.stopAnimating()
-        }
- */
-        
+    @objc func receiptTap(){
+        self.receiptDelegate.receiptBtnTapped(_usage: self.usage!, _index: self.index!)
     }
     
-    
-    /*
     func setImageUrl(_url:String){
         
-        let url = URL(string: _url)
         
-        DispatchQueue.global().async {
-            let data = try? Data(contentsOf: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
-            DispatchQueue.main.async {
-                self.employeeImageView.image = UIImage(data: data!)
+        
+        Alamofire.request(_url).responseImage { response in
+            debugPrint(response)
+            
+            //print(response.request)
+            //print(response.response)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                
+                self.employeeImageView.image = image
+                
+                
+                
+                //self.activityView.stopAnimating()
+                
+                
             }
         }
+        
+        
+        
+        
     }
     
-    */
+    func setReceiptUrl(_url:String){
+        
+        print("set receipt url \(_url)")
+        
+        Alamofire.request(_url).responseImage { response in
+            debugPrint(response)
+            
+            //print(response.request)
+            //print(response.response)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                
+                self.receiptView.image = image
+                
+                
+                
+                //self.activityView.stopAnimating()
+                
+                
+            }
+        }
+        
+        
+        
+        
+    }
+    
+    func setBlankImage(){
+        self.receiptView.image = layoutVars.defaultImage
+    }
+    
+    
+    
+   
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
@@ -503,6 +625,14 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
             //print("call delegate \(self.row)  \(qty)")
             self.delegate.editQty(row: self.row, qty: qty!)
             self.qtyTxtField.resignFirstResponder()
+            
+            if costTxtField.text != ""{
+                self.totalCostTxtField.text =    String(format: "%.2f", qty! * Double(costTxtField.text!)!)
+            }
+            
+           
+            
+            
         }
         
         
@@ -531,6 +661,18 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
             if(cost != nil){
                 //print("call delegate \(self.row)  \(cost)")
                 self.delegate.editCost(row: self.row, cost: cost!)
+                
+                
+               
+                if qtyTxtField.text != ""{
+                    self.totalCostTxtField.text =    String(format: "%.2f", cost! * Double(qtyTxtField.text!)!)
+                }
+                    
+                    
+              
+                
+                
+                
             }
         }
     }
@@ -548,7 +690,22 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
             //print("call delegate \(self.row)  \(cost)")
             self.delegate.editCost(row: self.row, cost: cost!)
             self.costTxtField.resignFirstResponder()
+            
+            if qtyTxtField.text != ""{
+                self.totalCostTxtField.text =    String(format: "%.2f", cost! * Double(qtyTxtField.text!)!)
+            }
+            
+            
+            
         }
+        
+       
+        
+            
+            
+            
+        
+        
         
         
     }
@@ -600,6 +757,56 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     }
 
     
+    
+    func updateReceipt(_image:Image){
+        print("update image")
+        
+        
+        activityView.startAnimating()
+        self.usage?.receipt = _image
+        //self.equipment.pic = _image.thumbPath
+        let imgURL:URL = URL(string: (self.usage?.receipt!.thumbPath)!)!
+        
+        
+        Alamofire.request(imgURL).responseImage { response in
+            debugPrint(response)
+            
+            //print(response.request)
+            //print(response.response)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                
+               // self.usage?.receipt = image
+                
+                
+                
+                self.activityView.stopAnimating()
+                
+                
+                /*
+                if(self.title == "New Equipment"){
+                    self.delegate.reDrawEquipmentList()
+                }else{
+                    self.editDelegate.updateEquipment(_equipment: self.equipment)
+                }
+                
+                
+                if self.imageAddedAfterSubmit {
+                    
+                    self.editsMade = false
+                    self.goBack()
+                }
+                */
+                
+            }
+        }
+        
+        
+       
+        
+    }
     
     
     

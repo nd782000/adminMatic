@@ -26,7 +26,7 @@ class EmailTableViewCell: UITableViewCell,UITextFieldDelegate {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         
@@ -81,11 +81,11 @@ class EmailTableViewCell: UITableViewCell,UITextFieldDelegate {
          self.addTxt.autocapitalizationType = UITextAutocapitalizationType.none
          self.addTxt.keyboardType = UIKeyboardType.emailAddress
          contentView.addSubview(self.addTxt)
-         self.addBtn.addTarget(self, action: #selector(EmailTableViewCell.addEmail), for: UIControlEvents.touchUpInside)
+         self.addBtn.addTarget(self, action: #selector(EmailTableViewCell.addEmail), for: UIControl.Event.touchUpInside)
          contentView.addSubview(self.addBtn)
         
          let viewsDictionary = ["addTxt":self.addTxt,"addBtn":self.addBtn] as [String : Any]
-         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[addTxt]-[addBtn(40)]-10-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[addTxt]-[addBtn(40)]-10-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
          contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[addTxt(40)]", options: [], metrics: nil, views: viewsDictionary))
          contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[addBtn(40)]", options: [], metrics: nil, views: viewsDictionary))
      
@@ -137,10 +137,10 @@ class EmailTableViewCell: UITableViewCell,UITextFieldDelegate {
         if !isValidEmail(testStr: self.addTxt.text!){
             
            
-            let alertController = UIAlertController(title: "Improper Email Format", message: "Please add a proper email.", preferredStyle: UIAlertControllerStyle.alert)
+            let alertController = UIAlertController(title: "Improper Email Format", message: "Please add a proper email.", preferredStyle: UIAlertController.Style.alert)
             
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("Yes")
             }
@@ -200,8 +200,8 @@ class EmailTableViewCell: UITableViewCell,UITextFieldDelegate {
                 }
         }else{
             //new
-            let alertController = UIAlertController(title: "Add Customer Email?", message: "Do you want to add this email to the customer file?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Add Customer Email?", message: "Do you want to add this email to the customer file?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("No")
                 
@@ -212,7 +212,7 @@ class EmailTableViewCell: UITableViewCell,UITextFieldDelegate {
                 
             }
             
-            let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("Yes")
                 

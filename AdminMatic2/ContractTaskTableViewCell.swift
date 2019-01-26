@@ -16,6 +16,7 @@
 
 import Foundation
 import UIKit
+import Alamofire
 //import AlamofireImage
 //import Nuke
 
@@ -38,7 +39,7 @@ class ContractTaskTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         
@@ -63,7 +64,7 @@ class ContractTaskTableViewCell: UITableViewCell {
         imageQtyLbl.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(imageQtyLbl)
         
-        activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        activityView = UIActivityIndicatorView(style: .gray)
         activityView.center = CGPoint(x: self.thumbView.frame.size.width, y: self.thumbView.frame.size.height)
         thumbView.addSubview(activityView)
         
@@ -119,7 +120,7 @@ class ContractTaskTableViewCell: UITableViewCell {
         
         
         let viewsDictionary = ["addBtn":self.addTasksLbl] as [String : Any]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[addBtn]-10-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[addBtn]-10-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[addBtn(40)]-|", options: [], metrics: nil, views: viewsDictionary))
         
@@ -139,7 +140,29 @@ class ContractTaskTableViewCell: UITableViewCell {
             setBlankImage()
         }else{
             
-            let url = URL(string: _url!)
+            
+            Alamofire.request(_url!).responseImage { response in
+                debugPrint(response)
+                
+                //print(response.request)
+                //print(response.response)
+                debugPrint(response.result)
+                
+                if let image = response.result.value {
+                    print("image downloaded: \(image)")
+                    
+                    self.thumbView.image = image
+                    
+                    
+                    
+                    self.activityView.stopAnimating()
+                    
+                    
+                }
+            }
+            
+            
+            //let url = URL(string: _url!)
             
             //cell.activityIndicator.startAnimating()
             

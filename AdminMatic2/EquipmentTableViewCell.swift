@@ -9,6 +9,7 @@
 
 import Foundation
 import UIKit
+import Alamofire
 //import Nuke
 
 class EquipmentTableViewCell: UITableViewCell {
@@ -32,7 +33,7 @@ class EquipmentTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         self.selectionStyle = .none
@@ -48,7 +49,7 @@ class EquipmentTableViewCell: UITableViewCell {
         self.equipmentImageView.translatesAutoresizingMaskIntoConstraints = false
         self.contentView.addSubview(self.equipmentImageView)
         
-        activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        activityView = UIActivityIndicatorView(style: .gray)
         activityView.translatesAutoresizingMaskIntoConstraints = false
         equipmentImageView.addSubview(activityView)
         
@@ -126,12 +127,32 @@ class EquipmentTableViewCell: UITableViewCell {
         let viewsDictionary2 = ["activityView":activityView] as [String : Any]
         
         equipmentImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activityView]-|", options: [], metrics: nil, views: viewsDictionary2))
-        equipmentImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activityView]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
+        equipmentImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activityView]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
         
     }
     
     func setImageUrl(_url:String){
-        let imgURL:URL = URL(string: _url)!
+       // let imgURL:URL = URL(string: _url)!
+        
+        Alamofire.request(_url).responseImage { response in
+            debugPrint(response)
+            
+            //print(response.request)
+            //print(response.response)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                
+                self.equipmentImageView.image = image
+                
+                
+                
+                self.activityView.stopAnimating()
+                
+                
+            }
+        }
         /*
         Nuke.loadImage(with: imgURL, into: self.equipmentImageView){
             //print("nuke loadImage")

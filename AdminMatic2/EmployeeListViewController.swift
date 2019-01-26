@@ -10,9 +10,8 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 import MessageUI
-//import Nuke
 
 
 class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, MFMessageComposeViewControllerDelegate{
@@ -50,12 +49,12 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         if appDelegate.employeeArray.count == 0{
             print("internet connection failed")
             
-            let alertController = UIAlertController(title: "Lost Internet Connection", message: "Try connecting again", preferredStyle: UIAlertControllerStyle.alert) //Replace UIAlertControllerStyle.Alert by UIAlertControllerStyle.alert
+            let alertController = UIAlertController(title: "Lost Internet Connection", message: "Try connecting again", preferredStyle: UIAlertController.Style.alert) //Replace UIAlertControllerStyle.Alert by UIAlertControllerStyle.alert
             //let DestructiveAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
                 //(result : UIAlertAction) -> Void in
                 //print("Cancel")
            // }
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 //print("OK")
                // _ = self.navigationController?.popViewController(animated: true)
@@ -109,7 +108,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         
         
-        self.groupMessageBtn.addTarget(self, action: #selector(EmployeeListViewController.groupMessage), for: UIControlEvents.touchUpInside)
+        self.groupMessageBtn.addTarget(self, action: #selector(EmployeeListViewController.groupMessage), for: UIControl.Event.touchUpInside)
         
        // self.groupMessageBtn.frame = CGRect(x:0, y: self.view.frame.height - 50, width: self.view.frame.width - 100, height: 50)
        // self.groupMessageBtn.translatesAutoresizingMaskIntoConstraints = true
@@ -219,7 +218,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
             //print("call button tapped")
             //callPhoneNumber(currentCell.employee.phone)
             if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
-                UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: [:], completionHandler: nil)
+                UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
             }
             tableView.setEditing(false, animated: true)
         }
@@ -234,7 +233,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
                         self.controller.navigationBar.shadowImage = UIImage()
                         self.controller.navigationBar.isTranslucent = true
                         self.controller.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(EmployeeListViewController.dismissMessage))
-                        self.controller.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.blue]
+                        self.controller.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.blue]
                         self.present(self.controller, animated: true, completion: nil)
                         tableView.setEditing(false, animated: true)
                     }
@@ -289,7 +288,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     }
     
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         // you need to implement this method too or you can't swipe to display the actions
     }
     
@@ -318,4 +317,9 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     
     
     
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
 }

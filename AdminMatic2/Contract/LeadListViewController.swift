@@ -11,12 +11,12 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 
 // updates status icons without getting new db data
 protocol LeadListDelegate{
     func getLeads(_openNewLead:Bool)
-    func cancelSearch()
+    //func cancelSearch()
     
 }
 
@@ -42,7 +42,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     var countLbl:Label = Label()
     var addLeadBtn:Button = Button(titleText: "Add New Lead")
     var leadViewController:LeadViewController!
-    var leads:JSON!
+    //var leads:JSON!
     var leadsArray:[Lead] = []
     
     
@@ -63,7 +63,8 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     var zoneName:String = ""
     
     
-    
+    var methodStart:Date!
+    var methodFinish:Date!
   
     
     override func viewDidLoad() {
@@ -87,6 +88,9 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     func getLeads(_openNewLead:Bool){
         print("getLeads")
         
+        
+         methodStart = Date()
+        
         self.leadsArray = []
         
         //cache buster
@@ -107,6 +111,103 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
             }
             .responseJSON() {
                 response in
+                
+                //native way
+                
+                do {
+                    if let data = response.data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        let leads = json["leads"] as? [[String: Any]] {
+                        
+                        let leadCount = leads.count
+                        print("lead count = \(leadCount)")
+                        
+                        
+                        for i in 0 ..< leadCount {
+                            
+                           
+                            //create an object
+                            print("create a lead object \(i)")
+                            
+                            
+                             //as! String
+                            let lead =  Lead(_ID: leads[i]["ID"] as? String, _statusID: leads[i]["status"] as? String, _scheduleType: leads[i]["timeType"] as? String, _date: leads[i]["date"] as? String, _time: leads[i]["time"] as? String, _statusName: leads[i]["statusName"] as? String, _customer: leads[i]["customer"] as? String, _customerName: leads[i]["custName"] as? String, _urgent: leads[i]["urgent"] as? String, _description: leads[i]["description"] as? String, _rep: leads[i]["salesRep"] as? String, _repName: leads[i]["repName"] as? String, _deadline: leads[i]["deadline"] as? String, _requestedByCust: leads[i]["requestedByCust"] as? String, _createdBy: leads[i]["createdBy"] as? String, _daysAged: leads[i]["daysAged"] as? String)
+                            
+                            lead.dateNice = leads[i]["dateNice"] as? String
+                            
+                            lead.custNameAndID = "\(lead.customerName!) #\(lead.ID!)"
+                            
+                            print("json zone = \(leads[i]["zone"] as! String)")
+                            for var n in 0 ..< self.appDelegate.zones.count{
+                                //print(" zone names = \(self.appDelegate.zones[n].name)")
+                                // print(" zone names = \(self.appDelegate.zones[n].ID)")
+                                print(" zone names = \(self.appDelegate.zones[n].name!)")
+                                print(" zone names = \(self.appDelegate.zones[n].ID!)")
+                                if leads[i]["zone"] as! String == self.appDelegate.zones[n].ID!{
+                                    lead.zone = self.appDelegate.zones[n]
+                                    // print(" matching zone names = \(lead.zone.name)")
+                                    n = self.appDelegate.zones.count
+                                }
+                            }
+                            
+                            if lead.zone == nil{
+                                let zone:Zone = Zone(_ID: "0", _name: "None")
+                                lead.zone = zone
+                            }
+                            
+                            
+                            lead.custNameAndZone = "\(lead.customerName!) \(lead.zone.name!)"
+                            
+                            lead.description = "Zone: \(lead.zone.name!) - \(lead.description!)"
+                            
+                            
+                            self.leadsArray.append(lead)
+                            
+                            
+                            
+                            
+                            
+                        }
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    self.methodFinish = Date()
+                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
+                    print("Execution time: \(executionTime)")
+                    
+                    
+                    self.indicator.dismissIndicator()
+                    
+                    
+                    self.layoutViews()
+                    
+                    
+                    if _openNewLead {
+                        print("open new lead")
+                        
+                        
+                        self.leadViewController = LeadViewController(_lead: self.leadsArray[0])
+                        self.leadViewController.delegate = self
+                        self.navigationController?.pushViewController(self.leadViewController, animated: false )
+                        
+                        
+                    }
+                    
+                    
+                    
+                } catch {
+                    print("Error deserializing JSON: \(error)")
+                }
+ 
+                
+                
+                /*
+                //swifty way
+                
                 if let json = response.result.value {
                     self.leads = JSON(json)
                     
@@ -121,13 +222,13 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                         
                         print("json zone = \(self.leads["leads"][i]["zone"].stringValue)")
                         for var n in 0 ..< self.appDelegate.zones.count{
-                            print(" zone names = \(self.appDelegate.zones[n].name)")
-                            print(" zone names = \(self.appDelegate.zones[n].ID)")
+                            //print(" zone names = \(self.appDelegate.zones[n].name)")
+                           // print(" zone names = \(self.appDelegate.zones[n].ID)")
                             print(" zone names = \(self.appDelegate.zones[n].name!)")
                             print(" zone names = \(self.appDelegate.zones[n].ID!)")
                             if self.leads["leads"][i]["zone"].stringValue == self.appDelegate.zones[n].ID!{
                                 lead.zone = self.appDelegate.zones[n]
-                                print(" matching zone names = \(lead.zone.name)")
+                               // print(" matching zone names = \(lead.zone.name)")
                                 n = self.appDelegate.zones.count
                             }
                         }
@@ -145,6 +246,12 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                         
                         self.leadsArray.append(lead)
                     }
+ 
+                 self.methodFinish = Date()
+                 let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
+                 print("Execution time: \(executionTime)")
+                 
+                 
                     self.indicator.dismissIndicator()
                     
                     
@@ -162,6 +269,9 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                         
                     }
                 }
+                */
+                
+                
         }
         
     }
@@ -208,7 +318,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         refreshControl = UIRefreshControl()
         refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
         leadTableView.addSubview(refreshControl)
-        refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: UIControlEvents.valueChanged)
+        refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: UIControl.Event.valueChanged)
         
         
         
@@ -223,13 +333,13 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         
         self.addLeadBtn.layer.borderColor = UIColor.white.cgColor
         self.addLeadBtn.layer.borderWidth = 1.0
-        self.addLeadBtn.addTarget(self, action: #selector(LeadListViewController.addLead), for: UIControlEvents.touchUpInside)
+        self.addLeadBtn.addTarget(self, action: #selector(LeadListViewController.addLead), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.addLeadBtn)
         
         
         
         
-        self.leadSettingsBtn.addTarget(self, action: #selector(LeadListViewController.leadSettings), for: UIControlEvents.touchUpInside)
+        self.leadSettingsBtn.addTarget(self, action: #selector(LeadListViewController.leadSettings), for: UIControl.Event.touchUpInside)
         
         // self.contractSettingsBtn.frame = CGRect(x:self.view.frame.width - 50, y: self.view.frame.height - 50, width: 50, height: 50)
         //self.contractSettingsBtn.translatesAutoresizingMaskIntoConstraints = true
@@ -237,7 +347,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         self.leadSettingsBtn.layer.borderWidth = 1.0
         self.view.addSubview(self.leadSettingsBtn)
         
-        self.leadSettingsBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
+        self.leadSettingsBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
         
         
         
@@ -404,7 +514,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                 print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
             }
             
@@ -424,7 +534,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                 print("Oh no! \(regexError2)")
             } else {
                 for match in (regex2?.matches(in: baseString2 as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString2.length)))! as [NSTextCheckingResult] {
-                    highlightedText2.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText2.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
                 
             }
@@ -525,14 +635,14 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     }
     
     
-    
+    /*
     func cancelSearch() {
         print("cancel search")
         if(self.searchController.isActive == true){
             self.searchController.isActive = false
             self.leadTableView.reloadData()
         }
-    }
+    }*/
     
     
     @objc func leadSettings(){

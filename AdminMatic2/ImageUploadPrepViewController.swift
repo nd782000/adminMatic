@@ -12,7 +12,7 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 import DKImagePickerController
 
 
@@ -35,6 +35,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     var delegate:ImageViewDelegate!  // refreshing the list
     var attachmentDelegate:AttachmentDelegate!  // refreshing the list
     var equipmentImageDelegate:UpdateEquipmentImageDelegate!
+    var receiptImageDelegate:UpdateReceiptImageDelegate!
     var indicator: SDevIndicator!
     var backButton:UIButton!
     
@@ -102,6 +103,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     
     var equipmentID:String = ""
     
+    var usageID:String = ""
+    var usageIndex:Int = 0
+    var vendorID:String = ""
+    
     //data items
     var imageType:String! //example: task, fieldnote, custImage, equipmentImage
     
@@ -116,12 +121,12 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     var imageEdit:Bool = false
     var keyboardHeight:CGFloat = 216
     
-    var attachmentsJson:JSON?
+    //var attachmentsJson:JSON?
     var attachments:[Attachment] = []
     let attachmentCount:Int = 0
     
     
-    var tasksJson:JSON?
+   // var tasksJson:JSON?
     var tasks:[Task] = []
     let taskCount:Int = 0
     
@@ -163,6 +168,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.leadTaskID = _leadTaskID
         self.customerID = _customerID
         self.images = _images
+        
+        print("imageType = \(imageType)")
+        print("leadID = \(leadID)")
+        print("leadTaskID = \(leadTaskID)")
+        print("customerID = \(customerID)")
     }
     
     
@@ -211,6 +221,17 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         
     }
     
+    //init for receipt
+    init(_imageType:String, _usageID:String,_usageIndex:Int){
+        super.init(nibName:nil,bundle:nil)
+        print("ImageUploadPrep init for receipt")
+        self.imageType = _imageType
+        self.usageID = _usageID
+        self.usageIndex = _usageIndex
+        
+        
+    }
+    
     
     
     required init?(coder aDecoder: NSCoder) {
@@ -226,7 +247,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         
         // Do any additional setup after loading the view.
         
-        print("ImageUploadPrep viewDidLoad imageType = \(self.imageType)")
+        //print("ImageUploadPrep viewDidLoad imageType = \(self.imageType)")
         
        
         
@@ -252,6 +273,9 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         case "Equipment":
             title = "Add Equipment Image"
             break
+        case "Receipt":
+            title = "Add Receipt Image"
+            break
         
             
         case .none:
@@ -271,9 +295,9 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         
         
         //custom back button
-        backButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(ImageUploadPrepViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        backButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(ImageUploadPrepViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -334,7 +358,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         self.groupNameView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         groupSwitch.removeTarget(self, action: #selector(ImageUploadPrepViewController.switchValueDidChange(sender:)), for: .valueChanged)
-    
+        groupSwitch.isHidden = true
         
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         imageCollectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height - 50), collectionViewLayout: layout)
@@ -347,7 +371,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.imageCollectionView.alwaysBounceVertical = true
         self.imageCollectionView.backgroundColor = UIColor.darkGray
         
-        if imageType != "Equipment"{
+        if imageType != "Equipment" && imageType != "Receipt"{
             self.groupNameView.backgroundColor = UIColor.lightGray
             self.groupNameView.translatesAutoresizingMaskIntoConstraints = false
             self.view.addSubview(self.groupNameView)
@@ -392,7 +416,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             groupSearchBar.clipsToBounds = true
             groupSearchBar.backgroundColor = UIColor.white
             groupSearchBar.barTintColor = UIColor.clear
-            groupSearchBar.searchBarStyle = UISearchBarStyle.minimal
+            groupSearchBar.searchBarStyle = UISearchBar.Style.minimal
             groupSearchBar.delegate = self
             self.groupNameView.addSubview(groupSearchBar)
             
@@ -409,28 +433,30 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             
             
-            self.addImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.addImages), for: UIControlEvents.touchUpInside)
+            self.addImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.addImages), for: UIControl.Event.touchUpInside)
             self.view.addSubview(self.addImageBtn)
             
             
             
+          
+                self.submitBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.pickImageUploadSize), for: UIControl.Event.touchUpInside)
             
-            self.submitBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.pickImageUploadSize), for: UIControlEvents.touchUpInside)
+            
             self.view.addSubview(self.submitBtn)
             
-        }else if imageType == "Equipment"{
-            print("equipment")
+        }else if imageType == "Equipment" || imageType == "Receipt"{
+            print("Equipment or Receipt")
             
             
             
-            self.changeImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.changeImage), for: UIControlEvents.touchUpInside)
+            self.changeImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.changeImage), for: UIControl.Event.touchUpInside)
             self.view.addSubview(self.changeImageBtn)
             
            
             
             
             
-            self.submitBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.pickImageUploadSize), for: UIControlEvents.touchUpInside)
+            self.submitBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.forceSmallUpload), for: UIControl.Event.touchUpInside)
             self.view.addSubview(self.submitBtn)
             print("end")
             
@@ -462,12 +488,12 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 self.groupDescriptionTxt.isEditable = false
             }
             
-            self.addImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.addImages), for: UIControlEvents.touchUpInside)
+            self.addImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.addImages), for: UIControl.Event.touchUpInside)
             self.view.addSubview(self.addImageBtn)
             
 
             
-            self.submitBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.pickImageUploadSize), for: UIControlEvents.touchUpInside)
+            self.submitBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.pickImageUploadSize), for: UIControl.Event.touchUpInside)
             self.view.addSubview(self.submitBtn)
              print("end")
             
@@ -482,11 +508,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             //self.addImageBtn.isHidden = false
             print("new item")
             //self.submitBtn.titleLabel?.text = "Submit Image(s)"
-            self.submitBtn.setTitle("Submit", for: UIControlState())
+            self.submitBtn.setTitle("Submit", for: UIControl.State())
         }else{
             //self.addImageBtn.isHidden = true
             print("existing item")
-            self.submitBtn.setTitle("Update", for: UIControlState())
+            self.submitBtn.setTitle("Update", for: UIControl.State())
             
         }
         
@@ -532,6 +558,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
                 
             }else{
+                
+                
+                
+                
                 if(self.imageType != "Customer"){
                     self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(50)]-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                     
@@ -549,6 +579,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             if(groupImages == true){
                 
+                    groupSwitch.isHidden = false
                 self.groupNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[groupSwitch(50)]-20-[groupSwitchLbl(70)]-10-[searchBar]-|", options: [], metrics: nil, views: viewsDictionary2))
                 
                 self.groupNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[groupNameTxt]-|", options: [], metrics: nil, views: viewsDictionary2))
@@ -559,7 +590,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
                 
             }else{
-                
+                groupSwitch.isHidden = false
                 self.groupNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[groupSwitch(40)]-10-[groupSwitchLbl(70)]-10-[searchBar]-|", options: [], metrics: nil, views: viewsDictionary2))
                 
                 self.groupNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[groupSwitch(30)]", options: [], metrics: nil, views: viewsDictionary2))
@@ -573,7 +604,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
                 
                 
-        }else if self.imageType == "Equipment"{
+        }else if self.imageType == "Equipment" || self.imageType == "Receipt"{
+            
+            
+            //groupSwitch.isHidden = false
+            
             let viewsDictionary = [
                  "imageCollection":self.imageCollectionView, "changeImageBtn":self.changeImageBtn, "submitBtn":self.submitBtn
                 ] as [String:Any]
@@ -626,6 +661,9 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             }
             
         if(self.imageType != "Customer"){
+            
+           // groupSwitch.isHidden = true
+            
             let viewsDictionary2 = ["groupDescriptionTxt":self.groupDescriptionTxt] as [String:Any]
             
             
@@ -634,6 +672,15 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 self.groupNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[groupDescriptionTxt(70)]", options: [], metrics: nil, views: viewsDictionary2))
             }
         }
+        
+        /*
+        if self.groupImages == false{
+            self.groupSwitch.isHidden = true
+            self.groupSwitchLbl.isHidden = true
+            self.groupNameTxt.isHidden = true
+            self.groupSearchBar.isHidden = true
+        }
+ */
         
        
         
@@ -683,11 +730,15 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         cell.backgroundColor = UIColor.lightGray
             cell.imageData = images[indexPath.row]
             
-            print("cell image = \(cell.imageData.thumbPath)")
+            //print("cell image = \(cell.imageData.thumbPath)")
             cell.layoutViews()
             cell.delegate = self
             cell.indexPath = indexPath
             cell.setText()
+        
+        if imageType == "Receipt"{
+            cell.descriptionTxt.isHidden = true
+        }
         
     
         return cell
@@ -703,7 +754,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         let currentCell = imageCollectionView?.cellForItem(at: indexPath) as! ImageUploadPrepCollectionViewCell
         
         if(self.images[indexPath.row].ID != "0" && self.images[indexPath.row].ID != ""){
-            print("createdBy = \(currentCell.imageData.createdBy)")
+           // print("createdBy = \(currentCell.imageData.createdBy)")
             
             
             
@@ -744,6 +795,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 //title = "Add Equipment Image"
                 self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
                 break
+            case "Receipt":
+                //title = "Add Equipment Image"
+                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
+                break
                 
                 
             case .none:
@@ -759,12 +814,12 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             
             
-            let actionSheet = UIAlertController(title: "Image Options", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+            let actionSheet = UIAlertController(title: "Image Options", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
             actionSheet.view.backgroundColor = UIColor.white
             actionSheet.view.layer.cornerRadius = 5;
             
             
-            actionSheet.addAction(UIAlertAction(title: "View Large Image", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            actionSheet.addAction(UIAlertAction(title: "View Large Image", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                 
                 
                 self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
@@ -783,7 +838,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
             }))
             
-            actionSheet.addAction(UIAlertAction(title: "Delete Image Link", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            actionSheet.addAction(UIAlertAction(title: "Delete Image Link", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                 
                 print("delete task image")
                 
@@ -803,22 +858,22 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             }))
             
             
-            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
+            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
             
             
             
             switch UIDevice.current.userInterfaceIdiom {
             case .phone:
-                self.present(actionSheet, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
                 break
             // It's an iPhone
             case .pad:
                 let nav = UINavigationController(rootViewController: actionSheet)
                 nav.modalPresentationStyle = UIModalPresentationStyle.popover
-                let popover = nav.popoverPresentationController as UIPopoverPresentationController!
+                let popover:UIPopoverPresentationController = nav.popoverPresentationController! //as //UIPopoverPresentationController
                 actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
-                popover?.sourceView = self.view
-                popover?.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
+                popover.sourceView = self.view
+                popover.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
                 
                 self.present(nav, animated: true, completion: nil)
                 break
@@ -826,7 +881,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             case .unspecified:
                 break
             default:
-                self.present(actionSheet, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
                 break
                 
                 // Uh, oh! What could it be?
@@ -848,27 +903,27 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             
             
-            let actionSheet = UIAlertController(title: "Edit Image Options", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+            let actionSheet = UIAlertController(title: "Edit Image Options", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
             actionSheet.view.backgroundColor = UIColor.white
             actionSheet.view.layer.cornerRadius = 5;
             
-            actionSheet.addAction(UIAlertAction(title: "Drawing", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            actionSheet.addAction(UIAlertAction(title: "Drawing", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                self.draw(_indexPath: indexPath, _image: self.images[indexPath.row].image!)
             }))
             
         
             
-            actionSheet.addAction(UIAlertAction(title: "Remove", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            actionSheet.addAction(UIAlertAction(title: "Remove", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                 self.close(_indexPath: indexPath)
             }))
-            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
+            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: { (alert:UIAlertAction!) -> Void in
             }))
             
             
             
             switch UIDevice.current.userInterfaceIdiom {
             case .phone:
-                self.present(actionSheet, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
 
                 break
             // It's an iPhone
@@ -886,7 +941,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             case .unspecified:
                 break
             default:
-                self.present(actionSheet, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
                 break
                 
                 // Uh, oh! What could it be?
@@ -917,14 +972,14 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         }
         
         
-        let alertController = UIAlertController(title: "Delete Image Link?", message: "Are you sure you want to delete the link to this image?", preferredStyle: UIAlertControllerStyle.alert)
-        let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+        let alertController = UIAlertController(title: "Delete Image Link?", message: "Are you sure you want to delete the link to this image?", preferredStyle: UIAlertController.Style.alert)
+        let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
             print("No")
             return
         }
         
-        let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+        let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
             print("Yes")
             
@@ -972,10 +1027,12 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
     }
     
+    
+    
     @objc func addImages(){
         print("add images")
         
-        print("imageType = \(self.imageType)")
+        //print("imageType = \(self.imageType)")
         
         let n: Int! = self.navigationController?.viewControllers.count
         print("add images 2")
@@ -1017,6 +1074,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         case "Equipment":
             
             break
+        
+        case "Receipt":
+            
+            break
             
         default://home
             print("add images 3")
@@ -1046,7 +1107,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         multiPicker.showsCancelButton = true
         multiPicker.assetType = .allPhotos
         
-        if(imageType == "Equipment"){
+        if(imageType == "Equipment" || imageType == "Receipt"){
             multiPicker.maxSelectableCount = 1
         }
         
@@ -1081,6 +1142,13 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                         imageToAdd.customer = self.customerID
                         imageToAdd.customerName = self.customerName
                     }
+                    
+                    if self.usageID != ""{
+                        imageToAdd.usageID = self.usageID
+                    }
+                    if self.vendorID != ""{
+                        imageToAdd.vendorID = self.vendorID
+                    }
                         
                         
                         
@@ -1090,16 +1158,23 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     self.images.append(imageToAdd)
                     self.imagesAdded.append(imageToAdd)
                     
+                    if i == assets.count - 1{
+                        print("images count = \(self.images.count)")
+                        print("imagesAdded = \(self.imagesAdded.count)")
+                        
+                        self.imageCollectionView.reloadData()
+                        
+                        
+                        let lastItem = self.collectionView(self.imageCollectionView, numberOfItemsInSection: 0) - 1
+                        let indexPath: NSIndexPath = NSIndexPath.init(item: lastItem, section: 0)
+                        
+                        self.imageCollectionView.scrollToItem(at: indexPath as IndexPath, at: .top, animated: true)
+                    }
+                    
                 })
             }
             
-            self.imageCollectionView.reloadData()
             
-            
-            let lastItem = self.collectionView(self.imageCollectionView, numberOfItemsInSection: 0) - 1
-            let indexPath: NSIndexPath = NSIndexPath.init(item: lastItem, section: 0)
-            
-            self.imageCollectionView.scrollToItem(at: indexPath as IndexPath, at: .top, animated: true)
             
             
         }
@@ -1210,6 +1285,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             //let image = Image(_path: self.equipment.pic!)
             
             equipmentImageDelegate.updateImage(_image: _images[0])
+        }else if self.imageType == "Receipt"{
+            receiptImageDelegate.updateImage(_image: _images[0], _usageIndex:self.usageIndex)
+            
+           // receiptImageDelegate.updateImage(_image: _images[0])
             
         }else{//attachments
             attachmentDelegate.updateTable(_points: (_scoreAdjust + points))
@@ -1428,6 +1507,14 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     }
     
 
+    @objc func forceSmallUpload(){
+        for image in self.imagesAdded{
+            image.image = image.image?.resized(withPercentage: 0.5)
+        }
+        self.saveData()
+    }
+    
+    
     @objc func pickImageUploadSize(){
         
         if(imagesAdded.count == 0){
@@ -1438,17 +1525,17 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             }
             
         }else{
-            let actionSheet = UIAlertController(title: "Pick an Image Size", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+            let actionSheet = UIAlertController(title: "Pick an Image Size", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
             actionSheet.view.backgroundColor = UIColor.white
             actionSheet.view.layer.cornerRadius = 5;
             
             
-            actionSheet.addAction(UIAlertAction(title: "Full 100%", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            actionSheet.addAction(UIAlertAction(title: "Full 100%", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                   //print("show cam 1")
                 self.saveData()
             }))
             
-            actionSheet.addAction(UIAlertAction(title: "Medium 75%", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            actionSheet.addAction(UIAlertAction(title: "Medium 75%", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                
                 
                 for image in self.imagesAdded{
@@ -1459,7 +1546,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 self.saveData()
             }))
             
-            actionSheet.addAction(UIAlertAction(title: "Small 50%", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+            actionSheet.addAction(UIAlertAction(title: "Small 50%", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                 
                
                 for image in self.imagesAdded{
@@ -1467,30 +1554,33 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 }
                 self.saveData()
             }))
-            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
+            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
             
             
             
             switch UIDevice.current.userInterfaceIdiom {
             case .phone:
-                self.present(actionSheet, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
+                //self.present(actionSheet, animated: true, completion: nil)
                 break
             // It's an iPhone
             case .pad:
                 let nav = UINavigationController(rootViewController: actionSheet)
                 nav.modalPresentationStyle = UIModalPresentationStyle.popover
-                let popover = nav.popoverPresentationController as UIPopoverPresentationController!
+                let popover = nav.popoverPresentationController as! UIPopoverPresentationController
                 actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
-                popover?.sourceView = self.view
-                popover?.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
+                popover.sourceView = self.view
+                popover.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
                 
-                self.present(nav, animated: true, completion: nil)
+                //self.present(nav, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(nav, animated: true, completion: nil)
                 break
             // It's an iPad
             case .unspecified:
                 break
             default:
-                self.present(actionSheet, animated: true, completion: nil)
+                //self.present(actionSheet, animated: true, completion: nil)
+                self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
                 break
                 
                 // Uh, oh! What could it be?
@@ -1546,6 +1636,48 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     print(response.data ?? "")     // server data
                     print(response.result)   // result of response serialization
                     
+                    
+                    
+                    
+                    //native way
+                    
+                    do {
+                        if let data = response.data,
+                            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                            
+                            //let imageLikes = json["newLikes"] as? String{
+                            
+                            
+                            let albumID = json["newID"] as? String{
+                            
+                            print("albumID = \(albumID)")
+                            for image in self.imagesAdded{
+                                image.albumID = albumID
+                                image.customer = self.selectedID
+                            }
+                            
+                            let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                            imageUploadProgressViewController.uploadPrepDelegate = self
+                            self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
+                            
+                            
+                        }
+                        
+                        
+                        
+                        
+                        
+                    } catch {
+                        print("Error deserializing JSON: \(error)")
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    //swifty way
+                    /*
                     ////print("JSON 1 \(json)")
                     if let json = response.result.value {
                         print("Album Json = \(json)")
@@ -1564,6 +1696,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                         self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
                         
                     }
+                    */
                     
                     self.indicator.dismissIndicator()
                     
@@ -1604,10 +1737,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     groupDescString = ""
                     
                     if(imagesAdded.count == 0){
-                        let alertController = UIAlertController(title: "Add Text or Image", message: "Write a description or add an image to submit.", preferredStyle: UIAlertControllerStyle.alert)
+                        let alertController = UIAlertController(title: "Add Text or Image", message: "Write a description or add an image to submit.", preferredStyle: UIAlertController.Style.alert)
                        
                         
-                        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+                        let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                             (result : UIAlertAction) -> Void in
                             print("OK")
                         }
@@ -1655,6 +1788,71 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     .responseJSON(){
                         response in
                         
+                        
+                        //native way
+                        
+                        do {
+                            if let data = response.data,
+                                let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                                
+                                //let imageLikes = json["newLikes"] as? String{
+                                
+                                
+                                let attachmentID = json["newID"] as? String{
+                                
+                                
+                                print("attachmentID = \(String(describing: attachmentID))")
+                                for image in self.imagesAdded{
+                                    image.leadTaskID = attachmentID
+                                    image.customer = self.selectedID
+                                    image.woID = self.woID
+                                }
+                                
+                                
+                                
+                                /*
+                                print("albumID = \(albumID)")
+                                for image in self.imagesAdded{
+                                    image.albumID = albumID
+                                    image.customer = self.selectedID
+                                }
+                                
+                                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                                imageUploadProgressViewController.uploadPrepDelegate = self
+                                self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
+                                */
+                                
+                                
+                            }
+                            
+                            
+                            if(self.imagesAdded.count > 0){
+                                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                                imageUploadProgressViewController.uploadPrepDelegate = self
+                                self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
+                            }else{
+                                if((self.attachmentDelegate) != nil){
+                                    self.attachmentDelegate.updateTable(_points: self.points)
+                                }
+                                self.imageAdded = false
+                                self.textEdited = false
+                                self.goBack()
+                                
+                            }
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                        } catch {
+                            print("Error deserializing JSON: \(error)")
+                        }
+                        
+                        //swifty way
+                        /*
                         ////print("JSON 1 \(json)")
                         if let json = response.result.value {
                             print("Field Note Json = \(json)")
@@ -1698,7 +1896,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                             self.goBack()
                             
                         }
-                        
+                        */
                         
                 }
             }else if(self.imageType == "Task"){
@@ -1726,6 +1924,61 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     .responseJSON(){
                         response in
                         
+                        
+                        
+                        //native way
+                        
+                        do {
+                            if let data = response.data,
+                                let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                                
+                                //let imageLikes = json["newLikes"] as? String{
+                                
+                                
+                                let taskID = json["newID"] as? String{
+                                
+                                
+                                print("taskID = \(String(describing: taskID))")
+                                for image in self.imagesAdded{
+                                    image.taskID = taskID
+                                    image.customer = self.customerID
+                                    image.woID = self.woID
+                                }
+                                
+                                
+                                
+                                
+                            }
+                            
+                            
+                            
+                            if(self.imagesAdded.count > 0){
+                                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                                imageUploadProgressViewController.uploadPrepDelegate = self
+                                self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
+                            }else{
+                                if((self.attachmentDelegate) != nil){
+                                    self.attachmentDelegate.updateTable(_points: self.points)
+                                }
+                                self.imageAdded = false
+                                self.textEdited = false
+                                self.goBack()
+                            }
+                            
+                            
+                            
+                            
+                            
+                            
+                        } catch {
+                            print("Error deserializing JSON: \(error)")
+                        }
+                        
+                        
+                        
+                        
+                        //swifty way
+                        /*
                         ////print("JSON 1 \(json)")
                         if let json = response.result.value {
                             print("Task Json = \(json)")
@@ -1750,18 +2003,13 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                                 //self.appDelegate.showMessage(_message: "lost \(points) App Points!")
                             }
                         }
-                        if(self.imagesAdded.count > 0){
-                            let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
-                            imageUploadProgressViewController.uploadPrepDelegate = self
-                            self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
-                        }else{
-                            if((self.attachmentDelegate) != nil){
-                                self.attachmentDelegate.updateTable(_points: self.points)
-                            }
-                            self.imageAdded = false
-                            self.textEdited = false
-                            self.goBack()
-                        }
+                        
+                        */
+                        
+                        
+                        
+                        
+                        
                 }
             }else if(self.imageType == "Lead Task"){
                 //Lead Task
@@ -1785,6 +2033,63 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                         .responseJSON(){
                             response in
                             
+                            
+                            //native way
+                            
+                            do {
+                                if let data = response.data,
+                                    let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                                    
+                                    //let imageLikes = json["newLikes"] as? String{
+                                    
+                                    
+                                   
+                                    
+                                    let newLeadTaskID = json["leadTaskID"] as? String{
+                                    
+                                    // print("taskID = \(String(describing: taskID) ?? default value)")
+                                    for image in self.imagesAdded{
+                                        // image.taskID = taskID!
+                                        image.leadTaskID = newLeadTaskID
+                                        image.customer = self.customerID
+                                        //image.woID = self.woID
+                                    }
+                                    
+                                    
+                                    
+                                    
+                                    
+                                }
+                                
+                                
+                                
+                                if(self.imagesAdded.count > 0){
+                                    let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                                    imageUploadProgressViewController.uploadPrepDelegate = self
+                                    self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
+                                }else{
+                                    if((self.attachmentDelegate) != nil){
+                                        self.attachmentDelegate.updateTable(_points: self.points)
+                                    }
+                                    self.imageAdded = false
+                                    self.textEdited = false
+                                    self.goBack()
+                                }
+                                
+                                
+                                
+                                
+                                
+                                
+                            } catch {
+                                print("Error deserializing JSON: \(error)")
+                            }
+                            
+                            
+                            
+                            
+                            //swifty way
+                            /*
                             ////print("JSON 1 \(json)")
                             if let json = response.result.value {
                                 print("Task Json = \(json)")
@@ -1810,18 +2115,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                                     //self.appDelegate.showMessage(_message: "lost \(points) App Points!")
                                 }
                             }
-                            if(self.imagesAdded.count > 0){
-                                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
-                                imageUploadProgressViewController.uploadPrepDelegate = self
-                                self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
-                            }else{
-                                if((self.attachmentDelegate) != nil){
-                                    self.attachmentDelegate.updateTable(_points: self.points)
-                                }
-                                self.imageAdded = false
-                                self.textEdited = false
-                                self.goBack()
-                            }
+                            */
+                            
+                            
+                            
+                            
                     }
                 
             
@@ -1829,7 +2127,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
           
             }else if(self.imageType == "Contract Task"){
-                //Lead Task
+                //Contract Task
                 
                 print("Contract Task Upload")
                 var parameters = [String : Any]()
@@ -1852,6 +2150,63 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     .responseJSON(){
                         response in
                         
+                        
+                        //native way
+                        
+                        do {
+                            if let data = response.data,
+                                let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                                
+                                //let imageLikes = json["newLikes"] as? String{
+                                
+                                
+                                
+                                
+                                let newContractTaskID = json["taskID"] as? String{
+                                
+                                // print("taskID = \(String(describing: taskID) ?? default value)")
+                                for image in self.imagesAdded{
+                                    // image.taskID = taskID!
+                                    image.contractTaskID = newContractTaskID
+                                    image.customer = self.customerID
+                                    //image.woID = self.woID
+                                }
+                                
+                                
+                                
+                                
+                                
+                            }
+                            
+                            
+                            
+                            if(self.imagesAdded.count > 0){
+                                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                                imageUploadProgressViewController.uploadPrepDelegate = self
+                                self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
+                            }else{
+                                if((self.attachmentDelegate) != nil){
+                                    self.attachmentDelegate.updateTable(_points: self.points)
+                                }
+                                self.imageAdded = false
+                                self.textEdited = false
+                                self.goBack()
+                            }
+                            
+                            
+                            
+                            
+                            
+                            
+                        } catch {
+                            print("Error deserializing JSON: \(error)")
+                        }
+                        
+                        
+                        
+                        
+                        //swifty way
+                        /*
                         ////print("JSON 1 \(json)")
                         if let json = response.result.value {
                             print("Task Json = \(json)")
@@ -1876,19 +2231,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                                 self.points = self.points * -1
                                 //self.appDelegate.showMessage(_message: "lost \(points) App Points!")
                             }
-                        }
-                        if(self.imagesAdded.count > 0){
-                            let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
-                            imageUploadProgressViewController.uploadPrepDelegate = self
-                            self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
-                        }else{
-                            if((self.attachmentDelegate) != nil){
-                                self.attachmentDelegate.updateTable(_points: self.points)
-                            }
-                            self.imageAdded = false
-                            self.textEdited = false
-                            self.goBack()
-                        }
+                        }*/
+                        
+                        
+                        
+                        
                 }
                 
                 
@@ -1953,6 +2300,66 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                             print(response.data ?? "")     // server data
                             print(response.result)   // result of response serialization
                             
+                            
+                            
+                            //native way
+                            
+                            do {
+                                if let data = response.data,
+                                    let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                                    
+                                    //let imageLikes = json["newLikes"] as? String{
+                                    
+                                    
+                                    
+                                    
+                                    let albumID = json["newID"] as? String{
+                                    
+                                    // print("taskID = \(String(describing: taskID) ?? default value)")
+                                    print("albumID = \(albumID)")
+                                    for image in self.imagesAdded{
+                                        image.albumID = albumID
+                                        image.customer = self.customerID
+                                    }
+                                    
+                                    let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                                    imageUploadProgressViewController.uploadPrepDelegate = self
+                                    self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
+                                    
+                                    
+                                    
+                                }
+                                
+                                
+                                /*
+                                if(self.imagesAdded.count > 0){
+                                    let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                                    imageUploadProgressViewController.uploadPrepDelegate = self
+                                    self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
+                                }else{
+                                    if((self.attachmentDelegate) != nil){
+                                        self.attachmentDelegate.updateTable(_points: self.points)
+                                    }
+                                    self.imageAdded = false
+                                    self.textEdited = false
+                                    self.goBack()
+                                }
+                                
+                                */
+                                
+                                
+                                
+                                
+                            } catch {
+                                print("Error deserializing JSON: \(error)")
+                            }
+                            
+                            
+                            
+                            
+                            //swifty way
+                            
+                            /*
                             ////print("JSON 1 \(json)")
                             if let json = response.result.value {
                                 print("Album Json = \(json)")
@@ -1971,6 +2378,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                                 self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
                                 
                             }
+ */
+                            
+                            
+                            
                             
                             self.indicator.dismissIndicator()
                             
@@ -2067,13 +2478,13 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         }else{
             
             if images.count > 0{
-                let alertController = UIAlertController(title: "Update Image Captions", message: "", preferredStyle: UIAlertControllerStyle.alert)
-                let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                let alertController = UIAlertController(title: "Update Image Captions", message: "", preferredStyle: UIAlertController.Style.alert)
+                let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                     (result : UIAlertAction) -> Void in
                     print("No")
                 }
                 
-                let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                     (result : UIAlertAction) -> Void in
                     print("Yes")
                     
@@ -2140,14 +2551,14 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             if(self.imageType == "Gallery"){
                 
-                let alertController = UIAlertController(title: "Cancel Upload?", message: "", preferredStyle: UIAlertControllerStyle.alert)
-                let yesAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.destructive) {
+                let alertController = UIAlertController(title: "Cancel Upload?", message: "", preferredStyle: UIAlertController.Style.alert)
+                let yesAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.destructive) {
                     (result : UIAlertAction) -> Void in
                     print("Yes")
                     self.goBack()
                 }
                 
-                let noAction = UIAlertAction(title: "No", style: UIAlertActionStyle.default) {
+                let noAction = UIAlertAction(title: "No", style: UIAlertAction.Style.default) {
                     (result : UIAlertAction) -> Void in
                     print("No")
                 }
@@ -2193,11 +2604,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         print("go back")
         
         if(self.imageAdded == true || self.textEdited == true){
-            let alertController = UIAlertController(title: "Go back without Submitting?", message: "", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Go back without Submitting?", message: "", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
             }
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 _ = self.navigationController?.popViewController(animated: false)
             }

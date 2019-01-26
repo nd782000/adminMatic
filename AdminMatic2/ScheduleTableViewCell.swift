@@ -13,6 +13,7 @@ class ScheduleTableViewCell: UITableViewCell {
     var layoutVars:LayoutVars = LayoutVars()
     var workOrder:WorkOrder!
     var lead:Lead?
+    var contract:Contract?
     var dateLbl: UILabel!
     var customerLbl: UILabel!
     var firstItemLbl: UILabel!
@@ -39,7 +40,7 @@ class ScheduleTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         
@@ -144,6 +145,29 @@ class ScheduleTableViewCell: UITableViewCell {
                 contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
                 
                 break
+                
+            case "CONTRACT":
+                
+                contentView.addSubview(dateLbl)
+                contentView.addSubview(customerLbl)
+                contentView.addSubview(firstItemLbl)
+                //contentView.addSubview(chargeLbl)
+                //contentView.addSubview(priceLbl)
+                //contentView.addSubview(priorityLbl)
+                //contentView.addSubview(depthLbl)
+                // contentView.addSubview(monitoringLbl)
+                // contentView.addSubview(remainingQtyLbl)
+                
+                
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[dateLbl]-[firstItemLbl]", options: [], metrics: nil, views: viewsDictionary))
+                // contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-42-[chargeLbl(25)]-[profitBarView(100)]-[priceLbl]", options: [], metrics: nil, views: viewsDictionary))
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[dateLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[firstItemLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
+                
+                break
+                
+                
                 case "CUSTOMER":
                     
                     contentView.addSubview(dateLbl)
@@ -263,33 +287,74 @@ class ScheduleTableViewCell: UITableViewCell {
         
     }
     
-    func setStatus(status: String) {
-        switch (status) {
-        case "1":
-            let statusImg = UIImage(named:"unDoneStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "2":
-            let statusImg = UIImage(named:"inProgressStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "3":
-            let statusImg = UIImage(named:"doneStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "4":
-            let statusImg = UIImage(named:"cancelStatus.png")
-            statusIcon.image = statusImg
-            break;
-        case "5":
-            let statusImg = UIImage(named:"waitingStatus.png")
-            statusIcon.image = statusImg
-            break;
+    func setStatus(status: String, type:String = "WORKORDER") {
+        switch (type) {
+        case "CONTRACT":
+            switch (status) {
+            case "0":
+                let statusImg = UIImage(named:"unDoneStatus.png")
+                statusIcon.image = statusImg
+                break;
+            case "1":
+                let statusImg = UIImage(named:"inProgressStatus.png")
+                statusIcon.image = statusImg
+                break;
+            case "2":
+                let statusImg = UIImage(named:"acceptedStatus.png")
+                statusIcon.image = statusImg
+                break;
+            case "3":
+                let statusImg = UIImage(named:"doneStatus.png")
+                statusIcon.image = statusImg
+                break;
+            case "4":
+                let statusImg = UIImage(named:"cancelStatus.png")
+                statusIcon.image = statusImg
+                break;
+            case "5":
+                let statusImg = UIImage(named:"waitingStatus.png")
+                statusIcon.image = statusImg
+                break;
+            case "6":
+                let statusImg = UIImage(named:"cancelStatus.png")
+                statusIcon.image = statusImg
+                break;
+            default:
+                let statusImg = UIImage(named:"inProgressStatus.png")
+                statusIcon.image = statusImg
+                break;
+            }
+            break
         default:
-            let statusImg = UIImage(named:"unDoneStatus.png")
-            statusIcon.image = statusImg
+            switch (status) {
+            case "1":
+                let statusImg = UIImage(named:"unDoneStatus.png")
+                statusIcon.image = statusImg
+                break;
+            case "2":
+                let statusImg = UIImage(named:"inProgressStatus.png")
+                statusIcon.image = statusImg
+                break;
+            case "3":
+                let statusImg = UIImage(named:"doneStatus.png")
+                statusIcon.image = statusImg
+                break;
+            case "4":
+                let statusImg = UIImage(named:"cancelStatus.png")
+                statusIcon.image = statusImg
+                break;
+            case "5":
+                let statusImg = UIImage(named:"waitingStatus.png")
+                statusIcon.image = statusImg
+                break;
+            default:
+                let statusImg = UIImage(named:"unDoneStatus.png")
+                statusIcon.image = statusImg
+                break;
+            }
             break;
         }
+        
     }
     
     

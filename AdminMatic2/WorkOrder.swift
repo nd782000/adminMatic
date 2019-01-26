@@ -146,4 +146,20 @@ class WorkOrder {
             self.customerTitleAndID = "\(self.customerName) \(self.titleAndID)"
         //}
     }
+    
+    init(_ID:String?, _customerName:String?) {
+        //print(json)
+        if _ID != nil {
+            self.ID = _ID
+        }else{
+            self.ID = ""
+        }
+        
+        if _customerName != nil {
+            self.customerName = _customerName!
+        }else{
+            self.customerName = ""
+        }
+        
+    }
 }

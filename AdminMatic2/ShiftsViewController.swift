@@ -13,7 +13,8 @@ import Alamofire
 import SwiftyJSON
 
 
-class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIPickerViewDelegate{
+
+class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
     
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
@@ -23,11 +24,11 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     var screenHeaderLbl: Label!
     
     var weekTxtField: PaddedTextField!
-    var weekPicker: Picker!
+    var weekPicker: UIPickerView!
     var weekArray = ["This Week","Next Week"]
     
     var shiftsTableView: TableView!
-    var shiftsJSON: JSON!
+    var shiftsJSON: JSON?
     var shifts: [Shift] = []
     var shiftsTotalLbl: Label!
     let shortDateFormatter = DateFormatter()
@@ -69,17 +70,18 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         title = "\(self.empFirstName!)'s Shifts"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(ShiftsViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(ShiftsViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
         
-        self.weekPicker = Picker()
+        self.weekPicker = UIPickerView()
         self.weekPicker.delegate = self
+        self.weekPicker.dataSource = self
         self.weekPicker.tag = 2
         self.weekPicker.selectRow(0, inComponent: 0, animated: false)
         
@@ -136,8 +138,8 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             
         }
         
-        print("start date = \(startDate)")
-        print("end date = \(endDate)")
+        //print("start date = \(startDate)")
+        //print("end date = \(endDate)")
 
         
         
@@ -170,37 +172,38 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     func parseShiftsJSON(){
         
         
-        print("parse shiftsJSON: \(self.shiftsJSON)")
+       // print("parse shiftsJSON: \(self.shiftsJSON)")
         
         self.shifts = []
         numberOfValidShifts = 0
         
-        let shiftsCount = self.shiftsJSON["shifts"].count
+        //let shiftsCount = self.shiftsJSON!["shifts"].count
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         
-        print("shift count = \(shiftsCount)")
+        //print("shift count = \(shiftsCount)")
             
             for day in 0 ..< 7 {
                 
             print("day = \(day)")
-                if self.shiftsJSON["shifts"]["\(day)"] != nil{
+                if self.shiftsJSON?["shifts"]["\(day)"]["startTime"].string != nil{
                 
-                print("startTime = \(self.shiftsJSON["shifts"]["\(day)"]["startTime"].string!)")
+                    print("startTime = \(String(describing: self.shiftsJSON!["shifts"]["\(day)"]["startTime"].string!))")
                 
 
-                let startTime = dateFormatter.date(from: self.shiftsJSON["shifts"]["\(day)"]["startTime"].string!)!
+                    let startTime = dateFormatter.date(from: (self.shiftsJSON!["shifts"]["\(day)"]["startTime"].string!))!
                 
-                let stopTime = dateFormatter.date(from: self.shiftsJSON["shifts"]["\(day)"]["endTime"].string!)!
+                    let stopTime = dateFormatter.date(from: (self.shiftsJSON!["shifts"]["\(day)"]["endTime"].string!))!
                 
                 
                 let shift:Shift!
             
-                shift = Shift(_ID: self.shiftsJSON["shifts"]["\(day)"]["ID"].string!, _empID: self.shiftsJSON["shifts"]["\(day)"]["empID"].string!, _startTime: startTime, _stopTime: stopTime, _status: self.shiftsJSON["shifts"]["\(day)"]["status"].string!, _comment: self.shiftsJSON["shifts"]["\(day)"]["comment"].string!, _qty: self.shiftsJSON["shifts"]["\(day)"]["shiftQty"].string!)
+                    shift = Shift(_ID: self.shiftsJSON!["shifts"]["\(day)"]["ID"].string!, _empID: self.shiftsJSON!["shifts"]["\(day)"]["empID"].string!, _startTime: startTime, _stopTime: stopTime, _status: self.shiftsJSON!["shifts"]["\(day)"]["status"].string!, _comment: self.shiftsJSON!["shifts"]["\(day)"]["comment"].string!, _qty: self.shiftsJSON!["shifts"]["\(day)"]["shiftQty"].string!)
                 
                 
                 self.shifts.append(shift)
-                    if Float(self.shiftsJSON["shifts"]["\(day)"]["shiftQty"].string!)! > 0.0{
+                    let shiftQty:String = (self.shiftsJSON!["shifts"]["\(day)"]["shiftQty"].string)!
+                    if Float(shiftQty)! > 0.0{
                         numberOfValidShifts += 1
                     }
                 
@@ -222,7 +225,7 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         print("shift count \(self.shifts.count)")
         
-        self.totalHours = self.shiftsJSON["shiftTotalHrs"].stringValue
+        self.totalHours = self.shiftsJSON!["shiftTotalHrs"].stringValue
         
         self.layoutViews()
         
@@ -263,10 +266,10 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         weekToolBar.barStyle = UIBarStyle.default
         weekToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         weekToolBar.sizeToFit()
-        let closeWeekButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ShiftsViewController.cancelWeekInput))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let closeWeekButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ShiftsViewController.cancelWeekInput))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
 
-        let setWeekButton = UIBarButtonItem(title: "Set Week", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ShiftsViewController.handleWeekChange))
+        let setWeekButton = UIBarButtonItem(title: "Set Week", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ShiftsViewController.handleWeekChange))
         weekToolBar.setItems([closeWeekButton, spaceButton, setWeekButton], animated: false)
         weekToolBar.isUserInteractionEnabled = true
         weekTxtField.inputAccessoryView = weekToolBar
@@ -340,36 +343,30 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     }
     
     
-    
-    // returns the number of 'columns' to display.
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
-        return 1
+    //picker methods
+    // Number of columns of data
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+    return 1
     }
     
-    
-    
-    // returns the # of rows in each component..
-    func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
-        // shows first 3 status options, not cancel or waiting
-        let count:Int = self.weekArray.count
-        return count
+    // The number of rows of data
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    //return pickerData.count
+        print("picker count = \(self.weekArray.count)")
+        
+        return self.weekArray.count
     }
     
-    
-    func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        return 60
-    }
-    
+    // The data to return fopr the row and component (column) that's being passed in
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    //return pickerData[row]
+        print("picker title = \(self.weekArray[row])")
         return self.weekArray[row]
     }
+    
+    
+    
    
-    /*
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
-    {
-        getShifts()
-    }
-    */
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         print("shifts.count = \(shifts.count)")

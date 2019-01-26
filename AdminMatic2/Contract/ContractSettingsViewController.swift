@@ -86,9 +86,9 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         title = "Contract Settings"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(ImageSettingsViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(ImageSettingsViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -138,9 +138,9 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         filterToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         filterToolBar.sizeToFit()
         
-        let filterCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ContractSettingsViewController.cancelFilter))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let filterSelectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ContractSettingsViewController.filter))
+        let filterCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ContractSettingsViewController.cancelFilter))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let filterSelectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ContractSettingsViewController.filter))
         
         filterToolBar.setItems([filterCloseButton, spaceButton, filterSelectButton], animated: false)
         filterToolBar.isUserInteractionEnabled = true
@@ -171,7 +171,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         
         repSearchBar.backgroundColor = UIColor.white
         repSearchBar.barTintColor = UIColor.white
-        repSearchBar.searchBarStyle = UISearchBarStyle.default
+        repSearchBar.searchBarStyle = UISearchBar.Style.default
         repSearchBar.delegate = self
         //repSearchBar.tag = 2
         self.view.addSubview(repSearchBar)
@@ -181,7 +181,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         repToolBar.barStyle = UIBarStyle.default
         repToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         repToolBar.sizeToFit()
-        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ContractSettingsViewController.cancelRepInput))
+        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ContractSettingsViewController.cancelRepInput))
         
         repToolBar.setItems([closeRepButton], animated: false)
         repToolBar.isUserInteractionEnabled = true
@@ -214,7 +214,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         
         
         
-        self.clearFiltersBtn.addTarget(self, action: #selector(ImageSettingsViewController.clearFilters), for: UIControlEvents.touchUpInside)
+        self.clearFiltersBtn.addTarget(self, action: #selector(ImageSettingsViewController.clearFilters), for: UIControl.Event.touchUpInside)
         
         // self.addImageBtn.frame = CGRect(x:0, y: self.view.frame.height - 50, width: self.view.frame.width - 100, height: 50)
         self.clearFiltersBtn.translatesAutoresizingMaskIntoConstraints = false
@@ -440,7 +440,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
                 print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
             }
             cell.nameLbl.attributedText = highlightedText

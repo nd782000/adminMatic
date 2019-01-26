@@ -69,9 +69,9 @@ class AttachmentListViewController: ViewControllerWithMenu, UITextFieldDelegate,
         title = "Attachments"
         
         
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(AttachmentListViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(AttachmentListViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -91,7 +91,7 @@ class AttachmentListViewController: ViewControllerWithMenu, UITextFieldDelegate,
         
         self.addAttachmentBtn.titleLabel?.textAlignment = NSTextAlignment.center
         self.addAttachmentBtn.contentEdgeInsets = UIEdgeInsets(top: 0, left: 35, bottom: 0, right: 10)
-        self.addAttachmentBtn.addTarget(self, action: #selector(AttachmentListViewController.addAttachment), for: UIControlEvents.touchUpInside)
+        self.addAttachmentBtn.addTarget(self, action: #selector(AttachmentListViewController.addAttachment), for: UIControl.Event.touchUpInside)
         self.containerView.addSubview(self.addAttachmentBtn)
         
         //employee table
@@ -345,8 +345,8 @@ class AttachmentListViewController: ViewControllerWithMenu, UITextFieldDelegate,
         return true
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if (editingStyle == UITableViewCellEditingStyle.delete) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == UITableViewCell.EditingStyle.delete) {
             
             
             //print("delete attachment ID = \(attachments[indexPath.row].ID)")

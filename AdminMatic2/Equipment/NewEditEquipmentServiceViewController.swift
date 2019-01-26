@@ -13,7 +13,7 @@ import SwiftyJSON
 
 
 
-class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UIPickerViewDelegate {
+class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
@@ -37,7 +37,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     var typeLbl:GreyLabel!
     var typeTxtField:PaddedTextField!
     var typePicker: Picker!
-    var typeArray:[String] = ["One Time","Date Based","Mile/Km. Based","Engine Hour Based"]
+    var typeArray:[String] = ["One Time","Date Based","Mile/Km. Based","Engine Hour Based","Inspection"]
     
     //frequency
     var frequencyLbl:GreyLabel!
@@ -58,6 +58,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     //instructions
     var instructionsLbl:GreyLabel!
     var instructionsView:UITextView = UITextView()
+    let instructionsToolBar:UIToolbar = UIToolbar()
 
     var submitButtonBottom:Button = Button(titleText: "Submit")
     
@@ -98,9 +99,9 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(LeadViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(LeadViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -156,6 +157,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         }
         
         self.nameTxtField.translatesAutoresizingMaskIntoConstraints = false
+        self.nameTxtField.autocapitalizationType = .words
         self.nameTxtField.delegate = self
         self.nameTxtField.tag = 1
         self.nameTxtField.returnKeyType = .done
@@ -173,6 +175,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         
         self.typePicker = Picker()
         self.typePicker.delegate = self
+        self.typePicker.dataSource = self
         self.typePicker.tag = 5
         
         
@@ -194,9 +197,9 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         typeToolBar.barStyle = UIBarStyle.default
         typeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         typeToolBar.sizeToFit()
-        let closeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelTypeInput))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleTypeChange))
+        let closeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelTypeInput))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let setTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleTypeChange))
         typeToolBar.setItems([closeTypeButton, spaceButton, setTypeButton], animated: false)
         typeToolBar.isUserInteractionEnabled = true
         typeTxtField.inputAccessoryView = typeToolBar
@@ -227,8 +230,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         frequencyToolBar.barStyle = UIBarStyle.default
         frequencyToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         frequencyToolBar.sizeToFit()
-        let closeFrequencyButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelFrequencyInput))
-        let setFrequencyButton = UIBarButtonItem(title: "Set", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleFrequencyChange))
+        let closeFrequencyButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelFrequencyInput))
+        let setFrequencyButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleFrequencyChange))
         
         frequencyToolBar.setItems([closeFrequencyButton,spaceButton,setFrequencyButton], animated: false)
         frequencyToolBar.isUserInteractionEnabled = true
@@ -278,8 +281,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         currentToolBar.barStyle = UIBarStyle.default
         currentToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         currentToolBar.sizeToFit()
-        let closeCurrentButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelCurrentInput))
-        let setCurrentButton = UIBarButtonItem(title: "Set", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleCurrentChange))
+        let closeCurrentButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelCurrentInput))
+        let setCurrentButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleCurrentChange))
         
         currentToolBar.setItems([closeCurrentButton,spaceButton,setCurrentButton], animated: false)
         
@@ -299,7 +302,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         if self.equipmentService.type == "1"{
             //treat current as a date
             nextDatePicker = DatePicker()
-            nextDatePicker.datePickerMode = UIDatePickerMode.date
+            nextDatePicker.datePickerMode = UIDatePicker.Mode.date
             self.nextTxtField = PaddedTextField()
             self.nextTxtField.inputView = self.nextDatePicker
             self.nextTxtField.text = layoutVars.determineUpcomingDate(_equipmentService: equipmentService)
@@ -327,8 +330,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         nextToolBar.barStyle = UIBarStyle.default
         nextToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         nextToolBar.sizeToFit()
-        let closeNextButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelNextInput))
-        let setNextButton = UIBarButtonItem(title: "Set", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleNextChange))
+        let closeNextButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelNextInput))
+        let setNextButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleNextChange))
         nextToolBar.setItems([closeNextButton,spaceButton,setNextButton], animated: false)
         
         nextToolBar.isUserInteractionEnabled = true
@@ -363,20 +366,20 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         self.instructionsView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.instructionsView)
         
-        let instructionsToolBar = UIToolbar()
-        instructionsToolBar.barStyle = UIBarStyle.default
-        instructionsToolBar.barTintColor = UIColor(hex:0x005100, op:1)
-        instructionsToolBar.sizeToFit()
-        let closeInstructionsButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelInstructionsInput))
-        let setInstructionsButton = UIBarButtonItem(title: "Set", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleInstructionsChange))
+        //let instructionsToolBar = UIToolbar()
+        self.instructionsToolBar.barStyle = UIBarStyle.default
+        self.instructionsToolBar.barTintColor = UIColor(hex:0x005100, op:1)
+        self.instructionsToolBar.sizeToFit()
+        let closeInstructionsButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelInstructionsInput))
+        let setInstructionsButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleInstructionsChange))
         
-        instructionsToolBar.setItems([closeInstructionsButton,spaceButton,setInstructionsButton], animated: false)
-        instructionsToolBar.isUserInteractionEnabled = true
-        self.instructionsView.inputAccessoryView = instructionsToolBar
+        self.instructionsToolBar.setItems([closeInstructionsButton,spaceButton,setInstructionsButton], animated: false)
+        self.instructionsToolBar.isUserInteractionEnabled = true
+        self.instructionsView.inputAccessoryView = self.instructionsToolBar
         
         
         
-        self.submitButtonBottom.addTarget(self, action: #selector(NewEditEquipmentServiceViewController.submit), for: UIControlEvents.touchUpInside)
+        self.submitButtonBottom.addTarget(self, action: #selector(NewEditEquipmentServiceViewController.submit), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.submitButtonBottom)
         
         
@@ -410,8 +413,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[typeTxt]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[frequencyLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[frequencyTxt]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[currentLbl(halfWidth)]-[nextLbl(halfWidth)]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[currentTxt(halfWidth)]-[nextTxt(halfWidth)]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[currentLbl(halfWidth)]-[nextLbl(halfWidth)]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: viewsDictionary))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[currentTxt(halfWidth)]-[nextTxt(halfWidth)]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[instructionsLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[instructionsView]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[submitBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
@@ -454,7 +457,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         if self.equipmentService.type == "1"{
             //treat current as a date
             nextDatePicker = DatePicker()
-            nextDatePicker.datePickerMode = UIDatePickerMode.date
+            nextDatePicker.datePickerMode = UIDatePicker.Mode.date
             //self.nextTxtField = PaddedTextField()
             self.nextTxtField.inputView = self.nextDatePicker
             self.nextTxtField.text = layoutVars.determineUpcomingDate(_equipmentService: equipmentService)
@@ -485,8 +488,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             
             self.typeTxtField.text = equipmentService.typeName
             
-            print("type = \(equipmentService.type)")
-            print("typeName = \(equipmentService.typeName)")
+            //print("type = \(equipmentService.type)")
+            //print("typeName = \(equipmentService.typeName)")
             
             editsMade = true
             
@@ -500,16 +503,13 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         equipmentService.typeName = typeArray[self.typePicker.selectedRow(inComponent: 0)]
         
         
-        //let dateFormatterDB = DateFormatter()
-        //dateFormatterDB.dateFormat = "yyyy-MM-dd"
-        
-        //equipmentService.creationDate = "\(dateFormatterDB.string(from: Date())) 00:00:00"
+       
         equipmentService.creationDate = dateFormatterDB.string(from: Date())
 
         
         self.typeTxtField.text = equipmentService.typeName
-        print("type = \(equipmentService.type)")
-        print("typeName = \(equipmentService.typeName)")
+        //print("type = \(equipmentService.type)")
+       // print("typeName = \(equipmentService.typeName)")
         
        
             editsMade = true
@@ -568,9 +568,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         if self.equipmentService.type == "1"{
             
             
-           // let dateFormatterDB = DateFormatter()
-            //dateFormatterDB.dateFormat = "yyyy-MM-dd HH:mm:ss"
-            
+           
             let date = dateFormatterDB.date(from: equipmentService.creationDate)
             
             self.nextTxtField.text = dateFormatter.string(from: nextDatePicker.date)
@@ -721,15 +719,6 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     
     
     
-    /*
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        print("shouldChangeTextInRange")
-        //if (text == "\n") {
-            //textView.resignFirstResponder()
-        //}
-        return true
-    }
-    */
     
     
     func textViewDidBeginEditing(_ textView: UITextView) {
@@ -764,20 +753,23 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         super.viewDidLayoutSubviews()
     }
     
-    // returns the number of 'columns' to display.
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
+    
+    
+    public func numberOfComponents(in pickerView: UIPickerView) -> Int
+    {
         return 1
     }
     
     
     // returns the # of rows in each component..
-    func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
-        // shows first 3 status options, not cancel or waiting
-        //print("pickerview tag: \(pickerView.tag)")
+    
+    public func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
         let count:Int = self.typeArray.count
-        
+       
         return count
     }
+    
+    
     
     
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
@@ -817,6 +809,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             self.nextTxtField.isEnabled = false
             self.nextLbl.alpha = 0.5
             self.nextTxtField.alpha = 0.5
+            self.instructionsView.inputAccessoryView = self.instructionsToolBar
+            break
         case 1:
             //Date Based
             print("date based")
@@ -834,7 +828,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             self.nextTxtField.isEnabled = true
             self.nextLbl.alpha = 1.0
             self.nextTxtField.alpha = 1.0
-            
+            self.instructionsView.inputAccessoryView = self.instructionsToolBar
+            break
             
         case 2:
             //Mileage Based
@@ -850,6 +845,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             self.nextTxtField.isEnabled = true
             self.nextLbl.alpha = 1.0
             self.nextTxtField.alpha = 1.0
+            self.instructionsView.inputAccessoryView = self.instructionsToolBar
+            break
         case 3:
             //Engine Hour Based
             self.frequencyLbl.text = "Frequency(Engine Hours):"
@@ -864,6 +861,27 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             self.nextTxtField.isEnabled = true
             self.nextLbl.alpha = 1.0
             self.nextTxtField.alpha = 1.0
+            self.instructionsView.inputAccessoryView = self.instructionsToolBar
+            break
+        case 4:
+            //Inspection
+            self.frequencyLbl.text = "Frequency:"
+            self.frequencyTxtField.isEnabled = false
+            self.frequencyLbl.alpha = 0.5
+            self.frequencyTxtField.alpha = 0.5
+            self.currentLbl.text = "Current:"
+            self.currentTxtField.isEnabled = false
+            self.currentLbl.alpha = 0.5
+            self.currentTxtField.alpha = 0.5
+            self.nextLbl.text = "Next:"
+            self.nextTxtField.isEnabled = false
+            self.nextLbl.alpha = 0.5
+            self.nextTxtField.alpha = 0.5
+            self.instructionsLbl.alpha = 0.5
+            self.instructionsView.alpha = 0.5
+            self.instructionsView.isEditable = false
+            self.instructionsView.inputAccessoryView = nil
+            break
         default:
             //One Time
             self.frequencyLbl.text = "Frequency:"
@@ -893,7 +911,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         }
         
         print("type text = \(typeTxtField.text!)")
-        print("type place holder = \(typeTxtField.placeHolder)")
+        //print("type place holder = \(typeTxtField.placeHolder)")
         
         if typeTxtField.text != typeTxtField.placeHolder{
             print("set type")
@@ -911,9 +929,9 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         
         
         
-        print("frequency = \(equipmentService.frequency)")
-        print("current = \(equipmentService.currentValue)")
-        print("next = \(equipmentService.nextValue)")
+       // print("frequency = \(equipmentService.frequency)")
+       // print("current = \(equipmentService.currentValue)")
+        //print("next = \(equipmentService.nextValue)")
         
         
         if equipmentService.currentValue == "" {
@@ -930,7 +948,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         }
         
         
-        print("nextValue = \(equipmentService.nextValue)")
+       // print("nextValue = \(equipmentService.nextValue)")
         
         //name check
         if(equipmentService.name == ""){
@@ -947,28 +965,28 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         }
         
         //frequency check
-        if(equipmentService.type != "0" && equipmentService.frequency == "0"){
+        if(equipmentService.type != "0" && equipmentService.type != "4" && equipmentService.frequency == "0"){
             print("give a frequency")
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Service", _message: "Give a Frequency")
             return false
         }
         
         //current check
-        if(equipmentService.type != "0" && equipmentService.currentValue == "0" && equipmentService.type != "1"){
+        if(equipmentService.type != "0" && equipmentService.type != "4" && equipmentService.currentValue == "0" && equipmentService.type != "1"){
             print("give a current value")
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Service", _message: "Give a Current Value")
             return false
         }
         
         //next check
-        if(equipmentService.type != "0" && equipmentService.nextValue == "0"){
+        if(equipmentService.type != "0" && equipmentService.type != "4" && equipmentService.nextValue == "0"){
             print("give a next value")
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Service", _message: "Give a Next Value")
             return false
         }
         
         //instructions check
-        if(equipmentService.instruction == ""){
+        if(equipmentService.instruction == "" && equipmentService.type != "4"){
             print("give some instructions")
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Service", _message: "Give some Instructions")
             return false
@@ -1054,13 +1072,13 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     @objc func goBack(){
         if(self.editsMade == true){
             print("editsMade = true")
-            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("Cancel")
             }
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
                 //self.submit()

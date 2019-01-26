@@ -52,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.4.0"
+    var appVersion:String = "1.4.2"
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
     var employeeListViewController:EmployeeListViewController!
@@ -105,7 +105,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var defaults:UserDefaults!
     
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
         
         defaults = UserDefaults.standard
@@ -285,11 +285,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.scheduleViewController.delegate = self
         self.navigationController?.navigationBar.barTintColor = UIColor.white
         
-        /*
-         self.imageCollectionViewController = ImageCollectionViewController()
-         self.imageCollectionViewController.delegate = self
-         */
-        
         
         self.leadListViewController = LeadListViewController()
         self.leadListViewController.delegate = self
@@ -303,10 +298,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.contractListViewController = ContractListViewController()
         self.contractListViewController.delegate = self
         
-        //self.underConstructionViewController = UnderConstructionViewController()
-        //self.underConstructionViewController.delegate = self
-        
-        
+       
         navigationController = UINavigationController(rootViewController: homeViewController)
         
         
@@ -317,16 +309,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         //style the nav bar
         let layoutVars:LayoutVars = LayoutVars()
         UIBarButtonItem.appearance().tintColor = layoutVars.buttonTextColor
-        UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white]
+        UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         
         
         let navigationBarAppearace = UINavigationBar.appearance()
         
         navigationBarAppearace.barTintColor = layoutVars.buttonColor1
         //title
-        UINavigationBar.appearance().titleTextAttributes = [ NSAttributedStringKey.font: layoutVars.buttonFont, NSAttributedStringKey.foregroundColor: layoutVars.buttonTextColor ]
+        UINavigationBar.appearance().titleTextAttributes = [ NSAttributedString.Key.font: layoutVars.buttonFont, NSAttributedString.Key.foregroundColor: layoutVars.buttonTextColor ]
         //left right buttons
-        UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedStringKey.font: layoutVars.buttonFont, NSAttributedStringKey.foregroundColor: layoutVars.buttonTextColor], for: UIControlState())
+        UIBarButtonItem.appearance().setTitleTextAttributes([NSAttributedString.Key.font: layoutVars.buttonFont, NSAttributedString.Key.foregroundColor: layoutVars.buttonTextColor], for: UIControl.State())
         
     }
     
@@ -447,6 +439,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             }
             break
         case 4:
+            print("Show  Lead List")
+            if(loggedInEmployee != nil){
+                navigationController = UINavigationController(rootViewController: self.leadListViewController)
+                window?.rootViewController = navigationController
+                window?.makeKeyAndVisible()
+            }else{
+                requireLogIn(_destination: "leads", _vc:homeViewController)
+            }
+            
+            
+            break
+            
+        case 5:
+            //print("Show  Contract List")
+            if(loggedInEmployee != nil){
+                navigationController = UINavigationController(rootViewController: self.contractListViewController)
+                window?.rootViewController = navigationController
+                window?.makeKeyAndVisible()
+            }else{
+                requireLogIn(_destination: "contracts", _vc:homeViewController)
+            }
+            
+            
+            break;
+        case 6:
             //print("Show Schedule")
             if(loggedInEmployee != nil){
                 navigationController = UINavigationController(rootViewController: self.scheduleViewController)
@@ -456,7 +473,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                requireLogIn(_destination: "schedule", _vc:homeViewController)
            }
             break
-        case 5:
+        case 7:
             //print("Show  Performance")
             if(loggedInEmployee != nil){
                 self.performanceViewController = PerformanceViewController(_empID: (self.loggedInEmployee?.ID)!)
@@ -467,7 +484,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 requireLogIn(_destination: "performance", _vc:homeViewController)
             }
             break
-        case 6:
+        case 8:
             //print("Show  Images")
             if(loggedInEmployee != nil){
                 
@@ -485,7 +502,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 requireLogIn(_destination: "images", _vc:homeViewController)
             }
             break
-        case 7:
+        case 9:
             //print("Show  Equipment List")
             if(loggedInEmployee != nil){
                 navigationController = UINavigationController(rootViewController: self.equipmentListViewController)
@@ -498,31 +515,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             
             break
             
-        case 8:
-            print("Show  Lead List")
-            if(loggedInEmployee != nil){
-                navigationController = UINavigationController(rootViewController: self.leadListViewController)
-                window?.rootViewController = navigationController
-                window?.makeKeyAndVisible()
-            }else{
-                requireLogIn(_destination: "leads", _vc:homeViewController)
-            }
-            
-            
-            break
-            
-        case 9:
-            //print("Show  Contract List")
-            if(loggedInEmployee != nil){
-                navigationController = UINavigationController(rootViewController: self.contractListViewController)
-                window?.rootViewController = navigationController
-                window?.makeKeyAndVisible()
-            }else{
-                requireLogIn(_destination: "contracts", _vc:homeViewController)
-            }
-            
-            
-            break;
+        
             
         default://home
             //print("Show  Home Screen")
@@ -638,12 +631,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     // handles rotating
 
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        
         if let rootViewController = self.topViewControllerWithRootViewController(rootViewController: window?.rootViewController) {
             if (rootViewController.responds(to: #selector(ImageFullViewController.canRotate))) {
                 // Unlock landscape view orientations for this view controller
                 return .allButUpsideDown;
             }
         }
+        
         
         // Only allow portrait (standard behaviour)
         return .portrait;
@@ -664,9 +659,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     func requireLogIn(_destination:String, _vc:UIViewController){
         print("requireLogIn")
         if(loggedInEmployee == nil){
-            let alertController = UIAlertController(title: "Log In", message: "You must log in to use \(_destination).", preferredStyle: UIAlertControllerStyle.alert)
+            let alertController = UIAlertController(title: "Log In", message: "You must log in to use \(_destination).", preferredStyle: UIAlertController.Style.alert)
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 //print("OK")
                 //go to employee screen
@@ -758,7 +753,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         closeIcon.image = closeImg
         self.messageCloseBtn?.addSubview(closeIcon)
         self.messageCloseBtn?.contentEdgeInsets = UIEdgeInsets(top: 0, left: 35, bottom: 0, right: 10)
-        self.messageCloseBtn?.addTarget(self, action: #selector(self.closeMessage), for: UIControlEvents.touchUpInside)
+        self.messageCloseBtn?.addTarget(self, action: #selector(self.closeMessage), for: UIControl.Event.touchUpInside)
         
         
         self.messageView?.addSubview(messageCloseBtn!)

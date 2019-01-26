@@ -78,9 +78,9 @@ class VendorViewController: ViewControllerWithMenu, CLLocationManagerDelegate{
         title = "Vendor"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(VendorViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(VendorViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -248,17 +248,17 @@ for i in 0 ..< contactCount {
         
         self.vendorPhoneBtn = Button()
         self.vendorPhoneBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.vendorPhoneBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
-        self.vendorPhoneBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 40.0, 0.0, 0.0)
+        self.vendorPhoneBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
+        self.vendorPhoneBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 40.0, bottom: 0.0, right: 0.0)
         
-        print("vendor phone = \(vendor.phone)")
-        print("vendor phoneNumberClean = \(self.phoneNumberClean)")
+        //print("vendor phone = \(vendor.phone)")
+        //print("vendor phoneNumberClean = \(self.phoneNumberClean)")
         if self.vendor.phone == "" {
-            self.vendorPhoneBtn.setTitle("No Phone Saved", for: UIControlState.normal)
+            self.vendorPhoneBtn.setTitle("No Phone Saved", for: UIControl.State.normal)
             
         }else{
-            self.vendorPhoneBtn.setTitle(self.vendor.phone, for: UIControlState.normal)
-            self.vendorPhoneBtn.addTarget(self, action: #selector(self.phoneHandler), for: UIControlEvents.touchUpInside)
+            self.vendorPhoneBtn.setTitle(self.vendor.phone, for: UIControl.State.normal)
+            self.vendorPhoneBtn.addTarget(self, action: #selector(self.phoneHandler), for: UIControl.Event.touchUpInside)
         }
         
         let phoneIcon:UIImageView = UIImageView()
@@ -278,17 +278,17 @@ for i in 0 ..< contactCount {
         
         self.vendorWebsiteBtn = Button()
         self.vendorWebsiteBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.vendorWebsiteBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
-        self.vendorWebsiteBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 40.0, 0.0, 0.0)
+        self.vendorWebsiteBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
+        self.vendorWebsiteBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 40.0, bottom: 0.0, right: 0.0)
         
         
         
         if self.vendor.website == "" {
-            self.vendorWebsiteBtn.setTitle("No Website Saved", for: UIControlState.normal)
+            self.vendorWebsiteBtn.setTitle("No Website Saved", for: UIControl.State.normal)
             
         }else{
-            self.vendorWebsiteBtn.setTitle(self.vendor.website, for: UIControlState.normal)
-            self.vendorWebsiteBtn.addTarget(self, action: #selector(VendorViewController.webHandler), for: UIControlEvents.touchUpInside)
+            self.vendorWebsiteBtn.setTitle(self.vendor.website, for: UIControl.State.normal)
+            self.vendorWebsiteBtn.addTarget(self, action: #selector(VendorViewController.webHandler), for: UIControl.Event.touchUpInside)
         }
         
         let websiteIcon:UIImageView = UIImageView()
@@ -307,17 +307,17 @@ for i in 0 ..< contactCount {
         
         self.vendorAddressBtn = Button()
         self.vendorAddressBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.vendorAddressBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
-        self.vendorAddressBtn.titleEdgeInsets = UIEdgeInsetsMake(0.0, 40.0, 0.0, 0.0)
+        self.vendorAddressBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
+        self.vendorAddressBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 40.0, bottom: 0.0, right: 0.0)
         
         if (self.vendor.address == "") {
-            self.vendorAddressBtn.setTitle("No Location Saved", for: UIControlState.normal)
+            self.vendorAddressBtn.setTitle("No Location Saved", for: UIControl.State.normal)
             
            
         }else{
-            self.vendorAddressBtn.setTitle(self.vendor.address, for: UIControlState.normal)
+            self.vendorAddressBtn.setTitle(self.vendor.address, for: UIControl.State.normal)
             
-            self.vendorAddressBtn.addTarget(self, action: #selector(VendorViewController.mapHandler), for: UIControlEvents.touchUpInside)
+            self.vendorAddressBtn.addTarget(self, action: #selector(VendorViewController.mapHandler), for: UIControl.Event.touchUpInside)
         }
         
         print("vendor view layoutViews 4")
@@ -404,7 +404,7 @@ for i in 0 ..< contactCount {
             
             
         ] as [String : Any]
-        print("window width = \(layoutVars.fullWidth)")
+        //print("window width = \(layoutVars.fullWidth)")
        
         
         self.vendorView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view2]-10-|", options: [], metrics: sizeVals, views: vendorsViewsDictionary))
@@ -449,18 +449,18 @@ for i in 0 ..< contactCount {
         defer { currentLocation = locations.last }
         print("didUpdateLocations \(foundLocation)")
         if(foundLocation == false){
-            var zoomRect:MKMapRect = MKMapRectNull
+            var zoomRect:MKMapRect = MKMapRect.null
             for  annotation in mapView.annotations {
-                let annotationPoint:MKMapPoint = MKMapPointForCoordinate(annotation.coordinate)
-                let pointRect:MKMapRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0, 0);
-                if (MKMapRectIsNull(zoomRect)) {
+                let annotationPoint:MKMapPoint = MKMapPoint.init(annotation.coordinate)
+                let pointRect:MKMapRect = MKMapRect.init(x: annotationPoint.x, y: annotationPoint.y, width: 0, height: 0);
+                if zoomRect.isNull {
                     zoomRect = pointRect;
                 } else {
-                    zoomRect = MKMapRectUnion(zoomRect, pointRect);
+                    zoomRect = zoomRect.union(pointRect);
                 }
             }
         
-            mapView.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsetsMake(50, 50, 50, 50), animated: true)
+            mapView.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsets.init(top: 50, left: 50, bottom: 50, right: 50), animated: true)
             foundLocation = true
         }
         

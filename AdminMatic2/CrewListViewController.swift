@@ -72,9 +72,9 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         view.backgroundColor = layoutVars.backgroundColor
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(DepartmentListViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(DepartmentListViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -151,7 +151,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             let crew = Crew(_ID: self.crews["crews"][i]["id"].stringValue, _name: self.crews["crews"][i]["name"].stringValue, _status: self.crews["crews"][i]["status"].stringValue, _color: self.crews["crews"][i]["subcolor"].stringValue, _crewHead: self.crews["crews"][i]["crewHead"].stringValue)
             
-            print("crew name = \(crew.name)")
+           // print("crew name = \(crew.name)")
             
             let empCount = self.crews["crews"][i]["employees"].count
             //self.totalItems = jsonCount
@@ -165,7 +165,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 employee.crewColor = crew.color!
                 //employee.crewColor2 = crew.color2!
                 
-                print("employee.crewColor = \(employee.crewColor)")
+               // print("employee.crewColor = \(employee.crewColor)")
                 
                 
                 //crew.employeeArray.append(employee)
@@ -270,7 +270,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.countView.addSubview(self.countLbl)
         
         
-        self.addCrewBtn.addTarget(self, action: #selector(CrewListViewController.addCrew), for: UIControlEvents.touchUpInside)
+        self.addCrewBtn.addTarget(self, action: #selector(CrewListViewController.addCrew), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.addCrewBtn)
         
         
@@ -437,7 +437,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             //print("call button tapped")
             //callPhoneNumber(currentCell.employee.phone)
             if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
-                UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: [:], completionHandler: nil)
+                UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
             }
             tableView.setEditing(false, animated: true)
         }
@@ -510,3 +510,8 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
 
 
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+}

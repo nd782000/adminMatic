@@ -70,9 +70,9 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         title = "Terms"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(CustomerViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(CustomerViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -113,14 +113,14 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         termsToolBar.barStyle = UIBarStyle.default
         termsToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         termsToolBar.sizeToFit()
-        let closeTermsButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(TermsViewController.closeTextView))
+        let closeTermsButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(TermsViewController.closeTextView))
         
         
         termsToolBar.setItems([closeTermsButton], animated: false)
         termsToolBar.isUserInteractionEnabled = true
         termsView.inputAccessoryView = termsToolBar
         
-        self.regenerateBtn.addTarget(self, action: #selector(TermsViewController.regenerateTerms), for: UIControlEvents.touchUpInside)
+        self.regenerateBtn.addTarget(self, action: #selector(TermsViewController.regenerateTerms), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.regenerateBtn)
         
         
@@ -181,13 +181,13 @@ class TermsViewController: UIViewController, UITextViewDelegate{
     
     @objc func regenerateTerms(){
         
-        let alertController = UIAlertController(title: "Regenerate Contract Terms?", message: "Would you like to regenerate the contract terms now based on current items?  All custom edits to terms will be overwritten.", preferredStyle: UIAlertControllerStyle.alert)
-        let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+        let alertController = UIAlertController(title: "Regenerate Contract Terms?", message: "Would you like to regenerate the contract terms now based on current items?  All custom edits to terms will be overwritten.", preferredStyle: UIAlertController.Style.alert)
+        let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
             print("Cancel")
         }
         
-        let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+        let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
             print("OK")
             
@@ -283,13 +283,13 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         
         if(self.editsMade == true){
             print("editsMade = true")
-            let alertController = UIAlertController(title: "Edits Made", message: "Leave without updating?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edits Made", message: "Leave without updating?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("Cancel")
             }
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
                 _ = self.navigationController?.popViewController(animated: true)

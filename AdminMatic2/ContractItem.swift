@@ -9,6 +9,8 @@
 
 
 import Foundation
+import SwiftyJSON
+import ObjectMapper
 
 class ContractItem {
     
@@ -27,10 +29,14 @@ class ContractItem {
     var type: String!
     var taxCode: String!
     var subcontractor: String!
+    
+    var hideUnits: String!
+    
+    
    
     var contractTitle:String!
     
-    init(_ID: String?,_chargeType: String?,_contractID: String?,_createDate: String?,_itemID: String?,_name: String?,_price: String?,_qty: String?,_totalImages: String?,_total: String?,_type: String?,_taxCode: String?,_subcontractor: String?) {
+    init(_ID: String?,_chargeType: String?,_contractID: String?,_createDate: String?,_itemID: String?,_name: String?,_price: String?,_qty: String?,_totalImages: String?,_total: String?,_type: String?,_taxCode: String?,_subcontractor: String?,_hideUnits: String?) {
         //print(json)
         if _ID != nil {
             self.ID = _ID
@@ -99,7 +105,7 @@ class ContractItem {
         if _total != nil {
             self.total = _total
         }else{
-            self.total = ""
+            self.total = "0.00"
         }
         if _type != nil {
             self.type = _type
@@ -117,6 +123,12 @@ class ContractItem {
             self.subcontractor = _subcontractor
         }else{
             self.subcontractor = ""
+        }
+        
+        if _hideUnits != nil {
+            self.hideUnits = _hideUnits
+        }else{
+            self.hideUnits = ""
         }
         
         
@@ -158,6 +170,93 @@ class ContractItem {
         
         
     }
+    
+    
+    init(_ID: String?,_chargeType: String?,_contractID: String?,_itemID: String?,_name: String?,_price: String?,_qty: String?,_total: String?,_type: String?,_taxCode: String?,_subcontractor: String?,_hideUnits: String?) {
+        //print(json)
+        if _ID != nil {
+            self.ID = _ID
+        }else{
+            self.ID = ""
+        }
+        
+        if _chargeType != nil {
+            self.chargeType = _chargeType
+        }else{
+            self.chargeType = ""
+        }
+        
+        if _contractID != nil {
+            self.contractID = _contractID
+        }else{
+            self.contractID = ""
+        }
+        
+        
+        
+        if _itemID != nil {
+            self.itemID = _itemID
+        }else{
+            self.itemID = ""
+        }
+        
+        
+        if _name != nil {
+            self.name = _name
+        }else{
+            self.ID = ""
+        }
+        
+        if _price != nil {
+            self.price = _price
+        }else{
+            self.price = ""
+        }
+        
+        if _qty != nil {
+            self.qty = _qty
+        }else{
+            self.qty = ""
+        }
+        
+        
+        
+        if _total != nil {
+            self.total = _total
+        }else{
+            self.total = "0.00"
+        }
+        if _type != nil {
+            self.type = _type
+        }else{
+            self.type = ""
+        }
+        
+        if _taxCode != nil {
+            self.taxCode = _taxCode
+        }else{
+            self.taxCode = ""
+        }
+        
+        if _subcontractor != nil {
+            self.subcontractor = _subcontractor
+        }else{
+            self.subcontractor = ""
+        }
+        
+        if _hideUnits != nil {
+            self.hideUnits = _hideUnits
+        }else{
+            self.hideUnits = ""
+        }
+        
+        
+        
+        
+    }
+    
+    
+   
     
     
     

@@ -23,7 +23,7 @@ class ContractTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
     }
@@ -31,7 +31,7 @@ class ContractTableViewCell: UITableViewCell {
     
     func layoutViews(){
         
-        print("cell contract total = \(self.contract.total)")
+        //print("cell contract total = \(self.contract.total)")
         self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         self.selectionStyle = .none

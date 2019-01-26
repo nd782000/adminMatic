@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 //import Nuke
 import DKImagePickerController
 
@@ -33,21 +33,17 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     var layoutVars:LayoutVars!
     var indicator: SDevIndicator!
     var totalImages:Int!
-    var images: JSON!
     var imageArray:[Image] = []
-    //var imagesSearchResults:[Image] = []
-    //var imagesSearchResults2:[Image] = []
     var shouldShowSearchResults:Bool = false
     var searchTerm:String = "" // used to retain search when leaving this view and having to deactivate search to enable device rotation - a real pain
     var searchController:UISearchController!
     
     var tagsResultsTableView:TableView = TableView()
-    var tagsJSON: JSON!
     var tags = [String]()
     var tagsSearchResults:[String] = []
     var selectedTag:String = ""
     
-    
+    var selectedImages:[Image] = [Image]()
     
     
     
@@ -81,6 +77,9 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     var batch = 0
     
     
+    
+    var methodStart:Date!
+    var methodFinish:Date!
     
     
     
@@ -121,6 +120,9 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         // Show Indicator
         indicator = SDevIndicator.generate(self.view)!
         
+        methodStart = Date()
+        
+        
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/tags.php",method: .post, parameters: nil, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
@@ -130,6 +132,47 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             .responseJSON(){
                 response in
                 
+                //native way
+                do {
+                    if let data = response.data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        
+                        
+                        let tags = json["tags"] as? [[String: Any]] {
+                        
+                        let tagCount = tags.count
+                        print("tag count = \(tagCount)")
+                        
+                        for i in 0 ..< tagCount {
+                            
+                            
+                            self.tags.append(tags[i]["name"] as! String)
+                            
+                        }
+                    }
+                    
+                    self.methodFinish = Date()
+                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
+                    print("Execution time: \(executionTime)")
+                    
+                    
+                     self.getImages()
+                    
+                    
+                } catch {
+                    print("Error deserializing JSON: \(error)")
+                }
+                
+                
+                
+                
+                
+                
+                
+                
+               /*
+                
+                //swifty way
                 if let json = response.result.value {
                     print("JSON: \(json)")
                     self.tagsJSON = JSON(json)
@@ -138,6 +181,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                 }
                 
                // self.indicator.dismissIndicator()
+                */
                 
                 
         }
@@ -146,7 +190,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
     }
     
-    
+    /*
     func parseTagsJSON(){
         let jsonCount = self.tagsJSON["tags"].count
         //self.totalImages = jsonCount
@@ -161,10 +205,18 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             
         }
         
+        
+        methodFinish = Date()
+        let executionTime = methodFinish.timeIntervalSince(methodStart)
+        print("Execution time: \(executionTime)")
+        
+        
+        
         self.getImages()
         
         
     }
+    */
     
     
     
@@ -191,7 +243,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
        
         
        
-        
+        methodStart = Date()
         
         //cache buster
         let now = Date()
@@ -244,11 +296,96 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/images.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
+                
                 print("images response = \(response)")
             }
             
             .responseJSON(){
                 response in
+                
+                
+                //native way
+                
+                do {
+                    if let data = response.data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        let images = json["images"] as? [[String: Any]] {
+                        
+                        let imageCount = images.count
+                        print("image count = \(imageCount)")
+                        
+                        let thumbBase:String = json["thumbBase"] as! String
+                        let mediumBase:String = json["mediumBase"] as! String
+                        let rawBase:String = json["rawBase"] as! String
+                        
+                        
+                        //for image in images {
+                        for i in 0 ..< imageCount {
+                            
+                            let thumbPath:String = "\(thumbBase)\(images[i]["fileName"] as! String)"
+                            let mediumPath:String = "\(mediumBase)\(images[i]["fileName"] as! String)"
+                            let rawPath:String = "\(rawBase)\(images[i]["fileName"] as! String)"
+                            
+                            //create a item object
+                            print("create an image object \(i)")
+                            
+                            
+                            
+                            
+                            let image = Image(_id: images[i]["ID"] as? String,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: images[i]["name"] as? String,_width: images[i]["width"] as? String,_height: images[i]["height"] as? String,_description: images[i]["description"] as? String,_dateAdded: images[i]["dateAdded"] as? String,_createdBy: images[i]["createdByName"] as? String,_type: images[i]["type"] as? String)
+                            
+                            image.customer = images[i]["customer"] as! String
+                            image.customerName = images[i]["customerName"] as! String
+                            image.tags = images[i]["tags"] as! String
+                            image.liked =  images[i]["liked"] as! String //images[i]["liked"] as! String
+                            image.likes = images[i]["likes"] as! String
+                            image.index = i
+                            
+                            //image.liked = "1"
+                            //image.likes = "26"
+                            
+                            self.imageArray.append(image)
+                            
+                            
+                            
+                            /*
+                            if let id = customer["ID"] as? String {
+                                //self.ids.append(id)
+                            }
+                            if let name = customer["name"] as? String {
+                                //self.names.append(name)
+                            }
+                            
+                            if let address = customer["mainAddr"] as? String {
+                                //self.addresses.append(address)
+                            }
+ */
+                            
+                        }
+                    }
+                    
+                    if(self.lazyLoad == 0){
+                        self.layoutViews()
+                    }else{
+                        self.lazyLoad = 0
+                        self.imageCollectionView?.reloadData()
+                    }
+                    
+                    
+                    
+                    
+                    self.methodFinish = Date()
+                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
+                    print("Execution time: \(executionTime)")
+                    
+                } catch {
+                    print("Error deserializing JSON: \(error)")
+                }
+                
+               
+                
+                /*
+               //swityJSON way
                 
                 if let json = response.result.value {
                     print("JSON: \(json)")
@@ -257,11 +394,16 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                     
                 }
                 
+                */
+                
+                
+                
+                
                 self.indicator.dismissIndicator()
         }
     }
     
-    
+    /*
     func parseJSON(){
         let jsonCount = self.images["images"].count
         self.totalImages = jsonCount
@@ -302,7 +444,15 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             self.imageCollectionView?.reloadData()
         }
         
+        methodFinish = Date()
+        let executionTime = methodFinish.timeIntervalSince(methodStart)
+        print("Execution time: \(executionTime)")
+        
+        
+        
+        
     }
+    */
     
     
     
@@ -377,7 +527,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         
         
-        self.addImageBtn.addTarget(self, action: #selector(ImageCollectionViewController.addImage), for: UIControlEvents.touchUpInside)
+        self.addImageBtn.addTarget(self, action: #selector(ImageCollectionViewController.addImage), for: UIControl.Event.touchUpInside)
         
         self.addImageBtn.frame = CGRect(x:0, y: self.view.frame.height - 50, width: self.view.frame.width - 100, height: 50)
         self.addImageBtn.translatesAutoresizingMaskIntoConstraints = true
@@ -385,7 +535,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         self.addImageBtn.layer.borderWidth = 1.0
         self.view.addSubview(self.addImageBtn)
         
-        self.imageSettingsBtn.addTarget(self, action: #selector(ImageCollectionViewController.imageSettings), for: UIControlEvents.touchUpInside)
+        self.imageSettingsBtn.addTarget(self, action: #selector(ImageCollectionViewController.imageSettings), for: UIControl.Event.touchUpInside)
         
         self.imageSettingsBtn.frame = CGRect(x:self.view.frame.width - 50, y: self.view.frame.height - 50, width: 50, height: 50)
         self.imageSettingsBtn.translatesAutoresizingMaskIntoConstraints = true
@@ -393,7 +543,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         self.imageSettingsBtn.layer.borderWidth = 1.0
         self.view.addSubview(self.imageSettingsBtn)
         
-        self.imageSettingsBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
+        self.imageSettingsBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
         
 
         
@@ -473,21 +623,38 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         cell.textLabel.text = " \(self.imageArray[indexPath.row].customerName)"
         
         
-        cell.image = self.imageArray[indexPath.row]
-        //cell.activityView.startAnimating()
+        
+        
         
         print("thumb = \(self.imageArray[indexPath.row].thumbPath!)")
         
-        let imgURL:URL = URL(string: self.imageArray[indexPath.row].thumbPath!)!
+        //let imgURL:URL = URL(string: self.imageArray[indexPath.row].thumbPath!)!
         
         //print("imgURL = \(imgURL)")
         
+        Alamofire.request(self.imageArray[indexPath.row].thumbPath!).responseImage { response in
+            debugPrint(response)
+            
+            //print(response.request)
+            //print(response.response)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                cell.imageView.image = image
+                cell.image = self.imageArray[indexPath.row]
+                cell.activityView.stopAnimating()
+                
+                
+                //self.employeeImage.image = image
+                
+                //let image2 = Image(_path: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.employee.pic!)
+                //self.imageFullViewController = ImageFullViewController(_image: image2)
+                //self.imageFullViewController = ImageFullViewController(_image: image)
+            }
+        }
         
-        
-      //  Nuke.loadImage(with: imgURL, into: cell.imageView)
-        
-        //print("view width = \(imageCollectionView?.frame.width)")
-        //print("cell width = \(cell.frame.width)")
+     
         
         return cell
     }
@@ -611,7 +778,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                 print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
             }
             cell.titleLbl.attributedText = highlightedText
@@ -706,7 +873,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         multiPicker.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
         
         var selectedAssets = [DKAsset]()
-        var selectedImages:[Image] = [Image]()
+        
 
        
         multiPicker.showsCancelButton = true
@@ -725,47 +892,63 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                 selectedAssets.append(assets[i])
                 //print(self.selectedAssets)
                 
+                
+                //assets[i].fetchOriginalImage(completeBlock: <#T##(UIImage?, [AnyHashable : Any]?) -> Void#>)
                 assets[i].fetchOriginalImage(completeBlock: { image, info in
                
                     
-                    print("making image")
+                    print("making image 1")
                     
                      let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
                     
                     imageToAdd.image = image
                     
                     
-                   selectedImages.append(imageToAdd)
-                
+                   self.selectedImages.append(imageToAdd)
+                    print("selectedimages count = \(self.selectedImages.count)")
+                    
+                    if self.selectedImages.count == assets.count{
+                        self.createPrepView()
+                    }
                 })
             }
             
-            //cache buster
-            let now = Date()
-            let timeInterval = now.timeIntervalSince1970
-            let timeStamp = Int(timeInterval)
-
-            print("making prep view")
-            print("selectedimages count = \(selectedImages.count)")
             
-           // let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Gallery", _ID: "0", _images: selectedImages, _saveURLString: "https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
-            
-            let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Gallery", _images: selectedImages)
-            
-            
-            print("url = https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
-            
-            print("self.selectedImages.count = \(selectedImages.count)")
-            
-            imageUploadPrepViewController.loadLinkList(_linkType: "customers", _loadScript: API.Router.customerList(["cb":timeStamp as AnyObject]))
-            
-            
-            imageUploadPrepViewController.delegate = self
-            
-            self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
             
 
         }
+        
+        
+    }
+    
+    func createPrepView(){
+        print("create prep view")
+        
+        
+        //cache buster
+        let now = Date()
+        let timeInterval = now.timeIntervalSince1970
+        let timeStamp = Int(timeInterval)
+        
+        print("making prep view")
+        print("selectedimages count = \(selectedImages.count)")
+        
+        // let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Gallery", _ID: "0", _images: selectedImages, _saveURLString: "https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
+        
+        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Gallery", _images: selectedImages)
+        
+        
+        print("url = https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
+        
+        print("self.selectedImages.count = \(selectedImages.count)")
+        
+        imageUploadPrepViewController.loadLinkList(_linkType: "customers", _loadScript: API.Router.customerList(["cb":timeStamp as AnyObject]))
+        
+        
+        imageUploadPrepViewController.delegate = self
+        
+        self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+        
         
         
     }
@@ -916,7 +1099,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             return
         }
         
-        if UIInterfaceOrientationIsLandscape(UIApplication.shared.statusBarOrientation) {
+        if UIApplication.shared.statusBarOrientation.isLandscape {
             //here you can do the logic for the cell size if phone is in landscape
             //print("landscape")
             portraitMode = false
@@ -960,7 +1143,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             searchController.isActive = false
         }
         
-        if (self.isMovingFromParentViewController) {
+        if (self.isMovingFromParent) {
             UIDevice.current.setValue(Int(UIInterfaceOrientation.portrait.rawValue), forKey: "orientation")
         }
     }

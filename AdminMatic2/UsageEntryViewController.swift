@@ -22,7 +22,12 @@ protocol UsageDelegate{
     func showHistory()
 }
 
-class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource,  UITableViewDelegate, UITableViewDataSource, UsageDelegate{
+protocol UpdateReceiptImageDelegate{
+    func receiptBtnTapped(_usage:Usage,_index:Int)
+    func updateImage(_image:Image,_usageIndex:Int)
+}
+
+class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource,  UITableViewDelegate, UITableViewDataSource, UsageDelegate, AttachmentDelegate,  UpdateReceiptImageDelegate{
     
    
     
@@ -37,6 +42,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     var workOrderID:String!
     var woItem:WoItem!
     var usageCharge:String!
+    var customerID:String!
     
     
     
@@ -89,9 +95,9 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         title = "Today's Usage"
         
         
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(UsageEntryViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(UsageEntryViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -140,9 +146,9 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryViewController.cancelPicker))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let addButton = UIBarButtonItem(title: "Add", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryViewController.addEmployee))
+        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryViewController.cancelPicker))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let addButton = UIBarButtonItem(title: "Add", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryViewController.addEmployee))
         
         toolBar.setItems([closeButton, spaceButton, addButton], animated: false)
         toolBar.isUserInteractionEnabled = true
@@ -161,17 +167,17 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         self.startBtn = Button(titleText: "Start")
         self.startBtn.backgroundColor = UIColor(hex:0x005100, op:1)
         self.startStopContainerView.addSubview(startBtn)
-        self.startBtn.addTarget(self, action: #selector(UsageEntryViewController.startTime), for: UIControlEvents.touchUpInside)
+        self.startBtn.addTarget(self, action: #selector(UsageEntryViewController.startTime), for: UIControl.Event.touchUpInside)
         
         self.stopBtn = Button(titleText: "Stop")
         self.stopBtn.backgroundColor = UIColor(hex:0xff0000, op:1)
         self.startStopContainerView.addSubview(stopBtn)
-        self.stopBtn.addTarget(self, action: #selector(UsageEntryViewController.stopTime), for: UIControlEvents.touchUpInside)
+        self.stopBtn.addTarget(self, action: #selector(UsageEntryViewController.stopTime), for: UIControl.Event.touchUpInside)
         
         self.submitBtn = Button(titleText: "Submit")
-        self.submitBtn.backgroundColor = UIColor(hex:0xE09E43, op:1)
+        //self.submitBtn.backgroundColor = UIColor(hex:0xE09E43, op:1)
         self.startStopContainerView.addSubview(submitBtn)
-        self.submitBtn.addTarget(self, action: #selector(UsageEntryViewController.submit), for: UIControlEvents.touchUpInside)
+        self.submitBtn.addTarget(self, action: #selector(UsageEntryViewController.submit), for: UIControl.Event.touchUpInside)
         
         
         /////////  Auto Layout   //////////////////////////////////////
@@ -222,15 +228,15 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         self.usageTableView =  TableView()
         self.usageTableView.delegate  =  self
         self.usageTableView.dataSource  =  self
-        self.usageTableView.rowHeight = 80.0
+        self.usageTableView.rowHeight = 255.0
         self.usageTableView.register(UsageEntryTableViewCell.self, forCellReuseIdentifier: "cell")
         self.containerView.addSubview(self.usageTableView)
         
         
         self.submitBtn = Button(titleText: "Submit")
-        self.submitBtn.backgroundColor = UIColor(hex:0x00ff00, op:1)
+        //self.submitBtn.backgroundColor = UIColor(hex:0x00ff00, op:1)
         self.containerView.addSubview(submitBtn)
-        self.submitBtn.addTarget(self, action: #selector(UsageEntryViewController.submit), for: UIControlEvents.touchUpInside)
+        self.submitBtn.addTarget(self, action: #selector(UsageEntryViewController.submit), for: UIControl.Event.touchUpInside)
         
         
         /////////  Auto Layout   //////////////////////////////////////
@@ -271,7 +277,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         if(row == 0){
             return "Crew"
         }else{
-            print("titleForRow = \(appDelegate.employeeArray[row-1].name)")
+            //print("titleForRow = \(appDelegate.employeeArray[row-1].name)")
             return appDelegate.employeeArray[row-1].name
             
         }
@@ -317,6 +323,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         
         cell.delegate = self
         cell.row = indexPath.row
+        cell.selectionStyle = .none
         
         if(usage.type == "1"){
             cell.displayLaborMode()
@@ -357,7 +364,15 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             cell.breakTxtField.isUserInteractionEnabled = !usage.locked!
             cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+usage.empPic!)
         }else{
+            cell.usage = usage
+            cell.index = indexPath.row
+            
             cell.displayMaterialMode()
+            cell.receiptDelegate = self
+            
+            
+           
+            
             cell.vendorList = self.woItem.vendors
             if(usage.qty == ""){
                 cell.qtyTxtField.text = ""
@@ -379,11 +394,25 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             }else{
                 cell.costTxtField.text = "\(usage.unitCost!)"
             }
+            
+            //cell.totalCostLbl.text = "Total Cost $"
+            
             if(usage.totalCost == ""){
-                cell.totalCostLbl.text = "Total Cost $0.00"
+                
+                cell.totalCostTxtField.text = "0.00"
             }else{
-                cell.totalCostLbl.text = "Total Cost $\(usage.totalCost!)"
+                cell.totalCostTxtField.text = usage.totalCost!
             }
+            
+            print("usage has receipt = \(usage.hasReceipt)")
+            if usage.hasReceipt == "1"{
+                cell.setReceiptUrl(_url: (usage.receipt?.thumbPath!)!)
+            }else{
+                cell.setBlankImage()
+            }
+            
+            
+            
         }
         if(usage.locked == false){
             cell.locked = false
@@ -392,8 +421,48 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             cell.locked = true
             cell.lockIcon.alpha = 1
         }
+        
+        
         return cell;
     }
+    
+    func receiptBtnTapped(_usage: Usage, _index: Int) {
+        print("add receipt ID = \(_usage.ID) index = \(_index)")
+        
+        
+        let usage = usageToLog[_index]
+        
+        if(self.usageToLog[_index].ID == "0"){
+            
+            let alertController = UIAlertController(title: "Submit Usage", message: "Please submit usage before attempting to add a receipt.", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
+                (result : UIAlertAction) -> Void in
+                print("Cancel")
+            }
+            
+            let okAction = UIAlertAction(title: "Submit", style: UIAlertAction.Style.default) {
+                (result : UIAlertAction) -> Void in
+                print("Submit")
+                
+                self.submit()
+                
+                
+            }
+            
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+            
+            
+            
+            //self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(),_title: "Submit Usage First", _message: "Please submit usage before attempting to add a receipt.")
+        }else{
+            self.addReceipt(_usage: usage,_usageIndex:_index)
+        }
+    }
+    
+    
+    
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         if(indexPath.row != usageToLog.count){
@@ -405,32 +474,100 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     }
     
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        
-        
-        if (editingStyle == UITableViewCellEditingStyle.delete) {
-            if(usageToLog[indexPath.row].locked == false && usageToLog[indexPath.row].type == "1"){
-                if(usageToLog[indexPath.row].ID == "0"){
-                    usageToLog.remove(at: indexPath.row)
-                    usageTableView.reloadData()
-                }else{
-                    usageToLog[indexPath.row].del = "1"
-                    usageToLogJSON = []
-                    let JSONString = usageToLog[indexPath.row].toJSONString(prettyPrint: true)
-                    usageToLogJSON.append(JSON(JSONString ?? ""))
-                    print("usage JSONString = \(String(describing: JSONString))")
-                    callAlamoFire(_type: "delete")
-                    usageToLog.remove(at: indexPath.row)
-                    usageTableView.reloadData()
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+       
+        let usage = usageToLog[indexPath.row]
+        //indexPath
+       /* let receipt = UITableViewRowAction(style: .normal, title: "Receipt") { action, index in
+            
+            if(self.usageToLog[indexPath.row].ID == "0"){
+                
+                let alertController = UIAlertController(title: "Submit Usage", message: "Please submit usage before attempting to add a receipt.", preferredStyle: UIAlertController.Style.alert)
+                let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
+                    (result : UIAlertAction) -> Void in
+                    print("Cancel")
                 }
+                
+                let okAction = UIAlertAction(title: "Submit", style: UIAlertAction.Style.default) {
+                    (result : UIAlertAction) -> Void in
+                    print("Submit")
+                    
+                    self.submit()
+                    
+                    
+                }
+                
+                alertController.addAction(cancelAction)
+                alertController.addAction(okAction)
+                self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+                
+                
+                
+                //self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(),_title: "Submit Usage First", _message: "Please submit usage before attempting to add a receipt.")
+            }else{
+                self.addReceipt(_usage: usage,_usageIndex:indexPath.row)
+            }
+            
+            
+        }
+        receipt.backgroundColor = UIColor.gray
+       
+      */
+        let delete = UITableViewRowAction(style: .normal, title: "Delete") { action, index in
+            //print("cancel button tapped")
+           // if(self.usageToLog[indexPath.row].locked == false && self.usageToLog[indexPath.row].type == "1"){
+            if(self.usageToLog[indexPath.row].locked == false){
+                
+                let alertController = UIAlertController(title: "Delete Usage?", message: "Are you sure you want to delete this usage entry?", preferredStyle: UIAlertController.Style.alert)
+                let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
+                    (result : UIAlertAction) -> Void in
+                    print("No")
+                }
+                
+                let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
+                    (result : UIAlertAction) -> Void in
+                    print("OK")
+                    
+                    if(self.usageToLog[indexPath.row].ID == "0"){
+                        self.usageToLog.remove(at: indexPath.row)
+                        self.usageTableView.reloadData()
+                    }else{
+                        self.usageToLog[indexPath.row].del = "1"
+                        self.usageToLogJSON = []
+                        let JSONString = self.usageToLog[indexPath.row].toJSONString(prettyPrint: true)
+                        self.usageToLogJSON.append(JSON(JSONString ?? ""))
+                        print("usage JSONString = \(String(describing: JSONString))")
+                        self.callAlamoFire(_type: "delete")
+                        self.usageToLog.remove(at: indexPath.row)
+                        self.usageTableView.reloadData()
+                    }
+                    
+                    
+
+                }
+                
+                alertController.addAction(cancelAction)
+                alertController.addAction(okAction)
+                self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+                
+                
+                
             }else{
                 self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(),_title: "Can't Delete Saved Rows", _message: "")
                 tableView.setEditing(false, animated: true)
             }
         }
+        delete.backgroundColor = UIColor.red
+        
+        //self.woItem.itemStatus = newItemStatus
+       
+            return [delete]
+        
     }
-   
     
+    
+    
+   
 
     func removeViews(){
         for view in containerView.subviews{
@@ -453,13 +590,13 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     @objc func goBack(){
         if(self.editsMade == true){
             print("editsMade = true")
-            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("Cancel")
             }
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
                 self.popView()
@@ -481,13 +618,13 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     override func displayHomeView() {
         if(self.editsMade == true){
             print("editsMade = true")
-            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("Cancel")
             }
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
                 self.appDelegate.menuChange(100)//home
@@ -586,7 +723,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
             print("openUsage = \(openUsage)")
             if(openUsage == false){
                 for employee in self.empsOnWo {
-                    print("empName = \(employee.name)")
+                    //print("empName = \(employee.name)")
                     let usage:Usage = Usage(_ID: "0",
                                             _empID: employee.ID,
                                             _depID: employee.depID,
@@ -638,6 +775,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                                     _addedBy: appDelegate.loggedInEmployee!.ID!,
                                     _del: ""
             )
+            
             usageToLog.insert(usage, at: 0)
             
         }
@@ -688,11 +826,11 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         print("editOtherStartTimes usageToLog.count = \(usageToLog.count)")
         if(usageToLog.count > 1){
             print("show alert")
-            let alertController = UIAlertController(title: "Edit Start Time for Others?", message: "", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edit Start Time for Others?", message: "", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
             }
-            let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 for n in 0 ..< self.usageToLog.count {
                     if(n != _row && self.usageToLog[n].locked == false){
@@ -750,11 +888,11 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     func editOtherStopTimes(_row:Int,_stop:Date){
         print("editOtherStopTimes")
         if(usageToLog.count > 1){
-            let alertController = UIAlertController(title: "Edit Stop Time for Others?", message: "", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edit Stop Time for Others?", message: "", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
             }
-            let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 for n in 0 ..< self.usageToLog.count {
                     if(n != _row && self.usageToLog[n].locked == false){
@@ -802,11 +940,11 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     func editOtherBreakTimes(_row:Int,_break:Int){
         print("editOtherBreakTimes")
         if(usageToLog.count > 1){
-            let alertController = UIAlertController(title: "Edit Break Time for Others?", message: "", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edit Break Time for Others?", message: "", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
             }
-            let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 for n in 0 ..< self.usageToLog.count {
                     if(n != _row && self.usageToLog[n].locked == false){
@@ -833,6 +971,13 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     //material usage functions
     func editQty(row:Int,qty:Double){
         usageToLog[row].qty = String(qty)
+        
+        if usageToLog[row].unitCost != ""{
+            usageToLog[row].totalCost =   String(format: "%.2f", qty * Double(usageToLog[row].unitCost!)!)
+        }
+       
+        
+        
         self.editsMade = true
     }
     
@@ -846,6 +991,11 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     
     func editCost(row:Int,cost:Double){
         usageToLog[row].unitCost = String(cost)
+        
+        if usageToLog[row].qty != ""{
+            usageToLog[row].totalCost =   String(format: "%.2f", cost * Double(usageToLog[row].qty!)!)
+        }
+        
         self.editsMade = true
     }
     
@@ -855,24 +1005,31 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         
         if(self.editsMade == true){
             print("editsMade = true")
-            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertControllerStyle.alert) //Replace UIAlertControllerStyle.Alert by UIAlertControllerStyle.alert
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertController.Style.alert) //Replace UIAlertControllerStyle.Alert by UIAlertControllerStyle.alert
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("Cancel")
             }
             
             // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
-                let usageListViewController = UsageListViewController(_workOrderItemID: self.woItem.ID, _units: self.woItem.unit)
-                self.navigationController?.pushViewController(usageListViewController, animated: true )            }
+                print("woItem type = \(String(describing: self.woItem.type))")
+
+                let usageListViewController = UsageListViewController(_workOrderItemID: self.woItem.ID, _units: self.woItem.unit,_type:self.woItem.type)
+                
+                self.navigationController?.pushViewController(usageListViewController, animated: true )
+            }
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
             self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
-            let usageListViewController = UsageListViewController(_workOrderItemID: self.woItem.ID, _units: self.woItem.unit)
+            print("woItem type = \(String(describing: self.woItem.type))")
+            let usageListViewController = UsageListViewController(_workOrderItemID: self.woItem.ID, _units: self.woItem.unit,_type:self.woItem.type)
+            
+            
             self.navigationController?.pushViewController(usageListViewController, animated: true )
         }
     }
@@ -983,6 +1140,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                 if(usage.type == "1"){
                     if(usage.start == nil){
                         self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "\(usage.empName!)'s break time can not be equal or greater then their shift time.")
+                        return
                     }else{
                         if(usageQty > 0.0){
                             if(Int(appDelegate.loggedInEmployee!.ID!)! > 0 &&  appDelegate.loggedInEmployee!.ID! == usage.addedBy){
@@ -1013,11 +1171,15 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         usageToLogJSON.append(JSON(JSONString ?? ""))
                     }else{
                         self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Qty Error", _message: "Qty needs to be added.")
+                        return
                     }
                 }
             }
         }
-        callAlamoFire(_type: "new")
+        
+            callAlamoFire(_type: "new")
+        
+        
     }
     
     func callAlamoFire(_type:String){
@@ -1126,6 +1288,8 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
                         }
                         self.layoutVars.playSaveSound()
                         self.usageTableView.reloadData()
+                        
+                        
                     case .failure(let error):
                         self.indicator.dismissIndicator()
                         self.usageTableView.reloadData()
@@ -1138,7 +1302,132 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         
     }
     
+    func updateTable(_points:Int){
+        print("updateTable")
+        getReceipts()
+    }
     
+    
+    func getReceipts(){
+        print("get receipts")
+    }
+    
+    /*
+    func buttonPressed(sender:UIButton!)
+    {
+        let buttonRow = sender.tag
+        print("button is Pressed")
+        print("Clicked Button Row is",buttonRow)
+    }
+    
+    */
+    
+    
+    func addReceipt(_usage:Usage,_usageIndex:Int){
+        
+        
+        print("addReceipt 2")
+        
+        
+        
+        
+        
+        //if equipment.pic == ""{
+        if _usage.receipt == nil{
+            print("no pic")
+            let imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Receipt", _usageID: _usage.ID!,_usageIndex:_usageIndex)
+            if _usage.vendor != ""{
+                imageUploadPrepViewController.vendorID = _usage.vendor!
+            }
+            imageUploadPrepViewController.customerID = self.customerID
+            imageUploadPrepViewController.layoutViews()
+            imageUploadPrepViewController.receiptImageDelegate = self
+            self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+            imageUploadPrepViewController.addImages()
+        }else{
+            print("already has a pic")
+            
+            
+            
+            let actionSheet = UIAlertController(title: "Replace existing receipt image? ", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+            actionSheet.view.backgroundColor = UIColor.white
+            actionSheet.view.layer.cornerRadius = 5;
+            
+            actionSheet.addAction(UIAlertAction(title: "Change Receipt", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
+                let imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Receipt", _usageID: _usage.ID!,_usageIndex:_usageIndex)
+                if _usage.vendor != ""{
+                    imageUploadPrepViewController.vendorID = _usage.vendor!
+                }
+                imageUploadPrepViewController.customerID = self.customerID
+                
+                imageUploadPrepViewController.layoutViews()
+                imageUploadPrepViewController.receiptImageDelegate = self
+                self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+                imageUploadPrepViewController.addImages()
+                
+            }))
+            
+            actionSheet.addAction(UIAlertAction(title: "View Receipt", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
+                let imageFullViewController = ImageFullViewController(_image: _usage.receipt!)
+                self.navigationController?.pushViewController(imageFullViewController, animated: false )
+                
+            }))
+            
+            actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: { (alert:UIAlertAction!) -> Void in
+            }))
+            
+            
+            switch UIDevice.current.userInterfaceIdiom {
+            case .phone:
+                layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
+                
+                break
+            // It's an iPhone
+            case .pad:
+                let nav = UINavigationController(rootViewController: actionSheet)
+                nav.modalPresentationStyle = UIModalPresentationStyle.popover
+                let popover = nav.popoverPresentationController as! UIPopoverPresentationController
+                actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
+                popover.sourceView = self.view
+                popover.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
+                
+                layoutVars.getTopController().present(nav, animated: true, completion: nil)
+                break
+            // It's an iPad
+            case .unspecified:
+                break
+            default:
+                layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
+                break
+                
+                // Uh, oh! What could it be?
+            }
+            
+        }
+        
+        
+        
+        
+    }
+    
+    func updateImage(_image:Image,_usageIndex:Int){
+        print("update image index = \(_usageIndex)")
+        
+        
+        //activityView.startAnimating()
+        self.usageToLog[_usageIndex].hasReceipt = "1"
+        self.usageToLog[_usageIndex].receipt = _image
+        //self.equipment.pic = _image.thumbPath
+       // let imgURL:URL = URL(string: self.usageToLog[_usageIndex].receipt!.thumbPath)!
+        
+        
+        self.usageTableView.reloadData()
+        
+        
+       
+        
+        
+    }
     
 }
 

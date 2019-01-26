@@ -18,7 +18,7 @@ protocol UpdateEquipmentImageDelegate{
 
 
 
-class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UITextViewDelegate, UpdateEquipmentImageDelegate {
+class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UITextViewDelegate, UpdateEquipmentImageDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
@@ -146,9 +146,9 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(LeadViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(LeadViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -198,6 +198,73 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/equipmentFields.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
             response in
+            
+            
+            
+            
+            do {
+                if let data = response.data,
+                    let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                    let types = json["types"] as? [[String: Any]],
+                    let fuelTypes = json["fuelTypes"] as? [[String: Any]],
+                    let engineTypes = json["engineTypes"] as? [[String: Any]],
+                    let crews = json["crews"] as? [[String: Any]],
+                    let vendors = json["vendors"] as? [[String: Any]]{
+                    for type in types {
+                        if let typeID = type["ID"] as? String {
+                            self.self.typeIDArray.append(typeID)
+                        }
+                        if let name = type["name"] as? String {
+                            self.typeNameArray.append(name)
+                        }
+                    }
+                    
+                    for fuelType in fuelTypes {
+                        if let typeID = fuelType["ID"] as? String {
+                            self.fuelIDArray.append(typeID)
+                        }
+                        if let name = fuelType["name"] as? String {
+                            self.fuelNameArray.append(name)
+                        }
+                    }
+                    
+                    for engineType in engineTypes {
+                        if let typeID = engineType["ID"] as? String {
+                            self.engineIDArray.append(typeID)
+                        }
+                        if let name = engineType["name"] as? String {
+                            self.engineNameArray.append(name)
+                        }
+                    }
+                    
+                    for crew in crews {
+                        if let crewID = crew["ID"] as? String {
+                            self.crewIDArray.append(crewID)
+                        }
+                        if let name = crew["name"] as? String {
+                            self.crewNameArray.append(name)
+                        }
+                    }
+                    
+                    for vendor in vendors {
+                        if let vendorID = vendor["ID"] as? String {
+                            self.vendorIDArray.append(vendorID)
+                        }
+                        if let name = vendor["name"] as? String {
+                            self.vendorNameArray.append(name)
+                        }
+                    }
+                    
+                    self.noPic = json["noPic"] as! String
+                    self.layoutViews()
+                }
+            } catch {
+                print("Error deserializing JSON: \(error)")
+            }
+            
+            
+            
+            /*
             if let json = response.result.value {
                
                 let typesCount = JSON(json)["types"].count
@@ -239,6 +306,9 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
                 
                 self.layoutViews()
             }
+            */
+            
+            
         }
         
     }
@@ -267,7 +337,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         self.equipmentImage = UIImageView()
         
         
-            activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+            activityView = UIActivityIndicatorView(style: .whiteLarge)
             activityView.center = CGPoint(x: self.equipmentImage.frame.size.width / 2, y: self.equipmentImage.frame.size.height / 2)
             equipmentImage.addSubview(activityView)
             //activityView.startAnimating()
@@ -290,7 +360,22 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
             }
             */
         
-        
+        Alamofire.request(equipment.image.thumbPath!).responseImage { response in
+            debugPrint(response)
+            
+            print(response.request!)
+            print(response.response!)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+               // self.imageFullViewController = ImageFullViewController(_image: self.equipment.image)
+                // cell.imageView.image = image
+                
+                //self.image = equipment.image
+                self.equipmentImage.image = image
+            }
+        }
         
         self.equipmentImage.layer.cornerRadius = 5.0
         self.equipmentImage.layer.borderWidth = 2
@@ -301,9 +386,9 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         
         self.tapBtn = Button()
         self.tapBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.tapBtn.addTarget(self, action: #selector(NewEditEquipmentViewController.editImage), for: UIControlEvents.touchUpInside)
+        self.tapBtn.addTarget(self, action: #selector(NewEditEquipmentViewController.editImage), for: UIControl.Event.touchUpInside)
         self.tapBtn.backgroundColor = UIColor.clear
-        self.tapBtn.setTitle("", for: UIControlState.normal)
+        self.tapBtn.setTitle("", for: UIControl.State.normal)
         self.view.addSubview(self.tapBtn)
         
         
@@ -339,6 +424,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         
         self.crewPicker = Picker()
         self.crewPicker.delegate = self
+        self.crewPicker.dataSource = self
         self.crewTxtField = PaddedTextField(placeholder: "Crew")
         self.crewTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.crewTxtField.delegate = self
@@ -352,9 +438,9 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         crewToolBar.barStyle = UIBarStyle.default
         crewToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         crewToolBar.sizeToFit()
-        let closeCrewButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelCrewInput))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setCrewButton = UIBarButtonItem(title: "Set Crew", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.handleCrewChange))
+        let closeCrewButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelCrewInput))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let setCrewButton = UIBarButtonItem(title: "Set Crew", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handleCrewChange))
         crewToolBar.setItems([closeCrewButton, spaceButton, setCrewButton], animated: false)
         crewToolBar.isUserInteractionEnabled = true
         crewTxtField.inputAccessoryView = crewToolBar
@@ -411,6 +497,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         
         self.typePicker = Picker()
         self.typePicker.delegate = self
+        self.typePicker.dataSource = self
         self.typePicker.tag = 5
         self.typeTxtField = PaddedTextField(placeholder: "Type")
         self.typeTxtField.translatesAutoresizingMaskIntoConstraints = false
@@ -424,8 +511,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         typeToolBar.barStyle = UIBarStyle.default
         typeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         typeToolBar.sizeToFit()
-        let closeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelTypeInput))
-        let setTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.handleTypeChange))
+        let closeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelTypeInput))
+        let setTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handleTypeChange))
         typeToolBar.setItems([closeTypeButton, spaceButton, setTypeButton], animated: false)
         typeToolBar.isUserInteractionEnabled = true
         typeTxtField.inputAccessoryView = typeToolBar
@@ -464,6 +551,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         
         self.fuelPicker = Picker()
         self.fuelPicker.delegate = self
+        self.fuelPicker.dataSource = self
         self.fuelPicker.tag = 7
         
         self.fuelTxtField = PaddedTextField(placeholder: "Fuel")
@@ -480,8 +568,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         fuelToolBar.barStyle = UIBarStyle.default
         fuelToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         fuelToolBar.sizeToFit()
-        let closeFuelButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelFuelInput))
-        let setFuelButton = UIBarButtonItem(title: "Set Fuel", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.handleFuelChange))
+        let closeFuelButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelFuelInput))
+        let setFuelButton = UIBarButtonItem(title: "Set Fuel", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handleFuelChange))
         fuelToolBar.setItems([closeFuelButton, spaceButton, setFuelButton], animated: false)
         fuelToolBar.isUserInteractionEnabled = true
         fuelTxtField.inputAccessoryView = fuelToolBar
@@ -503,6 +591,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         
         self.enginePicker = Picker()
         self.enginePicker.delegate = self
+        self.enginePicker.dataSource = self
         self.enginePicker.tag = 8
         
         self.engineTxtField = PaddedTextField(placeholder: "Engine")
@@ -519,8 +608,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         engineToolBar.barStyle = UIBarStyle.default
         engineToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         engineToolBar.sizeToFit()
-        let closeEngineButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelEngineInput))
-        let setEngineButton = UIBarButtonItem(title: "Set Engine", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.handleEngineChange))
+        let closeEngineButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelEngineInput))
+        let setEngineButton = UIBarButtonItem(title: "Set Engine", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handleEngineChange))
         engineToolBar.setItems([closeEngineButton, spaceButton, setEngineButton], animated: false)
         engineToolBar.isUserInteractionEnabled = true
         engineTxtField.inputAccessoryView = engineToolBar
@@ -554,7 +643,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         vendorToolBar.barStyle = UIBarStyle.default
         vendorToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         vendorToolBar.sizeToFit()
-        let closeVendorButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelVendorInput))
+        let closeVendorButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelVendorInput))
         
         vendorToolBar.setItems([closeVendorButton], animated: false)
         vendorToolBar.isUserInteractionEnabled = true
@@ -580,7 +669,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         
         
         purchasedPicker = DatePicker()
-        purchasedPicker.datePickerMode = UIDatePickerMode.date
+        purchasedPicker.datePickerMode = UIDatePicker.Mode.date
         
         
         self.purchasedTxtField = PaddedTextField(placeholder: "Purchase Date")
@@ -594,14 +683,14 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         purchasedToolBar.barStyle = UIBarStyle.default
         purchasedToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         purchasedToolBar.sizeToFit()
-        let closePurchasedButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelPurchasedInput))
-        let setPurchasedButton = UIBarButtonItem(title: "Set Purchased", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.handlePurchasedPicker))
+        let closePurchasedButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelPurchasedInput))
+        let setPurchasedButton = UIBarButtonItem(title: "Set Purchased", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handlePurchasedPicker))
         purchasedToolBar.setItems([closePurchasedButton, spaceButton, setPurchasedButton], animated: false)
         purchasedToolBar.isUserInteractionEnabled = true
         purchasedTxtField.inputAccessoryView = purchasedToolBar
         
         
-        print("purchased = \(equipment.purchaseDate)")
+        //print("purchased = \(equipment.purchaseDate)")
         if(equipment.purchaseDate != "" && equipment.purchaseDate != "null"){
             self.purchasedTxtField.text = dateFormatter.string(from: dateFormatterDB.date(from: equipment.purchaseDate)!)
             self.purchasedPicker.date = dateFormatterDB.date(from: equipment.purchaseDate)!
@@ -628,8 +717,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         descriptionToolBar.barStyle = UIBarStyle.default
         descriptionToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         descriptionToolBar.sizeToFit()
-        let closeDescriptionButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelDescriptionInput))
-        let setDescriptionButton = UIBarButtonItem(title: "Set", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelDescriptionInput))
+        let closeDescriptionButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelDescriptionInput))
+        let setDescriptionButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelDescriptionInput))
         
         descriptionToolBar.setItems([closeDescriptionButton,spaceButton,setDescriptionButton], animated: false)
         descriptionToolBar.isUserInteractionEnabled = true
@@ -637,7 +726,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         
         
         
-        self.submitButtonBottom.addTarget(self, action: #selector(NewEditEquipmentViewController.submit), for: UIControlEvents.touchUpInside)
+        self.submitButtonBottom.addTarget(self, action: #selector(NewEditEquipmentViewController.submit), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.submitButtonBottom)
         
         
@@ -739,11 +828,11 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
                 
                 
                 
-                let actionSheet = UIAlertController(title: "Replace existing equipment image? ", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+                let actionSheet = UIAlertController(title: "Replace existing equipment image? ", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
                 actionSheet.view.backgroundColor = UIColor.white
                 actionSheet.view.layer.cornerRadius = 5;
                 
-                actionSheet.addAction(UIAlertAction(title: "Change Image", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+                actionSheet.addAction(UIAlertAction(title: "Change Image", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                     self.imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Equipment", _equipmentID: self.equipment.ID)
                     self.imageUploadPrepViewController.layoutViews()
                     self.imageUploadPrepViewController.equipmentImageDelegate = self
@@ -752,31 +841,31 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
                     
                 }))
                 
-                actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
+                actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: { (alert:UIAlertAction!) -> Void in
                 }))
                 
                 
                 switch UIDevice.current.userInterfaceIdiom {
                 case .phone:
-                    self.present(actionSheet, animated: true, completion: nil)
+                    self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
                     
                     break
                 // It's an iPhone
                 case .pad:
                     let nav = UINavigationController(rootViewController: actionSheet)
                     nav.modalPresentationStyle = UIModalPresentationStyle.popover
-                    let popover = nav.popoverPresentationController as UIPopoverPresentationController!
+                    let popover = nav.popoverPresentationController as! UIPopoverPresentationController
                     actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
-                    popover?.sourceView = self.view
-                    popover?.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
+                    popover.sourceView = self.view
+                    popover.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
                     
-                    self.present(nav, animated: true, completion: nil)
+                    self.layoutVars.getTopController().present(nav, animated: true, completion: nil)
                     break
                 // It's an iPad
                 case .unspecified:
                     break
                 default:
-                    self.present(actionSheet, animated: true, completion: nil)
+                    self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
                     break
                     
                     // Uh, oh! What could it be?
@@ -801,8 +890,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         
         self.crewTxtField.text = equipment.crewName
         
-        print("crew = \(equipment.crew)")
-        print("crewName = \(equipment.crewName)")
+        print("crew = \(String(describing: equipment.crew))")
+        print("crewName = \(String(describing: equipment.crewName))")
         
         editsMade = true
     }
@@ -822,8 +911,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         equipment.typeName = typeNameArray[self.typePicker.selectedRow(inComponent: 0)]
         
         self.typeTxtField.text = equipment.typeName
-        print("type = \(equipment.type)")
-        print("typeName = \(equipment.typeName)")
+       // print("type = \(equipment.type)")
+       // print("typeName = \(equipment.typeName)")
         editsMade = true
     }
     
@@ -841,8 +930,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         
         self.fuelTxtField.text = equipment.fuelTypeName
         
-        print("fuel = \(equipment.fuelType)")
-        print("fuelName = \(equipment.fuelTypeName)")
+        //print("fuel = \(equipment.fuelType)")
+        //print("fuelName = \(equipment.fuelTypeName)")
         
         
         editsMade = true
@@ -862,8 +951,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         
         self.engineTxtField.text = equipment.engineTypeName
         
-        print("engine = \(equipment.engineType)")
-        print("engineName = \(equipment.engineTypeName)")
+        //print("engine = \(equipment.engineType)")
+        //print("engineName = \(equipment.engineTypeName)")
         
         
         editsMade = true
@@ -950,9 +1039,9 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
             })
         }
         
-    }
+         }
     
-     func textFieldDidChange(_ textField: UITextField) {
+    @objc private func textFieldDidChange(_ textField: UITextField) {
         print("textFieldDidChange")
        
             
@@ -1013,18 +1102,6 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
     
     
     
-    /*
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        print("shouldChangeTextInRange")
-        /*
-        if (text == "\n") {
-            textView.resignFirstResponder()
-        }
- */
-        
-        return true
-    }
-    */
     
     
     func textViewDidBeginEditing(_ textView: UITextView) {
@@ -1065,16 +1142,17 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         super.viewDidLayoutSubviews()
     }
     
-    // returns the number of 'columns' to display.
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
+    
+    
+    public func numberOfComponents(in pickerView: UIPickerView) -> Int
+    {
         return 1
     }
     
     
     // returns the # of rows in each component..
-    func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
-        // shows first 3 status options, not cancel or waiting
-        print("pickerview tag: \(pickerView.tag)")
+    
+    public func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
         var count:Int = 0
         switch pickerView.tag {
         case 2:
@@ -1215,7 +1293,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
             print("Oh no! \(regexError)")
         } else {
             for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
             }
         }
         cell.nameLbl.attributedText = highlightedText
@@ -1389,8 +1467,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
                     
                     
                     if self.equipment.image.ID == "0"{
-                        let alertController = UIAlertController(title: "Add Image?", message: "Please add an image of the equipment.", preferredStyle: UIAlertControllerStyle.alert)
-                        let cancelAction = UIAlertAction(title: "Don't Add", style: UIAlertActionStyle.destructive) {
+                        let alertController = UIAlertController(title: "Add Image?", message: "Please add an image of the equipment.", preferredStyle: UIAlertController.Style.alert)
+                        let cancelAction = UIAlertAction(title: "Don't Add", style: UIAlertAction.Style.destructive) {
                             (result : UIAlertAction) -> Void in
                             print("Cancel")
                             if(self.title == "New Equipment"){
@@ -1402,7 +1480,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
                             self.goBack()
                         }
                         
-                        let okAction = UIAlertAction(title: "Add", style: UIAlertActionStyle.default) {
+                        let okAction = UIAlertAction(title: "Add", style: UIAlertAction.Style.default) {
                             (result : UIAlertAction) -> Void in
                             print("OK")
                             
@@ -1442,13 +1520,13 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
     @objc func goBack(){
         if(self.editsMade == true){
             print("editsMade = true")
-            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("Cancel")
             }
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
                 //if self.delegate != nil{
@@ -1493,37 +1571,42 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDelegate, UI
         //self.equipment.pic = _image.thumbPath
         let imgURL:URL = URL(string: self.equipment.image.thumbPath)!
         
-       // print("imgURL = \(imgURL)")
         
-        
-        
-        //Nuke.loadImage(with: imgURL, into: self.equipmentImage!)
-        
-        /*
-        Nuke.loadImage(with: imgURL, into: self.equipmentImage!){
-            print("nuke loadImage")
-            //self.equipmentImage?.handle(response: $0, isFromMemoryCache: $1)
-            self.activityView.stopAnimating()
+        Alamofire.request(imgURL).responseImage { response in
+            debugPrint(response)
             
-            //self.image = Image(_path: self.equipment.pic!)
+            //print(response.request)
+            //print(response.response)
+            debugPrint(response.result)
             
-            
-            if(self.title == "New Equipment"){
-                self.delegate.reDrawEquipmentList()
-            }else{
-                self.editDelegate.updateEquipment(_equipment: self.equipment)
-            }
-            
-            
-            if self.imageAddedAfterSubmit {
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
                 
-                self.editsMade = false
-                self.goBack()
+                self.equipmentImage.image = image
+                
+                
+                
+                self.activityView.stopAnimating()
+                
+                if(self.title == "New Equipment"){
+                    self.delegate.reDrawEquipmentList()
+                }else{
+                    self.editDelegate.updateEquipment(_equipment: self.equipment)
+                }
+                
+                
+                if self.imageAddedAfterSubmit {
+                    
+                    self.editsMade = false
+                    self.goBack()
+                }
+                
+                
             }
-            
         }
-        */
         
+        
+      
         
     }
     

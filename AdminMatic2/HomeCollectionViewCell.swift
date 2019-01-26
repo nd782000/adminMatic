@@ -19,7 +19,7 @@ class HomeCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         
         imageView = UIImageView(frame: CGRect(x: 0, y: 20, width: frame.size.width, height: frame.size.height*1/2))
-        imageView.contentMode = UIViewContentMode.scaleAspectFit
+        imageView.contentMode = UIView.ContentMode.scaleAspectFit
         contentView.addSubview(imageView)
         textLabel = UILabel(frame: CGRect(x: 0, y: imageView.frame.size.height+20, width: frame.size.width, height: frame.size.height/3))
         textLabel.font = UIFont.boldSystemFont(ofSize: 24.0)

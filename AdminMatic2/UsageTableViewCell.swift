@@ -18,12 +18,15 @@ class UsageTableViewCell: UITableViewCell {
     var usageDateLbl: Label!
     var usageStartLbl: Label!
     var usageStopLbl: Label!
+    var usageQtyLbl: Label!
+    var usageUnitCostLbl: Label!
     var usageTotalLbl: Label!
+    var checkMarkView:UIImageView = UIImageView()
     var usagePriceLbl: Label!
     
      let layoutVars : LayoutVars = LayoutVars()
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         self.selectionStyle = .none
@@ -128,14 +131,11 @@ class UsageTableViewCell: UITableViewCell {
         
     }
     
-    func layoutForHistory(){
-        
+    func layoutForLabor(){
+        print("layoutForLabor")
         for view in self.contentView.subviews{
             view.removeFromSuperview()
         }
-        
-        
-       
         
         
         usageNameLbl = Label(text: "") // not sure how to refer to the cell size here
@@ -160,6 +160,55 @@ class UsageTableViewCell: UITableViewCell {
     }
 
     
+    func layoutForMaterial(){
+        print("layoutForMaterial")
+        for view in self.contentView.subviews{
+            view.removeFromSuperview()
+        }
+        
+        
+        usageDateLbl = Label(text: "") // not sure how to refer to the cell size here
+        usageQtyLbl = Label(text: "") // not sure how to refer to the cell size here
+        usageUnitCostLbl = Label(text: "") // not sure how to refer to the cell size here
+        usageTotalLbl = Label(text: "") // not sure how to refer to the cell size here
+        
+        contentView.addSubview(usageDateLbl)
+        contentView.addSubview(usageQtyLbl)
+        contentView.addSubview(usageUnitCostLbl)
+        contentView.addSubview(usageTotalLbl)
+        
+        
+        checkMarkView = UIImageView()
+        checkMarkView.translatesAutoresizingMaskIntoConstraints = false
+        checkMarkView.backgroundColor = UIColor.clear
+        checkMarkView.contentMode = .scaleAspectFit
+        contentView.addSubview(checkMarkView)
+        
+        /////////  Auto Layout   //////////////////////////////////////
+        print("usage table view cell")
+        //auto layout group
+        let usageViewsDictionary = ["view1": self.usageDateLbl,"view2": self.usageQtyLbl,"view3": self.usageUnitCostLbl,"view4": self.usageTotalLbl,"view5": self.checkMarkView] as [String:AnyObject]
+        
+        let usageViewWidth = (layoutVars.fullWidth - 30) / 2
+        let metricsDictionary = ["halfWidth": usageViewWidth] as [String:Any]
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[view1(65)]-[view2(50)]-[view3(75)]-[view4(100)]-[view5(50)]-5-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: usageViewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-7-[view1(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        
+    }
+    
+    
+    func setCheck(){
+        print("setCheck")
+        let blueCheckImg = UIImage(named:"checkMarkBlue.png")
+        checkMarkView.image = blueCheckImg
+    }
+    
+    func unSetCheck(){
+        print("unSetCheck")
+        let grayCheckImg = UIImage(named:"checkMarkGray.png")
+        checkMarkView.image = grayCheckImg
+    }
     
     
     
@@ -192,6 +241,8 @@ class UsageTableViewCell: UITableViewCell {
         }
     }
 
+    
+    
     
     
     required init?(coder aDecoder: NSCoder) {

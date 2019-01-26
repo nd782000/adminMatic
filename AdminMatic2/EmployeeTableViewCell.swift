@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Alamofire
 //import Nuke
 
 
@@ -25,7 +26,7 @@ class EmployeeTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         self.employeeImageView.layer.cornerRadius = 5.0
@@ -39,7 +40,7 @@ class EmployeeTableViewCell: UITableViewCell {
         phoneLbl.translatesAutoresizingMaskIntoConstraints = false
         phoneLbl.isHidden = true
         contentView.addSubview(phoneLbl)
-        activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        activityView = UIActivityIndicatorView(style: .gray)
         activityView.translatesAutoresizingMaskIntoConstraints = false
         //activityView.center = CGPoint(x: self.employeeImageView.frame.size.width / 2, y: self.employeeImageView.frame.size.height / 2)
         employeeImageView.addSubview(activityView)
@@ -51,16 +52,42 @@ class EmployeeTableViewCell: UITableViewCell {
         let viewsDictionary = ["pic":self.employeeImageView,"name":nameLbl] as [String : Any]
     
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[pic(50)]", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[name]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[name]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
         let viewsDictionary2 = ["activityView":activityView] as [String : Any]
         
         employeeImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activityView]-|", options: [], metrics: nil, views: viewsDictionary2))
-        employeeImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activityView]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
+        employeeImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activityView]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
         
     }
     
     func setImageUrl(_url:String){
+        
+        
+        
+        Alamofire.request(_url).responseImage { response in
+            debugPrint(response)
+            
+            //print(response.request)
+            //print(response.response)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                //cell.imageView.image = image
+                //cell.image = self.imageArray[indexPath.row]
+                //self.employeeImage.image = image
+                self.employeeImageView.image = image
+                
+                self.activityView.stopAnimating()
+                
+                //let image2 = Image(_path: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.employee.pic!)
+                //self.imageFullViewController = ImageFullViewController(_image: image2)
+                //self.imageFullViewController = ImageFullViewController(_image: image)
+            }
+        }
+        
+        
         
         /*
         let imgURL:URL = URL(string: _url)!
@@ -72,11 +99,18 @@ class EmployeeTableViewCell: UITableViewCell {
  */
         
         
+        
+        
+        
+        
+        
+        
+        
     }
     
     func setPhone(){
         self.phoneLbl.isHidden = false
-        if(self.employee.phone == ""){
+        if(self.employee.phone == "" || self.employee.phone == "No Phone Number"){
             self.phoneLbl.text = "No Phone on File"
             self.phoneLbl.textColor = UIColor.red
         }else{

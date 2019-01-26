@@ -27,7 +27,7 @@ class ImageCollectionViewCell: UICollectionViewCell {
         contentView.layer.borderColor = UIColor.darkGray.cgColor
         
         imageView = UIImageView()
-        imageView.contentMode = UIViewContentMode.scaleAspectFit
+        imageView.contentMode = UIView.ContentMode.scaleAspectFit
         imageView.backgroundColor = UIColor.darkGray
         contentView.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -43,7 +43,7 @@ class ImageCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(textLabel)
         
        // print("imageCell init 2")
-        activityView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        activityView = UIActivityIndicatorView(style: .whiteLarge)
         activityView.center = CGPoint(x: self.contentView.frame.size.width / 2, y: self.contentView.frame.size.height / 2)
         contentView.addSubview(activityView)
 

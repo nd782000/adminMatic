@@ -37,7 +37,7 @@ class EquipmentServiceTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
     
@@ -127,6 +127,11 @@ class EquipmentServiceTableViewCell: UITableViewCell {
                 dueByValueLbl.textColor = UIColor.black
             }
             frequencyLbl.text = "Every \(equipmentService.frequency!) Hours"
+            break
+        case "4":
+            dueByValueLbl.text = "Before Use"
+            dueByValueLbl.textColor = UIColor.red
+            frequencyLbl.text = "Inspection"
             break
         default:
             dueByValueLbl.text = "Now"

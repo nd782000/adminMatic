@@ -13,14 +13,6 @@ import Alamofire
 import SwiftyJSON
 
 
-/*
-protocol UpdateEquipmentImageDelegate{
-    func updateImage(_image:Image)
-}
- */
-
-
-
 class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
@@ -42,32 +34,17 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
     var nameTxtField:PaddedTextField!
     
     
-    /*
-    //code
-    var code:String = ""
-    var codeLbl:GreyLabel!
-    var codeTxtField:PaddedTextField!
-    
-    var codeDescriptionView:UITextView!
-    
-    */
-    
     
     
     var submitButtonBottom:Button = Button(titleText: "Submit")
     
-    
-    
-    
-    
+
     
     //init for new
     init(_field:String){
         super.init(nibName:nil,bundle:nil)
-        //print("lead init \(_leadID)")
-        //for an empty lead to start things off
         self.field = _field
-        print("new field name: \(name) ID: \(ID) field: \(field)")
+        print("new field name: \(name) ID: \(ID) field: \(String(describing: field))")
     }
     
     
@@ -76,10 +53,9 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         super.init(nibName:nil,bundle:nil)
         
         self.name = _name
-        //self.code = _code
         self.ID = _ID
         self.field = _field
-        print("edit field name: \(name) ID: \(ID)  field: \(field)")
+        print("edit field name: \(name) ID: \(ID)  field: \(String(describing: field))")
         
     }
     
@@ -92,9 +68,9 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(NewEditEquipmentFieldViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(NewEditEquipmentFieldViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -115,19 +91,18 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
             
             switch self.field {
             case "TYPE":
-                //equipmentArray.sorted(by: { $0.crew > $1.crew })
                 title =  "New Type Field"
                 break
             case "FUEL":
-                //equipmentArray.sorted(by: { $0.type > $1.type })
                 title =  "New Fuel Field"
                 break
             case "ENGINE":
-                //equipmentArray.sorted(by: { $0.type > $1.type })
                 title =  "New Engine Field"
                 break
+            case "INSPECTION":
+                title =  "New Inspection Field"
+                break
             default:
-                //equipmentArray.sorted(by: { $0.status > $1.status })
                 title =  "New Type Field"
                 break
             }
@@ -135,19 +110,18 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         }else{
             switch field {
             case "TYPE":
-                //equipmentArray.sorted(by: { $0.crew > $1.crew })
                 title =  "Edit Type Field"
                 break
             case "FUEL":
-                //equipmentArray.sorted(by: { $0.type > $1.type })
                 title =  "Edit Fuel Field"
                 break
             case "ENGINE":
-                //equipmentArray.sorted(by: { $0.type > $1.type })
                 title =  "Edit Engine Field"
                 break
+            case "INSPECTION":
+                title =  "Edit Inspection Field"
+                break
             default:
-                //equipmentArray.sorted(by: { $0.status > $1.status })
                 title =  "Edit Type Field"
                 break
             }
@@ -173,49 +147,16 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         }
         
         self.nameTxtField.translatesAutoresizingMaskIntoConstraints = false
+        self.nameTxtField.autocapitalizationType = .words
         self.nameTxtField.returnKeyType = .done
         self.nameTxtField.delegate = self
         self.nameTxtField.tag = 10
         self.view.addSubview(self.nameTxtField)
         
         
-        /*
-        //code
+       
         
-        self.codeLbl = GreyLabel()
-        self.codeLbl.text = "Code:"
-        self.codeLbl.textAlignment = .left
-        self.codeLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(codeLbl)
-        
-        
-        if self.code == ""{
-            self.codeTxtField = PaddedTextField(placeholder: "Code")
-        }else{
-            self.codeTxtField = PaddedTextField()
-            self.codeTxtField.text = code
-        }
-        
-        self.codeTxtField.translatesAutoresizingMaskIntoConstraints = false
-        self.codeTxtField.returnKeyType = .done
-        self.codeTxtField.delegate = self
-        self.codeTxtField.tag = 20
-        self.view.addSubview(self.codeTxtField)
-        
-        
-        //code description
-        
-        self.codeDescriptionView = UITextView()
-        self.codeDescriptionView.text = "A code should be an abbreviation of the type, used for labeling equipment.  (Example: Tractor Trailer = TT)"
-        self.codeDescriptionView.font = layoutVars.textFieldFont
-        self.codeDescriptionView.isEditable = false
-        self.codeDescriptionView.backgroundColor = UIColor.clear
-        self.codeDescriptionView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(codeDescriptionView)
-        
-        */
-        
-        self.submitButtonBottom.addTarget(self, action: #selector(NewEditEquipmentFieldViewController.submit), for: UIControlEvents.touchUpInside)
+        self.submitButtonBottom.addTarget(self, action: #selector(NewEditEquipmentFieldViewController.submit), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.submitButtonBottom)
         
         
@@ -324,8 +265,7 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         
         
         
-        
-        //let parameters = ["fieldID": self.ID as AnyObject, "addedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId) as AnyObject, "fieldName": self.name as AnyObject, "code": self.code as AnyObject,"field": self.field as AnyObject] as [String : Any]
+       
         
         let parameters:[String:String]
         parameters = ["fieldID": self.ID, "addedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "fieldName": self.name, "field": self.field] as! [String : String]
@@ -380,13 +320,13 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
     @objc func goBack(){
         if(self.editsMade == true){
             print("editsMade = true")
-            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("Cancel")
             }
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
                 _ = self.navigationController?.popViewController(animated: true)

@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 
 
 // updates status icons without getting new db data
@@ -17,7 +17,7 @@ protocol ScheduleDelegate{
     func updateSchedule() //from edit/new view for new work orders made
     func reDrawSchedule(_index:Int, _status:String, _price: String, _cost: String, _priceRaw: String, _costRaw: String)
     func updateSettings(_allDates:String, _startDate:String, _endDate:String,_startDateDB:String, _endDateDB:String, _mowSort:String, _plowSort:String, _plowDepth:String)
-    func cancelSearch()//to resolve problem with imageSelection bug when search mode is active
+    //func cancelSearch()//to resolve problem with imageSelection bug when search mode is active
 }
 
 
@@ -53,14 +53,14 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var plowDepth:String = "0"
     
     
-    var fullScheduleJSON:JSON!
+    //var fullScheduleJSON:JSON!
     var fullScheduleArray:[WorkOrder] = []
-    var personalScheduleJSON:JSON!
+    //var personalScheduleJSON:JSON!
     var personalScheduleArray:[WorkOrder] = []
     
-    var fullHistoryJSON: JSON!
+    //var fullHistoryJSON: JSON!
     var fullHistoryArray:[WorkOrder] = []
-    var personalHistoryJSON: JSON!
+    //var personalHistoryJSON: JSON!
     var personalHistoryArray:[WorkOrder] = []
     
     var workOrdersSearchResults:[WorkOrder] = []
@@ -85,13 +85,14 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     let settingsImg = UIImage(named:"settingsIcon.png")
     let settingsEditedImg = UIImage(named:"settingsEditedIcon.png")
     
-    
+    var methodStart:Date!
+    var methodFinish:Date!
     
     init(_employeeID:String){
         super.init(nibName:nil,bundle:nil)
         self.employeeID = _employeeID
         title = "Schedule"
-        print("empID = \(self.employeeID)")
+        print("empID = \(String(describing: self.employeeID))")
         self.view.backgroundColor = layoutVars.backgroundColor
         self.personalScheduleBtn = Button()
        
@@ -125,7 +126,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     }
                 }else{
                     if(fullHistoryLoaded != true){
-                        getHistory(_empID: "")
+                        //getHistory(_empID: "")
                     }else{
                         scheduleTableView.reloadData()
                     }
@@ -143,7 +144,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     }
                 }else{
                     if(personalHistoryLoaded != true){
-                        getHistory(_empID: (appDelegate.loggedInEmployee?.ID)!)
+                       // getHistory(_empID: (appDelegate.loggedInEmployee?.ID)!)
                     }else{
                         scheduleTableView.reloadData()
                     }
@@ -241,7 +242,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         
-        self.addWorkOrderBtn.addTarget(self, action: #selector(ScheduleViewController.addWorkOrder), for: UIControlEvents.touchUpInside)
+        self.addWorkOrderBtn.addTarget(self, action: #selector(ScheduleViewController.addWorkOrder), for: UIControl.Event.touchUpInside)
        // self.addWorkOrderBtn.layer.borderColor = UIColor.white.cgColor
        // self.addWorkOrderBtn.layer.borderWidth = 1.0
         self.view.addSubview(self.addWorkOrderBtn)
@@ -252,7 +253,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         
-        self.scheduleSettingsBtn.addTarget(self, action: #selector(ScheduleViewController.scheduleSettings), for: UIControlEvents.touchUpInside)
+        self.scheduleSettingsBtn.addTarget(self, action: #selector(ScheduleViewController.scheduleSettings), for: UIControl.Event.touchUpInside)
         //self.scheduleSettingsBtn.layer.borderColor = UIColor.white.cgColor
         //self.scheduleSettingsBtn.layer.borderWidth = 1.0
        // self.scheduleSettingsBtn.frame = CGRect(x:self.view.frame.width - 40, y: self.view.frame.height - 40, width: 40, height: 40)
@@ -261,7 +262,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
        // self.imageSettingsBtn.layer.borderWidth = 1.0
         self.view.addSubview(self.scheduleSettingsBtn)
         
-        self.scheduleSettingsBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
+        self.scheduleSettingsBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
         
         
         settingsIcon.backgroundColor = UIColor.clear
@@ -274,7 +275,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         
-       refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: UIControlEvents.valueChanged)
+       refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: UIControl.Event.valueChanged)
         
         
         setScheduleButton()
@@ -320,6 +321,9 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     func getSchedule(_empID:String) {
         print("getSchedule empID:\(_empID)")
         
+        
+        methodStart = Date()
+        
         if(refreshFromTable == true){
             self.refreshControl.endRefreshing()
         }
@@ -352,18 +356,177 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             print(response.request ?? "")  // original URL request
             // //print(response.response) // URL response
-            print(response.data)     // server data
-            print(response.result)   // result of response serialization
+            //print(response.data)     // server data
+            //print(response.result)   // result of response serialization
             
             if(_empID == ""){
                 self.fullScheduleLoaded = true
+                
+                
+                
+                //native way
+                
+                do {
+                    if let data = response.data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        let workOrders = json["workOrder"] as? [[String: Any]] {
+                        
+                        let workOrderCount = workOrders.count
+                        print("work order count = \(workOrderCount)")
+                        
+                        
+                        for i in 0 ..< workOrderCount {
+                            
+                            
+                            //create an object
+                            print("create a work order object \(i)")
+                            
+                            
+                            
+                            let workOrder = WorkOrder(_ID: workOrders[i]["ID"] as? String, _statusID: workOrders[i]["statusID"] as? String, _date: workOrders[i]["date"] as? String, _firstItem: workOrders[i]["firstItem"] as? String, _statusName: workOrders[i]["statusName"] as? String, _customer: workOrders[i]["customer"] as? String, _type: workOrders[i]["type"] as? String, _progress: workOrders[i]["progress"] as? String, _totalPrice: workOrders[i]["totalPrice"] as? String, _totalCost: workOrders[i]["totalCost"] as? String, _totalPriceRaw: workOrders[i]["totalPriceRaw"] as? String, _totalCostRaw: workOrders[i]["totalCostRaw"] as? String, _charge: workOrders[i]["charge"] as? String, _title: workOrders[i]["title"] as? String, _customerName: workOrders[i]["customerName"] as? String)
+                            
+                            //workOrder.customerName
+                            if(self.plowSort == "1"){
+                                workOrder.plowPriority = workOrders[i]["plowPriority"] as! String
+                                workOrder.plowDepth = workOrders[i]["plowDepth"] as! String
+                                workOrder.plowMonitoring = workOrders[i]["plowMonitorList"] as! String
+                            }
+                            
+                            self.fullScheduleArray.append(workOrder)
+                            
+                            
+                            
+                            
+                            
+                            
+                        }
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    self.methodFinish = Date()
+                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
+                    print("Execution time: \(executionTime)")
+                    
+                    
+                    //self.indicator.dismissIndicator()
+                    
+                    
+                   // self.layoutViews()
+                    
+                    if(self.layoutViewsCalled == false ){
+                        self.layoutViews()
+                    }else{
+                        DispatchQueue.main.async {
+                            self.scheduleTableView.reloadData()
+                        }
+                    }
+                    // Close Indicator
+                    self.indicator.dismissIndicator()
+                    
+                    
+                } catch {
+                    print("Error deserializing JSON: \(error)")
+                }
+ 
+ 
+                
+                
+                
+                
+              /*
+                
+                // swiftly way
                 if let json = response.result.value {
                      print("json = \(json)")
                     self.fullScheduleJSON = JSON(json)
                     self.parseSchedule(_empID: _empID)
                 }
+ */
+                
             }else{
                 self.personalScheduleLoaded = true
+                
+                
+                
+                //native way
+                
+                do {
+                    if let data = response.data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        let workOrders = json["workOrder"] as? [[String: Any]] {
+                        
+                        let workOrderCount = workOrders.count
+                        print("work order count = \(workOrderCount)")
+                        
+                        
+                        for i in 0 ..< workOrderCount {
+                            
+                            
+                            //create an object
+                            print("create a work order object \(i)")
+                            
+                            
+                            
+                            let workOrder = WorkOrder(_ID: workOrders[i]["ID"] as? String, _statusID: workOrders[i]["statusID"] as? String, _date: workOrders[i]["date"] as? String, _firstItem: workOrders[i]["firstItem"] as? String, _statusName: workOrders[i]["statusName"] as? String, _customer: workOrders[i]["customer"] as? String, _type: workOrders[i]["type"] as? String, _progress: workOrders[i]["progress"] as? String, _totalPrice: workOrders[i]["totalPrice"] as? String, _totalCost: workOrders[i]["totalCost"] as? String, _totalPriceRaw: workOrders[i]["totalPriceRaw"] as? String, _totalCostRaw: workOrders[i]["totalCostRaw"] as? String, _charge: workOrders[i]["charge"] as? String, _title: workOrders[i]["title"] as? String, _customerName: workOrders[i]["customerName"] as? String)
+                            
+                            //workOrder.customerName
+                            if(self.plowSort == "1"){
+                                workOrder.plowPriority = workOrders[i]["plowPriority"] as! String
+                                workOrder.plowDepth = workOrders[i]["plowDepth"] as! String
+                                workOrder.plowMonitoring = workOrders[i]["plowMonitorList"] as! String
+                            }
+                            
+                            //self.fullScheduleArray.append(workOrder)
+                            
+                            self.personalScheduleArray.append(workOrder)
+                            
+                            
+                            
+                            
+                        }
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    self.methodFinish = Date()
+                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
+                    print("Execution time: \(executionTime)")
+                    
+                    
+                    //self.indicator.dismissIndicator()
+                    
+                    
+                    // self.layoutViews()
+                    
+                    if(self.layoutViewsCalled == false ){
+                        self.layoutViews()
+                    }else{
+                        DispatchQueue.main.async {
+                            self.scheduleTableView.reloadData()
+                        }
+                    }
+                    // Close Indicator
+                    self.indicator.dismissIndicator()
+                    
+                    
+                } catch {
+                    print("Error deserializing JSON: \(error)")
+                }
+                
+                
+                
+                
+                
+                
+                /*
+                // swiftly way
                 if let json = response.result.value {
                      print("json = \(json)")
                     self.personalScheduleJSON = JSON(json)
@@ -371,13 +534,14 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     
                     
                 }
+ */
             }
             
         }
         
     }
     
-
+/*
     func parseSchedule(_empID:String){
         //print("parseSchedule empID:\(_empID)")
         if(_empID == ""){
@@ -463,20 +627,29 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 self.scheduleTableView.reloadData()
             }
         }
+        
+        self.methodFinish = Date()
+        let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
+        print("Execution time: \(executionTime)")
+        
+        
+        
         // Close Indicator
         indicator.dismissIndicator()
     }
+    */
     
     
+    /*
     
     func getHistory(_empID:String){
         print("getHistory empID:\(_empID)")
         // Show Indicator
         
         //limited history message
-        let alertController = UIAlertController(title: "Limited History", message: "This is the current year's history.  Go to customer screen to view full history for a given customer.", preferredStyle: UIAlertControllerStyle.alert)
+        let alertController = UIAlertController(title: "Limited History", message: "This is the current year's history.  Go to customer screen to view full history for a given customer.", preferredStyle: UIAlertController.Style.alert)
         
-        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+        let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
             //print("OK")
         }
@@ -620,6 +793,8 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         indicator.dismissIndicator()
     }
     
+    */
+    
     
     @objc func addWorkOrder(){
         print("Add Work Order")
@@ -747,7 +922,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 } else {
                     
                     for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                        highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                        highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                     }
                     
                 }
@@ -826,7 +1001,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 } else {
                     
                     for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                        highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                        highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                     }
                     
                 }
@@ -1028,23 +1203,23 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
          //print("tableViewMode = \(tableViewMode)")
         
         
-        self.personalScheduleBtn.removeTarget(nil, action: nil, for: UIControlEvents.allEvents)
+        self.personalScheduleBtn.removeTarget(nil, action: nil, for: UIControl.Event.allEvents)
         
         
             if(personalMode == true){
                 if(self.tableViewMode == "SCHEDULE"){
-                    self.personalScheduleBtn.setTitle("Full Schedule", for: UIControlState.normal)
+                    self.personalScheduleBtn.setTitle("Full Schedule", for: UIControl.State.normal)
                 }else{
-                    self.personalScheduleBtn.setTitle("Full History", for: UIControlState.normal)
+                    self.personalScheduleBtn.setTitle("Full History", for: UIControl.State.normal)
                 }
             }else{
                 if(self.tableViewMode == "SCHEDULE"){
-                    self.personalScheduleBtn.setTitle("\(appDelegate.loggedInEmployee!.fname!)'s Schedule", for: UIControlState.normal)
+                    self.personalScheduleBtn.setTitle("\(appDelegate.loggedInEmployee!.fname!)'s Schedule", for: UIControl.State.normal)
                 }else{
-                    self.personalScheduleBtn.setTitle("\(appDelegate.loggedInEmployee!.fname!)'s History", for: UIControlState.normal)
+                    self.personalScheduleBtn.setTitle("\(appDelegate.loggedInEmployee!.fname!)'s History", for: UIControl.State.normal)
                 }
             }
-            self.personalScheduleBtn.addTarget(self, action: #selector(ScheduleViewController.filterUsersSchedule), for: UIControlEvents.touchUpInside)
+            self.personalScheduleBtn.addTarget(self, action: #selector(ScheduleViewController.filterUsersSchedule), for: UIControl.Event.touchUpInside)
     }
     
     
@@ -1090,7 +1265,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 
               
                     if(self.personalHistoryLoaded != true){
-                        getHistory(_empID: (appDelegate.loggedInEmployee?.ID)!)
+                       // getHistory(_empID: (appDelegate.loggedInEmployee?.ID)!)
                     
                     }else{
                         //print("reload Data history")
@@ -1123,7 +1298,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             }else{//HISTORY MODE
               
                     if(self.fullHistoryLoaded != true){
-                        getHistory(_empID: "")
+                        //getHistory(_empID: "")
                     }else{
                         //print("reload Data history")
                         DispatchQueue.main.async{
@@ -1203,7 +1378,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     self.updateSearchResults(for:self.searchController)
                 } else {
                     if(personalHistoryLoaded  != true){
-                        getHistory(_empID: (appDelegate.loggedInEmployee?.ID)!)
+                       // getHistory(_empID: (appDelegate.loggedInEmployee?.ID)!)
                         
                     }else{
                         
@@ -1220,7 +1395,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     self.updateSearchResults(for:self.searchController)
                 } else {
                     if(fullHistoryLoaded != true){
-                        getHistory(_empID: "")
+                       // getHistory(_empID: "")
                         
                     }else{
                         

@@ -76,17 +76,22 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(GroupMessageViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(GroupMessageViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
 
-        
-        for _ in self.appDelegate.employeeArray{
-            selectedStates.append(true)
+        for index in 0 ..< self.appDelegate.employeeArray.count {
+            print("emp phone = \(appDelegate.employeeArray[index].phone)")
+        //for _ in self.appDelegate.employeeArray{
+              if  appDelegate.employeeArray[index].phone! != "No Phone Number"{
+                selectedStates.append(true)
+            }else{
+                selectedStates.append(false)
+            }
         }
         layoutViews()
     }
@@ -118,9 +123,9 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         
         
         
-        self.selectNoneBtn.addTarget(self, action: #selector(GroupMessageViewController.handleSelectNone), for: UIControlEvents.touchUpInside)
+        self.selectNoneBtn.addTarget(self, action: #selector(GroupMessageViewController.handleSelectNone), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.selectNoneBtn)
-        self.selectAllBtn.addTarget(self, action: #selector(GroupMessageViewController.handleSelectAll), for: UIControlEvents.touchUpInside)
+        self.selectAllBtn.addTarget(self, action: #selector(GroupMessageViewController.handleSelectAll), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.selectAllBtn)
         
         self.employeeTableView =  TableView()
@@ -138,7 +143,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         }
         
         
-        self.sendMessageBtn.addTarget(self, action: #selector(GroupMessageViewController.buildRecipientList), for: UIControlEvents.touchUpInside)
+        self.sendMessageBtn.addTarget(self, action: #selector(GroupMessageViewController.buildRecipientList), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.sendMessageBtn)
         
         //auto layout group
@@ -203,15 +208,17 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("You selected cell #\(indexPath.row)!")
         
-        if let cell = tableView.cellForRow(at: indexPath) {
-            if(self.selectedStates[indexPath.row] == true){
-                cell.accessoryType = .none
-                cell.isSelected = false
-                self.selectedStates[indexPath.row] = false
-            }else{
-                cell.accessoryType = .checkmark
-                cell.isSelected = true
-                self.selectedStates[indexPath.row] = true
+        if appDelegate.employeeArray[indexPath.row].phone != "" && appDelegate.employeeArray[indexPath.row].phone != "No Phone Number"{
+            if let cell = tableView.cellForRow(at: indexPath) {
+                if(self.selectedStates[indexPath.row] == true){
+                    cell.accessoryType = .none
+                    cell.isSelected = false
+                    self.selectedStates[indexPath.row] = false
+                }else{
+                    cell.accessoryType = .checkmark
+                    cell.isSelected = true
+                    self.selectedStates[indexPath.row] = true
+                }
             }
         }
         
@@ -250,6 +257,8 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     
     func handleSelectVarious(){
+        
+        print("select various")
         for index in 0 ..< selectedStates.count {
             selectedStates[index] = false
         }
@@ -258,6 +267,11 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
             for n in 0 ..<  self.appDelegate.employeeArray.count{
                 if appDelegate.employeeArray[n].ID == self.employees[i].ID {
                     selectedStates[n] = true
+                }
+                
+                print("emp phone = \(appDelegate.employeeArray[n].phone)")
+                if appDelegate.employeeArray[n].phone == "" || appDelegate.employeeArray[n].phone == "No Phone Number"{
+                    selectedStates[n] = false
                 }
             }
             
@@ -314,13 +328,13 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         for index in 0 ..< appDelegate.employeeArray.count {
             if(selectedStates[index] == true){
                 textRecipients.append(appDelegate.employeeArray[index].phone)
-                print("phone = \(appDelegate.employeeArray[index].phone)")
+               // print("phone = \(appDelegate.employeeArray[index].phone)")
             }
         }
         
         if(textRecipients.count == 0){
-            let alertController = UIAlertController(title: "Select some recipients", message: "", preferredStyle: UIAlertControllerStyle.alert)
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let alertController = UIAlertController(title: "Select some recipients", message: "", preferredStyle: UIAlertController.Style.alert)
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
             }
@@ -358,8 +372,8 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
             return
         }
         if(self.messageTxt.text == self.messagePlaceHolder){
-            let alertController = UIAlertController(title: "Message is Empty", message: "", preferredStyle: UIAlertControllerStyle.alert)
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let alertController = UIAlertController(title: "Message is Empty", message: "", preferredStyle: UIAlertController.Style.alert)
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
             }
@@ -378,11 +392,11 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
             }else{
                 message = "Batch \(textBatchNumber)"
             }
-            let alertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
             }
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 if (MFMessageComposeViewController.canSendText()) {
                     let controller = MFMessageComposeViewController()
@@ -394,7 +408,8 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
             }
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
-            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+            //layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }
     }
     

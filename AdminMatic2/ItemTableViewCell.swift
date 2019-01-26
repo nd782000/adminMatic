@@ -25,7 +25,7 @@ class ItemTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
        
         
@@ -59,7 +59,7 @@ class ItemTableViewCell: UITableViewCell {
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(14)]-5-[type]", options: [], metrics: nil, views: viewsDictionary))
         
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[type(150)][price(120)]-20-|", options: NSLayoutFormatOptions.alignAllTop, metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[type(150)][price(120)]-20-|", options: NSLayoutConstraint.FormatOptions.alignAllTop, metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[name(250)]", options: [], metrics: nil, views: viewsDictionary))
         
         

@@ -10,6 +10,7 @@
 
 import Foundation
 import UIKit
+import Alamofire
 //import Nuke
 
 class LeadTaskTableViewCell: UITableViewCell {
@@ -32,7 +33,7 @@ class LeadTaskTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         
@@ -111,7 +112,7 @@ class LeadTaskTableViewCell: UITableViewCell {
         imageQtyLbl.textAlignment = .center
         contentView.addSubview(imageQtyLbl)
         
-        activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        activityView = UIActivityIndicatorView(style: .gray)
         activityView.center = CGPoint(x: self.thumbView.frame.size.width, y: self.thumbView.frame.size.height)
         thumbView.addSubview(activityView)
         
@@ -207,7 +208,7 @@ class LeadTaskTableViewCell: UITableViewCell {
             setBlankImage()
         }else{
             
-            let url = URL(string: _url!)
+            //let url = URL(string: _url!)
             
             /*
             Nuke.loadImage(with: url!, into: self.thumbView){ 
@@ -217,7 +218,29 @@ class LeadTaskTableViewCell: UITableViewCell {
                 
             }
             */
-           
+            
+            
+            Alamofire.request(_url!).responseImage { response in
+                debugPrint(response)
+                
+                //print(response.request)
+                //print(response.response)
+                debugPrint(response.result)
+                
+                if let image = response.result.value {
+                    print("image downloaded: \(image)")
+                    
+                    self.thumbView.image = image
+                    
+                    self.activityView.stopAnimating()
+                    
+                    
+                    self.activityView.stopAnimating()
+                    
+                    
+                }
+            }
+            
             
         }
     }

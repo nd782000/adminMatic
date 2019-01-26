@@ -58,9 +58,9 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
         title = "Customer Info"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(CustomerContactViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(CustomerContactViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -122,6 +122,8 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
         self.contactTableView.tableHeaderView = UIView(frame: CGRect(x:0, y:0, width:self.contactTableView.bounds.size.width, height:5));
         
         self.view.addSubview(self.contactTableView)
+        
+        /*
         //auto layout group
         let viewsDictionary = [
             "notesLbl":self.customerNotesLbl,
@@ -136,6 +138,25 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesTxt]-|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[table]-|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[notesLbl(30)][notesTxt(80)]-[table]-10-|", options: [], metrics: nil, views: viewsDictionary))
+ 
+ */
+        
+        
+        self.customerNotesLbl.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        self.customerNotesLbl.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        self.customerNotesLbl.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        self.customerNotesLbl.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        self.customerNotesTxtView.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        self.customerNotesTxtView.topAnchor.constraint(equalTo: view.safeTopAnchor, constant: 30.0).isActive = true
+        self.customerNotesTxtView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        self.customerNotesTxtView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        
+        self.contactTableView.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        self.contactTableView.topAnchor.constraint(equalTo: view.safeTopAnchor, constant: 118.0).isActive = true
+        self.contactTableView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        self.contactTableView.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor).isActive = true
+        
         
     }
     

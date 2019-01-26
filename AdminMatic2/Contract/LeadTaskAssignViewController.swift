@@ -13,11 +13,7 @@ import SwiftyJSON
 
 
 
-
-
-
-
-class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate, LeadTaskDelegate{
+class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate, LeadTaskDelegate{
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
@@ -133,9 +129,9 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(LeadViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(LeadViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -147,7 +143,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     
     //sends request for lead tasks
     func getLead() {
-        print(" GetLead  Lead Id \(self.lead.ID)")
+        //print(" GetLead  Lead Id \(self.lead.ID)")
         
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -212,12 +208,11 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     //sends request for lead tasks
     func getWoItems() {
         
-        print(" GetItems  Cust Id \(self.lead.customer)")
+        //print(" GetItems  Cust Id \(self.lead.customer)")
         
         title = "Loading Items..."
         
         // Show Loading Indicator
-        //indicator = SDevIndicator.generate(self.view)!
         //reset task array
         self.woItemsArray = []
         let parameters: [String:String] = ["custID": self.lead.customer]
@@ -258,7 +253,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     //sends request for lead tasks
     func getContractItems() {
         
-        print(" GetContractItems  Cust Id \(self.lead.customer)")
+        //print(" GetContractItems  Cust Id \(self.lead.customer)")
         
         title = "Loading Items..."
         
@@ -349,6 +344,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         //print("set picker position : \(Int(self.statusValue)! - 1)")
         
         self.schedulePicker.delegate = self
+        self.schedulePicker.dataSource = self
         
         self.scheduleTxtField = PaddedTextField(placeholder: "")
         self.scheduleTxtField.textAlignment = NSTextAlignment.center
@@ -366,9 +362,9 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(LeadTaskAssignViewController.cancelPicker))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setButton = UIBarButtonItem(title: "Assign", style: UIBarButtonItemStyle.plain, target: self, action: #selector(LeadTaskAssignViewController.handleItemSelect))
+        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadTaskAssignViewController.cancelPicker))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let setButton = UIBarButtonItem(title: "Assign", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadTaskAssignViewController.handleItemSelect))
         
         toolBar.setItems([closeButton, spaceButton, setButton], animated: false)
         toolBar.isUserInteractionEnabled = true
@@ -382,6 +378,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         self.contractPicker = Picker()
         self.contractPicker.tag = 2
         self.contractPicker.delegate = self
+        self.contractPicker.dataSource = self
         
         self.contractTxtField = PaddedTextField(placeholder: "")
         self.contractTxtField.textAlignment = NSTextAlignment.center
@@ -399,8 +396,8 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         contractToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         contractToolBar.sizeToFit()
         
-        let closeContractButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(LeadTaskAssignViewController.cancelPicker))
-        let setContractButton = UIBarButtonItem(title: "Assign", style: UIBarButtonItemStyle.plain, target: self, action: #selector(LeadTaskAssignViewController.handleItemSelect))
+        let closeContractButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadTaskAssignViewController.cancelPicker))
+        let setContractButton = UIBarButtonItem(title: "Assign", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadTaskAssignViewController.handleItemSelect))
         
         contractToolBar.setItems([closeContractButton, spaceButton, setContractButton], animated: false)
         contractToolBar.isUserInteractionEnabled = true
@@ -408,7 +405,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         contractTxtField.inputAccessoryView = contractToolBar
 
         
-        self.setToItemBtn.addTarget(self, action: #selector(LeadTaskAssignViewController.setToItem), for: UIControlEvents.touchUpInside)
+        self.setToItemBtn.addTarget(self, action: #selector(LeadTaskAssignViewController.setToItem), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.setToItemBtn)
         
         /////////  Auto Layout   //////////////////////////////////////
@@ -465,15 +462,16 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         super.viewDidLayoutSubviews()
     }
     
-    // returns the number of 'columns' to display.
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
+  
+    public func numberOfComponents(in pickerView: UIPickerView) -> Int
+    {
         return 1
     }
     
     
     // returns the # of rows in each component..
-    func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
-        // shows first 3 status options, not cancel or waiting
+    
+    public func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
         if pickerMode == "WORKORDER"{
             return woItemsArray.count + 1
         }else{
@@ -481,10 +479,13 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         }
     }
     
-    
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
         return 60
     }
+    
+   
+    
+    
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         let myView = UIView(frame: CGRect(x:0, y:0, width:pickerView.bounds.width - 30, height:60))
@@ -558,6 +559,10 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         
         return myView
     }
+ 
+ 
+    
+    
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
     {
@@ -733,15 +738,15 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                     
                     
                     
-                    let alertController = UIAlertController(title: "Delete Task?", message: "Are you sure you want to delete this task?", preferredStyle: UIAlertControllerStyle.alert)
-                    let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                    let alertController = UIAlertController(title: "Delete Task?", message: "Are you sure you want to delete this task?", preferredStyle: UIAlertController.Style.alert)
+                    let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                         (result : UIAlertAction) -> Void in
                         
                         // self.getWorkOrder()
                         
                     }
                     
-                    let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                    let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                         (result : UIAlertAction) -> Void in
                         
                         
@@ -861,7 +866,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
         tasksToLogJSON = []
         //loop thru usage array and build JSON array
         self.editsMade = true
-        for  (index,task) in tasksToLog.enumerated() {
+        for  (_,task) in tasksToLog.enumerated() {
             
             
             let JSONString = task.toJSONString(prettyPrint: true)
@@ -883,7 +888,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     @objc func handleItemSelect(){
        // print("handleItemSelect selectedrow = \(schedulePicker.selectedRow(inComponent: 0))")
         
-        print("handleItemSelect selectedrow = \(self.selectedRow)")
+        //print("handleItemSelect selectedrow = \(self.selectedRow)")
         
         
         print("pickerMode = \(pickerMode)")
@@ -961,7 +966,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
             tasksToLogJSON = []
             //loop thru usage array and build JSON array
             //self.editsMade = false //resets edit checker
-            for  (index,task) in tasksToLog.enumerated() {
+            for  (_,task) in tasksToLog.enumerated() {
                 
                 
                 let JSONString = task.toJSONString(prettyPrint: true)
@@ -1017,7 +1022,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                     }
                     .responseJSON { response in
                         switch response.result {
-                        case .success(let value):
+                        case .success(_):
                             //let updatedJSON = JSON(value)
                             self.indicator.dismissIndicator()
                             
@@ -1137,7 +1142,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
             
             
             if(self.lead?.statusId != newStatusValue && newStatusValue != "na"){
-                print("should update status _newStatusValue = \(newStatusValue)")
+                //print("should update status _newStatusValue = \(newStatusValue)")
                 
                 var statusName = ""
                 switch (newStatusValue) {
@@ -1162,8 +1167,8 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                 
                 
                 
-                let alertController = UIAlertController(title: "Set Lead to \(statusName)", message: "", preferredStyle: UIAlertControllerStyle.alert)
-                let cancelAction = UIAlertAction(title: "No", style: UIAlertActionStyle.destructive) {
+                let alertController = UIAlertController(title: "Set Lead to \(statusName)", message: "", preferredStyle: UIAlertController.Style.alert)
+                let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                     (result : UIAlertAction) -> Void in
                     
                     
@@ -1174,7 +1179,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
                     
                 }
                 
-                let okAction = UIAlertAction(title: "Yes", style: UIAlertActionStyle.default) {
+                let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                     (result : UIAlertAction) -> Void in
                     
                     
@@ -1253,7 +1258,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
    
     
     func handleNewContract(_contract: Contract) {
-        print("handle new contract in assign view contract.ID: \(_contract.ID)")
+        //print("handle new contract in assign view contract.ID: \(_contract.ID)")
         
         _ = self.navigationController?.popViewController(animated: false)
         
@@ -1263,7 +1268,7 @@ class LeadTaskAssignViewController: UIViewController, UIPickerViewDelegate, UITe
     }
     
     func handleNewWorkOrder(_workOrder: WorkOrder) {
-        print("handle new work order in assign view workOrder.ID: \(_workOrder.ID)")
+       // print("handle new work order in assign view workOrder.ID: \(_workOrder.ID)")
         
     
         _ = self.navigationController?.popViewController(animated: false)

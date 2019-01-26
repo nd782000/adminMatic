@@ -32,6 +32,9 @@ class Image {
     var taskID: String = "0"
     var equipmentID: String = "0"
     
+    var usageID:String = "0"
+    var vendorID:String = "0"
+    
     
     var dateAdded: String!
     var createdBy: String!
@@ -75,7 +78,7 @@ class Image {
             self.rawPath = ""
         }
         
-        print("rawPath = \(self.rawPath)")
+       // print("rawPath = \(self.rawPath)")
         
         if _name != nil {
             self.name = _name

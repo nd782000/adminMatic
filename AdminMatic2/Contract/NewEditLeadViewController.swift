@@ -12,7 +12,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIScrollViewDelegate {
+class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIScrollViewDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
@@ -78,6 +78,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     var urgentLbl:GreyLabel!
     var urgentSwitch:UISwitch = UISwitch()
     
+    
     //rep search
     var repLbl:GreyLabel!
     var repSearchBar:UISearchBar = UISearchBar()
@@ -134,9 +135,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(LeadViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(LeadViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -254,9 +255,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         statusToolBar.barStyle = UIBarStyle.default
         statusToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         statusToolBar.sizeToFit()
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditLeadViewController.cancelStatusInput))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setStatusButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditLeadViewController.handleStatusChange))
+        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelStatusInput))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let setStatusButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleStatusChange))
         statusToolBar.setItems([closeButton, spaceButton, setStatusButton], animated: false)
         statusToolBar.isUserInteractionEnabled = true
         statusTxtField.inputAccessoryView = statusToolBar
@@ -276,7 +277,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         
         customerSearchBar.backgroundColor = UIColor.white
         customerSearchBar.barTintColor = UIColor.white
-        customerSearchBar.searchBarStyle = UISearchBarStyle.default
+        customerSearchBar.searchBarStyle = UISearchBar.Style.default
         customerSearchBar.delegate = self
         customerSearchBar.tag = 1
         self.view.addSubview(customerSearchBar)
@@ -285,7 +286,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         custToolBar.barStyle = UIBarStyle.default
         custToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         custToolBar.sizeToFit()
-        let closeCustButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditLeadViewController.cancelCustInput))
+        let closeCustButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelCustInput))
         
         custToolBar.setItems([closeCustButton], animated: false)
         custToolBar.isUserInteractionEnabled = true
@@ -319,6 +320,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         
         self.scheduleTypePicker = Picker()
         self.scheduleTypePicker.delegate = self
+        self.scheduleTypePicker.dataSource = self
         self.scheduleTypePicker.tag = 2
         self.scheduleTypeTxtField = PaddedTextField(placeholder: "Schedule Type...")
         self.scheduleTypeTxtField.translatesAutoresizingMaskIntoConstraints = false
@@ -331,9 +333,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         scheduleTypeToolBar.barStyle = UIBarStyle.default
         scheduleTypeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         scheduleTypeToolBar.sizeToFit()
-         let closeScheduleTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditLeadViewController.cancelScheduleTypeInput))
+         let closeScheduleTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelScheduleTypeInput))
         
-        let setScheduleTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditLeadViewController.handleScheduleTypeChange))
+        let setScheduleTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleScheduleTypeChange))
         scheduleTypeToolBar.setItems([closeScheduleTypeButton, spaceButton, setScheduleTypeButton], animated: false)
         scheduleTypeToolBar.isUserInteractionEnabled = true
         scheduleTypeTxtField.inputAccessoryView = scheduleTypeToolBar
@@ -354,7 +356,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         
         //date
         aptDatePickerView = DatePicker()
-        aptDatePickerView.datePickerMode = UIDatePickerMode.date
+        aptDatePickerView.datePickerMode = UIDatePicker.Mode.date
         
         self.aptDateTxtField = PaddedTextField(placeholder: "Date...")
         self.aptDateTxtField.returnKeyType = UIReturnKeyType.next
@@ -367,16 +369,16 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         aptDateToolBar.barStyle = UIBarStyle.default
         aptDateToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         aptDateToolBar.sizeToFit()
-        let closeAptDateButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditLeadViewController.cancelAptDateInput))
+        let closeAptDateButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelAptDateInput))
         
-        let setDateButton = UIBarButtonItem(title: "Set Date", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditLeadViewController.handleAptDatePicker))
+        let setDateButton = UIBarButtonItem(title: "Set Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleAptDatePicker))
         aptDateToolBar.setItems([closeAptDateButton, spaceButton, setDateButton], animated: false)
         aptDateToolBar.isUserInteractionEnabled = true
         aptDateTxtField.inputAccessoryView = aptDateToolBar
         
         //time
         aptTimePickerView = DatePicker()
-        aptTimePickerView.datePickerMode = UIDatePickerMode.time
+        aptTimePickerView.datePickerMode = UIDatePicker.Mode.time
         
         self.aptTimeTxtField = PaddedTextField(placeholder: "Time...")
         self.aptTimeTxtField.returnKeyType = UIReturnKeyType.next
@@ -389,9 +391,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         aptTimeToolBar.barStyle = UIBarStyle.default
         aptTimeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         aptTimeToolBar.sizeToFit()
-        let closeAptTimeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditLeadViewController.cancelAptTimeInput))
+        let closeAptTimeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelAptTimeInput))
         
-        let setTimeButton = UIBarButtonItem(title: "Set Time", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditLeadViewController.handleAptTimePicker))
+        let setTimeButton = UIBarButtonItem(title: "Set Time", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleAptTimePicker))
         aptTimeToolBar.setItems([closeAptTimeButton, spaceButton, setTimeButton], animated: false)
         aptTimeToolBar.isUserInteractionEnabled = true
         aptTimeTxtField.inputAccessoryView = aptTimeToolBar
@@ -410,7 +412,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
             
             
             //let currentDate = Date()  //5 -  get the current date
-            print("lead.date = \(lead.date)")
+            //print("lead.date = \(lead.date)")
             //print("lead.dateRaw = \(lead.dateRaw)")
             if(lead.date != "" && lead.date != "null"){
                
@@ -448,7 +450,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         
        
         deadlinePickerView = DatePicker()
-        deadlinePickerView.datePickerMode = UIDatePickerMode.date
+        deadlinePickerView.datePickerMode = UIDatePicker.Mode.date
         
         
         //self.deadlineTxtField = PaddedTextField()
@@ -463,14 +465,14 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         deadlineToolBar.barStyle = UIBarStyle.default
         deadlineToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         deadlineToolBar.sizeToFit()
-        let closeDeadlineButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditLeadViewController.cancelDeadlineInput))
-        let setDeadlineButton = UIBarButtonItem(title: "Set Deadline", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditLeadViewController.handleDeadlinePicker))
+        let closeDeadlineButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelDeadlineInput))
+        let setDeadlineButton = UIBarButtonItem(title: "Set Deadline", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleDeadlinePicker))
         deadlineToolBar.setItems([closeDeadlineButton, spaceButton, setDeadlineButton], animated: false)
         deadlineToolBar.isUserInteractionEnabled = true
         deadlineTxtField.inputAccessoryView = deadlineToolBar
         
         
-        print("deadline = \(lead.deadline)")
+        //print("deadline = \(lead.deadline)")
         if(lead.deadline != "" && lead.deadline != "null"){
             self.deadlineTxtField.text = lead.deadline
         }
@@ -519,7 +521,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         
         repSearchBar.backgroundColor = UIColor.white
         repSearchBar.barTintColor = UIColor.white
-        repSearchBar.searchBarStyle = UISearchBarStyle.default
+        repSearchBar.searchBarStyle = UISearchBar.Style.default
         
         
         repSearchBar.delegate = self
@@ -530,7 +532,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         repToolBar.barStyle = UIBarStyle.default
         repToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         repToolBar.sizeToFit()
-        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditLeadViewController.cancelRepInput))
+        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelRepInput))
        
         repToolBar.setItems([closeRepButton], animated: false)
         repToolBar.isUserInteractionEnabled = true
@@ -595,7 +597,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         descriptionToolBar.barStyle = UIBarStyle.default
         descriptionToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         descriptionToolBar.sizeToFit()
-        let closeDescriptionButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewEditLeadViewController.cancelDescriptionInput))
+        let closeDescriptionButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelDescriptionInput))
         
         descriptionToolBar.setItems([closeDescriptionButton], animated: false)
         descriptionToolBar.isUserInteractionEnabled = true
@@ -760,6 +762,16 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         super.viewDidLayoutSubviews()
     }
     
+    
+    
+   
+    //picker methods
+    // Number of columns of data
+   func numberOfComponents(in pickerView: UIPickerView) -> Int {
+       return 1
+    }
+    
+    
     // returns the number of 'columns' to display.
     func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
         return 1
@@ -866,6 +878,10 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
         }
  
     }
+ 
+ 
+    
+    
     
     func cancelPicker(){
         //self.statusValueToUpdate = self.statusValue
@@ -1155,7 +1171,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
                 print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
             }
             cell.nameLbl.attributedText = highlightedText
@@ -1190,7 +1206,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
                 print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                    highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                    highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
             }
             cell.nameLbl.attributedText = highlightedText
@@ -1295,7 +1311,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     
     func validateFields()->Bool{
         print("validate fields")
-        print("lead.scheduleType = \(lead.scheduleType)")
+       // print("lead.scheduleType = \(lead.scheduleType)")
         //customer check
         if(lead.customer == ""){
             print("select a customer")
@@ -1427,13 +1443,13 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UITextF
     @objc func goBack(){
         if(self.editsMade == true){
             print("editsMade = true")
-            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("Cancel")
             }
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
                 _ = self.navigationController?.popViewController(animated: true)

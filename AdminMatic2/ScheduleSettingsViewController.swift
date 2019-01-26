@@ -98,9 +98,9 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         title = "Schedule Settings"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(ScheduleSettingsViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(ScheduleSettingsViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -138,10 +138,10 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         self.view.addSubview(startLbl)
         
         
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
         startPickerView = DatePicker()
-        startPickerView.datePickerMode = UIDatePickerMode.date
+        startPickerView.datePickerMode = UIDatePicker.Mode.date
         startStopFormatter.dateFormat = "MM/dd/yy"
         
         self.startTxtField = PaddedTextField()
@@ -151,7 +151,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         self.startTxtField.tag = 8
         self.startTxtField.inputView = self.startPickerView
         //self.startTxtField.text = self.startDate
-        self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
+        self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.startTxtField)
         
         
@@ -161,7 +161,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         startToolBar.barStyle = UIBarStyle.default
         startToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         startToolBar.sizeToFit()
-        let setStartButton = UIBarButtonItem(title: "Set Start Date", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStartPicker))
+        let setStartButton = UIBarButtonItem(title: "Set Start Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStartPicker))
         startToolBar.setItems([spaceButton, setStartButton], animated: false)
         startToolBar.isUserInteractionEnabled = true
         startTxtField.inputAccessoryView = startToolBar
@@ -174,21 +174,21 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         
         print("layoutViews 2")
         stopPickerView = DatePicker()
-        stopPickerView.datePickerMode = UIDatePickerMode.date
+        stopPickerView.datePickerMode = UIDatePicker.Mode.date
         
         self.stopTxtField = PaddedTextField()
         self.stopTxtField.returnKeyType = UIReturnKeyType.next
         self.stopTxtField.delegate = self
         self.stopTxtField.tag = 8
         self.stopTxtField.inputView = self.stopPickerView
-        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
+        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.stopTxtField)
         
         let stopToolBar = UIToolbar()
         stopToolBar.barStyle = UIBarStyle.default
         stopToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         stopToolBar.sizeToFit()
-        let setStopButton = UIBarButtonItem(title: "Set Stop Date", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
+        let setStopButton = UIBarButtonItem(title: "Set Stop Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
         stopToolBar.setItems([spaceButton, setStopButton], animated: false)
         stopToolBar.isUserInteractionEnabled = true
         stopTxtField.inputAccessoryView = stopToolBar
@@ -242,8 +242,8 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         plowDepthToolBar.barStyle = UIBarStyle.default
         plowDepthToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         plowDepthToolBar.sizeToFit()
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ScheduleSettingsViewController.cancelPlowDepthInput))
-        let setPlowDepthButton = UIBarButtonItem(title: "Set Plow Depth", style: UIBarButtonItemStyle.plain, target: self, action: #selector(ScheduleSettingsViewController.handlePlowDepthChange))
+        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ScheduleSettingsViewController.cancelPlowDepthInput))
+        let setPlowDepthButton = UIBarButtonItem(title: "Set Plow Depth", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ScheduleSettingsViewController.handlePlowDepthChange))
         plowDepthToolBar.setItems([closeButton, spaceButton, setPlowDepthButton], animated: false)
         plowDepthToolBar.isUserInteractionEnabled = true
         plowDepthTxtField.inputAccessoryView = plowDepthToolBar
@@ -388,7 +388,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
         // shows first 3 status options, not cancel or waiting
        
-        var count:Int = self.plowDepthArray.count
+        let count:Int = self.plowDepthArray.count
        
        
         return count

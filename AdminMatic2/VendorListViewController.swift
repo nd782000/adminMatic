@@ -11,7 +11,7 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 
 //extension String: SequenceType {}
 
@@ -293,7 +293,7 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
             return nil
         }else{
             if(sections[section].title == "#"){
-                return "    # \(self.totalVendors)  Vendors Found"
+                return "    # \(String(describing: self.totalVendors))  Vendors Found"
             }else{
                 return "    " + sections[section].title //hack way of indenting section text
                 
@@ -395,7 +395,7 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
                     print("Oh no! \(regexError)")
                 } else {
                     for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                        highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                        highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                     }
                 }
                 cell.nameLbl.attributedText = highlightedText
@@ -440,7 +440,7 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
             
             if (cleanPhoneNumber(currentCell.phone) != ""){
                 
-                UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.phone))")! as URL, options: [:], completionHandler: nil)
+                UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.phone))")! as URL, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
             }
             
             
@@ -456,7 +456,7 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
     }
     
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         // you need to implement this method too or you can't swipe to display the actions
     }
 
@@ -469,4 +469,9 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
     
     
     
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
 }

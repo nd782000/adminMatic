@@ -9,6 +9,7 @@
 
 import Foundation
 import UIKit
+import Alamofire
 //import Nuke
 
 class AttachmentTableViewCell: UITableViewCell {
@@ -27,7 +28,7 @@ class AttachmentTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         self.selectionStyle = .none
@@ -47,7 +48,7 @@ class AttachmentTableViewCell: UITableViewCell {
         
         
         
-        activityView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        activityView = UIActivityIndicatorView(style: .gray)
         //activityView.center = CGPoint(x: self.picImageView.frame.size.width, y: self.picImageView.frame.size.height)
         
         activityView.translatesAutoresizingMaskIntoConstraints = false
@@ -73,7 +74,7 @@ class AttachmentTableViewCell: UITableViewCell {
         let viewsDictionary2 = ["activityView":activityView] as [String : Any]
         
         picImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activityView]-|", options: [], metrics: nil, views: viewsDictionary2))
-        picImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activityView]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
+        picImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activityView]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
     }
     
     
@@ -83,15 +84,29 @@ class AttachmentTableViewCell: UITableViewCell {
         
         print("set imgURL = \(imgURL)")
         
-        
-        /*
-        Nuke.loadImage(with: imgURL, into: self.picImageView){ 
-            //print("nuke loadImage")
-            self.picImageView.handle(response: $0, isFromMemoryCache: $1)
-            self.activityView.stopAnimating()
+        Alamofire.request(_url).responseImage { response in
+            debugPrint(response)
             
+            //print(response.request)
+            //print(response.response)
+            debugPrint(response.result)
+            
+            if let image = response.result.value {
+                print("image downloaded: \(image)")
+                
+                self.picImageView.image = image
+                
+                
+                
+                self.activityView.stopAnimating()
+                
+                
+            }
         }
- */
+        
+        
+        
+       
         
         
     }

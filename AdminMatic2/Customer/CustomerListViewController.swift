@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 
 
 enum SearchMode{
@@ -179,7 +179,7 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         self.countView.addSubview(self.countLbl)
         
         
-        
+       /*
         //auto layout group
         let viewsDictionary = [
             "view2":customSC,
@@ -204,6 +204,41 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[countLbl]|", options: [], metrics: sizeVals, views: viewsDictionary2))
         
         self.countView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[countLbl(20)]", options: [], metrics: sizeVals, views: viewsDictionary2))
+ 
+ */
+        
+        //self.loggedInBtn.translatesAutoresizingMaskIntoConstraints = false
+        customSC.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        customSC.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        customSC.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        customSC.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        
+        
+        self.countView.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        self.countView.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        self.countView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        self.countView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        
+        print("customSC height = \(customSC.frame.size.height)")
+        self.customerTableView.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        //self.customerTableView.topAnchor.constraint(equalTo: view.safeTopAnchor, constant: customSC.frame.size.height).isActive = true
+        self.customerTableView.topAnchor.constraint(equalTo: view.safeTopAnchor, constant: 40.0).isActive = true
+        self.customerTableView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        //self.customerTableView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        self.customerTableView.bottomAnchor.constraint(equalTo: view.safeBottomAnchor, constant: -40.0).isActive = true
+        //self.customerTableView.heightAnchor.constraint(equalToConstant: self.vi)
+        
+        
+        
+        self.countLbl.leftAnchor.constraint(equalTo: countView.safeLeftAnchor, constant: 10.0).isActive = true
+        self.countLbl.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor).isActive = true
+        self.countLbl.widthAnchor.constraint(equalToConstant: self.view.frame.width - 20.0).isActive = true
+        self.countLbl.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        
+        
     }
     
    
@@ -281,7 +316,7 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
             return nil
         }else{
             if(sections[section].title == "#"){
-                return "    # \(self.totalCustomers)  Customers Found"
+                return "    # \(String(describing: self.totalCustomers))  Customers Found"
             }else{
                 return "    " + sections[section].title //hack way of indenting section text
                 
@@ -366,7 +401,7 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
                     print("Oh no! \(regexError)")
                 } else {
                     for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                        highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                        highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                     }
                 }
                 cell.nameLbl.attributedText = highlightedText
@@ -399,7 +434,7 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
                     print("Oh no! \(regexError)")
                 } else {
                     for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                        highlightedText.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.yellow, range: match.range)
+                        highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                     }
                     
                 }
@@ -444,6 +479,8 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
 }
 
 

@@ -92,9 +92,9 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
         title = "Signature View"
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(CustomerViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(CustomerViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -125,7 +125,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
         //print("customer view layoutViews")
         //////////   containers for different sections
         
-        self.termsBtn.addTarget(self, action: #selector(SignatureViewController.terms), for: UIControlEvents.touchUpInside)
+        self.termsBtn.addTarget(self, action: #selector(SignatureViewController.terms), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.termsBtn)
         
         self.signatureView.backgroundColor = UIColor.clear
@@ -137,10 +137,10 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
         
         self.view.addSubview(self.signatureView)
         
-        self.clearBtn.addTarget(self, action: #selector(SignatureViewController.clear), for: UIControlEvents.touchUpInside)
+        self.clearBtn.addTarget(self, action: #selector(SignatureViewController.clear), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.clearBtn)
         
-        self.acceptBtn.addTarget(self, action: #selector(SignatureViewController.accept), for: UIControlEvents.touchUpInside)
+        self.acceptBtn.addTarget(self, action: #selector(SignatureViewController.accept), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.acceptBtn)
         
         
@@ -294,7 +294,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
             }
             
             
-            if  let imageData = UIImageJPEGRepresentation(self.signatureImage!.fixedOrientation(), 0.85) {
+            if  let imageData = self.signatureImage!.fixedOrientation().jpegData(compressionQuality: 0.85) {
                 multipartFormData.append(imageData, withName: "pic", fileName: "swift_file.jpeg", mimeType: "image/jpeg")
                 
             }
@@ -387,7 +387,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     @objc func updateContractStatus() {
         
         print("update contract status")
-        print("contract status = \(self.contract.status)")
+        //print("contract status = \(self.contract.status)")
         
         
         if self.contract.status == "2"{
@@ -396,14 +396,14 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
             self.goBack()
             
         }else{
-            let alertController = UIAlertController(title: "Update Contract Status?", message: "Do you want to set the contract to ACCEPTED?", preferredStyle: UIAlertControllerStyle.alert)
-            let cancelAction = UIAlertAction(title: "NO", style: UIAlertActionStyle.destructive) {
+            let alertController = UIAlertController(title: "Update Contract Status?", message: "Do you want to set the contract to ACCEPTED?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 self.signatureView.clear()
                 self.delegate.updateContract(_contract: self.contract)
                 self.goBack()
             }
-            let okAction = UIAlertAction(title: "YES", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 
                 self.signatureView.clear()
@@ -426,9 +426,9 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
         
         print("completeEmployeeUpload")
         
-            let alertController = UIAlertController(title: "Your Signature is All Set", message: "", preferredStyle: UIAlertControllerStyle.alert)
+            let alertController = UIAlertController(title: "Your Signature is All Set", message: "", preferredStyle: UIAlertController.Style.alert)
         
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 
                 if(self.delegate != nil){
@@ -439,14 +439,12 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
                 
                 for rep in self.appDelegate.salesRepArray {
                     print("looping through sales rep array to update")
-                    if self.contract.salesRep == rep.ID{
-                        //if rep.hasSignature == true {
+                    if self.contract != nil{
+                        if self.contract.salesRep == rep.ID{
                             rep.hasSignature = true
-                            //print("hasSignature = true")
-                            
-                        //}
-                        
+                        }
                     }
+                    
                 }
                 
                 

@@ -62,6 +62,11 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     var endDateDB:String!
 
     
+    var methodStart:Date!
+    var methodFinish:Date!
+    
+    
+    
     init(_empID:String){
         super.init(nibName:nil,bundle:nil)
         self.empID = _empID
@@ -94,9 +99,9 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         endDateDB = dateFormatterDB.string(from: now)
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(PerformanceViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(PerformanceViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -117,7 +122,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     func getPerformance(){
         print("get all usage")
         
-        
+        methodStart = Date()
         indicator = SDevIndicator.generate(self.view)!
         
         
@@ -135,6 +140,9 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
             .responseJSON(){
                 response in
                 
+                
+                
+                /*
                 if let json = response.result.value {
                     print("JSON: \(json)")
                     //self.images = JSON(json)
@@ -142,6 +150,144 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
                     self.parseUsageJSON()
                     
                 }
+ */
+                
+                self.usages = []
+                
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                
+                
+                
+                //native way
+                
+                do {
+                    if let data = response.data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        let usages = json["usage"] as? [[String: Any]] {
+                        
+                        
+                        self.total = json["usageTotalHrs"] as? String
+                        self.totalPrice = json["usageTotalPrice"] as! String
+                        
+                        let usageCount = usages.count
+                        print("usage count = \(usageCount)")
+                        
+                        
+                        for n in 0 ..< usageCount {
+                            let startDate = dateFormatter.date(from: usages[n]["start"] as! String)!
+                            
+                            
+                            let usage:Usage!
+                            
+                            
+                            if(usages[n]["stop"] as! String != "0000-00-00 00:00:00"){
+                                let stopDate = dateFormatter.date(from: usages[n]["stop"] as! String)!
+                                
+                                usage = Usage(_ID: usages[n]["ID"] as? String,
+                                              _empID: usages[n]["empID"] as? String,
+                                              _depID: usages[n]["depID"] as? String,
+                                              _woID: usages[n]["woID"] as? String,
+                                              _start: startDate,
+                                              _stop: stopDate,
+                                              _lunch: usages[n]["lunch"] as? String,
+                                              _qty: usages[n]["qty"] as? String,
+                                              _empName: usages[n]["empName"] as? String,
+                                              _type: usages[n]["type"] as? String,
+                                              _itemID: usages[n]["woItemID"] as? String,
+                                              _unitPrice: usages[n]["unitPrice"] as? String,
+                                              _totalPrice: usages[n]["totalPrice"] as? String,
+                                              _vendor: usages[n]["vendor"] as? String,
+                                              _unitCost: usages[n]["unitCost"] as? String,
+                                              _totalCost: usages[n]["totalCost"] as? String,
+                                              _chargeType: usages[n]["chargeID"] as? String,
+                                              _override: usages[n]["override"] as? String,
+                                              _empPic: usages[n]["empPic"] as? String,
+                                              _locked: true,
+                                              _addedBy: usages[n]["addedBy"] as? String,
+                                              _del: ""
+                                )
+                                
+                            }else{
+                                
+                                usage = Usage(_ID: usages[n]["ID"] as? String,
+                                              _empID: usages[n]["empID"] as? String,
+                                              _depID: usages[n]["depID"] as? String,
+                                              _woID: usages[n]["woID"] as? String,
+                                              _start: startDate,
+                                              _lunch: usages[n]["lunch"] as? String,
+                                              _qty: usages[n]["qty"] as? String,
+                                              _empName: usages[n]["empName"] as? String,
+                                              _type: usages[n]["type"] as? String,
+                                              _itemID: usages[n]["woItemID"] as? String,
+                                              _unitPrice: usages[n]["unitPrice"] as? String,
+                                              _totalPrice: usages[n]["totalPrice"] as? String,
+                                              _vendor: usages[n]["vendor"] as? String,
+                                              _unitCost: usages[n]["unitCost"] as? String,
+                                              _totalCost: usages[n]["totalCost"] as? String,
+                                              _chargeType: usages[n]["chargeID"] as? String,
+                                              _override: usages[n]["override"] as? String,
+                                              _empPic: usages[n]["empPic"] as? String,
+                                              _locked: true,
+                                              _addedBy: usages[n]["addedBy"] as? String,
+                                              _del: ""
+                                )
+                                
+                                
+                            }
+                            usage.custName = usages[n]["custName"] as? String
+                            usage.woStatus = usages[n]["woStatus"] as? String
+                            
+                            self.usages.append(usage)
+                        }
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    self.methodFinish = Date()
+                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
+                    print("Execution time: \(executionTime)")
+                    
+                    
+                    self.indicator.dismissIndicator()
+                    
+                    
+                    //self.layoutViews()
+                    
+                    print("usage count \(self.usages.count)")
+                    
+                    
+                    
+                    
+                    
+                    
+                    if (UIDevice.current.orientation.isLandscape == true) {
+                        print("Landscape")
+                        self.layoutViewsLandscape()
+                    } else {
+                        print("Portrait")
+                        self.layoutViewsPortrait()
+                    }
+                    
+                    
+                    
+                    
+                    self.performanceTableView.reloadData()
+                    
+                   
+                    
+                } catch {
+                    print("Error deserializing JSON: \(error)")
+                }
+                
+                
+                
+                
+                
+                
                 
                 self.indicator.dismissIndicator()
         }
@@ -152,10 +298,12 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         
     }
     
+    
+    /*
     func parseUsageJSON(){
         
         
-        print("parse usageJSON: \(self.usageJSON)")
+        print("parse usageJSON: \(String(describing: self.usageJSON))")
         
         self.usages = []
         
@@ -254,6 +402,8 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.performanceTableView.reloadData()
     }
     
+    */
+    
     
     
     
@@ -282,11 +432,11 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.toLbl.textAlignment = NSTextAlignment.left
         self.view.addSubview(self.toLbl)
         
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
         //start
         startPickerView = DatePicker()
-        startPickerView.datePickerMode = UIDatePickerMode.date
+        startPickerView.datePickerMode = UIDatePicker.Mode.date
         startStopFormatter.dateFormat = "MM/dd/yy"
         
         self.startTxtField = PaddedTextField()
@@ -295,7 +445,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.startTxtField.delegate = self
         self.startTxtField.tag = 8
         self.startTxtField.inputView = self.startPickerView
-        self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
+        self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.startTxtField)
         
         
@@ -303,7 +453,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         startToolBar.barStyle = UIBarStyle.default
         startToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         startToolBar.sizeToFit()
-        let setStartButton = UIBarButtonItem(title: "Set Start Date", style: UIBarButtonItemStyle.plain, target: self, action: #selector(PerformanceViewController.handleStartPicker))
+        let setStartButton = UIBarButtonItem(title: "Set Start Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PerformanceViewController.handleStartPicker))
         startToolBar.setItems([spaceButton, setStartButton], animated: false)
         startToolBar.isUserInteractionEnabled = true
         startTxtField.inputAccessoryView = startToolBar
@@ -313,21 +463,21 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         //stop
         
         stopPickerView = DatePicker()
-        stopPickerView.datePickerMode = UIDatePickerMode.date
+        stopPickerView.datePickerMode = UIDatePicker.Mode.date
         
         self.stopTxtField = PaddedTextField()
         self.stopTxtField.returnKeyType = UIReturnKeyType.next
         self.stopTxtField.delegate = self
         self.stopTxtField.tag = 8
         self.stopTxtField.inputView = self.stopPickerView
-        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
+        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.stopTxtField)
         
         let stopToolBar = UIToolbar()
         stopToolBar.barStyle = UIBarStyle.default
         stopToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         stopToolBar.sizeToFit()
-        let setStopButton = UIBarButtonItem(title: "Set Stop Date", style: UIBarButtonItemStyle.plain, target: self, action: #selector(PerformanceViewController.handleStopPicker))
+        let setStopButton = UIBarButtonItem(title: "Set Stop Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PerformanceViewController.handleStopPicker))
         stopToolBar.setItems([spaceButton, setStopButton], animated: false)
         stopToolBar.isUserInteractionEnabled = true
         stopTxtField.inputAccessoryView = stopToolBar
@@ -430,10 +580,10 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.toLbl.textAlignment = NSTextAlignment.left
         self.view.addSubview(self.toLbl)
         
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
         startPickerView = DatePicker()
-        startPickerView.datePickerMode = UIDatePickerMode.date
+        startPickerView.datePickerMode = UIDatePicker.Mode.date
         startStopFormatter.dateFormat = "MM/dd/yy"
         
         self.startTxtField = PaddedTextField()
@@ -442,7 +592,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.startTxtField.delegate = self
         self.startTxtField.tag = 8
         self.startTxtField.inputView = self.startPickerView
-        self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
+        self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.startTxtField)
         
         
@@ -452,7 +602,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         startToolBar.barStyle = UIBarStyle.default
         startToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         startToolBar.sizeToFit()
-        let setStartButton = UIBarButtonItem(title: "Set Start Date", style: UIBarButtonItemStyle.plain, target: self, action: #selector(PerformanceViewController.handleStartPicker))
+        let setStartButton = UIBarButtonItem(title: "Set Start Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PerformanceViewController.handleStartPicker))
         startToolBar.setItems([spaceButton, setStartButton], animated: false)
         startToolBar.isUserInteractionEnabled = true
         startTxtField.inputAccessoryView = startToolBar
@@ -460,21 +610,21 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         //stop
         
         stopPickerView = DatePicker()
-        stopPickerView.datePickerMode = UIDatePickerMode.date
+        stopPickerView.datePickerMode = UIDatePicker.Mode.date
         
         self.stopTxtField = PaddedTextField()
         self.stopTxtField.returnKeyType = UIReturnKeyType.next
         self.stopTxtField.delegate = self
         self.stopTxtField.tag = 8
         self.stopTxtField.inputView = self.stopPickerView
-        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSAttributedStringKey.foregroundColor: layoutVars.buttonColor1])
+        self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
         self.view.addSubview(self.stopTxtField)
         
         let stopToolBar = UIToolbar()
         stopToolBar.barStyle = UIBarStyle.default
         stopToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         stopToolBar.sizeToFit()
-        let setStopButton = UIBarButtonItem(title: "Set Stop Date", style: UIBarButtonItemStyle.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
+        let setStopButton = UIBarButtonItem(title: "Set Stop Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
         stopToolBar.setItems([spaceButton, setStopButton], animated: false)
         stopToolBar.isUserInteractionEnabled = true
         stopTxtField.inputAccessoryView = stopToolBar

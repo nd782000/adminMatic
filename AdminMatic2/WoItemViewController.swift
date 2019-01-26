@@ -114,9 +114,9 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         title = "W.O. Item #" + self.woItem.ID
         
         //custom back button
-        let backButton:UIButton = UIButton(type: UIButtonType.custom)
-        backButton.addTarget(self, action: #selector(WoItemViewController.goBack), for: UIControlEvents.touchUpInside)
-        backButton.setTitle("Back", for: UIControlState.normal)
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(WoItemViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
@@ -216,7 +216,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         let itemNameViewsDictionary = ["itemLbl":self.itemLbl]  as [String:AnyObject]
         
 
-        self.itemNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-50-[itemLbl]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: sizeVals, views: itemNameViewsDictionary))
+        self.itemNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-50-[itemLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: sizeVals, views: itemNameViewsDictionary))
         
         self.itemNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[itemLbl(20)]", options: [], metrics: sizeVals, views: itemNameViewsDictionary))
         
@@ -264,7 +264,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             "totalValueLabel":self.totalValueLabel
         ]  as [String:AnyObject]
         
-        self.chargeTypeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[chargeTypeLabel][chargeTypeValueLabel]-[totalLabel][totalValueLabel]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: sizeVals, views: chargeViewsDictionary))
+        self.chargeTypeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[chargeTypeLabel][chargeTypeValueLabel]-[totalLabel][totalValueLabel]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: sizeVals, views: chargeViewsDictionary))
         self.chargeTypeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[chargeTypeLabel(20)]", options: [], metrics: sizeVals, views: chargeViewsDictionary))
         
         
@@ -316,7 +316,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             "remainValueLabel":self.remainValueLabel
         ]  as [String:AnyObject]
         
-        self.estimatedView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[estLabel][estValueLabel]-[actualLabel][actualValueLabel]-[remainLabel][remainValueLabel]-10-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: sizeVals, views: estimatedViewsDictionary))
+        self.estimatedView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[estLabel][estValueLabel]-[actualLabel][actualValueLabel]-[remainLabel][remainValueLabel]-10-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: sizeVals, views: estimatedViewsDictionary))
         self.estimatedView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[estLabel(20)]", options: [], metrics: sizeVals, views: estimatedViewsDictionary))
         self.estimatedView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[remainLabel(20)]", options: [], metrics: sizeVals, views: estimatedViewsDictionary))
         
@@ -389,7 +389,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             "costLabel":self.costLabel, "costValueLabel":self.costValueLabel,"profitLabel":self.profitLabel, "profitValueLabel":self.profitValueLabel,"profitBarView":self.profitBarView
             
         ]  as [String:AnyObject]
-        self.profitView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[costLabel][costValueLabel]-[profitLabel][profitValueLabel]", options: NSLayoutFormatOptions.alignAllCenterY, metrics: sizeVals, views: profitViewsDictionary))
+        self.profitView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[costLabel][costValueLabel]-[profitLabel][profitValueLabel]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: sizeVals, views: profitViewsDictionary))
         self.profitView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[profitLabel(20)]", options: [], metrics: sizeVals, views: profitViewsDictionary))
         
         
@@ -442,7 +442,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         self.usageView.addSubview(usageBtn)
         
         //just a temp hook up to usage view controller
-        self.usageBtn.addTarget(self, action: #selector(WoItemViewController.enterUsage), for: UIControlEvents.touchUpInside)
+        self.usageBtn.addTarget(self, action: #selector(WoItemViewController.enterUsage), for: UIControl.Event.touchUpInside)
         
         
         let usageViewsDictionary = [
@@ -456,14 +456,14 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         ///////////   Item Details Section   /////////////
         
-        self.leadTasksWaitingBtn.addTarget(self, action: #selector(ContractItemViewController.assignLeadTasks), for: UIControlEvents.touchUpInside)
+        self.leadTasksWaitingBtn.addTarget(self, action: #selector(ContractItemViewController.assignLeadTasks), for: UIControl.Event.touchUpInside)
         self.detailsView.addSubview(self.leadTasksWaitingBtn)
         
         
         self.itemDetailsTableView.delegate  =  self
         self.itemDetailsTableView.dataSource = self
         
-        self.itemDetailsTableView.rowHeight = UITableViewAutomaticDimension
+        self.itemDetailsTableView.rowHeight = UITableView.automaticDimension
         self.itemDetailsTableView.estimatedRowHeight = 100.0
         
         
@@ -748,11 +748,11 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         print("photo action sheet")
         //photos for done action
         
-        let actionSheet = UIAlertController(title: "Add image(s) of completed work ", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        let actionSheet = UIAlertController(title: "Add image(s) of completed work ", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         actionSheet.view.backgroundColor = UIColor.white
         actionSheet.view.layer.cornerRadius = 5;
         
-        actionSheet.addAction(UIAlertAction(title: "Add Task Image(s)", style: UIAlertActionStyle.default, handler: { (alert:UIAlertAction!) -> Void in
+        actionSheet.addAction(UIAlertAction(title: "Add Task Image(s)", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
             let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _taskID: _ID, _customerID: self.customerID, _images: [])
             imageUploadPrepViewController.customerName = self.customerName
             imageUploadPrepViewController.selectedID = self.customerID
@@ -768,31 +768,33 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             
         }))
         
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert:UIAlertAction!) -> Void in
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: { (alert:UIAlertAction!) -> Void in
         }))
         
         
         switch UIDevice.current.userInterfaceIdiom {
         case .phone:
-            self.present(actionSheet, animated: true, completion: nil)
+            self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
             
             break
         // It's an iPhone
         case .pad:
             let nav = UINavigationController(rootViewController: actionSheet)
             nav.modalPresentationStyle = UIModalPresentationStyle.popover
-            let popover = nav.popoverPresentationController as UIPopoverPresentationController!
-            actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
-            popover?.sourceView = self.view
-            popover?.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
+            let popover:UIPopoverPresentationController = nav.popoverPresentationController! 
             
-            self.present(nav, animated: true, completion: nil)
+            //let popover = nav.popoverPresentationController as! UIPopoverPresentationController
+            actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
+            popover.sourceView = self.view
+            popover.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
+            
+            self.layoutVars.present(nav, animated: true, completion: nil)
             break
         // It's an iPad
         case .unspecified:
             break
         default:
-            self.present(actionSheet, animated: true, completion: nil)
+            self.layoutVars.present(actionSheet, animated: true, completion: nil)
             break
             
             // Uh, oh! What could it be?
@@ -813,10 +815,10 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             }else{
                 message = "Contact the office to add tasks to this item."
             }
-            let alertController = UIAlertController(title: "Flat Price Item", message: message, preferredStyle: UIAlertControllerStyle.alert)
+            let alertController = UIAlertController(title: "Flat Price Item", message: message, preferredStyle: UIAlertController.Style.alert)
             
             
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
             }
@@ -943,6 +945,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         editsMade = true
         
         let usageEntryViewController = UsageEntryViewController(_workOrderID: woID,_workOrderItem:self.woItem,_empsOnWo:self.empsOnWo)
+        usageEntryViewController.customerID = self.customerID
         navigationController?.pushViewController(usageEntryViewController, animated: false )
         
     }
@@ -966,7 +969,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     }
     
     func getLead() {
-        print(" GetLead  Lead Id \(self.lead!.ID)")
+        //print(" GetLead  Lead Id \(self.lead!.ID)")
         
         
         self.getTasks()
@@ -1035,9 +1038,13 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         if woDelegate != nil && editsMade == true{
             woDelegate.refreshWo(_refeshWoID: self.woItem.ID, _newWoStatus: self.newWoStatus)
         }
+        
+        /*
         if leadDelegate != nil && editsMade == true{
             leadDelegate.updateLead(_lead: self.lead!, _newStatusValue: (self.lead?.statusId)!)
         }
+ */
+        
         
     }
     
