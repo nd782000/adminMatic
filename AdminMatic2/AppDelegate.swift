@@ -47,6 +47,7 @@ struct defaultsKeys {
 
 
 
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     
