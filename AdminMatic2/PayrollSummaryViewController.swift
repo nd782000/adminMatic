@@ -6,7 +6,7 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
-
+//  Edited for safeView
  
 import Foundation
 import UIKit
@@ -331,6 +331,18 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
             view.removeFromSuperview()
         }
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
+        
         self.screenHeaderLbl = Label()
         self.screenHeaderLbl.text = "\(self.empFirstName!)'s payroll for:"
         self.screenHeaderLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
@@ -437,11 +449,23 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
             view.removeFromSuperview()
         }
         
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
         self.screenHeaderLbl = Label()
         self.screenHeaderLbl.text = "\(self.empFirstName!)'s payroll for:"
         self.screenHeaderLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.screenHeaderLbl.textAlignment = NSTextAlignment.right
-        self.view.addSubview(self.screenHeaderLbl)
+        safeContainer.addSubview(self.screenHeaderLbl)
         
         
         
@@ -450,7 +474,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         self.weekTxtField.delegate = self
         self.weekTxtField.textAlignment = .center
         self.weekTxtField.inputView = weekPicker
-        self.view.addSubview(self.weekTxtField)
+        safeContainer.addSubview(self.weekTxtField)
         
         
         let weekToolBar = UIToolbar()
@@ -470,13 +494,13 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         tableHead.layer.cornerRadius = 4.0
         tableHead.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(tableHead)
+        safeContainer.addSubview(tableHead)
         
         self.payrollTableView =  TableView()
         self.payrollTableView.delegate  =  self
         self.payrollTableView.dataSource  =  self
         self.payrollTableView.register(PayrollSummaryTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.payrollTableView)
+        safeContainer.addSubview(self.payrollTableView)
         
         self.payrollTotalLbl = Label()
         if totalPending {
@@ -487,7 +511,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         
         self.payrollTotalLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.payrollTotalLbl.textAlignment = NSTextAlignment.right
-        self.view.addSubview(self.payrollTotalLbl)
+        safeContainer.addSubview(self.payrollTotalLbl)
         
         
         tableHead.addSubview(dateTH)
@@ -519,15 +543,15 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         let viewsDictionary = ["headerLbl": self.screenHeaderLbl,"weekTxt": self.weekTxtField, "th":self.tableHead,"table": self.payrollTableView,"total": self.payrollTotalLbl] as [String:Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[headerLbl]-3-[weekTxt(120)]-|", options: [], metrics: metricsDictionary, views:viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[headerLbl]-3-[weekTxt(120)]-|", options: [], metrics: metricsDictionary, views:viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[th]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[table]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[th]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[table]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[total]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[total]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-70-[headerLbl(30)]-[th(40)][table]-[total(30)]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-70-[weekTxt(30)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[headerLbl(30)]-[th(40)][table]-[total(30)]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[weekTxt(30)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
     }
     
@@ -689,7 +713,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     @objc func goBack(){
         print("back")
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
     }
     
     

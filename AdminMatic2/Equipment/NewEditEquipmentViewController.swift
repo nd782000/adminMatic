@@ -5,6 +5,9 @@
 //  Created by Nick on 12/19/17.
 //  Copyright © 2017 Nick. All rights reserved.
 //
+
+//  Edited for safeView
+
 import Foundation
 import UIKit
 import Alamofire
@@ -264,50 +267,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
             
             
             
-            /*
-            if let json = response.result.value {
-               
-                let typesCount = JSON(json)["types"].count
-                print("typescount: \(typesCount)")
-                for i in 0 ..< typesCount {
-                    self.typeIDArray.append(JSON(json)["types"][i]["ID"].stringValue)
-                    self.typeNameArray.append(JSON(json)["types"][i]["name"].stringValue)
-                }
-                
-                let fuelTypesCount = JSON(json)["fuelTypes"].count
-                print("fuelTypesCount: \(fuelTypesCount)")
-                for i in 0 ..< fuelTypesCount {
-                    self.fuelIDArray.append(JSON(json)["fuelTypes"][i]["ID"].stringValue)
-                    self.fuelNameArray.append(JSON(json)["fuelTypes"][i]["name"].stringValue)
-                }
-                
-                let engineTypesCount = JSON(json)["engineTypes"].count
-                print("engineTypesCount: \(engineTypesCount)")
-                for i in 0 ..< engineTypesCount {
-                    self.engineIDArray.append(JSON(json)["engineTypes"][i]["ID"].stringValue)
-                    self.engineNameArray.append(JSON(json)["engineTypes"][i]["name"].stringValue)
-                }
-                
-                let crewCount = JSON(json)["crews"].count
-                print("crewCount: \(crewCount)")
-                for i in 0 ..< crewCount {
-                    self.crewIDArray.append(JSON(json)["crews"][i]["ID"].stringValue)
-                    self.crewNameArray.append(JSON(json)["crews"][i]["name"].stringValue)
-                }
-                
-                let vendorCount = JSON(json)["vendors"].count
-                print("vendorCount: \(vendorCount)")
-                for i in 0 ..< vendorCount {
-                    self.vendorIDArray.append(JSON(json)["vendors"][i]["ID"].stringValue)
-                    self.vendorNameArray.append(JSON(json)["vendors"][i]["name"].stringValue)
-                }
-                
-                 self.noPic = JSON(json)["noPic"].stringValue
-                
-                self.layoutViews()
-            }
-            */
-            
+           
             
         }
         
@@ -331,6 +291,15 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
             submitButton = UIBarButtonItem(title: "Update", style: .plain, target: self, action: #selector(NewEditEquipmentViewController.submit))
         }
         navigationItem.rightBarButtonItem = submitButton
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
         
         //image
@@ -382,14 +351,14 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.equipmentImage.layer.borderColor = layoutVars.borderColor
         self.equipmentImage.clipsToBounds = true
         self.equipmentImage.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.equipmentImage)
+        safeContainer.addSubview(self.equipmentImage)
         
         self.tapBtn = Button()
         self.tapBtn.translatesAutoresizingMaskIntoConstraints = false
         self.tapBtn.addTarget(self, action: #selector(NewEditEquipmentViewController.editImage), for: UIControl.Event.touchUpInside)
         self.tapBtn.backgroundColor = UIColor.clear
         self.tapBtn.setTitle("", for: UIControl.State.normal)
-        self.view.addSubview(self.tapBtn)
+        safeContainer.addSubview(self.tapBtn)
         
         
         
@@ -399,7 +368,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.nameLbl.text = "Name:"
         self.nameLbl.textAlignment = .left
         self.nameLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(nameLbl)
+        safeContainer.addSubview(nameLbl)
         if self.equipment.name == ""{
             self.nameTxtField = PaddedTextField(placeholder: "Name")
         }else{
@@ -411,7 +380,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.nameTxtField.delegate = self
         self.nameTxtField.tag = 1
         self.nameTxtField.returnKeyType = .done
-        self.view.addSubview(self.nameTxtField)
+        safeContainer.addSubview(self.nameTxtField)
         
         
         //crew
@@ -420,7 +389,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.crewLbl.text = "Crew:"
         self.crewLbl.textAlignment = .left
         self.crewLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(crewLbl)
+        safeContainer.addSubview(crewLbl)
         
         self.crewPicker = Picker()
         self.crewPicker.delegate = self
@@ -431,7 +400,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.crewTxtField.tag = 2
         self.crewTxtField.inputView = crewPicker
         self.crewTxtField.returnKeyType = .done
-        self.view.addSubview(self.crewTxtField)
+        safeContainer.addSubview(self.crewTxtField)
         
         
         let crewToolBar = UIToolbar()
@@ -456,7 +425,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.makeLbl.text = "Make:"
         self.makeLbl.textAlignment = .left
         self.makeLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(makeLbl)
+        safeContainer.addSubview(makeLbl)
         if self.equipment.make == ""{
             self.makeTxtField = PaddedTextField(placeholder: "Make")
         }else{
@@ -467,7 +436,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.makeTxtField.delegate = self
         self.makeTxtField.tag = 3
         self.makeTxtField.returnKeyType = .done
-        self.view.addSubview(self.makeTxtField)
+        safeContainer.addSubview(self.makeTxtField)
         
         
         //model
@@ -475,7 +444,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.modelLbl.text = "Model:"
         self.modelLbl.textAlignment = .left
         self.modelLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(modelLbl)
+        safeContainer.addSubview(modelLbl)
         if self.equipment.model == ""{
             self.modelTxtField = PaddedTextField(placeholder: "Model")
         }else{
@@ -486,14 +455,14 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.modelTxtField.delegate = self
         self.modelTxtField.tag = 4
         self.modelTxtField.returnKeyType = .done
-        self.view.addSubview(self.modelTxtField)
+        safeContainer.addSubview(self.modelTxtField)
         
         //type
         self.typeLbl = GreyLabel()
         self.typeLbl.text = "Type:"
         self.typeLbl.textAlignment = .left
         self.typeLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(typeLbl)
+        safeContainer.addSubview(typeLbl)
         
         self.typePicker = Picker()
         self.typePicker.delegate = self
@@ -504,7 +473,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.typeTxtField.delegate = self
         self.typeTxtField.inputView = typePicker
         self.typeTxtField.returnKeyType = .done
-        self.view.addSubview(self.typeTxtField)
+        safeContainer.addSubview(self.typeTxtField)
         
         
         let typeToolBar = UIToolbar()
@@ -529,7 +498,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.serialLbl.text = "Serial #:"
         self.serialLbl.textAlignment = .left
         self.serialLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(serialLbl)
+        safeContainer.addSubview(serialLbl)
         if self.equipment.serial == ""{
             self.serialTxtField = PaddedTextField(placeholder: "Serial #")
         }else{
@@ -540,14 +509,14 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.serialTxtField.delegate = self
         self.serialTxtField.tag = 6
         self.serialTxtField.returnKeyType = .done
-        self.view.addSubview(self.serialTxtField)
+        safeContainer.addSubview(self.serialTxtField)
         
         //fuel
         self.fuelLbl = GreyLabel()
         self.fuelLbl.text = "Fuel:"
         self.fuelLbl.textAlignment = .left
         self.fuelLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(fuelLbl)
+        safeContainer.addSubview(fuelLbl)
         
         self.fuelPicker = Picker()
         self.fuelPicker.delegate = self
@@ -561,7 +530,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         
         self.fuelTxtField.returnKeyType = .done
         self.fuelTxtField.inputView = fuelPicker
-        self.view.addSubview(self.fuelTxtField)
+        safeContainer.addSubview(self.fuelTxtField)
         
         
         let fuelToolBar = UIToolbar()
@@ -587,7 +556,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.engineLbl.text = "Engine:"
         self.engineLbl.textAlignment = .left
         self.engineLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(engineLbl)
+        safeContainer.addSubview(engineLbl)
         
         self.enginePicker = Picker()
         self.enginePicker.delegate = self
@@ -601,7 +570,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         
         self.engineTxtField.inputView = enginePicker
         self.engineTxtField.returnKeyType = .done
-        self.view.addSubview(self.engineTxtField)
+        safeContainer.addSubview(self.engineTxtField)
         
         
         let engineToolBar = UIToolbar()
@@ -624,7 +593,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.vendorLbl.text = "Dealer:"
         self.vendorLbl.textAlignment = .left
         self.vendorLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(vendorLbl)
+        safeContainer.addSubview(vendorLbl)
         
         
       
@@ -635,7 +604,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         //self.engineTxtField.inputView = enginePicker
         self.vendorTxtField.returnKeyType = .search
         //self.scheduleengineTxtField.layer.borderWidth = 0
-        self.view.addSubview(self.vendorTxtField)
+        safeContainer.addSubview(self.vendorTxtField)
         self.vendorTxtField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         
         
@@ -665,7 +634,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.purchasedLbl.text = "Purchase Date:"
         self.purchasedLbl.textAlignment = .left
         self.purchasedLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(purchasedLbl)
+        safeContainer.addSubview(purchasedLbl)
         
         
         purchasedPicker = DatePicker()
@@ -677,7 +646,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.purchasedTxtField.delegate = self
         self.purchasedTxtField.tag = 10
         self.purchasedTxtField.inputView = self.purchasedPicker
-        self.view.addSubview(self.purchasedTxtField)
+        safeContainer.addSubview(self.purchasedTxtField)
         
         let purchasedToolBar = UIToolbar()
         purchasedToolBar.barStyle = UIBarStyle.default
@@ -702,7 +671,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.descriptionLbl.text = "Description:"
         self.descriptionLbl.textAlignment = .left
         self.descriptionLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.descriptionLbl)
+        safeContainer.addSubview(self.descriptionLbl)
         
         //self.descriptionView = UITextView()
         //self.descriptionView.returnKeyType = .done
@@ -711,7 +680,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.descriptionView.isEditable = true
         self.descriptionView.delegate = self
         self.descriptionView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.descriptionView)
+        safeContainer.addSubview(self.descriptionView)
         
         let descriptionToolBar = UIToolbar()
         descriptionToolBar.barStyle = UIBarStyle.default
@@ -727,7 +696,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         
         
         self.submitButtonBottom.addTarget(self, action: #selector(NewEditEquipmentViewController.submit), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.submitButtonBottom)
+        safeContainer.addSubview(self.submitButtonBottom)
         
         
         self.vendorResultsTableView.translatesAutoresizingMaskIntoConstraints = false
@@ -735,7 +704,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.vendorResultsTableView.dataSource = self
         self.vendorResultsTableView.register(VendorTableViewCell.self, forCellReuseIdentifier: "vendorCell")
         self.vendorResultsTableView.alpha = 0.0
-        self.view.addSubview(vendorResultsTableView)
+        safeContainer.addSubview(vendorResultsTableView)
         
         
         /////////  Auto Layout   //////////////////////////////////////
@@ -773,39 +742,39 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
             ] as [String:AnyObject]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(120)]-5-[typeLbl]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[tapBtn(120)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(120)]-5-[typeTxt]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(120)]-5-[crewLbl]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(120)]-5-[crewTxt]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[makeLbl(halfWidth)]-5-[modelLbl(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[makeTxt(halfWidth)]-5-[modelTxt(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(120)]-5-[typeLbl]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[tapBtn(120)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(120)]-5-[typeTxt]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(120)]-5-[crewLbl]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(120)]-5-[crewTxt]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[makeLbl(halfWidth)]-5-[modelLbl(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[makeTxt(halfWidth)]-5-[modelTxt(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[nameLbl(halfWidth)]-5-[serialLbl(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[nameTxt(halfWidth)]-5-[serialTxt(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[nameLbl(halfWidth)]-5-[serialLbl(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[nameTxt(halfWidth)]-5-[serialTxt(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[fuelLbl(halfWidth)]-5-[engineLbl(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[fuelTxt(halfWidth)]-5-[engineTxt(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[fuelLbl(halfWidth)]-5-[engineLbl(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[fuelTxt(halfWidth)]-5-[engineTxt(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[vendorLbl(halfWidth)]-5-[purchasedLbl(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[vendorTxt(halfWidth)]-5-[purchasedTxt(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[descriptionLbl(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[descriptionView]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[vendorLbl(halfWidth)]-5-[purchasedLbl(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[vendorTxt(halfWidth)]-5-[purchasedTxt(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[descriptionLbl(halfWidth)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[descriptionView]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[vendorTable]-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[vendorTable]-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         
         
         
 
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[typeLbl(30)][typeTxt(30)]-[crewLbl(30)][crewTxt(30)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[typeLbl(30)][typeTxt(30)][crewLbl(30)][crewTxt(30)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[image(120)][modelLbl(30)][modelTxt(30)][serialLbl(30)][serialTxt(30)][engineLbl(30)][engineTxt(30)][purchasedLbl(30)][purchasedTxt(30)][descriptionLbl(30)][descriptionView(75)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[tapBtn(120)][makeLbl(30)][makeTxt(30)][nameLbl(30)][nameTxt(30)][fuelLbl(30)][fuelTxt(30)][vendorLbl(30)][vendorTxt(30)][vendorTable]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[image(120)][modelLbl(30)][modelTxt(30)][serialLbl(30)][serialTxt(30)][engineLbl(30)][engineTxt(30)][purchasedLbl(30)][purchasedTxt(30)][descriptionLbl(30)][descriptionView(75)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tapBtn(120)][makeLbl(30)][makeTxt(30)][nameLbl(30)][nameTxt(30)][fuelLbl(30)][fuelTxt(30)][vendorLbl(30)][vendorTxt(30)][vendorTable]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[submitBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[submitBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
     }
     
     @objc func editImage(){
@@ -1533,14 +1502,14 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
                     //self.delegate.reDrawEquipmentList()
                 //}
                 
-                _ = self.navigationController?.popViewController(animated: true)
+                _ = self.navigationController?.popViewController(animated: false)
             }
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
             self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
-            _ = navigationController?.popViewController(animated: true)
+            _ = navigationController?.popViewController(animated: false)
         }
         
     }

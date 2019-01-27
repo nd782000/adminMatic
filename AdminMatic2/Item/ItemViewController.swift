@@ -6,6 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -249,11 +250,23 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
     func layoutViews(){
         print("item view layoutViews")
         //////////   containers for different sections
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
         self.itemView = UIView()
         //self.itemView.layer.borderColor = layoutVars.borderColor
         //self.itemView.layer.borderWidth = 1.0
         self.itemView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.itemView)
+        safeContainer.addSubview(self.itemView)
         
         
         
@@ -263,7 +276,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         self.detailsView.backgroundColor = layoutVars.backgroundColor
         
         self.detailsView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.detailsView)
+        safeContainer.addSubview(self.detailsView)
         
         
         
@@ -276,9 +289,9 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         let sizeVals = ["width": layoutVars.fullWidth,"height": 24,"fullHeight":layoutVars.fullHeight - 270] as [String : Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[view1(120)]-[view2]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[view1(120)]-[view2]-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
         ///////////   item contact section   /////////////
         
@@ -776,7 +789,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
      
     
     @objc func goBack(){
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
         
     }
     

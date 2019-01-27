@@ -6,6 +6,8 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
+//  Edited for safeView
+
 import Foundation
 import UIKit
 import Alamofire
@@ -70,7 +72,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
     
     var type:String = "1"
     
-    var setToItemBtn:Button = Button(titleText: "")
+    //var setToItemBtn:Button = Button(titleText: "")
     
     var leadTaskDelegate:LeadTaskDelegate!
     
@@ -86,7 +88,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         self.itemID = (self.contractItem?.ID)!
         self.type = "2"
         self.multiSelectMode = true
-        self.setToItemBtn.setTitle("Assign to \(String(describing: self.contractItem!.name!)) Item", for: .normal)
+        //self.setToItemBtn.setTitle("Assign to \(String(describing: self.contractItem!.name!)) Item", for: .normal)
         //self.tasksArray = _tasks
         getLead()
     }
@@ -103,7 +105,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         self.type = "1"
         self.multiSelectMode = true
         print("workOrderItem Name = \(String(describing: self.workOrderItem!.name!))")
-        self.setToItemBtn.setTitle("Assign to \(String(describing: self.workOrderItem!.name!)) Item", for: .normal)
+        //self.setToItemBtn.setTitle("Assign to \(String(describing: self.workOrderItem!.name!)) Item", for: .normal)
         //self.tasksArray = _tasks
         getLead()
     }
@@ -302,6 +304,9 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
     func layoutViews(){
         print("layout views")
         title =  "Assign Tasks"
+        
+       
+        
         if multiSelectMode == false{
             multiButton = UIBarButtonItem(title: "Select", style: .plain, target: self, action: #selector(LeadTaskAssignViewController.displayMultiSelectView))
             navigationItem.rightBarButtonItem = multiButton
@@ -310,9 +315,20 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
         self.taskCountLbl.translatesAutoresizingMaskIntoConstraints = false
         self.taskCountLbl.font = layoutVars.buttonFont
-        self.view.addSubview(self.taskCountLbl)
+        safeContainer.addSubview(self.taskCountLbl)
         
         updateTaskCountLabel()
         
@@ -326,15 +342,15 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         self.tasksTableView.layer.cornerRadius = 0
         self.tasksTableView.rowHeight = 90
         self.tasksTableView.register(LeadTaskTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.tasksTableView)
+        safeContainer.addSubview(self.tasksTableView)
         
         
+        /*
+        self.addBtn.addTarget(self, action: #selector(LeadTaskAssignViewController.addTask), for: UIControlEvents.touchUpInside)
+       safeContainer.addSubview(self.addBtn)
+        */
         
-        //self.addBtn.addTarget(self, action: #selector(LeadTaskAssignViewController.addTask), for: UIControlEvents.touchUpInside)
-       // self.view.addSubview(self.addBtn)
-        
-        
-        self.view.addSubview(self.scheduleBtn)
+        safeContainer.addSubview(self.scheduleBtn)
         
         
         //schedule picker
@@ -355,7 +371,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         self.scheduleTxtField.backgroundColor = UIColor.clear
         self.scheduleTxtField.inputView = schedulePicker
         self.scheduleTxtField.layer.borderWidth = 0
-        self.view.addSubview(self.scheduleTxtField)
+        safeContainer.addSubview(self.scheduleTxtField)
         
         let toolBar = UIToolbar()
         toolBar.barStyle = UIBarStyle.default
@@ -371,7 +387,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         
         scheduleTxtField.inputAccessoryView = toolBar
         
-        self.view.addSubview(self.contractBtn)
+        safeContainer.addSubview(self.contractBtn)
         
         
         //contract picker
@@ -389,7 +405,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         self.contractTxtField.backgroundColor = UIColor.clear
         self.contractTxtField.inputView = contractPicker
         self.contractTxtField.layer.borderWidth = 0
-        self.view.addSubview(self.contractTxtField)
+        safeContainer.addSubview(self.contractTxtField)
         
         let contractToolBar = UIToolbar()
         contractToolBar.barStyle = UIBarStyle.default
@@ -404,10 +420,11 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         
         contractTxtField.inputAccessoryView = contractToolBar
 
-        
+        /*
         self.setToItemBtn.addTarget(self, action: #selector(LeadTaskAssignViewController.setToItem), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.setToItemBtn)
-        
+        safeContainer.addSubview(self.setToItemBtn)
+ */
+ 
         /////////  Auto Layout   //////////////////////////////////////
         
         let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30,"halfWidth": (layoutVars.fullWidth - 38)/2, "nameWidth": layoutVars.fullWidth - 150] as [String:Any]
@@ -420,32 +437,46 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
             "scheduleBtn":self.scheduleBtn,
             "scheduleTxt":self.scheduleTxtField,
             "contractBtn":self.contractBtn,
-            "contractTxt":self.contractTxtField,
-            "setToItemBtn":self.setToItemBtn
+            "contractTxt":self.contractTxtField
             ] as [String:AnyObject]
         
+        //,"setToItemBtn":self.setToItemBtn
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[countLbl]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[table]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-         //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[addBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        
+        print("1")
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[countLbl]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[table]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        print("2")
+        
+        // safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[addBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         if fromContractItem == true || fromWorkOrderItem == true{
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[setToItemBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+//            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[setToItemBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         }else{
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[contractBtn(halfWidth)]-[scheduleBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[contractTxt(halfWidth)]-[scheduleTxt]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+           
+            print("3")
+            
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[contractBtn(halfWidth)]-[scheduleBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[contractTxt(halfWidth)]-[scheduleTxt]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         }
         
         
         if fromContractItem == true || fromWorkOrderItem == true{
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[setToItemBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            print("4")
+            
+          // safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[countLbl(30)][table]-[setToItemBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[countLbl(30)][table]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         }else{
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[scheduleBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[scheduleTxt(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+           
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[contractBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            print("5")
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[countLbl(30)][table]-[scheduleBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[countLbl(30)][table]-[scheduleTxt(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[countLbl(30)][table]-[contractTxt(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[countLbl(30)][table]-[contractBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[countLbl(30)][table]-[contractTxt(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         }
        
         
@@ -1175,7 +1206,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                     
                     self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: self.lead.statusId)
                     
-                    _ = self.navigationController?.popViewController(animated: true)
+                    _ = self.navigationController?.popViewController(animated: false)
                     
                 }
                 
@@ -1206,7 +1237,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                             // self.getLead()
                             
                             self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: self.lead.statusId)
-                            _ = self.navigationController?.popViewController(animated: true)
+                            _ = self.navigationController?.popViewController(animated: false)
                     }
                     
                     
@@ -1221,7 +1252,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                 
             }else{
                 self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: self.lead.statusId)
-                 _ = navigationController?.popViewController(animated: true)
+                 _ = navigationController?.popViewController(animated: false)
             }
             
             
@@ -1229,7 +1260,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
             
             
         }else{
-            _ = navigationController?.popViewController(animated: true)
+            _ = navigationController?.popViewController(animated: false)
         }
         
         

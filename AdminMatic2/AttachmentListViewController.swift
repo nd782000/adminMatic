@@ -6,6 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -77,13 +78,20 @@ class AttachmentListViewController: ViewControllerWithMenu, UITextFieldDelegate,
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
-        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
         //container view for auto layout
         self.containerView = UIView()
         self.containerView.backgroundColor = layoutVars.backgroundColor
         self.containerView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.containerView)
+        safeContainer.addSubview(self.containerView)
         
         
         
@@ -113,8 +121,8 @@ class AttachmentListViewController: ViewControllerWithMenu, UITextFieldDelegate,
         let metricsDictionary = ["screenWidth": self.view.frame.size.width,"screenHeight": self.view.frame.size.height,"fullWidth": self.view.frame.size.width - 20,"halfWidth": (self.view.frame.size.width - 20)/2,"inputHeight":layoutVars.inputHeight,"doubleInputHeight":layoutVars.inputHeight*2] as [String : Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[container(screenWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[container(screenHeight)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[container(screenWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[container(screenHeight)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         //////print("3")
         

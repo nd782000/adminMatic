@@ -5,6 +5,9 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+
+//  Edited for safeView
+
 import Foundation
 
 import UIKit
@@ -1392,8 +1395,10 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         if(indexPath.row == self.woItemsArray.count){
             self.addItem()
+            let indexPath = tableView.indexPathForSelectedRow
+            tableView.deselectRow(at: indexPath!, animated: false)
         }else{
-            let indexPath = tableView.indexPathForSelectedRow;
+            let indexPath = tableView.indexPathForSelectedRow
             let currentCell = tableView.cellForRow(at: indexPath!) as! WoItemTableViewCell;
             if(currentCell.woItem != nil && currentCell.woItem.ID != ""){
                 self.woItemViewController = WoItemViewController(_woID: self.workOrder.ID, _woItem: currentCell.woItem, _empsOnWo: self.empsOnWo, _woStatus: self.statusValue)
@@ -1416,7 +1421,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.woItemViewController?.layoutViews()
                 
                 navigationController?.pushViewController(self.woItemViewController!, animated: false )
-                tableView.deselectRow(at: indexPath!, animated: true)
+                tableView.deselectRow(at: indexPath!, animated: false)
             }
         }
         
@@ -1703,7 +1708,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
         
     }
     

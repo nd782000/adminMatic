@@ -6,14 +6,18 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
+
 
 import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
  
-class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate, EditLeadDelegate{
+class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate, EditLeadDelegate{
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     var layoutVars:LayoutVars = LayoutVars()
     
     var woDelegate:WoDelegate!
@@ -134,17 +138,28 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     func layoutViews(){
         //print("item view layoutViews \(woItem.usageQty)")
         //////////   containers for different sections
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         self.itemView = UIView()
         self.itemView.backgroundColor = layoutVars.backgroundColor
         self.itemView.layer.borderColor = layoutVars.borderColor
         self.itemView.layer.borderWidth = 1.0
         self.itemView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.itemView)
+        safeContainer.addSubview(self.itemView)
         
         self.detailsView = UIView()
         self.detailsView.backgroundColor = layoutVars.backgroundColor
         self.detailsView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.detailsView)
+        safeContainer.addSubview(self.detailsView)
         
         
         
@@ -159,9 +174,9 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         //////////////////   auto layout position constraints   /////////////////////////////
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[view1(160)][view2(fullHeight)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(165)][view2(fullHeight)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
         ///////////   wo item header section   /////////////
         
@@ -206,7 +221,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[profitView(width)]", options: [], metrics: sizeVals, views: containersViewsDictionary))
         self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[usageView(width)]", options: [], metrics: sizeVals, views: containersViewsDictionary))
         
-        self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[itemNameView(35)][chargeTypeView(25)][estimatedView(25)][profitView(25)][usageView(50)]", options: [], metrics: sizeVals, views: containersViewsDictionary))
+        self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[itemNameView(40)][chargeTypeView(25)][estimatedView(25)][profitView(25)][usageView(50)]", options: [], metrics: sizeVals, views: containersViewsDictionary))
 
         self.itemLbl = GreyLabel()
         self.itemLbl.text = self.woItem.name
@@ -216,9 +231,9 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         let itemNameViewsDictionary = ["itemLbl":self.itemLbl]  as [String:AnyObject]
         
 
-        self.itemNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-50-[itemLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: sizeVals, views: itemNameViewsDictionary))
+        self.itemNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[itemLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: sizeVals, views: itemNameViewsDictionary))
         
-        self.itemNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[itemLbl(20)]", options: [], metrics: sizeVals, views: itemNameViewsDictionary))
+        self.itemNameView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[itemLbl(30)]", options: [], metrics: sizeVals, views: itemNameViewsDictionary))
         
         //charge Info
         self.chargeTypeLabel = Label()
@@ -637,10 +652,12 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //////print("You selected cell #\(indexPath.row)!")
         
+        tableView.deselectRow(at: indexPath as IndexPath, animated: false)
+        
         if(indexPath.row == self.tasks.count){
             self.addTask()
         }else{
-            tableView.deselectRow(at: indexPath as IndexPath, animated: true)
+            
             imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _taskID: tasks[indexPath.row].ID, _customerID: self.customerID, _images: self.tasks[indexPath.row].images)
             imageUploadPrepViewController.images = self.tasks[indexPath.row].images
             imageUploadPrepViewController.layoutViews()
@@ -1034,7 +1051,7 @@ class WoItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     
     @objc func goBack(){
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
         if woDelegate != nil && editsMade == true{
             woDelegate.refreshWo(_refeshWoID: self.woItem.ID, _newWoStatus: self.newWoStatus)
         }

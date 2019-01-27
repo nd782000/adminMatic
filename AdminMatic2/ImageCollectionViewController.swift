@@ -6,6 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 import Foundation
 import UIKit
 import Alamofire

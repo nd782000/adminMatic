@@ -6,6 +6,8 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
+
 import Foundation
 import UIKit
 import Alamofire
@@ -202,7 +204,14 @@ class EquipmentFieldsListViewController: UIViewController, UITableViewDelegate, 
         
         editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(self.displayEditView))
         
-        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
         
         equipmentFieldsTableView = TableView()
@@ -235,7 +244,7 @@ class EquipmentFieldsListViewController: UIViewController, UITableViewDelegate, 
         }
         
         
-        self.view.addSubview(customSC)
+        safeContainer.addSubview(customSC)
         
         
         
@@ -244,14 +253,14 @@ class EquipmentFieldsListViewController: UIViewController, UITableViewDelegate, 
         equipmentFieldsTableView.rowHeight = 60.0
         self.equipmentFieldsTableView.register(EquipmentFieldTableViewCell.self, forCellReuseIdentifier: "cell")
         
-        self.view.addSubview(self.equipmentFieldsTableView)
+        safeContainer.addSubview(self.equipmentFieldsTableView)
         
         
         
         
         
         self.addFieldBtn.addTarget(self, action: #selector(EquipmentFieldsListViewController.addField), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.addFieldBtn)
+        safeContainer.addSubview(self.addFieldBtn)
         
         
         
@@ -267,11 +276,11 @@ class EquipmentFieldsListViewController: UIViewController, UITableViewDelegate, 
         
         let sizeVals = ["halfWidth": layoutVars.halfWidth, "fullWidth": layoutVars.fullWidth,"width": layoutVars.fullWidth - 30,"navBottom":layoutVars.navAndStatusBarHeight,"height": self.view.frame.size.height - layoutVars.navAndStatusBarHeight] as [String : Any]
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view3(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view3(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
     
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[view1(40)][view2][view3(40)]|", options:[], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(40)][view2][view3(40)]|", options:[], metrics: sizeVals, views: viewsDictionary))
     
     }
     
@@ -370,7 +379,7 @@ class EquipmentFieldsListViewController: UIViewController, UITableViewDelegate, 
                 self.indicator.dismissIndicator()
                 self.sortEditsMade = false
                 if _leave{
-                    _ = self.navigationController?.popViewController(animated: true)
+                    _ = self.navigationController?.popViewController(animated: false)
                 }
                 
                 
@@ -627,7 +636,7 @@ class EquipmentFieldsListViewController: UIViewController, UITableViewDelegate, 
             let cancelAction = UIAlertAction(title: "Don't Save", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("Cancel")
-                _ = self.navigationController?.popViewController(animated: true)
+                _ = self.navigationController?.popViewController(animated: false)
                 return
             }
             
@@ -635,7 +644,7 @@ class EquipmentFieldsListViewController: UIViewController, UITableViewDelegate, 
                 (result : UIAlertAction) -> Void in
                 print("OK")
                 self.saveSort(_leave:true)
-               // _ = self.navigationController?.popViewController(animated: true)
+               // _ = self.navigationController?.popViewController(animated: false)
             }
             
             alertController.addAction(cancelAction)
@@ -647,7 +656,7 @@ class EquipmentFieldsListViewController: UIViewController, UITableViewDelegate, 
         if editsMade {
             self.equipmentListDelegate.reDrawEquipmentList()
         }
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
         
     }
     

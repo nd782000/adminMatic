@@ -6,6 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -27,15 +28,16 @@ protocol UpdateReceiptImageDelegate{
     func updateImage(_image:Image,_usageIndex:Int)
 }
 
-class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource,  UITableViewDelegate, UITableViewDataSource, UsageDelegate, AttachmentDelegate,  UpdateReceiptImageDelegate{
+class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource,  UITableViewDelegate, UITableViewDataSource, UsageDelegate, AttachmentDelegate,  UpdateReceiptImageDelegate{
     
    
-    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     var layoutVars:LayoutVars = LayoutVars()
     
     
     var indicator: SDevIndicator!
-    
+    let safeContainer:UIView = UIView()
     var containerView:UIView!
     var startStopContainerView:UIView!
     
@@ -103,13 +105,20 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
-       
+        //set container to safe bounds of view
+        
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
         //container view for auto layout
         self.containerView = UIView()
         self.containerView.backgroundColor = layoutVars.backgroundColor
         self.containerView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.containerView)
+        safeContainer.addSubview(self.containerView)
         
         
         
@@ -196,8 +205,8 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         let metricsDictionary = ["screenWidth": self.view.frame.size.width as AnyObject,"screenHeight": self.view.frame.size.height,"fullWidth": self.view.frame.size.width - 20,"halfWidth": (self.view.frame.size.width - 28)/2,"inputHeight":layoutVars.inputHeight,"doubleInputHeight":layoutVars.inputHeight*2 + 8] as [String : Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[container(screenWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[container(screenHeight)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[container(screenWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[container(screenHeight)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         
         self.containerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view1(fullWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
@@ -208,7 +217,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         
         
         
-        self.containerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-75-[view1(inputHeight)]-[view2]-[view3(doubleInputHeight)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.containerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[view1(inputHeight)]-[view2]-[view3(doubleInputHeight)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         self.startStopContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view4(halfWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.startStopContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view5(halfWidth)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
@@ -249,13 +258,13 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         ] as [String:AnyObject]
         let metricsDictionary = ["screenWidth": self.view.frame.size.width,"screenHeight": self.view.frame.size.height,"fullWidth": self.view.frame.size.width - 20,"halfWidth": (self.view.frame.size.width - 20)/2-5,"inputHeight":layoutVars.inputHeight,"doubleInputHeight":(layoutVars.inputHeight*2)+20] as [String : Any]
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[container(screenWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[container(screenHeight)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[container(screenWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[container(screenHeight)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.containerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[usageTable(fullWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.containerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn(fullWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[usageTable(fullWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn(fullWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.containerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[usageTable]-[submitBtn(inputHeight)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[usageTable]-[submitBtn(inputHeight)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         
         addActiveUsage()
@@ -578,7 +587,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        self.containerView.frame = view.bounds
+        safeContainer.frame = view.bounds
         
     }
     
@@ -615,6 +624,8 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         _ = navigationController?.popViewController(animated: false)
     }
     
+    
+    /*
     override func displayHomeView() {
         if(self.editsMade == true){
             print("editsMade = true")
@@ -638,7 +649,7 @@ class UsageEntryViewController: ViewControllerWithMenu, UITextFieldDelegate, UIP
         }
     }
     
-    
+    */
     
     
     

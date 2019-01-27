@@ -6,7 +6,9 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
- 
+//edited for safeView
+
+
 import Foundation
 import UIKit
 import Alamofire
@@ -88,10 +90,10 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     init(_employee:Employee){
         super.init(nibName:nil,bundle:nil)
-        print("init _employeeID = \(_employee.ID)")
+       // print("init _employeeID = \(_employee.ID)")
         self.employee = _employee
         
-        print("emp view init ID = \(self.employee.ID)")
+       // print("emp view init ID = \(self.employee.ID)")
         
     }
     
@@ -301,8 +303,20 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     func layoutViews(){
         
-        self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        //self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         self.indicator.dismissIndicator()
+        
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         
         //only show option button to profile of logged in user
         if self.employee.ID == appDelegate.loggedInEmployee?.ID{
@@ -324,20 +338,6 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         activityView.startAnimating()
         
         
-        /*
-        
-    
-        Nuke.loadImage(with: imgURL, into: self.employeeImage!){ 
-            print("nuke loadImage")
-            self.employeeImage?.handle(response: $0, isFromMemoryCache: $1)
-            self.activityView.stopAnimating()
-            
-            let image = Image(_path: self.employee.pic)
-            
-            self.imageFullViewController = ImageFullViewController(_image: image)
-            
-        }
- */
        // let imgURL:URL = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.employee.pic!)!
         
         
@@ -369,20 +369,20 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         self.tapBtn.addTarget(self, action: #selector(EmployeeViewController.showFullScreenImage), for: UIControl.Event.touchUpInside)
         self.tapBtn.backgroundColor = UIColor.clear
         self.tapBtn.setTitle("", for: UIControl.State.normal)
-        self.view.addSubview(self.tapBtn)
+        safeContainer.addSubview(self.tapBtn)
         
         self.employeeImage.layer.cornerRadius = 5.0
         self.employeeImage.layer.borderWidth = 2
         self.employeeImage.layer.borderColor = layoutVars.borderColor
         self.employeeImage.clipsToBounds = true
         self.employeeImage.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.employeeImage)
+        safeContainer.addSubview(self.employeeImage)
         
         //name
         self.employeeLbl = GreyLabel()
         self.employeeLbl.text = self.employee.name
         self.employeeLbl.font = layoutVars.labelFont
-        self.view.addSubview(self.employeeLbl)
+        safeContainer.addSubview(self.employeeLbl)
         
         //phone
         self.phoneNumberClean = cleanPhoneNumber(self.employee.phone)
@@ -402,7 +402,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         phoneIcon.image = phoneImg
         self.employeePhoneBtn.titleLabel?.addSubview(phoneIcon)
         
-        self.view.addSubview(self.employeePhoneBtn)
+        safeContainer.addSubview(self.employeePhoneBtn)
 
         self.emailBtn = Button()
         self.emailBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
@@ -423,28 +423,28 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         self.emailBtn.titleLabel?.addSubview(emailIcon)
         
         
-        self.view.addSubview(self.emailBtn)
+        safeContainer.addSubview(self.emailBtn)
         
         
         self.departmentsBtn = Button()
         self.departmentsBtn.setTitle("Departments", for: UIControl.State.normal)
         self.departmentsBtn.addTarget(self, action: #selector(self.showDepartments), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.departmentsBtn)
+        safeContainer.addSubview(self.departmentsBtn)
         
         self.crewsBtn = Button()
         self.crewsBtn.setTitle("Crews", for: UIControl.State.normal)
         self.crewsBtn.addTarget(self, action: #selector(self.showCrews), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.crewsBtn)
+        safeContainer.addSubview(self.crewsBtn)
         
         self.shiftsBtn = Button()
         self.shiftsBtn.setTitle("Shifts", for: UIControl.State.normal)
         self.shiftsBtn.addTarget(self, action: #selector(self.showShifts), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.shiftsBtn)
+        safeContainer.addSubview(self.shiftsBtn)
         
         self.payrollBtn = Button()
         self.payrollBtn.setTitle("Payroll", for: UIControl.State.normal)
         self.payrollBtn.addTarget(self, action: #selector(self.showPayroll), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.payrollBtn)
+        safeContainer.addSubview(self.payrollBtn)
         
         
         
@@ -460,7 +460,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         imageCollectionView?.delegate = self
         imageCollectionView?.register(ImageCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         imageCollectionView?.backgroundColor = UIColor.darkGray
-        self.view.addSubview(imageCollectionView!)
+        safeContainer.addSubview(imageCollectionView!)
         
         self.edgesForExtendedLayout = UIRectEdge.top
         
@@ -468,13 +468,13 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         self.noImagesLbl.textColor = UIColor.white
         self.noImagesLbl.textAlignment = .center
         self.noImagesLbl.font = layoutVars.largeFont
-        self.view.addSubview(self.noImagesLbl)
+        safeContainer.addSubview(self.noImagesLbl)
         
         self.userTxt = PaddedTextField(placeholder: "User Name")
         self.userTxt.tag = 1
         self.userTxt.text = self.employee.username
         self.userTxt.delegate = self
-        self.view.addSubview(self.userTxt)
+        safeContainer.addSubview(self.userTxt)
         self.userTxt.autocorrectionType = UITextAutocorrectionType.no
         
         
@@ -483,7 +483,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         self.passTxt.returnKeyType = .done
         self.passTxt.delegate = self
         self.passTxt.isSecureTextEntry = true
-        self.view.addSubview(self.passTxt)
+        safeContainer.addSubview(self.passTxt)
         
         
         self.logInOutBtn = Button()
@@ -496,7 +496,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
             self.logInOutBtn.setTitle("Log In (\(self.employee.fname!))", for: UIControl.State.normal)
             self.logInOutBtn.addTarget(self, action: #selector(EmployeeViewController.attemptLogIn), for: UIControl.Event.touchUpInside)
         }
-        self.view.addSubview(self.logInOutBtn)
+        safeContainer.addSubview(self.logInOutBtn)
         
         let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30, "halfWidth": layoutVars.halfWidth, "nameWidth": layoutVars.fullWidth - 150, "navBottom":layoutVars.navAndStatusBarHeight + 8] as [String:Any]
         
@@ -521,28 +521,28 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
             ] as [String:Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[name]-10-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[tapBtn(100)]", options: [], metrics: nil, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[activity(100)]", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[name]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[tapBtn(100)]", options: [], metrics: nil, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[activity(100)]", options: [], metrics: nil, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[phone]-10-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[email]-10-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[departmentsBtn(halfWidth)]-5-[crewsBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[shiftsBtn(halfWidth)]-5-[payrollBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[imageCollection]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[noImagesLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[userTxt(halfWidth)]-5-[passTxt]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[logInBtn]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[phone]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[email]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[departmentsBtn(halfWidth)]-5-[crewsBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[shiftsBtn(halfWidth)]-5-[payrollBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[imageCollection]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[noImagesLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[userTxt(halfWidth)]-5-[passTxt]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[logInBtn]-10-|", options: [], metrics: nil, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[image(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[tapBtn(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[activity(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[image(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tapBtn(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activity(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(30)][phone(30)]-10-[email(30)]-[departmentsBtn(30)]-[shiftsBtn(30)]-[imageCollection]-[userTxt(30)]-[logInBtn(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(30)][phone(30)]-10-[email(30)]-[crewsBtn(30)]-[payrollBtn(30)]-[imageCollection]-[passTxt(30)]-[logInBtn(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)][phone(30)]-10-[email(30)]-[departmentsBtn(30)]-[shiftsBtn(30)]-[imageCollection]-[userTxt(30)]-[logInBtn(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)][phone(30)]-10-[email(30)]-[crewsBtn(30)]-[payrollBtn(30)]-[imageCollection]-[passTxt(30)]-[logInBtn(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(30)][phone(30)]-10-[email(30)]-[crewsBtn(30)]-[payrollBtn(30)]-20-[noImagesLbl(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)][phone(30)]-10-[email(30)]-[crewsBtn(30)]-[payrollBtn(30)]-20-[noImagesLbl(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
     }
     

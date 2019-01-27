@@ -5,10 +5,14 @@
 //  Created by Nick on 4/3/17.
 //  Copyright © 2017 Nick. All rights reserved.
 //
+
+//  Edited for safeView
+
 import Foundation
 import UIKit
 import MessageUI
  
+
 
 class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, MFMessageComposeViewControllerDelegate{
     
@@ -100,6 +104,14 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     func layoutViews(){
         
        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
         
         messagePlaceHolder = "Message..."
@@ -117,16 +129,16 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         self.messageTxt.isEditable = true
         self.messageTxt.delegate = self
         self.messageTxt.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.messageTxt)
+        safeContainer.addSubview(self.messageTxt)
         
        
         
         
         
         self.selectNoneBtn.addTarget(self, action: #selector(GroupMessageViewController.handleSelectNone), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.selectNoneBtn)
+        safeContainer.addSubview(self.selectNoneBtn)
         self.selectAllBtn.addTarget(self, action: #selector(GroupMessageViewController.handleSelectAll), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.selectAllBtn)
+        safeContainer.addSubview(self.selectAllBtn)
         
         self.employeeTableView =  TableView()
         self.employeeTableView.delegate  =  self
@@ -134,7 +146,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         self.employeeTableView.rowHeight = 60.0
         self.employeeTableView.tableHeaderView = nil;
         self.employeeTableView.register(EmployeeTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.employeeTableView)
+        safeContainer.addSubview(self.employeeTableView)
         
         
         
@@ -144,7 +156,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         
         
         self.sendMessageBtn.addTarget(self, action: #selector(GroupMessageViewController.buildRecipientList), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.sendMessageBtn)
+        safeContainer.addSubview(self.sendMessageBtn)
         
         //auto layout group
         let viewsDictionary = [
@@ -158,12 +170,12 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         let sizeVals = ["width": layoutVars.fullWidth,"halfWidth":(layoutVars.fullWidth - 15)/2,"height": self.view.frame.size.height ,"navBarHeight":self.layoutVars.navAndStatusBarHeight + 5] as [String : Any]
         
     //////////////   auto layout position constraints   /////////////////////////////
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[messageTxt]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[selectNoneBtn(halfWidth)]-5-[selectAllBtn(halfWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[empTable]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[sendMessageBtn]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[messageTxt(90)]-[selectNoneBtn(40)]-[empTable]-[sendMessageBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[messageTxt(90)]-[selectAllBtn(40)]-[empTable]-[sendMessageBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[messageTxt]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[selectNoneBtn(halfWidth)]-5-[selectAllBtn(halfWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[empTable]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[sendMessageBtn]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[messageTxt(90)]-[selectNoneBtn(40)]-[empTable]-[sendMessageBtn(40)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[messageTxt(90)]-[selectAllBtn(40)]-[empTable]-[sendMessageBtn(40)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         
     }
     
@@ -430,7 +442,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     }
     
     @objc func goBack(){
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
     }
     
     override func didReceiveMemoryWarning() {

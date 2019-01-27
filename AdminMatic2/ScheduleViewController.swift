@@ -6,6 +6,8 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
+
 import Foundation
 import UIKit
 import Alamofire
@@ -27,7 +29,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var layoutVars:LayoutVars = LayoutVars()
 
     
-    var customSC:SegmentedControl!
+    //var customSC:SegmentedControl!
     
     var searchController:UISearchController!
     
@@ -202,7 +204,17 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         //controller.searchBar.barTintColor = UIColor(red: 76/255, green: 203/255, blue: 124/255, alpha: 1)
        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
+        
+        /*
         let items = ["Active","History"]
         self.customSC = SegmentedControl(items: items)
         self.customSC.selectedSegmentIndex = 0
@@ -211,8 +223,8 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         customSC.addTarget(self, action: #selector(ScheduleViewController.changeSearchOptions(sender:)), for: .valueChanged)
-        self.view.addSubview(customSC)
-        
+        //safeContainer.addSubview(customSC)
+        */
         
         print("calling tableView")
         self.scheduleTableView =  TableView()
@@ -220,7 +232,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.scheduleTableView.dataSource  =  self
         self.scheduleTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "cell")
         self.scheduleTableView.rowHeight = 50.0
-        self.view.addSubview(self.scheduleTableView)
+        safeContainer.addSubview(self.scheduleTableView)
         
         refreshControl = UIRefreshControl()
         refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
@@ -233,7 +245,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //self.countView.layer.borderColor = layoutVars.borderColor
         //self.countView.layer.borderWidth = 1.0
         self.countView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.countView)
+        safeContainer.addSubview(self.countView)
         
         
         self.countLbl.translatesAutoresizingMaskIntoConstraints = false
@@ -245,11 +257,11 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.addWorkOrderBtn.addTarget(self, action: #selector(ScheduleViewController.addWorkOrder), for: UIControl.Event.touchUpInside)
        // self.addWorkOrderBtn.layer.borderColor = UIColor.white.cgColor
        // self.addWorkOrderBtn.layer.borderWidth = 1.0
-        self.view.addSubview(self.addWorkOrderBtn)
+        safeContainer.addSubview(self.addWorkOrderBtn)
         
        // self.personalScheduleBtn.layer.borderColor = UIColor.white.cgColor
         //self.personalScheduleBtn.layer.borderWidth = 1.0
-        self.view.addSubview(self.personalScheduleBtn)
+        safeContainer.addSubview(self.personalScheduleBtn)
         
         
         
@@ -260,7 +272,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //self.scheduleSettingsBtn.translatesAutoresizingMaskIntoConstraints = true
        // self.imageSettingsBtn.layer.borderColor = UIColor.white.cgColor
        // self.imageSettingsBtn.layer.borderWidth = 1.0
-        self.view.addSubview(self.scheduleSettingsBtn)
+        safeContainer.addSubview(self.scheduleSettingsBtn)
         
         self.scheduleSettingsBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
         
@@ -284,8 +296,11 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         let sizeVals = ["width": layoutVars.fullWidth,"height": self.view.frame.size.height - self.layoutVars.navAndStatusBarHeight - 80,"navHeight":self.layoutVars.navAndStatusBarHeight] as [String : Any]
         //auto layout group
+        
+        //"segmentedSwitch":customSC,
+        
         let viewsDictionary : [String:Any] = [
-            "segmentedSwitch":customSC,
+            
             "table":self.scheduleTableView,
             "countView":self.countView,
             "addBtn":self.addWorkOrderBtn,
@@ -294,15 +309,15 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         ] as [String : Any]
         
         //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[table(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[countView(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[addBtn(100)]-[switchBtn]-[settingsBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[view1(40)][view2][countView(30)][view3(40)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[table][countView(30)][addBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[table(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[countView(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[addBtn(100)]-[switchBtn]-[settingsBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        //safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[view1(40)][view2][countView(30)][view3(40)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[table][countView(30)][addBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[table][countView(30)][switchBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[table][countView(30)][switchBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[table][countView(30)][settingsBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[table][countView(30)][settingsBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
          
         let viewsDictionary2 = [
             
@@ -1523,7 +1538,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     func goBack(){
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
     }
     
     override func didReceiveMemoryWarning() {

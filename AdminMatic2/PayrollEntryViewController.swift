@@ -6,7 +6,7 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
-
+//  Edited for safeView
  
 import Foundation
 import UIKit
@@ -315,13 +315,23 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
             view.removeFromSuperview()
         }
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         
         
         self.screenHeaderLbl = Label()
         self.screenHeaderLbl.text = "Today's payroll for:"
         self.screenHeaderLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.screenHeaderLbl.textAlignment = NSTextAlignment.right
-        self.view.addSubview(self.screenHeaderLbl)
+        safeContainer.addSubview(self.screenHeaderLbl)
         
         
         
@@ -338,7 +348,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         
         self.employeeTxtField.tintColor = UIColor.clear
         self.employeeTxtField.inputView = employeePicker
-        self.view.addSubview(self.employeeTxtField)
+        safeContainer.addSubview(self.employeeTxtField)
         
         let toolBar = UIToolbar()
         toolBar.barStyle = UIBarStyle.default
@@ -355,33 +365,34 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         employeeTxtField.inputAccessoryView = toolBar
         
         self.payrollTableView =  TableView()
+        self.payrollTableView.layer.cornerRadius = 0
         self.payrollTableView.delegate  =  self
         self.payrollTableView.dataSource  =  self
         self.payrollTableView.rowHeight = 60
         self.payrollTableView.isScrollEnabled = false
         self.payrollTableView.register(PayrollEntryTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.payrollTableView)
+        safeContainer.addSubview(self.payrollTableView)
         
     
         //self.payrollTotalLbl = Label()
         //self.payrollTotalLbl.text = "Total hours: \(self.totalHours!)"
         self.payrollTotalLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.payrollTotalLbl.textAlignment = NSTextAlignment.right
-        self.view.addSubview(self.payrollTotalLbl)
+        safeContainer.addSubview(self.payrollTotalLbl)
         
         
         
         let viewsDictionary = ["headerLbl": self.screenHeaderLbl,"empTxt": self.employeeTxtField, "table": self.payrollTableView,"total": self.payrollTotalLbl] as [String:Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[headerLbl]-3-[empTxt(160)]-|", options: [], metrics: nil, views:viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[headerLbl]-3-[empTxt(160)]-|", options: [], metrics: nil, views:viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[table]|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[table]|", options: [], metrics: nil, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[total]-15-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[total]-15-|", options: [], metrics: nil, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-70-[headerLbl(30)]-[table]-[total(30)]-15-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-70-[empTxt(30)]", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[headerLbl(30)]-[table]-[total(30)]-15-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[empTxt(30)]", options: [], metrics: nil, views: viewsDictionary))
         
     }
     
@@ -1016,7 +1027,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     
     @objc func goBack(){
         print("back")
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
     }
     
     override func didReceiveMemoryWarning() {

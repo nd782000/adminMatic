@@ -6,6 +6,9 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+
+//  Edited for safeView
+
 import Foundation
 import UIKit
 import Alamofire
@@ -23,6 +26,8 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
     
     var woID:String!
     var charge:String!
+    
+    let safeContainer:UIView = UIView()
     
     var itemSearchBar:UISearchBar = UISearchBar()
     var itemResultsTableView:TableView = TableView()
@@ -190,10 +195,16 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         
-       
+        //set container to safe bounds of view
+        
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
         
-        self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
     
         itemSearchBar.placeholder = "Item..."
         itemSearchBar.translatesAutoresizingMaskIntoConstraints = false
@@ -203,7 +214,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         itemSearchBar.barTintColor = UIColor.clear
         itemSearchBar.searchBarStyle = UISearchBar.Style.minimal
         itemSearchBar.delegate = self
-        self.view.addSubview(itemSearchBar)
+        safeContainer.addSubview(itemSearchBar)
         
         
         self.itemResultsTableView.delegate  =  self
@@ -215,7 +226,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         
         self.estQtyLbl = Label(text: "Estimated Qty")
         self.estQtyLbl.textAlignment = .right
-        self.view.addSubview(self.estQtyLbl)
+        safeContainer.addSubview(self.estQtyLbl)
         
         
         self.estQtyTxtField = PaddedTextField()
@@ -224,7 +235,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         self.estQtyTxtField.keyboardType = UIKeyboardType.decimalPad
         self.estQtyTxtField.tag = 10
         
-        self.view.addSubview(self.estQtyTxtField)
+        safeContainer.addSubview(self.estQtyTxtField)
         
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
@@ -243,7 +254,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         
         self.priceLbl = Label(text: "Unit Price $")
         self.priceLbl.textAlignment = .right
-        self.view.addSubview(self.priceLbl)
+        safeContainer.addSubview(self.priceLbl)
         
         
         self.priceTxtField = PaddedTextField()
@@ -252,7 +263,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         self.priceTxtField.keyboardType = UIKeyboardType.decimalPad
         self.priceTxtField.tag = 11
         
-        self.view.addSubview(self.priceTxtField)
+        safeContainer.addSubview(self.priceTxtField)
         
         let spaceButton2 = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
@@ -266,12 +277,12 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         priceTxtField.inputAccessoryView = priceToolBar
         
         
-        self.view.addSubview(self.itemResultsTableView)
+        safeContainer.addSubview(self.itemResultsTableView)
         
         /*
         self.taskCountLbl.translatesAutoresizingMaskIntoConstraints = false
         self.taskCountLbl.font = layoutVars.buttonFont
-        self.view.addSubview(self.taskCountLbl)
+        safeContainer.addSubview(self.taskCountLbl)
         
         updateTaskCountLabel()
         
@@ -285,7 +296,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         self.tasksTableView.layer.cornerRadius = 0
         self.tasksTableView.rowHeight = 90
         self.tasksTableView.register(LeadTaskTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.tasksTableView)
+        safeContainer.addSubview(self.tasksTableView)
         
         
         
@@ -298,7 +309,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         
         
         self.submitBtn.addTarget(self, action: #selector(NewWoItemViewController.submit), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.submitBtn)
+        safeContainer.addSubview(self.submitBtn)
         
         
         setConstraints()
@@ -324,19 +335,19 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
             ] as [String:Any]
             
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchBar]-|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[estQtyLbl(150)]-[estQty]-|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[priceLbl(150)]-[price]-|", options: [], metrics: nil, views: viewsDictionary))
-            //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[taskCountLbl]-|", options: [], metrics: nil, views: viewsDictionary))
-            //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[taskTable]-|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchTable]-|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchBar]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[estQtyLbl(150)]-[estQty]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[priceLbl(150)]-[price]-|", options: [], metrics: nil, views: viewsDictionary))
+            //safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[taskCountLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+            //safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[taskTable]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchTable]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
             
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[searchBar(40)]-10-[estQtyLbl(40)]-10-[priceLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
-             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[searchBar(40)]-10-[estQty(40)]-10-[price(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[searchBar(40)]-10-[estQtyLbl(40)]-10-[priceLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+             safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[searchBar(40)]-10-[estQty(40)]-10-[price(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[searchBar(40)][searchTable]-[submitBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[searchBar(40)][searchTable]-[submitBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
         
            // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[searchBar(40)]-10-[estQty(40)]-10-[price(40)]-[taskCountLbl(30)][taskTable]-[submitBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))

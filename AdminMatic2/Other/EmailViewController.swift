@@ -6,7 +6,7 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
-
+//  Edited for safeView
 
 import Foundation
 
@@ -181,6 +181,16 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func layoutViews(){
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         
         //titleLbl
         self.viewTitleLbl = GreyLabel()
@@ -188,7 +198,7 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.viewTitleLbl.font = layoutVars.labelFont
         self.viewTitleLbl.textAlignment = .left
         self.viewTitleLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(viewTitleLbl)
+        safeContainer.addSubview(viewTitleLbl)
         
         //emailTable
         self.emailTableView  =   TableView()
@@ -198,12 +208,12 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.emailTableView.layer.cornerRadius = 4.0
         self.emailTableView.rowHeight = 56.0
         self.emailTableView.register(EmailTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.emailTableView)
+        safeContainer.addSubview(self.emailTableView)
         
         //titleLbl
         self.titleLbl = Label()
         self.titleLbl.text = "Email Title:"
-        self.view.addSubview(titleLbl)
+        safeContainer.addSubview(titleLbl)
         
         //titleTxtField
         self.titleTxt = PaddedTextField()
@@ -211,13 +221,13 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.titleTxt.returnKeyType = .done
         
         self.titleTxt.delegate = self
-        self.view.addSubview(self.titleTxt)
+        safeContainer.addSubview(self.titleTxt)
         
         //messageLbl
         self.messageLbl = Label()
         self.messageLbl.text = "Email Message:"
         
-        self.view.addSubview(messageLbl)
+        safeContainer.addSubview(messageLbl)
         
         
         //messageTxt
@@ -233,25 +243,25 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.messageTxt.layer.borderWidth = 1
         self.messageTxt.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
         self.messageTxt.layer.cornerRadius = 4.0
-        self.view.addSubview(self.messageTxt)
+        safeContainer.addSubview(self.messageTxt)
         
         //pdf
         self.convertToPDFLabel = Label()
         self.convertToPDFLabel.text = "Convert document to PDF:"
         self.convertToPDFLabel.textAlignment = .left
         self.convertToPDFLabel.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(convertToPDFLabel)
+        safeContainer.addSubview(convertToPDFLabel)
         
         convertToPDFSwitch = UISwitch()
         convertToPDFSwitch.translatesAutoresizingMaskIntoConstraints = false
         convertToPDFSwitch.isOn = false
         convertToPDFSwitch.addTarget(self, action: #selector(EmailViewController.convertToPDFSwitchValueDidChange(sender:)), for: .valueChanged)
-        self.view.addSubview(convertToPDFSwitch)
+        safeContainer.addSubview(convertToPDFSwitch)
         
         //sendBtn
         self.sendBtn = Button(titleText: "Send")
         self.sendBtn.addTarget(self, action: #selector(EmailViewController.send), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(sendBtn)
+        safeContainer.addSubview(sendBtn)
     
         /////////  Auto Layout   //////////////////////////////////////
         let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30, "nameWidth": layoutVars.fullWidth - 150] as [String:Any]
@@ -269,20 +279,20 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
             "sendBtn":self.sendBtn
             ] as [String:AnyObject]
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[viewTitleLbl]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[emailTable]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[titleLbl]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[titleTxt]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[messageLbl]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[messageTxt]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[convertToPDFLbl][convertToPDFSwitch(40)]-30-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[sendBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[viewTitleLbl]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[emailTable]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[titleLbl]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[titleTxt]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[messageLbl]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[messageTxt]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[convertToPDFLbl][convertToPDFSwitch(40)]-30-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[sendBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         
         
        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[viewTitleLbl(40)]-[emailTable]-[titleLbl(30)][titleTxt(40)]-[messageLbl(30)][messageTxt(100)]-[convertToPDFLbl(30)]-[sendBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[viewTitleLbl(40)]-[emailTable]-[titleLbl(30)][titleTxt(40)]-[messageLbl(30)][messageTxt(100)]-[convertToPDFSwitch(30)]-[sendBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[viewTitleLbl(40)]-[emailTable]-[titleLbl(30)][titleTxt(40)]-[messageLbl(30)][messageTxt(100)]-[convertToPDFLbl(30)]-[sendBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[viewTitleLbl(40)]-[emailTable]-[titleLbl(30)][titleTxt(40)]-[messageLbl(30)][messageTxt(100)]-[convertToPDFSwitch(30)]-[sendBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         
     }
@@ -549,7 +559,7 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     @objc func goBack(){
         
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
         
     }
     

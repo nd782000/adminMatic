@@ -6,6 +6,9 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
+//  Edited for safeView
+
+
 
 import Foundation
 import UIKit
@@ -222,11 +225,21 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         }
         navigationItem.rightBarButtonItem = submitButton
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
-        self.view.addSubview(statusIcon)
+        safeContainer.addSubview(statusIcon)
         setStatus(status: self.contract.status)
         
         //status picker
@@ -244,7 +257,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         self.statusTxtField.backgroundColor = UIColor.clear
         self.statusTxtField.inputView = statusPicker
         self.statusTxtField.layer.borderWidth = 0
-        self.view.addSubview(self.statusTxtField)
+        safeContainer.addSubview(self.statusTxtField)
         let statusToolBar = UIToolbar()
         statusToolBar.barStyle = UIBarStyle.default
         statusToolBar.barTintColor = UIColor(hex:0x005100, op:1)
@@ -273,7 +286,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         customerSearchBar.searchBarStyle = UISearchBar.Style.default
         customerSearchBar.delegate = self
         customerSearchBar.tag = 1
-        self.view.addSubview(customerSearchBar)
+        safeContainer.addSubview(customerSearchBar)
         
         let custToolBar = UIToolbar()
         custToolBar.barStyle = UIBarStyle.default
@@ -307,7 +320,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         //title
         self.titleLbl = GreyLabel()
         self.titleLbl.text = "Title:"
-        self.view.addSubview(titleLbl)
+        safeContainer.addSubview(titleLbl)
         
         
         if(contract.title != ""){
@@ -321,13 +334,13 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         self.titleTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.titleTxtField.delegate = self
         self.titleTxtField.autocapitalizationType = .words
-        self.view.addSubview(self.titleTxtField)
+        safeContainer.addSubview(self.titleTxtField)
         
         
         //charge type
         self.chargeTypeLbl = GreyLabel()
         self.chargeTypeLbl.text = "Charge Type:"
-        self.view.addSubview(chargeTypeLbl)
+        safeContainer.addSubview(chargeTypeLbl)
         
         self.chargeTypePicker = Picker()
         self.chargeTypePicker.delegate = self
@@ -339,7 +352,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         self.chargeTypeTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.chargeTypeTxtField.delegate = self
         self.chargeTypeTxtField.inputView = chargeTypePicker
-        self.view.addSubview(self.chargeTypeTxtField)
+        safeContainer.addSubview(self.chargeTypeTxtField)
         
         
         let chargeTypeToolBar = UIToolbar()
@@ -373,7 +386,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         self.repLbl = GreyLabel()
         self.repLbl.text = "Sales Rep:"
         
-        self.view.addSubview(repLbl)
+        safeContainer.addSubview(repLbl)
         
         
         
@@ -393,7 +406,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         repSearchBar.searchBarStyle = UISearchBar.Style.default
         repSearchBar.delegate = self
         repSearchBar.tag = 2
-        self.view.addSubview(repSearchBar)
+        safeContainer.addSubview(repSearchBar)
         
         
         let repToolBar = UIToolbar()
@@ -436,7 +449,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         //notes
         self.notesLbl = GreyLabel()
         self.notesLbl.text = "Notes:"
-        self.view.addSubview(self.notesLbl)
+        safeContainer.addSubview(self.notesLbl)
         
         self.notesView = UITextView()
         self.notesView.layer.borderWidth = 1
@@ -448,7 +461,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         self.notesView.isEditable = true
         self.notesView.delegate = self
         self.notesView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.notesView)
+        safeContainer.addSubview(self.notesView)
         
         let notesToolBar = UIToolbar()
         notesToolBar.barStyle = UIBarStyle.default
@@ -460,8 +473,8 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         notesToolBar.isUserInteractionEnabled = true
         self.notesView.inputAccessoryView = notesToolBar
         
-        self.view.addSubview(self.customerResultsTableView)
-        self.view.addSubview(self.repResultsTableView)
+        safeContainer.addSubview(self.customerResultsTableView)
+        safeContainer.addSubview(self.repResultsTableView)
         
         /////////  Auto Layout   //////////////////////////////////////
         
@@ -488,41 +501,41 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
             ] as [String:AnyObject]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusIcon(40)]-15-[customerSearchBar]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusIcon(40)]-15-[customerSearchBar]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleLbl(48)][titleTxtField]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeLbl(116)][chargeTypeTxtField]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleLbl(48)][titleTxtField]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repLbl(80)]-10-[repSearchBar]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeLbl(116)][chargeTypeTxtField]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesLbl]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesView]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repLbl(80)]-10-[repSearchBar]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        
+        
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesLbl]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesView]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         
         
         
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: dictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: dictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: dictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-10-[titleLbl(40)]-10-[chargeTypeLbl(40)]-10-[repLbl(40)]-10-[notesLbl(40)][notesView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[customerSearchBar(40)]-10-[titleLbl(40)]-10-[chargeTypeLbl(40)]-10-[repLbl(40)]-10-[notesLbl(40)][notesView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)][customerTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-10-[titleLbl(40)]-10-[chargeTypeLbl(40)]-10-[repLbl(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[customerSearchBar(40)][customerTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[customerSearchBar(40)]-10-[titleLbl(40)]-10-[chargeTypeLbl(40)]-10-[repLbl(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-10-[titleTxtField(40)]-10-[chargeTypeTxtField(40)]-10-[repLbl(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[customerSearchBar(40)]-10-[titleTxtField(40)]-10-[chargeTypeTxtField(40)]-10-[repLbl(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-10-[titleTxtField(40)]-10-[chargeTypeTxtField(40)]-10-[repSearchBar(40)]-10-[notesLbl(40)][notesView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[customerSearchBar(40)]-10-[titleTxtField(40)]-10-[chargeTypeTxtField(40)]-10-[repSearchBar(40)]-10-[notesLbl(40)][notesView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         
         
@@ -1284,14 +1297,14 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
-                _ = self.navigationController?.popViewController(animated: true)
+                _ = self.navigationController?.popViewController(animated: false)
             }
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
             layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
-            _ = navigationController?.popViewController(animated: true)
+            _ = navigationController?.popViewController(animated: false)
         }
         
     }

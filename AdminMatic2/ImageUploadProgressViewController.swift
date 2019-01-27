@@ -6,7 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
-
+//  Edited for safeView
  
 import Foundation
 import UIKit
@@ -87,6 +87,18 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
     
     
     func layoutViews(){
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
         self.employeeView = UIView()
         self.employeeView.backgroundColor = layoutVars.backgroundColor
         self.employeeView.translatesAutoresizingMaskIntoConstraints = false
@@ -105,18 +117,6 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
             }
         }
         
-        //let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!)
-        
-        
-        //Nuke.loadImage(with: imgUrl!, into: self.employeeImageView)
-        
-        /*
-        //Nuke.loadImage(with: imgUrl!, into: self.employeeImageView){ [weak view] in
-        Nuke.loadImage(with: imgUrl!, into: self.employeeImageView){ 
-            //print("nuke loadImage")
-            self.employeeImageView.handle(response: $0, isFromMemoryCache: $1)
-        }
-        */
         
         
         Alamofire.request("https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!).responseImage { response in
@@ -157,7 +157,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
         self.employeeView?.addSubview(self.employeeLabel!)
         self.progressLabel = InfoLabel()
         self.employeeView?.addSubview(self.progressLabel!)
-        self.view.addSubview(self.employeeView!)
+        safeContainer.addSubview(self.employeeView!)
     //gets first batch of images to upload
         getBatch()
         
@@ -167,7 +167,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
         self.imageTableView.register(ImageUploadProgressTableViewCell.self, forCellReuseIdentifier: "cell")
          self.imageTableView.alwaysBounceVertical = false
         
-        self.view.addSubview(self.imageTableView)
+        safeContainer.addSubview(self.imageTableView)
         //auto layout group
         let viewsDictionary = ["employeeView":self.employeeView,
             "tableView":self.imageTableView
@@ -175,9 +175,9 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
         
         let sizeVals = ["fullWidth": layoutVars.fullWidth,"width": layoutVars.fullWidth ,"navBottom":layoutVars.navAndStatusBarHeight,"height": self.view.frame.size.height - 10]  as [String : Any]
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[employeeView]|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[tableView]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[employeeView(80)][tableView]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[employeeView]|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[tableView]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[employeeView(80)][tableView]|", options: [], metrics: sizeVals, views: viewsDictionary))
         
         let viewsDictionary2 = ["employeePic":self.employeeImageView,
                                "employeeLbl":self.employeeLabel,

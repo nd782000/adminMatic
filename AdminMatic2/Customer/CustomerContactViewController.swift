@@ -6,7 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
- 
+//edited for safeView
 
 import Foundation
 import UIKit
@@ -434,7 +434,7 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
     
     
     @objc func goBack(){
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
         
     }
     

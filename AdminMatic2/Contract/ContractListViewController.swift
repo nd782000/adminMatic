@@ -6,6 +6,8 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
  
+//  Edited for safeView
+
 
 import Foundation
 import UIKit
@@ -243,6 +245,9 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         title = "Contract List"
         
         
+       
+        
+        
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchBar.placeholder = "Search Contracts"
         searchController.searchResultsUpdater = self
@@ -259,6 +264,15 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         navigationItem.titleView = searchBarContainer
         
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
         
         
         self.contractTableView =  TableView()
@@ -267,7 +281,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         self.contractTableView.dataSource  =  self
         self.contractTableView.rowHeight = 60.0
         self.contractTableView.register(ContractTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.contractTableView)
+        safeContainer.addSubview(self.contractTableView)
         
         refreshControl = UIRefreshControl()
         refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
@@ -279,7 +293,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         self.countView = UIView()
         self.countView.backgroundColor = layoutVars.backgroundColor
         self.countView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.countView)
+        safeContainer.addSubview(self.countView)
         
         self.countLbl.translatesAutoresizingMaskIntoConstraints = false
         
@@ -288,7 +302,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         self.addContractBtn.layer.borderColor = UIColor.white.cgColor
         self.addContractBtn.layer.borderWidth = 1.0
         self.addContractBtn.addTarget(self, action: #selector(ContractListViewController.addContract), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.addContractBtn)
+        safeContainer.addSubview(self.addContractBtn)
         
         
         
@@ -298,7 +312,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         //self.contractSettingsBtn.translatesAutoresizingMaskIntoConstraints = true
         self.contractSettingsBtn.layer.borderColor = UIColor.white.cgColor
         self.contractSettingsBtn.layer.borderWidth = 1.0
-        self.view.addSubview(self.contractSettingsBtn)
+        safeContainer.addSubview(self.contractSettingsBtn)
         
         self.contractSettingsBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
         
@@ -335,11 +349,11 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         let sizeVals = ["width": layoutVars.fullWidth,"height": self.view.frame.size.height ,"navBarHeight":self.layoutVars.navAndStatusBarHeight] as [String : Any]
         
         //////////////   auto layout position constraints   /////////////////////////////
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[contractTable(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[countView(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[addContractBtn][contractSettingsBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[contractTable][countView(30)][addContractBtn(50)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[contractTable][countView(30)][contractSettingsBtn(50)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[contractTable(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[countView(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[addContractBtn][contractSettingsBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[contractTable][countView(30)][addContractBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[contractTable][countView(30)][contractSettingsBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         let viewsDictionary2 = [
             "countLbl":self.countLbl
             ] as [String : Any]
@@ -554,7 +568,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     
     
     func goBack(){
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
     }
     
     

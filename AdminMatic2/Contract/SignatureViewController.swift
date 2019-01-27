@@ -6,6 +6,7 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 
 import Foundation
@@ -111,11 +112,18 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
    
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        
+        layoutViews()
+        /*
         if UIDevice.current.orientation.isLandscape {
             print("Landscape")
+            layoutViews()
         } else {
             print("Portrait")
+            //layoutViewsLandscape()
+            layoutViews()
         }
+ */
     }
 
     
@@ -125,8 +133,21 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
         //print("customer view layoutViews")
         //////////   containers for different sections
         
+        self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
         self.termsBtn.addTarget(self, action: #selector(SignatureViewController.terms), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.termsBtn)
+        safeContainer.addSubview(self.termsBtn)
         
         self.signatureView.backgroundColor = UIColor.clear
         self.signatureView.layer.borderWidth = 1
@@ -135,13 +156,13 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
         
         self.signatureView.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(self.signatureView)
+        safeContainer.addSubview(self.signatureView)
         
         self.clearBtn.addTarget(self, action: #selector(SignatureViewController.clear), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.clearBtn)
+        safeContainer.addSubview(self.clearBtn)
         
         self.acceptBtn.addTarget(self, action: #selector(SignatureViewController.accept), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.acceptBtn)
+        safeContainer.addSubview(self.acceptBtn)
         
         
         self.progressLbl = Label(text: "", valueMode: false)
@@ -149,13 +170,13 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
         self.progressLbl.textAlignment = .right
         self.progressLbl.translatesAutoresizingMaskIntoConstraints = false
         self.progressLbl.isHidden = true
-        self.view.addSubview(self.progressLbl)
+        safeContainer.addSubview(self.progressLbl)
         
         self.progressView = UIProgressView()
         self.progressView.tintColor = layoutVars.buttonColor1
         self.progressView.translatesAutoresizingMaskIntoConstraints = false
         self.progressView.isHidden = true
-        self.view.addSubview(self.progressView)
+        safeContainer.addSubview(self.progressView)
         
         
         let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 24,"halfWidth": layoutVars.halfWidth] as [String:Any]
@@ -177,26 +198,122 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
         //////////////   auto layout position constraints   /////////////////////////////
         
         if self.employee == nil{
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[termsBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[termsBtn]-|", options: [], metrics: nil, views: viewsDictionary))
         }
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[signView]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[clearBtn(halfWidth)]-[acceptBtn]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[progressLbl][progressView(80)]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[signView]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[clearBtn(halfWidth)]-[acceptBtn]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[progressLbl][progressView(80)]-|", options: [], metrics: nil, views: viewsDictionary))
        
         if self.employee == nil{
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-68-[termsBtn(40)]-[signView]-[clearBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-68-[termsBtn(40)]-[signView]-[acceptBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[termsBtn(40)]-[signView]-[clearBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[termsBtn(40)]-[signView]-[acceptBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
         }else{
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-68-[signView]-[clearBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-68-[signView]-[acceptBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[signView]-[clearBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[signView]-[acceptBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
         }
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-120-[progressLbl(20)]", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-125-[progressView(10)]", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-52-[progressLbl(20)]", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-52-[progressView(10)]", options: [], metrics: nil, views: viewsDictionary))
         
     }
+    
+    
+    /*
+    
+    func layoutViewsPortrait(){
+        //print("customer view layoutViews")
+        //////////   containers for different sections
+        
+        self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalToConstant: view.safeLeftAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
+        self.termsBtn.addTarget(self, action: #selector(SignatureViewController.terms), for: UIControl.Event.touchUpInside)
+        safeContainer.addSubview(self.termsBtn)
+        
+        self.signatureView.backgroundColor = UIColor.clear
+        self.signatureView.layer.borderWidth = 1
+        self.signatureView.layer.borderColor = UIColor(hex:0x005100, op: 0.2).cgColor
+        self.signatureView.layer.cornerRadius = 4.0
+        
+        self.signatureView.translatesAutoresizingMaskIntoConstraints = false
+        
+        safeContainer.addSubview(self.signatureView)
+        
+        self.clearBtn.addTarget(self, action: #selector(SignatureViewController.clear), for: UIControl.Event.touchUpInside)
+        safeContainer.addSubview(self.clearBtn)
+        
+        self.acceptBtn.addTarget(self, action: #selector(SignatureViewController.accept), for: UIControl.Event.touchUpInside)
+        safeContainer.addSubview(self.acceptBtn)
+        
+        
+        self.progressLbl = Label(text: "", valueMode: false)
+        self.progressLbl.font = self.progressLbl.font.withSize(20)
+        self.progressLbl.textAlignment = .right
+        self.progressLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.progressLbl.isHidden = true
+        safeContainer.addSubview(self.progressLbl)
+        
+        self.progressView = UIProgressView()
+        self.progressView.tintColor = layoutVars.buttonColor1
+        self.progressView.translatesAutoresizingMaskIntoConstraints = false
+        self.progressView.isHidden = true
+        safeContainer.addSubview(self.progressView)
+        
+        
+        let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 24,"halfWidth": layoutVars.halfWidth] as [String:Any]
+        
+        
+        //print("1")
+        //auto layout group
+        let viewsDictionary = [
+            "termsBtn":self.termsBtn,
+            "signView":self.signatureView,
+            "clearBtn":self.clearBtn,
+            "acceptBtn":self.acceptBtn,
+            "progressLbl":self.progressLbl,
+            "progressView":self.progressView
+            ] as [String:Any]
+        
+        
+        
+        //////////////   auto layout position constraints   /////////////////////////////
+        
+        if self.employee == nil{
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[termsBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+        }
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[signView]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[clearBtn(halfWidth)]-[acceptBtn]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[progressLbl][progressView(80)]-|", options: [], metrics: nil, views: viewsDictionary))
+        
+        if self.employee == nil{
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[termsBtn(40)]-[signView]-[clearBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[termsBtn(40)]-[signView]-[acceptBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        }else{
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[signView]-[clearBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[signView]-[acceptBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        }
+        
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-52-[progressLbl(20)]", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-52-[progressView(10)]", options: [], metrics: nil, views: viewsDictionary))
+        
+    }
+    
+    */
+    
     
     
     // MARK: - Delegate Methods
@@ -469,7 +586,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
    
     
     @objc func goBack(){
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
         
     }
     

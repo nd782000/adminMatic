@@ -6,7 +6,8 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
- 
+//edited for safeView
+
 import Foundation
 import UIKit
 import Alamofire
@@ -78,16 +79,29 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
    
     func layoutViews(){
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
+        
         self.employeeTableView =  TableView()
         
         //print("layoutViews")
         
+        self.employeeTableView.layer.cornerRadius = 0
         self.employeeTableView.delegate  =  self
         self.employeeTableView.dataSource  =  self
         self.employeeTableView.rowHeight = 60.0
         self.employeeTableView.tableHeaderView = nil;
         self.employeeTableView.register(EmployeeTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.employeeTableView)
+        safeContainer.addSubview(self.employeeTableView)
         
         
         
@@ -96,7 +110,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         //self.countView.layer.borderColor = layoutVars.borderColor
         //self.countView.layer.borderWidth = 1.0
         self.countView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.countView)
+        safeContainer.addSubview(self.countView)
         
         
         self.countLbl.translatesAutoresizingMaskIntoConstraints = false
@@ -107,14 +121,14 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         
         
-        
+        self.groupMessageBtn.layer.cornerRadius = 0
         self.groupMessageBtn.addTarget(self, action: #selector(EmployeeListViewController.groupMessage), for: UIControl.Event.touchUpInside)
         
        // self.groupMessageBtn.frame = CGRect(x:0, y: self.view.frame.height - 50, width: self.view.frame.width - 100, height: 50)
        // self.groupMessageBtn.translatesAutoresizingMaskIntoConstraints = true
        // self.groupMessageBtn.layer.borderColor = UIColor.white.cgColor
         //self.groupMessageBtn.layer.borderWidth = 1.0
-        self.view.addSubview(self.groupMessageBtn)
+        safeContainer.addSubview(self.groupMessageBtn)
         
         
         
@@ -131,10 +145,10 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         //////////////   auto layout position constraints   /////////////////////////////
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[empTable(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[countView(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[groupMessageBtn(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[empTable][countView(30)][groupMessageBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[empTable(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[countView(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[groupMessageBtn(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[empTable][countView(30)][groupMessageBtn(40)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         
         let viewsDictionary2 = [
             
@@ -304,7 +318,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     
 
     func goBack(){
-      _ = navigationController?.popViewController(animated: true)
+      _ = navigationController?.popViewController(animated: false)
         
     }
     

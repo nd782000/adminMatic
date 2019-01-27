@@ -6,6 +6,8 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
+
 
 import Foundation
 import UIKit
@@ -20,6 +22,9 @@ protocol PerformanceDelegate{
  
 
 class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIPickerViewDelegate, PerformanceDelegate{
+    
+   // let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
@@ -299,111 +304,6 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     }
     
     
-    /*
-    func parseUsageJSON(){
-        
-        
-        print("parse usageJSON: \(String(describing: self.usageJSON))")
-        
-        self.usages = []
-        
-        let usageCount = self.usageJSON["usage"].count
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        
-        
-        for n in 0 ..< usageCount {
-            let startDate = dateFormatter.date(from: self.usageJSON["usage"][n]["start"].string!)!
-            
-            
-            let usage:Usage!
-            
-            
-            if(self.usageJSON["usage"][n]["stop"].string != "0000-00-00 00:00:00"){
-                let stopDate = dateFormatter.date(from: self.usageJSON["usage"][n]["stop"].string!)!
-                
-                usage = Usage(_ID: self.usageJSON["usage"][n]["ID"].stringValue,
-                              _empID: self.usageJSON["usage"][n]["empID"].stringValue,
-                              _depID: self.usageJSON["usage"][n]["depID"].stringValue,
-                              _woID: self.usageJSON["usage"][n]["woID"].stringValue,
-                              _start: startDate,
-                              _stop: stopDate,
-                              _lunch: self.usageJSON["usage"][n]["lunch"].stringValue,
-                              _qty: self.usageJSON["usage"][n]["qty"].stringValue,
-                              _empName: self.usageJSON["usage"][n]["empName"].stringValue,
-                              _type: self.usageJSON["usage"][n]["type"].stringValue,
-                              _itemID: self.usageJSON["usage"][n]["woItemID"].stringValue,
-                              _unitPrice: self.usageJSON["usage"][n]["unitPrice"].stringValue,
-                              _totalPrice: self.usageJSON["usage"][n]["totalPrice"].stringValue,
-                              _vendor: self.usageJSON["usage"][n]["vendor"].stringValue,
-                              _unitCost: self.usageJSON["usage"][n]["unitCost"].stringValue,
-                              _totalCost: self.usageJSON["usage"][n]["totalCost"].stringValue,
-                              _chargeType: self.usageJSON["usage"][n]["chargeID"].stringValue,
-                              _override: self.usageJSON["usage"][n]["override"].stringValue,
-                              _empPic: self.usageJSON["usage"][n]["empPic"].stringValue,
-                              _locked: true,
-                              _addedBy: self.usageJSON["usage"][n]["addedBy"].stringValue,
-                              _del: ""
-                )
-                
-            }else{
-                
-                usage = Usage(_ID: self.usageJSON["usage"][n]["ID"].stringValue,
-                              _empID: self.usageJSON["usage"][n]["empID"].stringValue,
-                              _depID: self.usageJSON["usage"][n]["depID"].stringValue,
-                              _woID: self.usageJSON["usage"][n]["woID"].stringValue,
-                              _start: startDate,
-                              _lunch: self.usageJSON["usage"][n]["lunch"].stringValue,
-                              _qty: self.usageJSON["usage"][n]["qty"].stringValue,
-                              _empName: self.usageJSON["usage"][n]["empName"].stringValue,
-                              _type: self.usageJSON["usage"][n]["type"].stringValue,
-                              _itemID: self.usageJSON["usage"][n]["woItemID"].stringValue,
-                              _unitPrice: self.usageJSON["usage"][n]["unitPrice"].stringValue,
-                              _totalPrice: self.usageJSON["usage"][n]["totalPrice"].stringValue,
-                              _vendor: self.usageJSON["usage"][n]["vendor"].stringValue,
-                              _unitCost: self.usageJSON["usage"][n]["unitCost"].stringValue,
-                              _totalCost: self.usageJSON["usage"][n]["totalCost"].stringValue,
-                              _chargeType: self.usageJSON["usage"][n]["chargeID"].stringValue,
-                              _override: self.usageJSON["usage"][n]["override"].stringValue,
-                              _empPic: self.usageJSON["usage"][n]["empPic"].stringValue,
-                              _locked: true,
-                              _addedBy: self.usageJSON["usage"][n]["addedBy"].stringValue,
-                              _del: ""
-                )
-                
-                
-            }
-            usage.custName = self.usageJSON["usage"][n]["custName"].stringValue
-            usage.woStatus = self.usageJSON["usage"][n]["woStatus"].stringValue
-            
-            self.usages.append(usage)
-        }
-        
-        
-        print("usage count \(self.usages.count)")
-        self.total = self.usageJSON["usageTotalHrs"].stringValue
-        self.totalPrice = self.usageJSON["usageTotalPrice"].stringValue
-        
-        
-        
-        
-        
-        if (UIDevice.current.orientation.isLandscape == true) {
-            print("Landscape")
-            self.layoutViewsLandscape()
-        } else {
-            print("Portrait")
-            self.layoutViewsPortrait()
-        }
-        
-       
-        
-        
-        self.performanceTableView.reloadData()
-    }
-    
-    */
-    
     
     
     
@@ -419,18 +319,28 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         }
         
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         
         self.screenHeaderLbl = Label()
         self.screenHeaderLbl.text = "Your usage from:"
         self.screenHeaderLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.screenHeaderLbl.textAlignment = NSTextAlignment.left
-        self.view.addSubview(self.screenHeaderLbl)
+        safeContainer.addSubview(self.screenHeaderLbl)
         
         self.toLbl = Label()
         self.toLbl.text = "to:"
         self.toLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.toLbl.textAlignment = NSTextAlignment.left
-        self.view.addSubview(self.toLbl)
+        safeContainer.addSubview(self.toLbl)
         
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
@@ -446,7 +356,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.startTxtField.tag = 8
         self.startTxtField.inputView = self.startPickerView
         self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
-        self.view.addSubview(self.startTxtField)
+        safeContainer.addSubview(self.startTxtField)
         
         
         let startToolBar = UIToolbar()
@@ -471,7 +381,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.stopTxtField.tag = 8
         self.stopTxtField.inputView = self.stopPickerView
         self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
-        self.view.addSubview(self.stopTxtField)
+        safeContainer.addSubview(self.stopTxtField)
         
         let stopToolBar = UIToolbar()
         stopToolBar.barStyle = UIBarStyle.default
@@ -498,19 +408,19 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         tableHead.layer.cornerRadius = 4.0
         tableHead.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(tableHead)
+        safeContainer.addSubview(tableHead)
         
         self.performanceTableView =  TableView()
         self.performanceTableView.delegate  =  self
         self.performanceTableView.dataSource  =  self
         self.performanceTableView.register(UsageTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.performanceTableView)
+        safeContainer.addSubview(self.performanceTableView)
         
         self.usageTotalLbl = Label()
         self.usageTotalLbl.text = "Totals -  Jobs:\(self.usages.count), Hours: \(self.total!)"
         self.usageTotalLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.usageTotalLbl.textAlignment = NSTextAlignment.right
-        self.view.addSubview(self.usageTotalLbl)
+        safeContainer.addSubview(self.usageTotalLbl)
         
 
         tableHead.addSubview(stsTH)
@@ -539,17 +449,17 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         let usageViewsDictionary = ["headerLbl": self.screenHeaderLbl,"start": self.startTxtField,"toLbl":self.toLbl,"stop": self.stopTxtField, "th":self.tableHead,"view1": self.performanceTableView,"view2": self.usageTotalLbl] as [String:Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[headerLbl]-[start(80)]-[toLbl(25)]-[stop(80)]", options: [], metrics: metricsDictionary, views:usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[headerLbl]-[start(80)]-[toLbl(25)]-[stop(80)]", options: [], metrics: metricsDictionary, views:usageViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[th]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[th]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-70-[headerLbl(30)]-[th(40)][view1]-[view2(30)]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-70-[start(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-70-[toLbl(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-70-[stop(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[headerLbl(30)]-[th(40)][view1]-[view2(30)]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[start(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[toLbl(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[stop(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
     }
     
     
@@ -564,6 +474,15 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
             view.removeFromSuperview()
         }
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
         
         
         
@@ -572,13 +491,13 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.screenHeaderLbl.text = "Your usage from:"
         self.screenHeaderLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.screenHeaderLbl.textAlignment = NSTextAlignment.left
-        self.view.addSubview(self.screenHeaderLbl)
+        safeContainer.addSubview(self.screenHeaderLbl)
         
         self.toLbl = Label()
         self.toLbl.text = "to:"
         self.toLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.toLbl.textAlignment = NSTextAlignment.left
-        self.view.addSubview(self.toLbl)
+        safeContainer.addSubview(self.toLbl)
         
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
@@ -593,7 +512,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.startTxtField.tag = 8
         self.startTxtField.inputView = self.startPickerView
         self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
-        self.view.addSubview(self.startTxtField)
+        safeContainer.addSubview(self.startTxtField)
         
         
         
@@ -618,7 +537,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         self.stopTxtField.tag = 8
         self.stopTxtField.inputView = self.stopPickerView
         self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
-        self.view.addSubview(self.stopTxtField)
+        safeContainer.addSubview(self.stopTxtField)
         
         let stopToolBar = UIToolbar()
         stopToolBar.barStyle = UIBarStyle.default
@@ -637,19 +556,19 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         tableHead.layer.cornerRadius = 4.0
         tableHead.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(tableHead)
+        safeContainer.addSubview(tableHead)
         
         self.performanceTableView =  TableView()
         self.performanceTableView.delegate  =  self
         self.performanceTableView.dataSource  =  self
         self.performanceTableView.register(UsageTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.performanceTableView)
+        safeContainer.addSubview(self.performanceTableView)
         
         self.usageTotalLbl = Label()
         self.usageTotalLbl.text = "Totals - Jobs:\(self.usages.count), Hours: \(self.total!) , Revenue: \(self.totalPrice!)"
         self.usageTotalLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.usageTotalLbl.textAlignment = NSTextAlignment.right
-        self.view.addSubview(self.usageTotalLbl)
+        safeContainer.addSubview(self.usageTotalLbl)
         
         
         tableHead.addSubview(stsTH)
@@ -688,19 +607,19 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         let usageViewsDictionary = ["headerLbl": self.screenHeaderLbl,"start": self.startTxtField,"toLbl":self.toLbl,"stop": self.stopTxtField, "th":self.tableHead,"view1": self.performanceTableView,"view2": self.usageTotalLbl] as [String:Any]
         
         
-       // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[headerLbl]-|", options: [], metrics: metricsDictionary, views:usageViewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[headerLbl]-[start(80)]-[toLbl(25)]-[stop(80)]", options: [], metrics: metricsDictionary, views:usageViewsDictionary))
+       // safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[headerLbl]-|", options: [], metrics: metricsDictionary, views:usageViewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[headerLbl]-[start(80)]-[toLbl(25)]-[stop(80)]", options: [], metrics: metricsDictionary, views:usageViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[th]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[th]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-40-[headerLbl(30)]-[th(40)][view1]-[view2(30)]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[headerLbl(30)]-[th(40)][view1]-[view2(30)]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-40-[start(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-40-[toLbl(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-40-[stop(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[start(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[toLbl(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[stop(30)]", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         
         
         
@@ -854,9 +773,9 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     
     
     @objc func goBack(){
-        print("back")
-        displayHomeView()
-       // _ = appDelegate.navigationController.popViewController(animated: false)
+        print("go back")
+        _ = navigationController!.popViewController(animated: false)
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -865,7 +784,11 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     
     func canRotate() -> Void {}
     
+    
+    
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        print("view will transition")
         if (UIDevice.current.orientation.isLandscape == true) {
             print("Landscape")
             self.layoutViewsLandscape()

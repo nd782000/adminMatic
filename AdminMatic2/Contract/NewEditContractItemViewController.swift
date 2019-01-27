@@ -6,6 +6,7 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 
 import Foundation
@@ -27,6 +28,8 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     var contract:Contract!
     var itemCount:Int!
     //var charge:String!
+    
+    let safeContainer:UIView = UIView()
     
     var itemSearchBar:UISearchBar = UISearchBar()
     var itemResultsTableView:TableView = TableView()
@@ -208,6 +211,19 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
+        
+        //set container to safe bounds of view
+        //let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
+        
         if self.contractItem == nil{
             itemSearchBar.placeholder = "Item..."
         }else{
@@ -221,7 +237,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         itemSearchBar.barTintColor = UIColor.clear
         itemSearchBar.searchBarStyle = UISearchBar.Style.minimal
         itemSearchBar.delegate = self
-        self.view.addSubview(itemSearchBar)
+        safeContainer.addSubview(itemSearchBar)
         
         
         self.itemResultsTableView.delegate  =  self
@@ -235,7 +251,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         //charge type
         self.chargeTypeLbl = Label(text: "Charge Type:")
         chargeTypeLbl.textAlignment = .right
-        self.view.addSubview(chargeTypeLbl)
+        safeContainer.addSubview(chargeTypeLbl)
         
         self.chargeTypePicker = Picker()
         self.chargeTypePicker.delegate = self
@@ -247,7 +263,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         self.chargeTypeTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.chargeTypeTxtField.delegate = self
         self.chargeTypeTxtField.inputView = chargeTypePicker
-        self.view.addSubview(self.chargeTypeTxtField)
+        safeContainer.addSubview(self.chargeTypeTxtField)
         
         
         let chargeTypeToolBar = UIToolbar()
@@ -285,7 +301,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         
         
         self.estQtyLbl.textAlignment = .right
-        self.view.addSubview(self.estQtyLbl)
+        safeContainer.addSubview(self.estQtyLbl)
         
         
         
@@ -301,7 +317,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         self.estQtyTxtField.keyboardType = UIKeyboardType.decimalPad
         self.estQtyTxtField.tag = 10
         
-        self.view.addSubview(self.estQtyTxtField)
+        safeContainer.addSubview(self.estQtyTxtField)
         
        
         
@@ -320,7 +336,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         
         self.priceLbl = Label(text: "Unit Price $")
         self.priceLbl.textAlignment = .right
-        self.view.addSubview(self.priceLbl)
+        safeContainer.addSubview(self.priceLbl)
         self.priceTxtField = PaddedTextField()
         if self.contractItem != nil{
             self.priceTxtField.text = self.contractItem.price
@@ -328,7 +344,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         self.priceTxtField.delegate = self
         self.priceTxtField.keyboardType = UIKeyboardType.decimalPad
         self.priceTxtField.tag = 11
-        self.view.addSubview(self.priceTxtField)
+        safeContainer.addSubview(self.priceTxtField)
         
         let spaceButton2 = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
@@ -347,7 +363,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         self.hideUnitsLbl = Label(text: "Hide Qty:")
         self.hideUnitsLbl.textAlignment = .right
         self.hideUnitsLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(hideUnitsLbl)
+        safeContainer.addSubview(hideUnitsLbl)
         
         if self.contractItem != nil{
             if(self.contractItem.hideUnits != "0" && self.contractItem.hideUnits != ""){
@@ -364,21 +380,24 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         
         
         hideUnitsSwitch.addTarget(self, action: #selector(self.hideUnitsSwitchValueDidChange(sender:)), for: .valueChanged)
-        self.view.addSubview(hideUnitsSwitch)
+        safeContainer.addSubview(hideUnitsSwitch)
         
         
         
         self.totalLbl = Label(text: "Total $")
         self.totalLbl.textAlignment = .right
-        self.view.addSubview(self.totalLbl)
+        safeContainer.addSubview(self.totalLbl)
         self.totalTxtField = PaddedTextField()
         
         if self.contractItem != nil{
-            if(self.contractItem.qty == "0" || self.contractItem.price == "0.00"){
-                self.contractItem.total = "0.00"
-            }else{
-                self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price)!)
-            }
+            
+                if(self.contractItem.chargeType == "1" || self.contractItem.qty == "0" || self.contractItem.price == "0.00"){
+                    self.contractItem.total = "0.00"
+                }else{
+                    self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price)!)
+                }
+            
+            
         }
         
         if self.contractItem != nil{
@@ -388,7 +407,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         self.totalTxtField.alpha = 0.5
     
         
-        self.view.addSubview(self.totalTxtField)
+        safeContainer.addSubview(self.totalTxtField)
         
         self.infoLbl = Label(text:"")
         setInfoTxt()
@@ -396,13 +415,15 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         self.infoLbl.textAlignment = .center
         self.infoLbl.numberOfLines = 0
         
-        self.view.addSubview(self.infoLbl)
+        safeContainer.addSubview(self.infoLbl)
         
-        self.view.addSubview(self.itemResultsTableView)
+        
         
         
         self.submitBtn.addTarget(self, action: #selector(self.submit), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.submitBtn)
+        safeContainer.addSubview(self.submitBtn)
+        
+        safeContainer.addSubview(self.itemResultsTableView)
         
         
         setConstraints()
@@ -434,22 +455,30 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             ] as [String:Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchBar]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeLbl(175)]-[chargeType]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[estQtyLbl(175)]-[estQty]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[hideUnitsLbl(175)]-[hideUnitsSwitch]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[priceLbl(175)]-[price]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[totalLbl(175)]-[total]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[infoLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchBar]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeLbl(175)]-[chargeType]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[estQtyLbl(175)]-[estQty]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[hideUnitsLbl(175)]-[hideUnitsSwitch]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[priceLbl(175)]-[price]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[totalLbl(175)]-[total]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[infoLbl]-|", options: [], metrics: nil, views: viewsDictionary))
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchTable]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchTable]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[searchBar(40)]-10-[chargeTypeLbl(40)]-10-[estQtyLbl(40)]-10-[priceLbl(40)]-10-[totalLbl(40)]-10-[hideUnitsLbl(40)]-[searchTable]-[submitBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[searchBar(40)]-10-[chargeType(40)]-10-[estQty(40)]-10-[price(40)]-10-[total(40)]-10-[hideUnitsSwitch(40)]-[searchTable]-[submitBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[infoLbl(90)]-[submitBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[searchBar(40)]-10-[chargeTypeLbl(40)]-10-[estQtyLbl(40)]-10-[priceLbl(40)]-10-[totalLbl(40)]-10-[hideUnitsLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[searchBar(40)]-10-[chargeType(40)]-10-[estQty(40)]-10-[price(40)]-10-[total(40)]-10-[hideUnitsSwitch(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        
+        
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[searchBar(40)]-[searchTable]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[submitBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[infoLbl(90)]-[submitBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
     }
     
@@ -458,6 +487,15 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     
     @objc func handleEstQty()
     {
+        if self.contractItem == nil{
+            self.estQtyTxtField.resignFirstResponder()
+            self.itemSearchBar.becomeFirstResponder()
+            
+            layoutVars.simpleAlert(_vc: self, _title: "Select an Item", _message: "Select an item before adding an estimated quantity.")
+            self.estQtyTxtField.text = ""
+            
+            return
+        }
         //print("handle qty")
         if(Double(estQtyTxtField.text!) == nil){
             self.estQtyTxtField.resignFirstResponder()
@@ -472,14 +510,32 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         }
         self.contractItem.qty = estQtyTxtField.text!
         
-        self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price)!)
-        self.totalTxtField.text = self.contractItem.total
+        if self.contractItem.chargeType == "1"{
+            self.contractItem.total = "0.00"
+            self.totalTxtField.text = self.contractItem.total
+        }else{
+            self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price)!)
+            self.totalTxtField.text = self.contractItem.total
+        }
+            
+        
         
         editsMade = true
     }
     
     @objc func handlePrice()
     {
+        
+        if self.contractItem == nil{
+            self.priceTxtField.resignFirstResponder()
+            self.itemSearchBar.becomeFirstResponder()
+            
+            layoutVars.simpleAlert(_vc: self, _title: "Select an Item", _message: "Select an item before adding a price.")
+            self.priceTxtField.text = ""
+            
+            return
+        }
+        
         //print("handle qty")
         if(Double(priceTxtField.text!) == nil){
             self.priceTxtField.resignFirstResponder()
@@ -491,13 +547,19 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         }
         
         
-        if priceTxtField.text == ""{
+        if priceTxtField.text == "" || self.contractItem.chargeType == "1"{
             priceTxtField.text = "0.00"
         }
         self.contractItem.price = priceTxtField.text!
-        
-        self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price)!)
-        self.totalTxtField.text = self.contractItem.total
+        if self.contractItem.chargeType == "1"{
+            self.contractItem.total = "0.00"
+            self.totalTxtField.text = self.contractItem.total
+            
+        }else{
+            self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price)!)
+            self.totalTxtField.text = self.contractItem.total
+            
+        }
         
         editsMade = true
         
@@ -507,6 +569,18 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     @objc func hideUnitsSwitchValueDidChange(sender:UISwitch!)
     {
         //print("switchValueDidChange groupImages = \(groupImages)")
+        
+        if self.contractItem == nil{
+            
+            sender.isOn = false
+            self.itemSearchBar.becomeFirstResponder()
+            
+            layoutVars.simpleAlert(_vc: self, _title: "Select an Item First", _message: "")
+            //self.priceTxtField.text = ""
+            //self.priceTxtField.resignFirstResponder()
+            
+            return
+        }
         
         if (sender.isOn == true){
             print("on")
@@ -542,8 +616,25 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-       // self.employeeValue = appDelegate.employeeArray[row].name
+        
+        if self.contractItem == nil{
+            self.chargeTypeTxtField.resignFirstResponder()
+            self.itemSearchBar.becomeFirstResponder()
+            
+            
+            self.chargeTypeTxtField.resignFirstResponder()
+            
+            layoutVars.simpleAlert(_vc: self, _title: "Select an Item First", _message: "")
+            //self.priceTxtField.text = ""
+            //self.priceTxtField.resignFirstResponder()
+            
+            return
+        }
+        
         self.contractItem.chargeType = "\(row + 1)"
+        
+       // self.employeeValue = appDelegate.employeeArray[row].name
+       
     }
     
     
@@ -556,8 +647,18 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     
     @objc func handleChargeTypeChange(){
         print("handle chargeType change")
-        self.chargeTypeTxtField.resignFirstResponder()
-        
+        if self.contractItem == nil{
+            self.chargeTypeTxtField.resignFirstResponder()
+            self.itemSearchBar.becomeFirstResponder()
+            
+            self.priceTxtField.resignFirstResponder()
+            
+            layoutVars.simpleAlert(_vc: self, _title: "Select an Item First", _message: "")
+            //self.priceTxtField.text = ""
+            //self.priceTxtField.resignFirstResponder()
+            
+            return
+        }
         
         self.contractItem.chargeType = "\(self.chargeTypePicker.selectedRow(inComponent: 0) + 1)"
         //self.scheduleTypeValue = "\(self.scheduleTypePicker.selectedRow(inComponent: 0))"
@@ -571,11 +672,11 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             self.contractItem.price = "0.00"
             self.priceTxtField.text = self.contractItem.price
             
-            self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price)!)
+            self.contractItem.total = "0.00"
             self.totalTxtField.text = self.contractItem.total
         }
         
-        
+        self.chargeTypeTxtField.resignFirstResponder()
         
         
         
@@ -650,8 +751,15 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
        
         setInfoTxt()
        
-        
-        self.priceTxtField.text = currentCell.price
+        if self.contractItem.chargeType == "1"{
+            self.contractItem.price = "0.00"
+            self.priceTxtField.text = self.contractItem.price
+            self.contractItem.total = "0.00"
+            self.totalTxtField.text = self.contractItem.total
+            
+        }else{
+            self.priceTxtField.text = currentCell.price
+        }
         print("select item")
         
         //print("select type = \(self.contractItem.type)")
@@ -938,7 +1046,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
-                _ = self.navigationController?.popViewController(animated: true)
+                _ = self.navigationController?.popViewController(animated: false)
             }
             
             alertController.addAction(cancelAction)

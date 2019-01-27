@@ -5,7 +5,9 @@
 //  Created by Nick on 1/7/17.
 //  Copyright © 2017 Nick. All rights reserved.
 //
- 
+
+//edited for safeView
+
 import Foundation
 import UIKit
 import Alamofire
@@ -1534,7 +1536,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         multiPicker.showsCancelButton = true
         multiPicker.assetType = .allPhotos
-        self.layoutVars.getTopController().present(multiPicker, animated: true) {}
+        self.layoutVars.getTopController().present(multiPicker, animated: false) {}
         
         
         
@@ -1691,7 +1693,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         imageDetailViewController = ImageDetailViewController(_image: currentCell.image, _ID: currentCell.image.ID)
         imageDetailViewController.imageFullViewController.delegate = self
-        imageCollectionView?.deselectItem(at: indexPath, animated: true)
+        imageCollectionView?.deselectItem(at: indexPath, animated: false)
         navigationController?.pushViewController(imageDetailViewController, animated: false )
         imageDetailViewController.delegate = self
         imageDetailViewController.imageLikeDelegate = self
@@ -1925,7 +1927,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         case "LEADS":
             let leadViewController = LeadViewController(_lead: currentCell.lead!)
         
-            navigationController?.pushViewController(leadViewController, animated: true )
+            navigationController?.pushViewController(leadViewController, animated: false )
             
             leadViewController.delegate = self
             //workOrderViewController.scheduleDelegate = self
@@ -1935,12 +1937,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             //workOrderViewController.scheduleIndex = indexPath?.row
             
             
-            tableView.deselectRow(at: indexPath!, animated: true)
+            tableView.deselectRow(at: indexPath!, animated: false)
             break
         case "CONTRACTS":
             let contractViewController = ContractViewController(_contract: currentCell.contract!)
             
-            navigationController?.pushViewController(contractViewController, animated: true )
+            navigationController?.pushViewController(contractViewController, animated: false )
             
             contractViewController.delegate = self
             //workOrderViewController.scheduleDelegate = self
@@ -1950,11 +1952,11 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             //workOrderViewController.scheduleIndex = indexPath?.row
             
             
-            tableView.deselectRow(at: indexPath!, animated: true)
+            tableView.deselectRow(at: indexPath!, animated: false)
             break
         case "SCHEDULE":
             let workOrderViewController = WorkOrderViewController(_workOrder: currentCell.workOrder,_customerName: currentCell.workOrder.customer)
-            navigationController?.pushViewController(workOrderViewController, animated: true )
+            navigationController?.pushViewController(workOrderViewController, animated: false )
             
             workOrderViewController.scheduleDelegate = self
             //workOrderViewController.customerDelegate = self
@@ -1963,11 +1965,11 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             workOrderViewController.scheduleIndex = indexPath?.row
             
             
-            tableView.deselectRow(at: indexPath!, animated: true)
+            tableView.deselectRow(at: indexPath!, animated: false)
             break
         case "HISTORY":
             let workOrderViewController = WorkOrderViewController(_workOrder: currentCell.workOrder,_customerName: currentCell.workOrder.customer)
-            navigationController?.pushViewController(workOrderViewController, animated: true )
+            navigationController?.pushViewController(workOrderViewController, animated: false )
             
             workOrderViewController.scheduleDelegate = self
             //workOrderViewController.customerDelegate = self
@@ -1976,7 +1978,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             workOrderViewController.scheduleIndex = indexPath?.row
             
             
-            tableView.deselectRow(at: indexPath!, animated: true)
+            tableView.deselectRow(at: indexPath!, animated: false)
             break
         default:
             
@@ -2061,7 +2063,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
             imageCollectionView?.scrollToItem(at: IndexPath(row: currentImageIndex, section: 0),
                                               at: .top,
-                                              animated: false)
+                                              animated: true)
         
         
         
@@ -2113,7 +2115,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     @objc func goBack(){
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
         
     }
     

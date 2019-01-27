@@ -6,6 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -196,39 +197,6 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         
     }
     
-    /*
-    func parseJSON(){
-        let jsonCount = self.equipment["equipment"].count
-        self.totalEquipment = jsonCount
-        for i in 0 ..< jsonCount {
-            
-            //create an equipment object
-            let equipment = Equipment(_ID: self.equipment["equipment"][i]["equipID"].stringValue, _name: self.equipment["equipment"][i]["eName"].stringValue, _make: self.equipment["equipment"][i]["make"].stringValue, _model: self.equipment["equipment"][i]["model"].stringValue, _serial: self.equipment["equipment"][i]["serial"].stringValue, _crew: self.equipment["equipment"][i]["crew"].stringValue, _crewName: self.equipment["equipment"][i]["crewName"].stringValue, _status: self.equipment["equipment"][i]["status"].stringValue, _type: self.equipment["equipment"][i]["type"].stringValue, _typeName: self.equipment["equipment"][i]["typeName"].stringValue, _fuelType: self.equipment["equipment"][i]["fuelType"].stringValue, _fuelTypeName: self.equipment["equipment"][i]["fuelName"].stringValue, _engineType: self.equipment["equipment"][i]["engineType"].stringValue, _engineTypeName: self.equipment["equipment"][i]["engineName"].stringValue, _mileage: self.equipment["equipment"][i]["mileage"].stringValue, _dealer: self.equipment["equipment"][i]["vendorID"].stringValue, _dealerName: self.equipment["equipment"][i]["vendorName"].stringValue, _purchaseDate: self.equipment["equipment"][i]["purchaseDate"].stringValue, _description: self.equipment["equipment"][i]["description"].stringValue)
-            
-            
-            if self.equipment["equipment"][i]["pic"].stringValue == "0"{
-                let image:Image = Image(_ID: "0", _noPicPath: self.equipment["equipment"][i]["picInfo"].stringValue)
-                equipment.image = image
-            }else{
-                let image:Image = Image(_ID: self.equipment["equipment"][i]["pic"].stringValue)
-                equipment.image = image
-                
-               // print("pic path = \(equipment.image.thumbPath)")
-            }
-            
-            
-            self.equipmentArray.append(equipment)
-            
-        }
-       
-        createSections()
-        
-        
-        self.layoutViews()
-        
-    }
- 
- */
     
     
     
@@ -380,6 +348,16 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         navigationItem.titleView = searchBarContainer
         
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         let items = ["Crew","Type","Status"]
          customSC = SegmentedControl(items: items)
         
@@ -407,7 +385,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         }
         
         
-        self.view.addSubview(customSC)
+        safeContainer.addSubview(customSC)
         
         
         
@@ -416,7 +394,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         equipmentTableView.rowHeight = 60.0
         self.equipmentTableView.register(EquipmentTableViewCell.self, forCellReuseIdentifier: "cell")
         
-        self.view.addSubview(self.equipmentTableView)
+        safeContainer.addSubview(self.equipmentTableView)
         
         refresher = UIRefreshControl()
         refresher.attributedTitle = NSAttributedString(string: "Pull to refresh")
@@ -429,7 +407,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         self.countView = UIView()
         self.countView.backgroundColor = layoutVars.backgroundColor
         self.countView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.countView)
+        safeContainer.addSubview(self.countView)
         
         
         self.countLbl.translatesAutoresizingMaskIntoConstraints = false
@@ -438,10 +416,10 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         
         
         self.addEquipmentBtn.addTarget(self, action: #selector(EquipmentListViewController.addEquipment), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.addEquipmentBtn)
+        safeContainer.addSubview(self.addEquipmentBtn)
         
         self.editFieldsBtn.addTarget(self, action: #selector(EquipmentListViewController.editFields), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.editFieldsBtn)
+        safeContainer.addSubview(self.editFieldsBtn)
         
         
         
@@ -457,13 +435,13 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         
         let sizeVals = ["halfWidth": layoutVars.halfWidth, "fullWidth": layoutVars.fullWidth,"width": layoutVars.fullWidth - 30,"navBottom":layoutVars.navAndStatusBarHeight,"height": self.view.frame.size.height - layoutVars.navAndStatusBarHeight] as [String : Any]
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view3(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view4(halfWidth)]-5-[view5(halfWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view3(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view4(halfWidth)]-5-[view5(halfWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[view1(40)][view2][view3(30)][view4(40)]-10-|", options:[], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view5(40)]-10-|", options:[], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(40)][view2][view3(30)][view4(40)]-10-|", options:[], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view5(40)]-10-|", options:[], metrics: sizeVals, views: viewsDictionary))
         
         let viewsDictionary2 = [
             

@@ -6,6 +6,8 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
  
+//  Edited for safeView
+
 
 import Foundation
 import UIKit
@@ -193,18 +195,6 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
             }
         }
         
-        /*
-        for employee in appDelegate.employeeArray {
-            if let id = employee.ID{
-                self.repIDs.append(id)
-            }
-            if let name = employee.name{
-                self.repNames.append(name)
-            }
-        }
- */
-        
-        
     }
     
     
@@ -229,11 +219,21 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         }
         navigationItem.rightBarButtonItem = submitButton
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
-        self.view.addSubview(statusIcon)
+        safeContainer.addSubview(statusIcon)
         setStatus(status: self.lead.statusId)
         
         //status picker
@@ -250,7 +250,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         self.statusTxtField.backgroundColor = UIColor.clear
         self.statusTxtField.inputView = statusPicker
         self.statusTxtField.layer.borderWidth = 0
-        self.view.addSubview(self.statusTxtField)
+        safeContainer.addSubview(self.statusTxtField)
         let statusToolBar = UIToolbar()
         statusToolBar.barStyle = UIBarStyle.default
         statusToolBar.barTintColor = UIColor(hex:0x005100, op:1)
@@ -280,7 +280,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         customerSearchBar.searchBarStyle = UISearchBar.Style.default
         customerSearchBar.delegate = self
         customerSearchBar.tag = 1
-        self.view.addSubview(customerSearchBar)
+        safeContainer.addSubview(customerSearchBar)
         
         let custToolBar = UIToolbar()
         custToolBar.barStyle = UIBarStyle.default
@@ -316,7 +316,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         self.scheduleTypeLbl.text = "Schedule Type:"
         self.scheduleTypeLbl.textAlignment = .left
         self.scheduleTypeLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(scheduleTypeLbl)
+        safeContainer.addSubview(scheduleTypeLbl)
         
         self.scheduleTypePicker = Picker()
         self.scheduleTypePicker.delegate = self
@@ -326,7 +326,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         self.scheduleTypeTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.scheduleTypeTxtField.delegate = self
         self.scheduleTypeTxtField.inputView = scheduleTypePicker
-        self.view.addSubview(self.scheduleTypeTxtField)
+        safeContainer.addSubview(self.scheduleTypeTxtField)
         
         
         let scheduleTypeToolBar = UIToolbar()
@@ -352,7 +352,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         self.aptLbl.text = "Appointment:"
         self.aptLbl.textAlignment = .left
         self.aptLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(aptLbl)
+        safeContainer.addSubview(aptLbl)
         
         //date
         aptDatePickerView = DatePicker()
@@ -363,7 +363,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         self.aptDateTxtField.delegate = self
         self.aptDateTxtField.tag = 8
         self.aptDateTxtField.inputView = self.aptDatePickerView
-        self.view.addSubview(self.aptDateTxtField)
+        safeContainer.addSubview(self.aptDateTxtField)
         
         let aptDateToolBar = UIToolbar()
         aptDateToolBar.barStyle = UIBarStyle.default
@@ -385,7 +385,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         self.aptTimeTxtField.delegate = self
         self.aptTimeTxtField.tag = 8
         self.aptTimeTxtField.inputView = self.aptTimePickerView
-        self.view.addSubview(self.aptTimeTxtField)
+        safeContainer.addSubview(self.aptTimeTxtField)
         
         let aptTimeToolBar = UIToolbar()
         aptTimeToolBar.barStyle = UIBarStyle.default
@@ -446,7 +446,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         self.deadlineLbl.text = "Deadline:"
         self.deadlineLbl.textAlignment = .left
         self.deadlineLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(deadlineLbl)
+        safeContainer.addSubview(deadlineLbl)
         
        
         deadlinePickerView = DatePicker()
@@ -459,7 +459,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         self.deadlineTxtField.delegate = self
         self.deadlineTxtField.tag = 8
         self.deadlineTxtField.inputView = self.deadlinePickerView
-        self.view.addSubview(self.deadlineTxtField)
+        safeContainer.addSubview(self.deadlineTxtField)
         
         let deadlineToolBar = UIToolbar()
         deadlineToolBar.barStyle = UIBarStyle.default
@@ -483,7 +483,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         self.urgentLbl.text = "Urgent:"
         self.urgentLbl.textAlignment = .left
         self.urgentLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(urgentLbl)
+        safeContainer.addSubview(urgentLbl)
         
         if(self.lead.urgent != "0" && self.lead.urgent != ""){
             urgentSwitch.isOn = true
@@ -495,7 +495,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         
         urgentSwitch.addTarget(self, action: #selector(NewEditLeadViewController.urgentSwitchValueDidChange(sender:)), for: .valueChanged)
-        self.view.addSubview(urgentSwitch)
+        safeContainer.addSubview(urgentSwitch)
         
     
         //sales rep
@@ -503,7 +503,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         self.repLbl.text = "Sales Rep:"
         self.repLbl.textAlignment = .left
         self.repLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(repLbl)
+        safeContainer.addSubview(repLbl)
         
         repSearchBar.placeholder = "Sales Rep..."
         repSearchBar.translatesAutoresizingMaskIntoConstraints = false
@@ -526,7 +526,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         repSearchBar.delegate = self
         repSearchBar.tag = 2
-        self.view.addSubview(repSearchBar)
+        safeContainer.addSubview(repSearchBar)
         
         let repToolBar = UIToolbar()
         repToolBar.barStyle = UIBarStyle.default
@@ -560,7 +560,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         self.reqByCustLbl.text = "Requsted By Customer:"
         self.reqByCustLbl.textAlignment = .left
         self.reqByCustLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(reqByCustLbl)
+        safeContainer.addSubview(reqByCustLbl)
         
         if(self.lead.requestedByCust != "0" && self.lead.requestedByCust != ""){
             reqByCustSwitch.isOn = true
@@ -571,7 +571,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         reqByCustSwitch.translatesAutoresizingMaskIntoConstraints = false
         reqByCustSwitch.addTarget(self, action: #selector(NewEditLeadViewController.reqByCustSwitchValueDidChange(sender:)), for: .valueChanged)
-        self.view.addSubview(reqByCustSwitch)
+        safeContainer.addSubview(reqByCustSwitch)
         
         
         //description
@@ -579,7 +579,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         self.descriptionLbl.text = "General Description:"
         self.descriptionLbl.textAlignment = .left
         self.descriptionLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.descriptionLbl)
+        safeContainer.addSubview(self.descriptionLbl)
         
         self.descriptionView = UITextView()
         self.descriptionView.layer.borderWidth = 1
@@ -591,7 +591,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         self.descriptionView.isEditable = true
         self.descriptionView.delegate = self
         self.descriptionView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.descriptionView)
+        safeContainer.addSubview(self.descriptionView)
         
         let descriptionToolBar = UIToolbar()
         descriptionToolBar.barStyle = UIBarStyle.default
@@ -603,8 +603,8 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         descriptionToolBar.isUserInteractionEnabled = true
         self.descriptionView.inputAccessoryView = descriptionToolBar
         
-        self.view.addSubview(self.customerResultsTableView)
-        self.view.addSubview(self.repResultsTableView)
+        safeContainer.addSubview(self.customerResultsTableView)
+        safeContainer.addSubview(self.repResultsTableView)
         
         /////////  Auto Layout   //////////////////////////////////////
         
@@ -635,41 +635,41 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
             ] as [String:AnyObject]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusIcon(40)]-15-[customerSearchBar]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusIcon(40)]-15-[customerSearchBar]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: dictionary))
 
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scheduleTypeLbl][scheduleTypeTxtField(208)]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scheduleTypeLbl][scheduleTypeTxtField(208)]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[aptLbl][aptDateTxtField(100)]-[aptTimeTxtField(100)]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[aptLbl][aptDateTxtField(100)]-[aptTimeTxtField(100)]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[deadlineLbl][deadlineTxtField(100)]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[urgentLbl][urgentSwitch]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[deadlineLbl][deadlineTxtField(100)]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[urgentLbl][urgentSwitch]-|", options: [], metrics: metricsDictionary, views: dictionary))
 
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repLbl(80)]-10-[repSearchBar]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repLbl(80)]-10-[repSearchBar]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[reqByCustLbl][reqByCustSwitch]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[reqByCustLbl][reqByCustSwitch]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[descriptionLbl]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[descriptionView]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        
-        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[descriptionLbl]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[descriptionView]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-10-[scheduleTypeLbl(40)]-[aptLbl(40)]-[deadlineLbl(40)]-[urgentLbl(40)]-[repLbl(40)]-10-[reqByCustLbl(40)]-[descriptionLbl(40)][descriptionView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)][customerTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-10-[scheduleTypeLbl(40)]-[aptLbl(40)]-[deadlineLbl(40)]-[urgentLbl(40)]-[repLbl(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-10-[scheduleTypeTxtField(40)]-[aptDateTxtField(40)]-[deadlineTxtField(40)]-[urgentLbl(40)]-[repLbl(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[customerSearchBar(40)]-10-[scheduleTypeLbl(40)]-[aptLbl(40)]-[deadlineLbl(40)]-[urgentLbl(40)]-[repLbl(40)]-10-[reqByCustLbl(40)]-[descriptionLbl(40)][descriptionView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-10-[scheduleTypeTxtField(40)]-[aptTimeTxtField(40)]-[deadlineTxtField(40)]-[urgentSwitch(40)]-[repSearchBar(40)]-10-[reqByCustSwitch(40)]-[descriptionLbl(40)][descriptionView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[customerSearchBar(40)][customerTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[customerSearchBar(40)]-10-[scheduleTypeLbl(40)]-[aptLbl(40)]-[deadlineLbl(40)]-[urgentLbl(40)]-[repLbl(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[customerSearchBar(40)]-10-[scheduleTypeTxtField(40)]-[aptDateTxtField(40)]-[deadlineTxtField(40)]-[urgentLbl(40)]-[repLbl(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[customerSearchBar(40)]-10-[scheduleTypeTxtField(40)]-[aptTimeTxtField(40)]-[deadlineTxtField(40)]-[urgentSwitch(40)]-[repSearchBar(40)]-10-[reqByCustSwitch(40)]-[descriptionLbl(40)][descriptionView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         
  
@@ -1452,14 +1452,14 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
-                _ = self.navigationController?.popViewController(animated: true)
+                _ = self.navigationController?.popViewController(animated: false)
             }
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
             layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
-            _ = navigationController?.popViewController(animated: true)
+            _ = navigationController?.popViewController(animated: false)
         }
         
     }

@@ -6,6 +6,7 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 
 import Foundation
@@ -278,17 +279,28 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             self.infoView.subviews.forEach({ $0.removeFromSuperview() })
         }
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
         
         stackController = StackController()
         stackController.delegate = self
         stackController.getStack(_type:1,_ID:self.contract.ID)
-        self.view.addSubview(stackController)
+        safeContainer.addSubview(stackController)
         
         
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
-        self.view.addSubview(statusIcon)
+        safeContainer.addSubview(statusIcon)
         setStatus(status: contract.status)
         
         //picker
@@ -310,7 +322,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         self.statusTxtField.backgroundColor = UIColor.clear
         self.statusTxtField.inputView = statusPicker
         self.statusTxtField.layer.borderWidth = 0
-        self.view.addSubview(self.statusTxtField)
+        safeContainer.addSubview(self.statusTxtField)
         
         let toolBar = UIToolbar()
         toolBar.barStyle = UIBarStyle.default
@@ -338,7 +350,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         self.customerBtn.contentEdgeInsets = UIEdgeInsets(top: 0, left: 35, bottom: 0, right: 10)
         self.customerBtn.addTarget(self, action: #selector(self.showCustInfo), for: UIControl.Event.touchUpInside)
         
-        self.view.addSubview(customerBtn)
+        safeContainer.addSubview(customerBtn)
         
         // Info Window
         self.infoView.translatesAutoresizingMaskIntoConstraints = false
@@ -346,7 +358,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         self.infoView.layer.borderWidth = 1
         self.infoView.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
         self.infoView.layer.cornerRadius = 4.0
-        self.view.addSubview(infoView)
+        safeContainer.addSubview(infoView)
         
         //date
         self.titleLbl = GreyLabel()
@@ -423,12 +435,12 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         self.itemsTableView.estimatedRowHeight = 60
         
         
-        self.view.addSubview(self.itemsTableView)
+        safeContainer.addSubview(self.itemsTableView)
         
         
         
         self.signBtn.addTarget(self, action: #selector(ContractViewController.sign), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.signBtn)
+        safeContainer.addSubview(self.signBtn)
         
         
         
@@ -438,7 +450,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         self.signatureImageContainerView.backgroundColor = UIColor.white
         self.signatureImageContainerView.layer.cornerRadius = 4.0
         self.signatureImageContainerView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.signatureImageContainerView)
+        safeContainer.addSubview(self.signatureImageContainerView)
         
         
         
@@ -464,7 +476,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         self.tapBtn.addTarget(self, action: #selector(ContractViewController.showSignatureOptions), for: UIControl.Event.touchUpInside)
         self.tapBtn.backgroundColor = UIColor.clear
         self.tapBtn.setTitle("", for: UIControl.State.normal)
-        self.view.addSubview(self.tapBtn)
+        safeContainer.addSubview(self.tapBtn)
         
         
         //total
@@ -473,7 +485,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         self.totalLbl.textAlignment = .right
         self.totalLbl.font = layoutVars.largeFont
         self.totalLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(totalLbl)
+        safeContainer.addSubview(totalLbl)
         
         //tax
         self.taxLbl = GreyLabel()
@@ -481,7 +493,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         self.taxLbl.textAlignment = .right
         self.taxLbl.font = layoutVars.microFont
         self.taxLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(taxLbl)
+        safeContainer.addSubview(taxLbl)
         
         
         if self.contract.customerSignature == "1"{
@@ -519,46 +531,46 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             "taxLbl":self.taxLbl
             ] as [String:AnyObject]
         
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[stackController]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusIcon(40)]-[customerBtn]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[info]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[itemsLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[table]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[stackController]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusIcon(40)]-[customerBtn]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[info]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[itemsLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[table]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         if(self.contract.customerSignature == "1"){
            
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[signature(halfWidth)]-[totalLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapBtn(halfWidth)]-[totalLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[signature(halfWidth)]-[totalLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapBtn(halfWidth)]-[totalLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapBtn(halfWidth)]-[taxLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapBtn(halfWidth)]-[taxLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
             
             
             signBtn.isHidden = true
         }else{
             
-             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[signBtn(halfWidth)]-[totalLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[signBtn(halfWidth)]-[taxLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+             safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[signBtn(halfWidth)]-[totalLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[signBtn(halfWidth)]-[taxLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
             signBtn.isHidden = false
             tapBtn.isHidden = true
             
         }
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table]-[signBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table]-[signBtn(40)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         if(self.contract.customerSignature == "1"){
             
             //print("v constraint for signature")
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table]-[signature(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table]-[tapBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table]-[signature(40)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table]-[tapBtn(40)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         }
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table][totalLbl(35)][taxLbl(10)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(160)]-[itemsLbl(22)][table][totalLbl(35)][taxLbl(10)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         
         
@@ -816,15 +828,15 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         
         //let indexPath = tableView.indexPathForSelectedRow;
-        //let currentCell = tableView.cellForRow(at: indexPath!) as! ContractItemTableViewCell;
+       // let currentCell = tableView.cellForRow(at: indexPath!) as! ContractItemTableViewCell;
         
         let ID = self.itemsArray[sourceIndexPath.row].ID!
         self.itemIDArray.remove(at: sourceIndexPath.row)
         self.itemIDArray.insert(ID, at: destinationIndexPath.row)
         
-        //let item:ContractItem = currentCell.contractItem
-        //self.itemsArray.remove(at: sourceIndexPath.row)
-        //self.itemsArray.insert(item, at: destinationIndexPath.row)
+        let item:ContractItem = self.itemsArray[sourceIndexPath.row]
+        self.itemsArray.remove(at: sourceIndexPath.row)
+        self.itemsArray.insert(item, at: destinationIndexPath.row)
         
         
         sortEditsMade = true
@@ -1298,7 +1310,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                     
                     if _leave{
                         self.indicator.dismissIndicator()
-                        _ = self.navigationController?.popViewController(animated: true)
+                        _ = self.navigationController?.popViewController(animated: false)
                     }else{
                         self.getContract()
                     }
@@ -2075,7 +2087,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                 editLeadDelegate.updateLead(_lead: self.contract.lead!, _newStatusValue: (self.contract.lead?.statusId!)!)
             }
         }
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
         
     }
     

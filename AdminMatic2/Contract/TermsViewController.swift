@@ -6,6 +6,7 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 
 import Foundation
@@ -78,8 +79,10 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
-        submitButton = UIBarButtonItem(title: "Update", style: .plain, target: self, action: #selector(NewEditContractViewController.submit))
-        navigationItem.rightBarButtonItem = submitButton
+        if self.editable{
+            submitButton = UIBarButtonItem(title: "Update", style: .plain, target: self, action: #selector(NewEditContractViewController.submit))
+            navigationItem.rightBarButtonItem = submitButton
+        }
         
         layoutViews()
     }
@@ -93,6 +96,16 @@ class TermsViewController: UIViewController, UITextViewDelegate{
     
     func layoutViews(){
        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         
         self.termsView.layer.borderWidth = 1
         self.termsView.layer.borderColor = UIColor(hex:0x005100, op: 0.2).cgColor
@@ -106,22 +119,23 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         self.termsView.isEditable = self.editable
         self.termsView.backgroundColor = UIColor.white
         self.termsView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.termsView)
+        safeContainer.addSubview(self.termsView)
+        
+       if self.editable{
+            let termsToolBar = UIToolbar()
+            termsToolBar.barStyle = UIBarStyle.default
+            termsToolBar.barTintColor = UIColor(hex:0x005100, op:1)
+            termsToolBar.sizeToFit()
+            let closeTermsButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(TermsViewController.closeTextView))
         
         
-        let termsToolBar = UIToolbar()
-        termsToolBar.barStyle = UIBarStyle.default
-        termsToolBar.barTintColor = UIColor(hex:0x005100, op:1)
-        termsToolBar.sizeToFit()
-        let closeTermsButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(TermsViewController.closeTextView))
-        
-        
-        termsToolBar.setItems([closeTermsButton], animated: false)
-        termsToolBar.isUserInteractionEnabled = true
-        termsView.inputAccessoryView = termsToolBar
+            termsToolBar.setItems([closeTermsButton], animated: false)
+            termsToolBar.isUserInteractionEnabled = true
+            termsView.inputAccessoryView = termsToolBar
+        }
         
         self.regenerateBtn.addTarget(self, action: #selector(TermsViewController.regenerateTerms), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.regenerateBtn)
+        safeContainer.addSubview(self.regenerateBtn)
         
         
         
@@ -136,15 +150,19 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         
         //////////////   auto layout position constraints   /////////////////////////////
         if self.editable == true{
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view1]-|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[regenBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+           
+            self.regenerateBtn.isHidden = false
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view1]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[regenBtn]-|", options: [], metrics: nil, views: viewsDictionary))
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-72-[view1]-220-[regenBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[view1]-220-[regenBtn(40)]-|", options: [], metrics: nil, views: viewsDictionary))
             
         }else{
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view1]-|", options: [], metrics: nil, views: viewsDictionary))
+           
+            self.regenerateBtn.isHidden = true
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view1]-|", options: [], metrics: nil, views: viewsDictionary))
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-72-[view1]-10-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[view1]-|", options: [], metrics: nil, views: viewsDictionary))
             
         }
         
@@ -292,14 +310,14 @@ class TermsViewController: UIViewController, UITextViewDelegate{
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
-                _ = self.navigationController?.popViewController(animated: true)
+                _ = self.navigationController?.popViewController(animated: false)
             }
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
             self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
-            _ = navigationController?.popViewController(animated: true)
+            _ = navigationController?.popViewController(animated: false)
         }
         
     }

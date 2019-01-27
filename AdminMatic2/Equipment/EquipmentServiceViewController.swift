@@ -6,6 +6,7 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -146,17 +147,28 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         dateFormatter.dateFormat = "MM/dd/yy"
         dateFormatterDB.dateFormat = "yyyy-MM-dd HH:mm:ss"
        
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         //name
         self.nameLbl = GreyLabel()
         self.nameLbl.text = self.equipmentService.name!
         self.nameLbl.font = layoutVars.largeFont
-        self.view.addSubview(self.nameLbl)
+        safeContainer.addSubview(self.nameLbl)
         
         //status
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
-        self.view.addSubview(statusIcon)
+        safeContainer.addSubview(statusIcon)
         
         
         self.statusPicker = Picker()
@@ -171,7 +183,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.statusTxtField.backgroundColor = UIColor.clear
         self.statusTxtField.inputView = statusPicker
         self.statusTxtField.layer.borderWidth = 0
-        self.view.addSubview(self.statusTxtField)
+        safeContainer.addSubview(self.statusTxtField)
         
         let toolBar = UIToolbar()
         toolBar.barStyle = UIBarStyle.default
@@ -190,17 +202,17 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.typeLbl = GreyLabel()
         self.typeLbl.text = "Type: \(self.equipmentService.typeName!)"
         self.typeLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.typeLbl)
+        safeContainer.addSubview(self.typeLbl)
         
         //due
         self.dueLbl = GreyLabel()
         self.dueLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.dueLbl)
+        safeContainer.addSubview(self.dueLbl)
         
         
         self.frequencyLbl = GreyLabel()
         self.frequencyLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.frequencyLbl)
+        safeContainer.addSubview(self.frequencyLbl)
         
         let creationDateFormatter:DateFormatter = DateFormatter()
         creationDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -210,7 +222,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.creationOnByLbl = GreyLabel()
         self.creationOnByLbl.text = "By: \(self.equipmentService.createdBy!) on \(self.dateFormatter.string(from: creationDate!))"
         self.creationOnByLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.creationOnByLbl)
+        safeContainer.addSubview(self.creationOnByLbl)
         
         
         //instructions
@@ -218,7 +230,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.instructionsLbl.text = "Instructions:"
         self.instructionsLbl.textAlignment = .left
         self.instructionsLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.instructionsLbl)
+        safeContainer.addSubview(self.instructionsLbl)
         
         //self.instructionsView = UITextView()
         self.instructionsView.layer.borderWidth = 1
@@ -230,13 +242,13 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.instructionsView.font = layoutVars.smallFont
         self.instructionsView.isEditable = false
         self.instructionsView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.instructionsView)
+        safeContainer.addSubview(self.instructionsView)
         
         //current
         self.currentLbl = GreyLabel()
         self.currentLbl.textAlignment = .left
         self.currentLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(currentLbl)
+        safeContainer.addSubview(currentLbl)
         
         
         
@@ -261,7 +273,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.nextLbl.text = "Next:"
         self.nextLbl.textAlignment = .left
         self.nextLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(nextLbl)
+        safeContainer.addSubview(nextLbl)
         
         
        
@@ -282,7 +294,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.completionNotesLbl.text = "Completion Notes:"
         self.completionNotesLbl.textAlignment = .left
         self.completionNotesLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.completionNotesLbl)
+        safeContainer.addSubview(self.completionNotesLbl)
         
         //self.completionNotesView = UITextView()
         self.completionNotesView.layer.borderWidth = 1
@@ -294,7 +306,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.completionNotesView.isEditable = true
         self.completionNotesView.delegate = self
         self.completionNotesView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.completionNotesView)
+        safeContainer.addSubview(self.completionNotesView)
         
         
         let completionNotesToolBar = UIToolbar()
@@ -311,7 +323,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         //status2
         self.statusLbl = GreyLabel()
         self.statusLbl.text = "Status:"
-        self.view.addSubview(self.statusLbl)
+        safeContainer.addSubview(self.statusLbl)
         
         
         
@@ -330,14 +342,14 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.statusTxtField2.layer.cornerRadius = 4.0
         self.statusTxtField2.inputView = statusPicker2
         self.statusTxtField2.leftMargin = 50
-        self.view.addSubview(self.statusTxtField2)
+        safeContainer.addSubview(self.statusTxtField2)
         
         statusTxtField2.inputAccessoryView = toolBar
         
         statusIcon2.translatesAutoresizingMaskIntoConstraints = false
         statusIcon2.backgroundColor = UIColor.clear
         statusIcon2.contentMode = .scaleAspectFill
-        self.view.addSubview(statusIcon2)
+        safeContainer.addSubview(statusIcon2)
         
         setStatus(status: equipmentService.status)
         
@@ -362,7 +374,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             self.currentTxtField.delegate = self
             self.currentTxtField.tag = 10
             
-            self.view.addSubview(self.currentTxtField)
+            safeContainer.addSubview(self.currentTxtField)
             self.currentTxtField.inputAccessoryView = currentToolBar
             
             if self.equipmentService.nextValue == "0"{
@@ -375,7 +387,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             self.nextTxtField.keyboardType = UIKeyboardType.numberPad
             self.nextTxtField.delegate = self
             self.nextTxtField.tag = 11
-            self.view.addSubview(self.nextTxtField)
+            safeContainer.addSubview(self.nextTxtField)
             
             nextLbl.isHidden = true
             nextTxtField.isHidden = true
@@ -401,7 +413,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             
             self.currentLbl.text = "Current Date:"
             self.currentTxtField = PaddedTextField()
-            self.view.addSubview(self.currentTxtField)
+            safeContainer.addSubview(self.currentTxtField)
             
             self.currentTxtField.text = dateFormatter.string(from: Date())
             self.currentTxtField.isEnabled = false
@@ -410,7 +422,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             nextDatePicker.datePickerMode = UIDatePicker.Mode.date
             
             self.nextTxtField = PaddedTextField()
-            self.view.addSubview(self.nextTxtField)
+            safeContainer.addSubview(self.nextTxtField)
             
             self.nextTxtField.inputView = self.nextDatePicker
             self.nextTxtField.text = layoutVars.determineUpcomingDate(_equipmentService: equipmentService)
@@ -442,7 +454,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             self.currentTxtField.delegate = self
             self.currentTxtField.tag = 10
             
-            self.view.addSubview(self.currentTxtField)
+            safeContainer.addSubview(self.currentTxtField)
             
             if self.equipmentService.nextValue == "0"{
                 self.nextTxtField = PaddedTextField(placeholder: "Next")
@@ -454,7 +466,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             self.nextTxtField.delegate = self
             self.nextTxtField.tag = 11
             
-            self.view.addSubview(self.nextTxtField)
+            safeContainer.addSubview(self.nextTxtField)
             
             break
         case "3":
@@ -479,7 +491,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             self.currentTxtField.keyboardType = UIKeyboardType.numberPad
             self.currentTxtField.delegate = self
             self.currentTxtField.tag = 10
-            self.view.addSubview(self.currentTxtField)
+            safeContainer.addSubview(self.currentTxtField)
             
             if self.equipmentService.nextValue == "0"{
                 self.nextTxtField = PaddedTextField(placeholder: "Next")
@@ -491,7 +503,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             self.nextTxtField.delegate = self
             self.nextTxtField.tag = 11
             
-            self.view.addSubview(self.nextTxtField)
+            safeContainer.addSubview(self.nextTxtField)
             
             break
         default:
@@ -511,7 +523,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             self.currentTxtField.delegate = self
             self.currentTxtField.tag = 10
             
-            self.view.addSubview(self.currentTxtField)
+            safeContainer.addSubview(self.currentTxtField)
             
             if self.equipmentService.nextValue == "0"{
                 self.nextTxtField = PaddedTextField(placeholder: "Next")
@@ -523,7 +535,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             self.nextTxtField.delegate = self
             self.nextTxtField.tag = 11
             
-            self.view.addSubview(self.nextTxtField)
+            safeContainer.addSubview(self.nextTxtField)
         }
         
         
@@ -554,29 +566,29 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             
             ] as [String:Any]
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[name]-[statusIcon(40)]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[name]-[statusTxt(40)]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[typeLbl]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[dueLbl]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[frequencyLbl]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[creationOnByLbl]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[instructionLbl]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[instructionView]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[currentLbl(halfWidth)]-[nextLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[currentTxt(halfWidth)]-[nextTxt]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[completionNotesLbl]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[completionNotesView]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusLbl]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-24-[statusIcon2(32)]", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusTxt2]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[name]-[statusIcon(40)]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[name]-[statusTxt(40)]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[typeLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[dueLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[frequencyLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[creationOnByLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[instructionLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[instructionView]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[currentLbl(halfWidth)]-[nextLbl]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[currentTxt(halfWidth)]-[nextTxt]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[completionNotesLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[completionNotesView]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-24-[statusIcon2(32)]", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[statusTxt2]-|", options: [], metrics: nil, views: viewsDictionary))
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusTxt(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusTxt(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][typeLbl(30)][dueLbl(30)][frequencyLbl(30)][creationOnByLbl(30)][instructionLbl(30)][instructionView(60)]-[currentLbl(30)][currentTxt(30)]-[completionNotesLbl(30)][completionNotesView]-[statusLbl(30)][statusIcon2(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(40)][typeLbl(30)][dueLbl(30)][frequencyLbl(30)][creationOnByLbl(30)][instructionLbl(30)][instructionView(60)]-[currentLbl(30)][currentTxt(30)]-[completionNotesLbl(30)][completionNotesView]-[statusLbl(30)][statusIcon2(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][typeLbl(30)][dueLbl(30)][frequencyLbl(30)][creationOnByLbl(30)][instructionLbl(30)][instructionView(60)]-[nextLbl(30)][nextTxt(30)]-[completionNotesLbl(30)][completionNotesView]-[statusLbl(30)][statusTxt2(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(40)][typeLbl(30)][dueLbl(30)][frequencyLbl(30)][creationOnByLbl(30)][instructionLbl(30)][instructionView(60)]-[nextLbl(30)][nextTxt(30)]-[completionNotesLbl(30)][completionNotesView]-[statusLbl(30)][statusTxt2(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
     }
     
     @objc func displayEditView(){
@@ -1130,7 +1142,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
                 //self.submit()
                 
                 
-                _ = self.navigationController?.popViewController(animated: true)
+                _ = self.navigationController?.popViewController(animated: false)
             }
             
             alertController.addAction(cancelAction)
@@ -1138,7 +1150,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
             self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
            
-            _ = navigationController?.popViewController(animated: true)
+            _ = navigationController?.popViewController(animated: false)
         }
         
         

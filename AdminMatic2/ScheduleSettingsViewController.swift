@@ -6,6 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -117,6 +118,17 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         print("layoutViews")
         // indicator.dismissIndicator()
         
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         if(self.allDates == "1"){
             allDatesSwitch.isOn = true
         }else{
@@ -124,18 +136,18 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         }
         allDatesSwitch.translatesAutoresizingMaskIntoConstraints = false
         allDatesSwitch.addTarget(self, action: #selector(ScheduleSettingsViewController.allDatesValueDidChange(sender:)), for: .valueChanged)
-        self.view.addSubview(allDatesSwitch)
+        safeContainer.addSubview(allDatesSwitch)
         
         allDatesSwitchLbl.translatesAutoresizingMaskIntoConstraints = false
         allDatesSwitchLbl.text = "All Dates"
-        self.view.addSubview(allDatesSwitchLbl)
+        safeContainer.addSubview(allDatesSwitchLbl)
 
         
         
         
         startLbl.translatesAutoresizingMaskIntoConstraints = false
         startLbl.text = "Start Date"
-        self.view.addSubview(startLbl)
+        safeContainer.addSubview(startLbl)
         
         
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
@@ -152,7 +164,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         self.startTxtField.inputView = self.startPickerView
         //self.startTxtField.text = self.startDate
         self.startTxtField.attributedPlaceholder = NSAttributedString(string:startDate,attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
-        self.view.addSubview(self.startTxtField)
+        safeContainer.addSubview(self.startTxtField)
         
         
         print("layoutViews 1")
@@ -170,7 +182,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         
         stopLbl.translatesAutoresizingMaskIntoConstraints = false
         stopLbl.text = "Stop Date"
-        self.view.addSubview(stopLbl)
+        safeContainer.addSubview(stopLbl)
         
         print("layoutViews 2")
         stopPickerView = DatePicker()
@@ -182,7 +194,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         self.stopTxtField.tag = 8
         self.stopTxtField.inputView = self.stopPickerView
         self.stopTxtField.attributedPlaceholder = NSAttributedString(string:endDate,attributes:[NSAttributedString.Key.foregroundColor: layoutVars.buttonColor1])
-        self.view.addSubview(self.stopTxtField)
+        safeContainer.addSubview(self.stopTxtField)
         
         let stopToolBar = UIToolbar()
         stopToolBar.barStyle = UIBarStyle.default
@@ -204,21 +216,21 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         }
         mowSortSwitch.translatesAutoresizingMaskIntoConstraints = false
         mowSortSwitch.addTarget(self, action: #selector(ScheduleSettingsViewController.mowSortValueDidChange(sender:)), for: .valueChanged)
-        self.view.addSubview(mowSortSwitch)
+        safeContainer.addSubview(mowSortSwitch)
         
         mowSortSwitchLbl.translatesAutoresizingMaskIntoConstraints = false
         mowSortSwitchLbl.text = "Sort for Mowing"
-        self.view.addSubview(mowSortSwitchLbl)
+        safeContainer.addSubview(mowSortSwitchLbl)
         
         
         
         plowSortSwitch.translatesAutoresizingMaskIntoConstraints = false
         plowSortSwitch.addTarget(self, action: #selector(ScheduleSettingsViewController.plowSortValueDidChange(sender:)), for: .valueChanged)
-        self.view.addSubview(plowSortSwitch)
+        safeContainer.addSubview(plowSortSwitch)
         
         plowSortSwitchLbl.translatesAutoresizingMaskIntoConstraints = false
         plowSortSwitchLbl.text = "Sort for Plowing"
-        self.view.addSubview(plowSortSwitchLbl)
+        safeContainer.addSubview(plowSortSwitchLbl)
         
         
         
@@ -237,7 +249,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         self.plowDepthTxtField.delegate = self
         
         self.plowDepthTxtField.inputView = plowDepthPicker
-        self.view.addSubview(self.plowDepthTxtField)
+        safeContainer.addSubview(self.plowDepthTxtField)
         let plowDepthToolBar = UIToolbar()
         plowDepthToolBar.barStyle = UIBarStyle.default
         plowDepthToolBar.barTintColor = UIColor(hex:0x005100, op:1)
@@ -282,19 +294,19 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         
         //////////////   auto layout position constraints   /////////////////////////////
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[allDatesSwitch(60)]-[allDatesSwitchLbl]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[allDatesSwitch(60)]-[allDatesSwitchLbl]-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[startLbl(80)]-[view1(80)]-[stopLbl(80)]-[view2(80)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[mowSwitch(60)]-[mowLbl]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[plowSwitch(60)]-[plowLbl]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[plowDepthTxtField(200)]", options: [], metrics: sizeVals, views: viewsDictionary))
-       // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view3(60)]-[view4]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[startLbl(80)]-[view1(80)]-[stopLbl(80)]-[view2(80)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[mowSwitch(60)]-[mowLbl]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[plowSwitch(60)]-[plowLbl]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[plowDepthTxtField(200)]", options: [], metrics: sizeVals, views: viewsDictionary))
+       // safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view3(60)]-[view4]-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[allDatesSwitch(40)]-[startLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[allDatesSwitch(40)]-[stopLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[allDatesSwitch(40)]-[view1(40)]-[mowSwitch(40)]-[plowSwitch(40)]-[plowDepthTxtField(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[allDatesSwitchLbl(40)]-[view2(40)]-[mowLbl(40)]-[plowLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[allDatesSwitch(40)]-[startLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[allDatesSwitch(40)]-[stopLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[allDatesSwitch(40)]-[view1(40)]-[mowSwitch(40)]-[plowSwitch(40)]-[plowDepthTxtField(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[allDatesSwitchLbl(40)]-[view2(40)]-[mowLbl(40)]-[plowLbl(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
         
         

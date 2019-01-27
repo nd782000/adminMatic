@@ -6,6 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -136,6 +137,17 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(EquipmentViewController.displayEditView))
         navigationItem.rightBarButtonItem = editButton
         
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         //image
         self.equipmentImage = UIImageView()
     
@@ -188,7 +200,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.equipmentImage.layer.borderColor = layoutVars.borderColor
         self.equipmentImage.clipsToBounds = true
         self.equipmentImage.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.equipmentImage)
+        safeContainer.addSubview(self.equipmentImage)
         
         
         self.tapBtn = Button()
@@ -198,19 +210,19 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         }
         self.tapBtn.backgroundColor = UIColor.clear
         self.tapBtn.setTitle("", for: UIControl.State.normal)
-        self.view.addSubview(self.tapBtn)
+        safeContainer.addSubview(self.tapBtn)
         
         //name
         self.nameLbl = GreyLabel()
         self.nameLbl.text = self.equipment.name!
         self.nameLbl.font = layoutVars.largeFont
-        self.view.addSubview(self.nameLbl)
+        safeContainer.addSubview(self.nameLbl)
         
         //status
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
-        self.view.addSubview(statusIcon)
+        safeContainer.addSubview(statusIcon)
         setStatus(status: equipment.status)
         
         self.statusPicker = Picker()
@@ -225,7 +237,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.statusTxtField.backgroundColor = UIColor.clear
         self.statusTxtField.inputView = statusPicker
         self.statusTxtField.layer.borderWidth = 0
-        self.view.addSubview(self.statusTxtField)
+        safeContainer.addSubview(self.statusTxtField)
         
         let toolBar = UIToolbar()
         toolBar.barStyle = UIBarStyle.default
@@ -244,43 +256,43 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.crewLbl = GreyLabel()
         self.crewLbl.text = "Crew: \(self.equipment.crewName!)"
         self.crewLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.crewLbl)
+        safeContainer.addSubview(self.crewLbl)
         
         //make model
         self.makeModelLbl = GreyLabel()
         self.makeModelLbl.text = "\(self.equipment.make!) - \(self.equipment.model!)"
         self.makeModelLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.makeModelLbl)
+        safeContainer.addSubview(self.makeModelLbl)
         
         //serial
         self.serialLbl = GreyLabel()
         self.serialLbl.text = "Serial#: \(self.equipment.serial!)"
         self.serialLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.serialLbl)
+        safeContainer.addSubview(self.serialLbl)
         
         //type
         self.typeLbl = GreyLabel()
         self.typeLbl.text = "Type: \(self.equipment.typeName!)"
         self.typeLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.typeLbl)
+        safeContainer.addSubview(self.typeLbl)
         
         //fuelType
         self.fuelLbl = GreyLabel()
         self.fuelLbl.text = "Fuel Type: \(self.equipment.fuelTypeName!)"
         self.fuelLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.fuelLbl)
+        safeContainer.addSubview(self.fuelLbl)
         
         //engineType
         self.engineLbl = GreyLabel()
         self.engineLbl.text = "Engine Type: \(self.equipment.engineTypeName!)"
         self.engineLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.engineLbl)
+        safeContainer.addSubview(self.engineLbl)
         
         //dealer
         self.dealerLbl = GreyLabel()
         self.dealerLbl.text = "Dealer:"
         self.dealerLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.dealerLbl)
+        safeContainer.addSubview(self.dealerLbl)
         
         //dealer value (vendor btn)
         self.dealerValueBtn = Button()
@@ -303,7 +315,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.dealerValueBtn.setTitleColor(layoutVars.buttonColor1, for: .normal)
         
         
-        self.view.addSubview(self.dealerValueBtn)
+        safeContainer.addSubview(self.dealerValueBtn)
         
         //purchase date
         
@@ -326,7 +338,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         }
         
         self.purchaseDateLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.purchaseDateLbl)
+        safeContainer.addSubview(self.purchaseDateLbl)
         
         
         //description
@@ -342,7 +354,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.descriptionView.backgroundColor = UIColor.clear
         self.descriptionView.isEditable = false
         self.descriptionView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(descriptionView)
+        safeContainer.addSubview(descriptionView)
         
         
         
@@ -352,7 +364,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.serviceBtn = Button(titleText: "View Service Lists")
         self.serviceBtn.translatesAutoresizingMaskIntoConstraints = false
         self.serviceBtn.addTarget(self, action: #selector(EquipmentViewController.showServiceListView), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.serviceBtn)
+        safeContainer.addSubview(self.serviceBtn)
         
         
         
@@ -384,34 +396,34 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
             ] as [String:Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[name]-[statusIcon(40)]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapBtn(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activity(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[name]-[statusTxtField(40)]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[name]-[statusIcon(40)]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapBtn(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activity(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[name]-[statusTxtField(40)]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[makeModel]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[description]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[type]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serial]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[crew]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[makeModel]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[description]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[type]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serial]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[crew]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[fuel]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[engine]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[dealer(80)][dealerValue]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[purchaseDate]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[fuel]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[engine]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[dealer(80)][dealerValue]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[purchaseDate]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceBtn]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceBtn]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
         
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[image(80)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tapBtn(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activity(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[image(80)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tapBtn(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activity(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusIcon(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[statusTxtField(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(40)][makeModel(40)]-[description(40)][type(30)][serial(30)][crew(30)][fuel(30)][engine(30)][dealer(30)][purchaseDate(30)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[serviceBtn(40)]-16-|", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusIcon(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusTxtField(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(40)][makeModel(40)]-[description(40)][type(30)][serial(30)][crew(30)][fuel(30)][engine(30)][dealer(30)][purchaseDate(30)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[serviceBtn(40)]-16-|", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
         
         
         

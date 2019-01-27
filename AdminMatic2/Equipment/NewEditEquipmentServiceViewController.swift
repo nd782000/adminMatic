@@ -6,6 +6,8 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
+//  Edited for safeView
+
 import Foundation
 import UIKit
 import Alamofire
@@ -141,14 +143,21 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         dateFormatter.dateFormat = "MM/dd/yy"
         dateFormatterDB.dateFormat = "yyyy-MM-dd HH:mm:ss"
        
-        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
         //name
         self.nameLbl = GreyLabel()
         self.nameLbl.text = "Name:"
         self.nameLbl.textAlignment = .left
         self.nameLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(nameLbl)
+        safeContainer.addSubview(nameLbl)
         if self.equipmentService.name == ""{
             self.nameTxtField = PaddedTextField(placeholder: "Name")
         }else{
@@ -161,7 +170,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         self.nameTxtField.delegate = self
         self.nameTxtField.tag = 1
         self.nameTxtField.returnKeyType = .done
-        self.view.addSubview(self.nameTxtField)
+        safeContainer.addSubview(self.nameTxtField)
         
         
        
@@ -171,7 +180,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         self.typeLbl.text = "Type:"
         self.typeLbl.textAlignment = .left
         self.typeLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(typeLbl)
+        safeContainer.addSubview(typeLbl)
         
         self.typePicker = Picker()
         self.typePicker.delegate = self
@@ -190,7 +199,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         self.typeTxtField.delegate = self
         self.typeTxtField.inputView = typePicker
         self.typeTxtField.returnKeyType = .done
-        self.view.addSubview(self.typeTxtField)
+        safeContainer.addSubview(self.typeTxtField)
         
         
         let typeToolBar = UIToolbar()
@@ -212,7 +221,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         
         self.frequencyLbl.textAlignment = .left
         self.frequencyLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(frequencyLbl)
+        safeContainer.addSubview(frequencyLbl)
         if self.equipmentService.frequency == "0"{
             self.frequencyTxtField = PaddedTextField(placeholder: "Frequency")
         }else{
@@ -224,7 +233,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         self.frequencyTxtField.delegate = self
         self.frequencyTxtField.tag = 10
         self.frequencyTxtField.keyboardType = UIKeyboardType.numberPad
-        self.view.addSubview(self.frequencyTxtField)
+        safeContainer.addSubview(self.frequencyTxtField)
         
         let frequencyToolBar = UIToolbar()
         frequencyToolBar.barStyle = UIBarStyle.default
@@ -243,7 +252,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         self.currentLbl = GreyLabel()
         self.currentLbl.textAlignment = .left
         self.currentLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(currentLbl)
+        safeContainer.addSubview(currentLbl)
         
         
         
@@ -275,7 +284,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         
         self.currentTxtField.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(self.currentTxtField)
+        safeContainer.addSubview(self.currentTxtField)
         
         let currentToolBar = UIToolbar()
         currentToolBar.barStyle = UIBarStyle.default
@@ -295,7 +304,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         self.nextLbl = GreyLabel()
         self.nextLbl.textAlignment = .left
         self.nextLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(nextLbl)
+        safeContainer.addSubview(nextLbl)
         
         //setNextText()
        
@@ -324,7 +333,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
  
         
         self.nextTxtField.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.nextTxtField)
+        safeContainer.addSubview(self.nextTxtField)
         
         let nextToolBar = UIToolbar()
         nextToolBar.barStyle = UIBarStyle.default
@@ -352,7 +361,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         self.instructionsLbl.text = "Instructions:"
         self.instructionsLbl.textAlignment = .left
         self.instructionsLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.instructionsLbl)
+        safeContainer.addSubview(self.instructionsLbl)
         
        // self.instructionsView = UITextView()
         self.instructionsView.layer.borderWidth = 1
@@ -364,7 +373,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         self.instructionsView.isEditable = true
         self.instructionsView.delegate = self
         self.instructionsView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.instructionsView)
+        safeContainer.addSubview(self.instructionsView)
         
         //let instructionsToolBar = UIToolbar()
         self.instructionsToolBar.barStyle = UIBarStyle.default
@@ -380,7 +389,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         
         
         self.submitButtonBottom.addTarget(self, action: #selector(NewEditEquipmentServiceViewController.submit), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.submitButtonBottom)
+        safeContainer.addSubview(self.submitButtonBottom)
         
         
         
@@ -407,20 +416,20 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[nameLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[nameTxt]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[typeLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[typeTxt]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[frequencyLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[frequencyTxt]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[currentLbl(halfWidth)]-[nextLbl(halfWidth)]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[currentTxt(halfWidth)]-[nextTxt(halfWidth)]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[instructionsLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[instructionsView]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[submitBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[nameLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[nameTxt]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[typeLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[typeTxt]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[frequencyLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[frequencyTxt]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[currentLbl(halfWidth)]-[nextLbl(halfWidth)]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[currentTxt(halfWidth)]-[nextTxt(halfWidth)]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[instructionsLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[instructionsView]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[submitBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameLbl(30)][nameTxt(30)]-[typeLbl(30)][typeTxt(30)]-[frequencyLbl(30)][frequencyTxt(30)]-[currentLbl(30)][currentTxt(30)]-[instructionsLbl(30)][instructionsView]-[submitBtn(40)]-20-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameLbl(30)][nameTxt(30)]-[typeLbl(30)][typeTxt(30)]-[frequencyLbl(30)][frequencyTxt(30)]-[nextLbl(30)][nextTxt(30)]-[instructionsLbl(30)][instructionsView]-[submitBtn(40)]-20-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameLbl(30)][nameTxt(30)]-[typeLbl(30)][typeTxt(30)]-[frequencyLbl(30)][frequencyTxt(30)]-[currentLbl(30)][currentTxt(30)]-[instructionsLbl(30)][instructionsView]-[submitBtn(40)]-20-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameLbl(30)][nameTxt(30)]-[typeLbl(30)][typeTxt(30)]-[frequencyLbl(30)][frequencyTxt(30)]-[nextLbl(30)][nextTxt(30)]-[instructionsLbl(30)][instructionsView]-[submitBtn(40)]-20-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
     }
     
     
@@ -1086,7 +1095,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
                 self.editDelegate.updateEquipmentService(_equipmentService: self.equipmentService)
                 }
                 
-                _ = self.navigationController?.popViewController(animated: true)
+                _ = self.navigationController?.popViewController(animated: false)
             }
             
             alertController.addAction(cancelAction)
@@ -1094,7 +1103,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             
-            _ = navigationController?.popViewController(animated: true)
+            _ = navigationController?.popViewController(animated: false)
         }
         
     }

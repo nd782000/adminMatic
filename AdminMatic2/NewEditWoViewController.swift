@@ -6,6 +6,8 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
+//  Edited for safeView
+
 
 import Foundation
 import UIKit
@@ -271,12 +273,20 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         navigationItem.rightBarButtonItem = submitButton
         
        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
         
         //customer
         self.customerLbl = GreyLabel()
         self.customerLbl.text = "Customer:"
-        self.view.addSubview(customerLbl)
+        safeContainer.addSubview(customerLbl)
         
         customerSearchBar.placeholder = "Customer..."
         customerSearchBar.translatesAutoresizingMaskIntoConstraints = false
@@ -293,7 +303,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         customerSearchBar.searchBarStyle = UISearchBar.Style.default
         customerSearchBar.delegate = self
         customerSearchBar.tag = 1
-        self.view.addSubview(customerSearchBar)
+        safeContainer.addSubview(customerSearchBar)
         
         if self.wo.customer != ""{
             self.customerSearchBar.text = self.wo.customerName
@@ -333,7 +343,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         //charge type
         self.chargeTypeLbl = GreyLabel()
         self.chargeTypeLbl.text = "Charge Type:"
-        self.view.addSubview(chargeTypeLbl)
+        safeContainer.addSubview(chargeTypeLbl)
         
         self.chargeTypePicker = Picker()
         self.chargeTypePicker.delegate = self
@@ -345,7 +355,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         self.chargeTypeTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.chargeTypeTxtField.delegate = self
         self.chargeTypeTxtField.inputView = chargeTypePicker
-        self.view.addSubview(self.chargeTypeTxtField)
+        safeContainer.addSubview(self.chargeTypeTxtField)
         
         
         let chargeTypeToolBar = UIToolbar()
@@ -373,7 +383,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         //invoice type
         self.invoiceTypeLbl = GreyLabel()
         self.invoiceTypeLbl.text = "Invoice Type:"
-        self.view.addSubview(invoiceTypeLbl)
+        safeContainer.addSubview(invoiceTypeLbl)
         
         self.invoiceTypePicker = Picker()
         self.invoiceTypePicker.delegate = self
@@ -385,7 +395,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         self.invoiceTypeTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.invoiceTypeTxtField.delegate = self
         self.invoiceTypeTxtField.inputView = invoiceTypePicker
-        self.view.addSubview(self.invoiceTypeTxtField)
+        safeContainer.addSubview(self.invoiceTypeTxtField)
         
         
         let invoiceTypeToolBar = UIToolbar()
@@ -410,7 +420,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         //schedule type
         self.scheduleTypeLbl = GreyLabel()
         self.scheduleTypeLbl.text = "Schedule Type:"
-        self.view.addSubview(scheduleTypeLbl)
+        safeContainer.addSubview(scheduleTypeLbl)
         
         self.scheduleTypePicker = Picker()
         self.scheduleTypePicker.delegate = self
@@ -422,7 +432,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         self.scheduleTypeTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.scheduleTypeTxtField.delegate = self
         self.scheduleTypeTxtField.inputView = scheduleTypePicker
-        self.view.addSubview(self.scheduleTypeTxtField)
+        safeContainer.addSubview(self.scheduleTypeTxtField)
         
         
         let scheduleTypeToolBar = UIToolbar()
@@ -457,7 +467,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         self.scheduleOptionsBtn.setTitleColor(UIColor.black, for: .normal)
         
         self.scheduleOptionsBtn.addTarget(self, action: #selector(NewEditWoViewController.scheduleOptions), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.scheduleOptionsBtn)
+        safeContainer.addSubview(self.scheduleOptionsBtn)
         
         //temporarily disable options btn
         self.scheduleOptionsBtn.isEnabled = false
@@ -466,7 +476,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         //department
         self.departmentLbl = GreyLabel()
         self.departmentLbl.text = "Department:"
-        self.view.addSubview(departmentLbl)
+        safeContainer.addSubview(departmentLbl)
         
         self.departmentPicker = Picker()
         self.departmentPicker.delegate = self
@@ -478,7 +488,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         self.departmentTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.departmentTxtField.delegate = self
         self.departmentTxtField.inputView = departmentPicker
-        self.view.addSubview(self.departmentTxtField)
+        safeContainer.addSubview(self.departmentTxtField)
         
         
         let departmentToolBar = UIToolbar()
@@ -518,7 +528,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         //crew
         self.crewLbl = GreyLabel()
         self.crewLbl.text = "Crew:"
-        self.view.addSubview(crewLbl)
+        safeContainer.addSubview(crewLbl)
         
         self.crewPicker = Picker()
         self.crewPicker.delegate = self
@@ -530,7 +540,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         self.crewTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.crewTxtField.delegate = self
         self.crewTxtField.inputView = crewPicker
-        self.view.addSubview(self.crewTxtField)
+        safeContainer.addSubview(self.crewTxtField)
         
         
         let crewToolBar = UIToolbar()
@@ -571,7 +581,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         self.repLbl = GreyLabel()
         self.repLbl.text = "Sales Rep:"
         
-        self.view.addSubview(repLbl)
+        safeContainer.addSubview(repLbl)
         
         
         
@@ -590,7 +600,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         repSearchBar.searchBarStyle = UISearchBar.Style.default
         repSearchBar.delegate = self
         repSearchBar.tag = 2
-        self.view.addSubview(repSearchBar)
+        safeContainer.addSubview(repSearchBar)
         
         
         let repToolBar = UIToolbar()
@@ -627,7 +637,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         //title
         self.titleLbl = GreyLabel()
         self.titleLbl.text = "Title:"
-        self.view.addSubview(titleLbl)
+        safeContainer.addSubview(titleLbl)
         
         
         if(wo.title != ""){
@@ -642,7 +652,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         self.titleTxtField.delegate = self
         self.titleTxtField.autocapitalizationType = .words
         self.titleTxtField.returnKeyType = .done
-        self.view.addSubview(self.titleTxtField)
+        safeContainer.addSubview(self.titleTxtField)
         
         let titleToolBar = UIToolbar()
         titleToolBar.barStyle = UIBarStyle.default
@@ -659,7 +669,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         //notes
         self.notesLbl = GreyLabel()
         self.notesLbl.text = "Notes:"
-        self.view.addSubview(self.notesLbl)
+        safeContainer.addSubview(self.notesLbl)
         
         self.notesView = UITextView()
         self.notesView.layer.borderWidth = 1
@@ -671,7 +681,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         self.notesView.isEditable = true
         self.notesView.delegate = self
         self.notesView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.notesView)
+        safeContainer.addSubview(self.notesView)
         
         let notesToolBar = UIToolbar()
         notesToolBar.barStyle = UIBarStyle.default
@@ -683,8 +693,8 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         notesToolBar.isUserInteractionEnabled = true
         self.notesView.inputAccessoryView = notesToolBar
         
-        self.view.addSubview(self.customerResultsTableView)
-        self.view.addSubview(self.repResultsTableView)
+        safeContainer.addSubview(self.customerResultsTableView)
+        safeContainer.addSubview(self.repResultsTableView)
         
         /////////  Auto Layout   //////////////////////////////////////
         
@@ -733,45 +743,45 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         
         
        
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerLbl(80)]-[customerSearchBar]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerLbl(80)]-[customerSearchBar]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeLbl(halfWidth)]-[invoiceTypeLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeTxtField(halfWidth)]-[invoiceTypeTxtField]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeLbl(halfWidth)]-[invoiceTypeLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeTxtField(halfWidth)]-[invoiceTypeTxtField]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scheduleTypeLbl(halfWidth)]", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scheduleTypeTxtField(halfWidth)]-[scheduleOptions]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
-        
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[departmentLbl(halfWidth)]-[crewLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[departmentTxtField(halfWidth)]-[crewTxtField]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scheduleTypeLbl(halfWidth)]", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scheduleTypeTxtField(halfWidth)]-[scheduleOptions]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
         
         
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repLbl(80)]-[repSearchBar]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleLbl]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleTxtField]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesLbl]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesView]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[departmentLbl(halfWidth)]-[crewLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[departmentTxtField(halfWidth)]-[crewTxtField]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
         
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerLbl(40)]-[chargeTypeLbl(30)]-[chargeTypeTxtField(40)]-[scheduleTypeLbl(30)]-[scheduleTypeTxtField(40)]-[departmentLbl(30)]-[departmentTxtField(40)]-10-[repLbl(40)]-[titleLbl(30)][titleTxtField(40)]-[notesLbl(30)][notesView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repLbl(80)]-[repSearchBar]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-[invoiceTypeLbl(30)]-[invoiceTypeTxtField(40)]-[scheduleTypeLbl(30)]-[scheduleOptions(40)]-[crewLbl(30)]-[crewTxtField(40)]-10-[repSearchBar(40)]-[titleLbl(30)][titleTxtField(40)]-[notesLbl(30)][notesView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)][customerTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerSearchBar(40)]-[invoiceTypeLbl(30)]-[invoiceTypeTxtField(40)]-[scheduleTypeLbl(30)]-[scheduleOptions(40)]-[crewLbl(30)]-[crewTxtField(40)]-10-[repSearchBar(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleLbl]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleTxtField]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesLbl]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesView]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        
+        
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerLbl(40)]-[chargeTypeLbl(30)]-[chargeTypeTxtField(40)]-[scheduleTypeLbl(30)]-[scheduleTypeTxtField(40)]-[departmentLbl(30)]-[departmentTxtField(40)]-10-[repLbl(40)]-[titleLbl(30)][titleTxtField(40)]-[notesLbl(30)][notesView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerSearchBar(40)]-[invoiceTypeLbl(30)]-[invoiceTypeTxtField(40)]-[scheduleTypeLbl(30)]-[scheduleOptions(40)]-[crewLbl(30)]-[crewTxtField(40)]-10-[repSearchBar(40)]-[titleLbl(30)][titleTxtField(40)]-[notesLbl(30)][notesView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerSearchBar(40)][customerTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerSearchBar(40)]-[invoiceTypeLbl(30)]-[invoiceTypeTxtField(40)]-[scheduleTypeLbl(30)]-[scheduleOptions(40)]-[crewLbl(30)]-[crewTxtField(40)]-10-[repSearchBar(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         
     }
@@ -1644,14 +1654,14 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 print("OK")
-                _ = self.navigationController?.popViewController(animated: true)
+                _ = self.navigationController?.popViewController(animated: false)
             }
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
             self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
-            _ = navigationController?.popViewController(animated: true)
+            _ = navigationController?.popViewController(animated: false)
         }
         
     }

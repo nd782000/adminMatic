@@ -6,6 +6,7 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -113,13 +114,24 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         print("layoutViews")
         // indicator.dismissIndicator()
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
         self.statusPicker = Picker()
         self.statusPicker.tag = 1
         self.statusPicker.delegate = self
         
         self.statusLbl.translatesAutoresizingMaskIntoConstraints = false
         self.statusLbl.text = "Status:"
-        self.view.addSubview(self.statusLbl)
+        safeContainer.addSubview(self.statusLbl)
         
         self.statusTxtField = PaddedTextField()
         if status != ""{
@@ -137,7 +149,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         self.statusTxtField.delegate = self
         self.statusTxtField.tintColor = UIColor.clear
         self.statusTxtField.inputView = statusPicker
-        self.view.addSubview(self.statusTxtField)
+        safeContainer.addSubview(self.statusTxtField)
         
         
         print("layoutViews 1")
@@ -162,7 +174,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         self.repLbl = GreyLabel()
         self.repLbl.text = "Sales Rep:"
         
-        self.view.addSubview(repLbl)
+        safeContainer.addSubview(repLbl)
         
         
         
@@ -182,7 +194,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         repSearchBar.searchBarStyle = UISearchBar.Style.default
         repSearchBar.delegate = self
         //repSearchBar.tag = 2
-        self.view.addSubview(repSearchBar)
+        safeContainer.addSubview(repSearchBar)
         
         
         let repToolBar = UIToolbar()
@@ -203,7 +215,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         
         self.zoneLbl.translatesAutoresizingMaskIntoConstraints = false
         self.zoneLbl.text = "Zone:"
-        self.view.addSubview(self.zoneLbl)
+        safeContainer.addSubview(self.zoneLbl)
         
         self.zoneTxtField = PaddedTextField()
         if zoneID != ""{
@@ -219,7 +231,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         self.zoneTxtField.delegate = self
         self.zoneTxtField.tintColor = UIColor.clear
         self.zoneTxtField.inputView = zonePicker
-        self.view.addSubview(self.zoneTxtField)
+        safeContainer.addSubview(self.zoneTxtField)
         
         
         print("layoutViews 1")
@@ -269,11 +281,11 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         self.clearFiltersBtn.translatesAutoresizingMaskIntoConstraints = false
         //self.clearFiltersBtn.layer.borderColor = UIColor.white.cgColor
         //self.clearFiltersBtn.layer.borderWidth = 1.0
-        self.view.addSubview(self.clearFiltersBtn)
+        safeContainer.addSubview(self.clearFiltersBtn)
         
         
         
-        self.view.addSubview(self.repResultsTableView)
+        safeContainer.addSubview(self.repResultsTableView)
         
         
         let viewsDictionary = [
@@ -287,20 +299,20 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[statusLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[statusTxt]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[statusLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[statusTxt]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repSearchBar]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repTable]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repSearchBar]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repTable]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[zoneLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[zoneTxt]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[zoneLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[zoneTxt]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[clearFiltersBtn]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[clearFiltersBtn]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[statusLbl(40)][statusTxt(40)]-20-[repLbl(40)][repSearchBar(40)][repTable]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[statusLbl(40)][statusTxt(40)]-20-[repLbl(40)][repSearchBar(40)]-20-[zoneLbl(40)][zoneTxt(40)]-20-[clearFiltersBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[statusLbl(40)][statusTxt(40)]-20-[repLbl(40)][repSearchBar(40)][repTable]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[statusLbl(40)][statusTxt(40)]-20-[repLbl(40)][repSearchBar(40)]-20-[zoneLbl(40)][zoneTxt(40)]-20-[clearFiltersBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
     }
     

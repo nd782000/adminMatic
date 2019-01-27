@@ -6,6 +6,8 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
+//  Edited for safeView
+
 
 import Foundation
 import UIKit
@@ -107,13 +109,7 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         // Show Indicator
         indicator = SDevIndicator.generate(self.view)!
         
-        /*
-         //cache buster
-         let now = Date()
-         let timeInterval = now.timeIntervalSince1970
-         let timeStamp = Int(timeInterval)
-         
-         */
+       
         
         let parameters:[String:String]
         parameters = ["imageID":self.image.ID]
@@ -188,6 +184,14 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
     func layoutViews(){
         
         // Close Indicator
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
         
         self.imageView = UIImageView()
@@ -197,22 +201,7 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         activityView.center = CGPoint(x: self.imageView.frame.size.width / 2, y: self.imageView.frame.size.height / 2)
         imageView.addSubview(activityView)
         
-        /*activityView.startAnimating()
-        
-        let imgURL:URL = URL(string: self.image.thumbPath!)!
-        
-        Nuke.loadImage(with: imgURL, into: self.imageView!){
-            print("nuke loadImage")
-            self.imageView?.handle(response: $0, isFromMemoryCache: $1)
-            self.activityView.stopAnimating()
-            
-            //let image = Image(_path: self.image.thumbPath!)
-            
-            //self.imageFullViewController = ImageFullViewController(_image: image)
-            
-        }
-        */
-        
+       
         
         Alamofire.request(self.image.thumbPath!).responseImage { response in
             debugPrint(response)
@@ -246,13 +235,13 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         self.imageView.layer.borderColor = layoutVars.borderColor
         self.imageView.clipsToBounds = true
         self.imageView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.imageView)
+        safeContainer.addSubview(self.imageView)
         
         //name
         self.nameLbl = GreyLabel()
         self.nameLbl.text = self.image.name!
         self.nameLbl.font = layoutVars.labelFont
-        self.view.addSubview(self.nameLbl)
+        safeContainer.addSubview(self.nameLbl)
         
         
         
@@ -273,12 +262,12 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         self.infoLbl = Label()
         self.infoLbl.text = "By \(self.image.createdBy!)"
         self.infoLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.infoLbl)
+        safeContainer.addSubview(self.infoLbl)
         
         self.info2Lbl = Label()
         self.info2Lbl.text = "On \(addedByDate)"
         self.info2Lbl.font = layoutVars.smallFont
-        self.view.addSubview(self.info2Lbl)
+        safeContainer.addSubview(self.info2Lbl)
         
         
         
@@ -292,22 +281,14 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         self.likesTableView.register(EmployeeTableViewCell.self, forCellReuseIdentifier: "cell")
         
         
-        self.view.addSubview(self.likesTableView)
-        
-        
-        /*
-        noLikesLabel.text = "No Likes"
-        noLikesLabel.textAlignment = NSTextAlignment.center
-        noLikesLabel.font = layoutVars.largeFont
-        self.view.addSubview(self.noLikesLabel)
-        */
+        safeContainer.addSubview(self.likesTableView)
         
         
         
         self.countView = UIView()
         self.countView.backgroundColor = layoutVars.backgroundColor
         self.countView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.countView)
+        safeContainer.addSubview(self.countView)
         
         
         self.countLbl.translatesAutoresizingMaskIntoConstraints = false
@@ -331,20 +312,18 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         let sizeVals = ["halfWidth": layoutVars.halfWidth, "fullWidth": layoutVars.fullWidth,"width": layoutVars.fullWidth - 30,"navBottom":layoutVars.navAndStatusBarHeight + 8,"height": self.view.frame.size.height - layoutVars.navAndStatusBarHeight] as [String : Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[name]-10-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[info]-10-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[info2]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[name]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[info]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[info2]-10-|", options: [], metrics: nil, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[table(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[noLikesLbl(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[count(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[table(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        //safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[noLikesLbl(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[count(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
-        
-        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[image(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[image(100)]-[table][count(30)]|", options:[], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[name(30)][info(30)][info2(30)]", options:[], metrics: sizeVals, views: viewsDictionary))
-        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[noLikesLbl(30)]", options:[], metrics: sizeVals, views: viewsDictionary))
+       
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[image(100)]-[table][count(30)]|", options:[], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)][info(30)][info2(30)]", options:[], metrics: sizeVals, views: viewsDictionary))
+        //safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[noLikesLbl(30)]", options:[], metrics: sizeVals, views: viewsDictionary))
         
         
         let viewsDictionary2 = [
@@ -423,7 +402,7 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
     
     
     @objc func goBack(){
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
     }
     
     

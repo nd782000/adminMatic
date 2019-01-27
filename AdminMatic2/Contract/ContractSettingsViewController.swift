@@ -6,6 +6,7 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 
 import Foundation
@@ -105,13 +106,25 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         print("layoutViews")
         // indicator.dismissIndicator()
         
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
         self.filterPicker = Picker()
         self.filterPicker.delegate = self
         
         self.filterLbl = GreyLabel()
         self.filterLbl.translatesAutoresizingMaskIntoConstraints = false
         self.filterLbl.text = "Status:"
-        self.view.addSubview(self.filterLbl)
+        safeContainer.addSubview(self.filterLbl)
         
         self.filterTxtField = PaddedTextField()
         if status != ""{
@@ -129,7 +142,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         self.filterTxtField.delegate = self
         self.filterTxtField.tintColor = UIColor.clear
         self.filterTxtField.inputView = filterPicker
-        self.view.addSubview(self.filterTxtField)
+        safeContainer.addSubview(self.filterTxtField)
         
         
         print("layoutViews 1")
@@ -154,7 +167,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         self.repLbl = GreyLabel()
         self.repLbl.text = "Sales Rep:"
         
-        self.view.addSubview(repLbl)
+        safeContainer.addSubview(repLbl)
         
         
         
@@ -174,7 +187,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         repSearchBar.searchBarStyle = UISearchBar.Style.default
         repSearchBar.delegate = self
         //repSearchBar.tag = 2
-        self.view.addSubview(repSearchBar)
+        safeContainer.addSubview(repSearchBar)
         
         
         let repToolBar = UIToolbar()
@@ -220,11 +233,11 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         self.clearFiltersBtn.translatesAutoresizingMaskIntoConstraints = false
         //self.clearFiltersBtn.layer.borderColor = UIColor.white.cgColor
         //self.clearFiltersBtn.layer.borderWidth = 1.0
-        self.view.addSubview(self.clearFiltersBtn)
+        safeContainer.addSubview(self.clearFiltersBtn)
         
         
         
-        self.view.addSubview(self.repResultsTableView)
+        safeContainer.addSubview(self.repResultsTableView)
         
         
         let viewsDictionary = [
@@ -239,17 +252,17 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[filterLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[filterTxt]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[filterLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[filterTxt]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repSearchBar]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repTable]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repSearchBar]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[repTable]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[clearFiltersBtn]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[clearFiltersBtn]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[filterLbl(40)][filterTxt(40)]-20-[repLbl(40)][repSearchBar(40)][repTable]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[filterLbl(40)][filterTxt(40)]-20-[repLbl(40)][repSearchBar(40)]-20-[clearFiltersBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[filterLbl(40)][filterTxt(40)]-20-[repLbl(40)][repSearchBar(40)][repTable]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[filterLbl(40)][filterTxt(40)]-20-[repLbl(40)][repSearchBar(40)]-20-[clearFiltersBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
     }
     

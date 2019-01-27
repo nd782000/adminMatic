@@ -6,7 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
-
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -14,8 +14,10 @@ import Alamofire
 //import SwiftyJSON
 
  
-class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource{
+class UsageListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     var layoutVars:LayoutVars = LayoutVars()
     var workOrderItemID:String!
     var type:String!
@@ -224,24 +226,36 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
     func layoutLaborView(){
         //self.total = self.usageJSON["total"].stringValue
         
+        
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         print("layoutLaborView")
         
         tableHead.backgroundColor = layoutVars.buttonTint
         tableHead.layer.cornerRadius = 4.0
         tableHead.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(tableHead)
+        safeContainer.addSubview(tableHead)
         
         self.usageListTableView =  TableView()
         self.usageListTableView.delegate  =  self
         self.usageListTableView.dataSource  =  self
         self.usageListTableView.register(UsageTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.usageListTableView)
+        safeContainer.addSubview(self.usageListTableView)
         
         self.usageTotalLbl = Label()
         self.usageTotalLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.usageTotalLbl.textAlignment = NSTextAlignment.right
-        self.view.addSubview(self.usageTotalLbl)
+        safeContainer.addSubview(self.usageTotalLbl)
         
         
         
@@ -272,11 +286,11 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[th]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[th]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(fullWidth)]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view1(fullWidth)]-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-77-[th(40)][view1]-[view2(30)]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2]-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[th(40)][view1]-[view2(30)]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         
         
         self.usageListTableView.reloadData()
@@ -289,22 +303,35 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         print("layoutMaterialView")
         
+        
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
         tableHead.backgroundColor = layoutVars.buttonTint
         tableHead.layer.cornerRadius = 4.0
         tableHead.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(tableHead)
+        safeContainer.addSubview(tableHead)
         
         self.usageListTableView =  TableView()
         self.usageListTableView.delegate  =  self
         self.usageListTableView.dataSource  =  self
         self.usageListTableView.register(UsageTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.usageListTableView)
+        safeContainer.addSubview(self.usageListTableView)
         
         self.usageTotalLbl = Label()
         self.usageTotalLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.usageTotalLbl.textAlignment = NSTextAlignment.right
-        self.view.addSubview(self.usageTotalLbl)
+        safeContainer.addSubview(self.usageTotalLbl)
         
         
         
@@ -329,7 +356,7 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
             ] as [String:AnyObject]
         
         print("layoutMaterialView 2")
-        self.tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[date(65)]-[qty(50)]-[cost(75)]-[total(100)]-[rec(50)]-5-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: thDictionary))
+        self.tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[date(65)]-[qty(50)]-[cost(75)]-[total(100)]-[rec(50)]|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: thDictionary))
         print("layoutMaterialView 3")
         self.tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[date(20)]", options: [], metrics: metricsDictionary, views: thDictionary))
         
@@ -339,12 +366,12 @@ class UsageListViewController: ViewControllerWithMenu, UITableViewDelegate, UITa
         
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[th]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[th]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         print("layoutMaterialView 5")
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(fullWidth)]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view1(fullWidth)]-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2]-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         print("layoutMaterialView 6")
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-77-[th(40)][view1]-[view2(30)]-15-|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[th(40)][view1]-[view2(30)]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         
         
         self.usageListTableView.reloadData()

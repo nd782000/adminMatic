@@ -5,7 +5,8 @@
 //  Created by Nick on 2/18/18.
 //  Copyright © 2018 Nick. All rights reserved.
 //
- 
+
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -246,11 +247,24 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             view.removeFromSuperview()
         }
         
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
+        
         self.screenHeaderLbl = Label()
         self.screenHeaderLbl.text = "\(self.empFirstName!)'s shifts for:"
         self.screenHeaderLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.screenHeaderLbl.textAlignment = NSTextAlignment.right
-        self.view.addSubview(self.screenHeaderLbl)
+        safeContainer.addSubview(self.screenHeaderLbl)
         
         
         
@@ -259,7 +273,7 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         self.weekTxtField.delegate = self
         self.weekTxtField.textAlignment = .center
         self.weekTxtField.inputView = weekPicker
-        self.view.addSubview(self.weekTxtField)
+        safeContainer.addSubview(self.weekTxtField)
         
         
         let weekToolBar = UIToolbar()
@@ -276,22 +290,23 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         
         
         tableHead.backgroundColor = layoutVars.buttonTint
-        tableHead.layer.cornerRadius = 4.0
+        tableHead.layer.cornerRadius = 0
         tableHead.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(tableHead)
+        safeContainer.addSubview(tableHead)
         
         self.shiftsTableView =  TableView()
+        self.shiftsTableView.layer.cornerRadius = 0
         self.shiftsTableView.delegate  =  self
         self.shiftsTableView.dataSource  =  self
         self.shiftsTableView.register(ShiftTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.shiftsTableView)
+        safeContainer.addSubview(self.shiftsTableView)
         
         self.shiftsTotalLbl = Label()
         self.shiftsTotalLbl.text = "Totals -  Shifts:\(self.numberOfValidShifts), Hours: \(self.totalHours!)"
         self.shiftsTotalLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.shiftsTotalLbl.textAlignment = NSTextAlignment.right
-        self.view.addSubview(self.shiftsTotalLbl)
+        safeContainer.addSubview(self.shiftsTotalLbl)
         
         
         tableHead.addSubview(dateTH)
@@ -320,15 +335,15 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         let viewsDictionary = ["headerLbl": self.screenHeaderLbl,"weekTxt": self.weekTxtField, "th":self.tableHead,"table": self.shiftsTableView,"total": self.shiftsTotalLbl] as [String:Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[headerLbl]-3-[weekTxt(120)]-|", options: [], metrics: metricsDictionary, views:viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[headerLbl]-3-[weekTxt(120)]-|", options: [], metrics: metricsDictionary, views:viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[th]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[table]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[th]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[table]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[total]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[total]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-70-[headerLbl(30)]-[th(40)][table]-[total(30)]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-70-[weekTxt(30)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[headerLbl(30)]-[th(40)][table]-[total(30)]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[weekTxt(30)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
     }
     
@@ -407,7 +422,7 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     @objc func goBack(){
         print("back")
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
     }
     
     override func didReceiveMemoryWarning() {

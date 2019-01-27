@@ -6,7 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
-
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -186,12 +186,21 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
         navigationItem.titleView = searchBarContainer
         
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
         
         
         self.vendorTableView.delegate  =  self
         self.vendorTableView.dataSource = self
         self.vendorTableView.register(VendorTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.vendorTableView)
+        safeContainer.addSubview(self.vendorTableView)
 
         
         self.countView = UIView()
@@ -199,7 +208,7 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
         //self.countView.layer.borderColor = layoutVars.borderColor
         //self.countView.layer.borderWidth = 1.0
         self.countView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.countView)
+        safeContainer.addSubview(self.countView)
         
         
         self.countLbl.translatesAutoresizingMaskIntoConstraints = false
@@ -215,9 +224,9 @@ class VendorListViewController: ViewControllerWithMenu, UITableViewDelegate, UIT
         
         let sizeVals = ["fullWidth": layoutVars.fullWidth,"width": layoutVars.fullWidth - 30,"navBottom":layoutVars.navAndStatusBarHeight,"height": self.view.frame.size.height - layoutVars.navAndStatusBarHeight] as [String : Any]
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[view1][view2(30)]|", options:[], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1][view2(30)]|", options:[], metrics: sizeVals, views: viewsDictionary))
         
         let viewsDictionary2 = [
             

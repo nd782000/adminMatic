@@ -6,6 +6,8 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
+
 import Foundation
 import UIKit
 import Alamofire
@@ -261,21 +263,32 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
-      
         
         if(self.infoView != nil){
             self.infoView.subviews.forEach({ $0.removeFromSuperview() })
         }
         
+      
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
         stackController = StackController()
         stackController.delegate = self
         stackController.getStack(_type:0,_ID:self.lead.ID)
-        self.view.addSubview(stackController)
+        safeContainer.addSubview(stackController)
         
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
-        self.view.addSubview(statusIcon)
+        safeContainer.addSubview(statusIcon)
         setStatus(status: lead.statusId)
         
         //picker
@@ -299,7 +312,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.statusTxtField.backgroundColor = UIColor.clear
         self.statusTxtField.inputView = statusPicker
         self.statusTxtField.layer.borderWidth = 0
-        self.view.addSubview(self.statusTxtField)
+        safeContainer.addSubview(self.statusTxtField)
         
         let toolBar = UIToolbar()
         toolBar.barStyle = UIBarStyle.default
@@ -327,7 +340,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.customerBtn.contentEdgeInsets = UIEdgeInsets(top: 0, left: 35, bottom: 0, right: 10)
         self.customerBtn.addTarget(self, action: #selector(self.showCustInfo), for: UIControl.Event.touchUpInside)
         
-        self.view.addSubview(customerBtn)
+        safeContainer.addSubview(customerBtn)
         
         // Info Window
         self.infoView.translatesAutoresizingMaskIntoConstraints = false
@@ -336,7 +349,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.infoView.layer.borderWidth = 1
         self.infoView.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
         self.infoView.layer.cornerRadius = 4.0
-        self.view.addSubview(infoView)
+        safeContainer.addSubview(infoView)
         
         //date
         self.scheduleLbl = GreyLabel()
@@ -436,15 +449,15 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.tasksTableView.layer.cornerRadius = 4
         self.tasksTableView.rowHeight = 90
         self.tasksTableView.register(LeadTaskTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(self.tasksTableView)
+        safeContainer.addSubview(self.tasksTableView)
         
         
         self.addBtn.addTarget(self, action: #selector(LeadViewController.addTask), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.addBtn)
+        safeContainer.addSubview(self.addBtn)
         
         
         self.assignBtn.addTarget(self, action: #selector(LeadViewController.assignTasks), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.assignBtn)
+        safeContainer.addSubview(self.assignBtn)
         
         
         if lead.tasksArray.count == 0{
@@ -467,17 +480,17 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
             "addBtn":self.addBtn
             ] as [String:AnyObject]
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[stackController]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[statusIcon(40)]-15-[customerBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[info]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[tasksLbl]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[table]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[addBtn(halfWidth)]-[assignBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[customerBtn(40)]-[info(180)]-[tasksLbl(22)][table]-[addBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[assignBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[stackController(40)]-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[stackController]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[statusIcon(40)]-15-[customerBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[info]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[tasksLbl]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[table]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[addBtn(halfWidth)]-[assignBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(180)]-[tasksLbl(22)][table]-[addBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[assignBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         
         
@@ -1140,7 +1153,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
                 delegate.getLeads(_openNewLead: false)
             }
         }
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
         
     }
     

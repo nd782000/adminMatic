@@ -6,7 +6,8 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
- 
+ //  Edited for safeView
+
 import Foundation
 import UIKit
 import Alamofire
@@ -243,18 +244,29 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         indicator.dismissIndicator()
         
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        self.crewTableView.layer.cornerRadius = 0
         self.crewTableView.delegate  =  self
         self.crewTableView.dataSource = self
         crewTableView.rowHeight = 60.0
         self.crewTableView.register(EmployeeTableViewCell.self, forCellReuseIdentifier: "cell")
         
         
-        self.view.addSubview(self.crewTableView)
+        safeContainer.addSubview(self.crewTableView)
         
         noCrewLabel.text = "No Crews"
         noCrewLabel.textAlignment = NSTextAlignment.center
         noCrewLabel.font = layoutVars.largeFont
-        self.view.addSubview(self.noCrewLabel)
+        safeContainer.addSubview(self.noCrewLabel)
         
         
         
@@ -262,16 +274,16 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.countView = UIView()
         self.countView.backgroundColor = layoutVars.backgroundColor
         self.countView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.countView)
+        safeContainer.addSubview(self.countView)
         
         
         self.countLbl.translatesAutoresizingMaskIntoConstraints = false
         
         self.countView.addSubview(self.countLbl)
         
-        
+        self.addCrewBtn.layer.cornerRadius = 0
         self.addCrewBtn.addTarget(self, action: #selector(CrewListViewController.addCrew), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.addCrewBtn)
+        safeContainer.addSubview(self.addCrewBtn)
         
         
         //auto layout group
@@ -285,14 +297,14 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         let sizeVals = ["halfWidth": layoutVars.halfWidth, "fullWidth": layoutVars.fullWidth,"width": layoutVars.fullWidth - 30,"navBottom":layoutVars.navAndStatusBarHeight,"height": self.view.frame.size.height - layoutVars.navAndStatusBarHeight] as [String : Any]
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[table(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[noCrewLbl(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[count(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[addBtn(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[table(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[noCrewLbl(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[count(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[addBtn(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[table][count(30)][addBtn(40)]|", options:[], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[noCrewLbl(40)]", options:[], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[table][count(30)][addBtn(40)]|", options:[], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[noCrewLbl(40)]", options:[], metrics: sizeVals, views: viewsDictionary))
         
         
         let viewsDictionary2 = [
@@ -496,7 +508,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
    
     
     @objc func goBack(){
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
     }
     
     

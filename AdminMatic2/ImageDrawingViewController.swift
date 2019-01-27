@@ -6,6 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
  
+//  Edited for safeView
 
 import UIKit
 
@@ -115,12 +116,22 @@ class ImageDrawingViewController: UIViewController {
         
          self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         // Do any additional setup after loading the view, typically from a nib.
         red   = (255.0/255.0)
         green = (0.0/255.0)
         blue  = (0.0/255.0)
         
-        self.view.backgroundColor = layoutVars.backgroundColor
+        safeContainer.backgroundColor = layoutVars.backgroundColor
        
         
         self.imageView = UIImageView(frame:CGRect(x: 0, y: layoutVars.navAndStatusBarHeight, width: self.view.frame.size.width, height: self.view.frame.size.height)    )
@@ -133,7 +144,7 @@ class ImageDrawingViewController: UIViewController {
         self.imageView.image = self.image
         self.imageView.clipsToBounds = true
         
-        self.view.addSubview(self.imageView)
+        safeContainer.addSubview(self.imageView)
         
         
         //custom back button
@@ -182,7 +193,7 @@ class ImageDrawingViewController: UIViewController {
         self.redBtn.translatesAutoresizingMaskIntoConstraints = false
         self.redBtn.addTarget(self, action: #selector(ImageDrawingViewController.colorChange), for: UIControl.Event.touchUpInside)
         self.redBtn.backgroundColor = UIColor.red
-        self.view.addSubview(self.redBtn)
+        safeContainer.addSubview(self.redBtn)
         
         self.orangeBtn = Button()
         self.orangeBtn.tag = 1
@@ -191,7 +202,7 @@ class ImageDrawingViewController: UIViewController {
         self.orangeBtn.translatesAutoresizingMaskIntoConstraints = false
         self.orangeBtn.addTarget(self, action: #selector(ImageDrawingViewController.colorChange), for: UIControl.Event.touchUpInside)
         self.orangeBtn.backgroundColor = UIColor.orange
-        self.view.addSubview(self.orangeBtn)
+        safeContainer.addSubview(self.orangeBtn)
         
         self.yellowBtn = Button()
         self.yellowBtn.tag = 2
@@ -200,7 +211,7 @@ class ImageDrawingViewController: UIViewController {
         self.yellowBtn.translatesAutoresizingMaskIntoConstraints = false
         self.yellowBtn.addTarget(self, action: #selector(ImageDrawingViewController.colorChange), for: UIControl.Event.touchUpInside)
         self.yellowBtn.backgroundColor = UIColor.yellow
-        self.view.addSubview(self.yellowBtn)
+        safeContainer.addSubview(self.yellowBtn)
         
         self.greenBtn = Button()
         self.greenBtn.backgroundColor = UIColor.green
@@ -209,7 +220,7 @@ class ImageDrawingViewController: UIViewController {
         self.greenBtn.layer.borderWidth = 2.0
         self.greenBtn.translatesAutoresizingMaskIntoConstraints = false
         self.greenBtn.addTarget(self, action: #selector(ImageDrawingViewController.colorChange), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.greenBtn)
+        safeContainer.addSubview(self.greenBtn)
         
         self.blueBtn = Button()
         self.blueBtn.backgroundColor = UIColor.blue
@@ -218,7 +229,7 @@ class ImageDrawingViewController: UIViewController {
         self.blueBtn.layer.borderWidth = 2.0
         self.blueBtn.translatesAutoresizingMaskIntoConstraints = false
         self.blueBtn.addTarget(self, action: #selector(ImageDrawingViewController.colorChange), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.blueBtn)
+        safeContainer.addSubview(self.blueBtn)
         
         self.purpleBtn = Button()
         self.purpleBtn.backgroundColor = UIColor.purple
@@ -227,7 +238,7 @@ class ImageDrawingViewController: UIViewController {
         self.purpleBtn.layer.borderWidth = 2.0
         self.purpleBtn.translatesAutoresizingMaskIntoConstraints = false
         self.purpleBtn.addTarget(self, action: #selector(ImageDrawingViewController.colorChange), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.purpleBtn)
+        safeContainer.addSubview(self.purpleBtn)
         
         self.pinkBtn = Button()
         self.pinkBtn.backgroundColor = UIColor(displayP3Red: 255.0/255.0, green: 0.0/255.0, blue: 233.0/255.0, alpha: 1.0)
@@ -237,7 +248,7 @@ class ImageDrawingViewController: UIViewController {
         self.pinkBtn.layer.borderWidth = 2.0
         self.pinkBtn.translatesAutoresizingMaskIntoConstraints = false
         self.pinkBtn.addTarget(self, action: #selector(ImageDrawingViewController.colorChange), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.pinkBtn)
+        safeContainer.addSubview(self.pinkBtn)
         
         
         self.brownBtn = Button()
@@ -247,7 +258,7 @@ class ImageDrawingViewController: UIViewController {
         self.brownBtn.layer.borderWidth = 2.0
         self.brownBtn.translatesAutoresizingMaskIntoConstraints = false
         self.brownBtn.addTarget(self, action: #selector(ImageDrawingViewController.colorChange), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.brownBtn)
+        safeContainer.addSubview(self.brownBtn)
         
         self.whiteBtn = Button()
         self.whiteBtn.backgroundColor = UIColor.white
@@ -256,7 +267,7 @@ class ImageDrawingViewController: UIViewController {
         self.whiteBtn.layer.borderWidth = 2.0
         self.whiteBtn.translatesAutoresizingMaskIntoConstraints = false
         self.whiteBtn.addTarget(self, action: #selector(ImageDrawingViewController.colorChange), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.whiteBtn)
+        safeContainer.addSubview(self.whiteBtn)
         
         self.grayBtn = Button()
         self.grayBtn.backgroundColor = UIColor.darkGray
@@ -265,7 +276,7 @@ class ImageDrawingViewController: UIViewController {
         self.grayBtn.layer.borderWidth = 2.0
         self.grayBtn.translatesAutoresizingMaskIntoConstraints = false
         self.grayBtn.addTarget(self, action: #selector(ImageDrawingViewController.colorChange), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.grayBtn)
+        safeContainer.addSubview(self.grayBtn)
         
         self.blackBtn = Button()
         self.blackBtn.backgroundColor = UIColor.black
@@ -274,7 +285,7 @@ class ImageDrawingViewController: UIViewController {
         self.blackBtn.layer.borderWidth = 2.0
         self.blackBtn.translatesAutoresizingMaskIntoConstraints = false
         self.blackBtn.addTarget(self, action: #selector(ImageDrawingViewController.colorChange), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.blackBtn)
+        safeContainer.addSubview(self.blackBtn)
         
         self.smallBrushBtn = Button()
         self.smallBrushBtn.layer.borderColor = UIColor(red:255/255.0, green:255/255.0, blue:255/255.0, alpha: 1.0).cgColor
@@ -289,7 +300,7 @@ class ImageDrawingViewController: UIViewController {
         
         self.smallBrushBtn.translatesAutoresizingMaskIntoConstraints = false
         self.smallBrushBtn.addTarget(self, action: #selector(ImageDrawingViewController.smallBrush), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.smallBrushBtn)
+        safeContainer.addSubview(self.smallBrushBtn)
         
         self.mediumBrushBtn = Button()
         self.mediumBrushBtn.layer.borderColor = UIColor(red:255/255.0, green:255/255.0, blue:255/255.0, alpha: 1.0).cgColor
@@ -304,7 +315,7 @@ class ImageDrawingViewController: UIViewController {
         self.mediumBrushBtn.backgroundColor = layoutVars.buttonColor1
         self.mediumBrushBtn.translatesAutoresizingMaskIntoConstraints = false
         self.mediumBrushBtn.addTarget(self, action: #selector(ImageDrawingViewController.mediumBrush), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.mediumBrushBtn)
+        safeContainer.addSubview(self.mediumBrushBtn)
         
         self.largeBrushBtn = Button()
         self.largeBrushBtn.layer.borderColor = UIColor(red:255/255.0, green:255/255.0, blue:255/255.0, alpha: 1.0).cgColor
@@ -322,7 +333,7 @@ class ImageDrawingViewController: UIViewController {
         self.largeBrushBtn.backgroundColor = layoutVars.buttonColor1
         self.largeBrushBtn.translatesAutoresizingMaskIntoConstraints = false
         self.largeBrushBtn.addTarget(self, action: #selector(ImageDrawingViewController.largeBrush), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.largeBrushBtn)
+        safeContainer.addSubview(self.largeBrushBtn)
         
         
         
@@ -332,7 +343,7 @@ class ImageDrawingViewController: UIViewController {
         self.clearBtn.backgroundColor = layoutVars.buttonColor1
         self.clearBtn.translatesAutoresizingMaskIntoConstraints = false
         self.clearBtn.addTarget(self, action: #selector(ImageDrawingViewController.clear), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.clearBtn)
+        safeContainer.addSubview(self.clearBtn)
         
         self.doneBtn = Button(titleText: "Done")
         self.doneBtn.layer.borderColor = UIColor(red:255/255.0, green:255/255.0, blue:255/255.0, alpha: 1.0).cgColor
@@ -340,7 +351,7 @@ class ImageDrawingViewController: UIViewController {
         self.doneBtn.backgroundColor = layoutVars.buttonColor1
         self.doneBtn.translatesAutoresizingMaskIntoConstraints = false
         self.doneBtn.addTarget(self, action: #selector(ImageDrawingViewController.done), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.doneBtn)
+        safeContainer.addSubview(self.doneBtn)
         
         
         
@@ -391,30 +402,30 @@ class ImageDrawingViewController: UIViewController {
          let sizeVals = ["colorBtnSize": layoutVars.colorBtnSize,"clearBtnSize": layoutVars.fullWidth/2]  as [String:CGFloat]
         
          
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[red(colorBtnSize)][orange(colorBtnSize)][yellow(colorBtnSize)][green(colorBtnSize)][blue(colorBtnSize)][purple(colorBtnSize)][pink(colorBtnSize)]", options: NSLayoutConstraint.FormatOptions.alignAllBottom, metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[red(colorBtnSize)][orange(colorBtnSize)][yellow(colorBtnSize)][green(colorBtnSize)][blue(colorBtnSize)][purple(colorBtnSize)][pink(colorBtnSize)]", options: NSLayoutConstraint.FormatOptions.alignAllBottom, metrics: sizeVals, views: viewsDictionary))
          
          
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[brown(colorBtnSize)][white(colorBtnSize)][gray(colorBtnSize)][black(colorBtnSize)][small(colorBtnSize)][medium(colorBtnSize)][large(colorBtnSize)]", options: NSLayoutConstraint.FormatOptions.alignAllBottom, metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[brown(colorBtnSize)][white(colorBtnSize)][gray(colorBtnSize)][black(colorBtnSize)][small(colorBtnSize)][medium(colorBtnSize)][large(colorBtnSize)]", options: NSLayoutConstraint.FormatOptions.alignAllBottom, metrics: sizeVals, views: viewsDictionary))
          
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[clear(clearBtnSize)][done(clearBtnSize)]|", options: NSLayoutConstraint.FormatOptions.alignAllBottom, metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[clear(clearBtnSize)][done(clearBtnSize)]|", options: NSLayoutConstraint.FormatOptions.alignAllBottom, metrics: sizeVals, views: viewsDictionary))
          
          
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[red(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[orange(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[yellow(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[green(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[blue(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[purple(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[pink(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[brown(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[white(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[gray(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[black(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[small(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[medium(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[large(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[clear(colorBtnSize)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[done(colorBtnSize)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[red(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[orange(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[yellow(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[green(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[blue(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[purple(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[pink(colorBtnSize)]-108-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[brown(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[white(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[gray(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[black(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[small(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[medium(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[large(colorBtnSize)]-54-|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[clear(colorBtnSize)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[done(colorBtnSize)]|", options: [], metrics: sizeVals, views: viewsDictionary))
     }
     
     override func didReceiveMemoryWarning() {
@@ -545,7 +556,7 @@ class ImageDrawingViewController: UIViewController {
     @objc func goBack(){
         //print("Go Back")
         delegate.updateImage(_indexPath:self.indexPath, _image: self.imageView.image!)
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
         
     }
     

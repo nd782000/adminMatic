@@ -6,6 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -185,11 +186,24 @@ for i in 0 ..< contactCount {
     func layoutViews(){
         print("vendor view layoutViews")
         //////////   containers for different sections
+        
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
         self.vendorView = UIView()
         self.vendorView.layer.borderColor = layoutVars.borderColor
         self.vendorView.layer.borderWidth = 1.0
         self.vendorView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.vendorView)
+        safeContainer.addSubview(self.vendorView)
         
         
         
@@ -203,8 +217,8 @@ for i in 0 ..< contactCount {
         //////////////   auto layout position constraints   /////////////////////////////
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[view1]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1]|", options: [], metrics: sizeVals, views: viewsDictionary))
         
         
         

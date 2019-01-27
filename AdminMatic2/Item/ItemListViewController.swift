@@ -6,6 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -160,65 +161,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
     }
     
-    /*
-    func parseJSON(){
-        let jsonCount = self.items["items"].count
-        self.totalItems = jsonCount
-        for i in 0 ..< jsonCount {
-            
-            //create a item object
-            let item = Item( _name: self.items["items"][i]["name"].stringValue, _id: self.items["items"][i]["ID"].stringValue, _type: self.items["items"][i]["type"].stringValue, _price: self.items["items"][i]["price"].stringValue, _units: self.items["items"][i]["unit"].stringValue, _description: self.items["items"][i]["description"].stringValue, _taxable: self.items["items"][i]["taxable"].stringValue)
-            
-            self.itemsArray.append(item)
-            
-        }
-        //let item = Item(_name:"# \(jsonCount) Items", _id: "", _type: "", _price: "", _units: "",_description:"",_taxable:"")
-        //self.itemsArray.append(item)
-        
-        
-        
-        // build sections based on first letter(json is already sorted alphabetically)
-        
-        var index = 0;
-        var firstCharacterArray:[String] = [" "]
-        
-        for i in 0 ..< self.itemsArray.count {
-            let stringToTest = self.itemsArray[i].name.uppercased()
-            let firstCharacter = String(stringToTest[stringToTest.startIndex])
-            if(i == 0){
-                firstCharacterArray.append(firstCharacter)
-            }
-            
-            
-            
-            
-            if !firstCharacterArray.contains(firstCharacter) {
-                
-                //print("new")
-                let title = firstCharacterArray[firstCharacterArray.count - 1]
-                firstCharacterArray.append(firstCharacter)
-                
-                let newSection = (index: index, length: i - index, title: title)
-                sections.append(newSection)
-                index = i;
-            }
-            
-            if(i == self.itemsArray.count - 1){
-                let title = firstCharacterArray[firstCharacterArray.count - 1]
-                let newSection = (index: index, length: i - index + 1, title: title)
-                self.sections.append(newSection)
-            }
-            
-            
-        }
-        
-        
-        
-        
-        self.layoutViews()
-        
-    }
- */
+    
     
     
     
@@ -247,18 +190,28 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         searchBarContainer.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 44)
         navigationItem.titleView = searchBarContainer
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         
         
         self.itemTableView.delegate  =  self
         self.itemTableView.dataSource = self
         self.itemTableView.register(ItemTableViewCell.self, forCellReuseIdentifier: "cell")
         
-        self.view.addSubview(self.itemTableView)
+        safeContainer.addSubview(self.itemTableView)
         
         self.countView = UIView()
         self.countView.backgroundColor = layoutVars.backgroundColor
         self.countView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.countView)
+        safeContainer.addSubview(self.countView)
         
         
         self.countLbl.translatesAutoresizingMaskIntoConstraints = false
@@ -275,9 +228,9 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         let sizeVals = ["fullWidth": layoutVars.fullWidth,"width": layoutVars.fullWidth - 30,"navBottom":layoutVars.navAndStatusBarHeight,"height": self.view.frame.size.height - layoutVars.navAndStatusBarHeight] as [String : Any]
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[view1][view2(30)]|", options:[], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2(fullWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1][view2(30)]|", options:[], metrics: sizeVals, views: viewsDictionary))
         
         let viewsDictionary2 = [
             

@@ -6,7 +6,7 @@
 //  Copyright © 2019 Nick. All rights reserved.
 //
 
-
+//  Edited for safeView
 
 
 import Foundation
@@ -166,7 +166,6 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
             self.notesTxtView.contentOffset = CGPoint.zero
             self.notesTxtView.scrollRangeToVisible(NSRange(location:0, length:0))
         }
-        
         
         
         
@@ -577,7 +576,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
                 //self.submit()
                 
                 
-                _ = self.navigationController?.popViewController(animated: true)
+                _ = self.navigationController?.popViewController(animated: false)
             }
             
             alertController.addAction(cancelAction)
@@ -585,7 +584,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
             self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             
-            _ = navigationController?.popViewController(animated: true)
+            _ = navigationController?.popViewController(animated: false)
         }
         
         

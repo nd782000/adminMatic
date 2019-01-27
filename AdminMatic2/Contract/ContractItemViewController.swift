@@ -6,6 +6,8 @@
 //  Copyright © 2018 Nick. All rights reserved.
 //
 
+//  Edited for safeView
+
 
 import Foundation
 import UIKit
@@ -118,6 +120,14 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
         optionsButton = UIBarButtonItem(title: "Options", style: .plain, target: self, action: #selector(ContractItemViewController.displayContractItemOptions))
         navigationItem.rightBarButtonItem = optionsButton
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
         
         //////////   containers for different sections
@@ -126,12 +136,12 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
         self.itemView.layer.borderColor = layoutVars.borderColor
         self.itemView.layer.borderWidth = 1.0
         self.itemView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.itemView)
+        safeContainer.addSubview(self.itemView)
         
         self.detailsView = UIView()
         self.detailsView.backgroundColor = layoutVars.backgroundColor
         self.detailsView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.detailsView)
+        safeContainer.addSubview(self.detailsView)
         
         
         ////print("1")
@@ -145,9 +155,9 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
         //////////////////   auto layout position constraints   /////////////////////////////
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[view1(125)][view2]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(125)][view2]|", options: [], metrics: sizeVals, views: viewsDictionary))
         
         ///////////   wo item header section   /////////////
         
@@ -435,12 +445,16 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
         optionsButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(ContractItemViewController.saveSort))
         navigationItem.rightBarButtonItem = optionsButton
         
+        self.itemDetailsTableView.reloadData()
+        
+        /*
         self.taskIDArray = []
         for task in contractItem.tasks{
             let ID = task.ID!
             self.taskIDArray.append(ID)
         }
         self.itemDetailsTableView.reloadData()
+ */
     }
     
    
@@ -464,7 +478,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             
             let parameters = [
                 "dataBase":"projects",
-                "table": "contractItems",
+                "table": "contractTasks",
                 "IDs": NSArray(array: self.taskIDArray)
                 ] as [String : Any]
             
@@ -476,14 +490,14 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/itemSort.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
                 .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
                 .responseString { response in
-                    print("response = \(response)")
+                    print("task sort response = \(response)")
                 }
                 .responseJSON(){
                     response in
                     self.sortEditsMade = false
                     self.indicator.dismissIndicator()
                     if _leave{
-                        _ = self.navigationController?.popViewController(animated: true)
+                        _ = self.navigationController?.popViewController(animated: false)
                     }
                     
                     
@@ -491,12 +505,14 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
                     
             }
         }
+        /*
         self.taskIDArray = []
         for task in contractItem.tasks{
             let ID = task.ID!
             self.taskIDArray.append(ID)
         }
         self.itemDetailsTableView.reloadData()
+        */
         
     }
     
@@ -671,6 +687,31 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     }
     
     
+    //reorder cells
+    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        
+        let ID = self.contractItem.tasks[sourceIndexPath.row].ID!
+        self.taskIDArray.remove(at: sourceIndexPath.row)
+        self.taskIDArray.insert(ID, at: destinationIndexPath.row)
+        
+        
+        let task = self.contractItem.tasks[sourceIndexPath.row]
+        self.contractItem.tasks.remove(at: sourceIndexPath.row)
+        self.contractItem.tasks.insert(task, at: destinationIndexPath.row)
+        
+        sortEditsMade = true
+    }
+    
+    
+    
+    
+    
+    
+    
     @objc func assignLeadTasks(){
         print("assign lead tasks")
         let leadTaskAssignViewController:LeadTaskAssignViewController = LeadTaskAssignViewController(_leadFromContractItem: self.lead!, _contractItem: self.contractItem)
@@ -737,20 +778,6 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     }
     
     
-    //reorder cells
-    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    
-    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        
-        let ID = self.contractItem.tasks[sourceIndexPath.row].ID!
-        self.taskIDArray.remove(at: sourceIndexPath.row)
-        self.taskIDArray.insert(ID, at: destinationIndexPath.row)
-        
-        
-        sortEditsMade = true
-    }
     
     
     
@@ -852,6 +879,13 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
                     }
                     
                     self.itemDetailsTableView.reloadData()
+                    
+                    self.taskIDArray = []
+                    for task in self.contractItem.tasks{
+                        let ID = task.ID!
+                        self.taskIDArray.append(ID)
+                    }
+                    
                     let indexPath = IndexPath(row: self.contractItem.tasks.count, section: 0)
                     self.itemDetailsTableView.scrollToRow(at: indexPath, at: .top, animated: true)
                 }
@@ -991,7 +1025,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             contractDelegate.updateContract(_contractItem: self.contractItem)
             
         }
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
         
     }
     

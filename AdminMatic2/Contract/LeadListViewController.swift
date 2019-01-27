@@ -6,7 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
- 
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -283,6 +283,16 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchBar.placeholder = "Search Leads"
         searchController.searchResultsUpdater = self
@@ -308,7 +318,6 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         
         
         self.leadTableView =  TableView()
-        
         self.leadTableView.delegate  =  self
         self.leadTableView.dataSource  =  self
         self.leadTableView.rowHeight = 60.0
@@ -676,7 +685,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     
     
     func goBack(){
-        _ = navigationController?.popViewController(animated: true)
+        _ = navigationController?.popViewController(animated: false)
     }
     
     override func viewWillAppear(_ animated: Bool) {

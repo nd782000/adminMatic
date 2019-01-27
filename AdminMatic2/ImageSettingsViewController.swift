@@ -6,7 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
-
+//  Edited for safeView
 
 import Foundation
 import UIKit
@@ -107,12 +107,22 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         print("layoutViews")
         // indicator.dismissIndicator()
         
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         self.filterPicker = Picker()
         self.filterPicker.delegate = self
         
         self.filterLbl.translatesAutoresizingMaskIntoConstraints = false
         self.filterLbl.text = "Filter by:"
-        self.view.addSubview(self.filterLbl)
+        safeContainer.addSubview(self.filterLbl)
         
         self.filterTxtField = PaddedTextField()
         
@@ -123,7 +133,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         self.filterTxtField.delegate = self
         self.filterTxtField.tintColor = UIColor.clear
         self.filterTxtField.inputView = filterPicker
-        self.view.addSubview(self.filterTxtField)
+        safeContainer.addSubview(self.filterTxtField)
          
         
         print("layoutViews 1")
@@ -148,7 +158,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         
         self.orderLbl.translatesAutoresizingMaskIntoConstraints = false
         self.orderLbl.text = "Order by:"
-        self.view.addSubview(self.orderLbl)
+        safeContainer.addSubview(self.orderLbl)
         
         self.orderTxtField = PaddedTextField()
         
@@ -160,7 +170,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         self.orderTxtField.delegate = self
         self.orderTxtField.tintColor = UIColor.clear
         self.orderTxtField.inputView = orderPicker
-        self.view.addSubview(self.orderTxtField)
+        safeContainer.addSubview(self.orderTxtField)
         
         
         print("layoutViews 1")
@@ -185,7 +195,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         self.clearFiltersBtn.translatesAutoresizingMaskIntoConstraints = false
         //self.clearFiltersBtn.layer.borderColor = UIColor.white.cgColor
         //self.clearFiltersBtn.layer.borderWidth = 1.0
-        self.view.addSubview(self.clearFiltersBtn)
+        safeContainer.addSubview(self.clearFiltersBtn)
         
         
         
@@ -200,13 +210,13 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[filterLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[filterTxt]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[orderLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[orderTxt]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[clearFiltersBtn]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[filterLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[filterTxt]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[orderLbl]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[orderTxt]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[clearFiltersBtn]-40-|", options: [], metrics: sizeVals, views: viewsDictionary))
        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navHeight-[filterLbl(40)][filterTxt(40)]-20-[orderLbl(40)][orderTxt(40)]-20-[clearFiltersBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[filterLbl(40)][filterTxt(40)]-20-[orderLbl(40)][orderTxt(40)]-20-[clearFiltersBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
     }
     

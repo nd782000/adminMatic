@@ -6,6 +6,8 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
+
 import Foundation
 import UIKit
 import Alamofire
@@ -207,6 +209,17 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
+        
+        //set container to safe bounds of view
+        let safeContainer:UIView = UIView()
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
         //image
         self.equipmentImage = UIImageView()
         
@@ -234,7 +247,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         self.equipmentImage.layer.borderColor = layoutVars.borderColor
         self.equipmentImage.clipsToBounds = true
         self.equipmentImage.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.equipmentImage)
+        safeContainer.addSubview(self.equipmentImage)
         
         
         self.tapBtn = Button()
@@ -244,7 +257,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         }
         self.tapBtn.backgroundColor = UIColor.clear
         self.tapBtn.setTitle("", for: UIControl.State.normal)
-        self.view.addSubview(self.tapBtn)
+        safeContainer.addSubview(self.tapBtn)
         
         
         
@@ -253,14 +266,14 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         self.mileageLbl = GreyLabel()
         self.mileageLbl.text = "Current Mileage/Hours"
         self.mileageLbl.font = layoutVars.smallFont
-        self.view.addSubview(self.mileageLbl)
+        safeContainer.addSubview(self.mileageLbl)
         
         self.mileageTxtField = PaddedTextField(placeholder: "Mileage/Hours...")
         self.mileageTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.mileageTxtField.delegate = self
         self.mileageTxtField.keyboardType = UIKeyboardType.numberPad
         self.mileageTxtField.returnKeyType = .done
-        self.view.addSubview(self.mileageTxtField)
+        safeContainer.addSubview(self.mileageTxtField)
         
         
         
@@ -280,7 +293,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         
         
         self.mileageButton.addTarget(self, action: #selector(EquipmentServiceListViewController.checkForServices), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.mileageButton)
+        safeContainer.addSubview(self.mileageButton)
         
         
         
@@ -289,7 +302,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         serviceSC.selectedSegmentIndex = 0
         
         serviceSC.addTarget(self, action: #selector(self.changeServiceView(sender:)), for: .valueChanged)
-        self.view.addSubview(serviceSC)
+        safeContainer.addSubview(serviceSC)
         
         
         self.serviceTableView = TableView()
@@ -297,7 +310,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         self.serviceTableView.dataSource = self
         self.serviceTableView.rowHeight = 60.0
         self.serviceTableView.register(EquipmentServiceTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(serviceTableView)
+        safeContainer.addSubview(serviceTableView)
         //if shouldUpdateTable {
             //self.serviceTableView.reloadData()
            // shouldUpdateTable = false
@@ -305,7 +318,7 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
         
         
         self.addServiceButton.addTarget(self, action: #selector(EquipmentServiceListViewController.addService), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(self.addServiceButton)
+        safeContainer.addSubview(self.addServiceButton)
         
         
         let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": (layoutVars.fullWidth/2)-15, "height": 24,"fullHeight":layoutVars.fullHeight - 344, "navBottom":layoutVars.navAndStatusBarHeight + 8] as [String:Any]
@@ -323,19 +336,19 @@ class EquipmentServiceListViewController: UIViewController, UITextFieldDelegate,
             ] as [String:Any]
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(40)]-[mileageLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapBtn(40)]", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[mileageTxt]-[mileageBtn(80)]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(40)]-[mileageLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapBtn(40)]", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[mileageTxt]-[mileageBtn(80)]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceSegmentedControl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceTable]-|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[addServiceBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceSegmentedControl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceTable]-|", options: [], metrics: nil, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[addServiceBtn]-|", options: [], metrics: nil, views: viewsDictionary))
         
         
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[image(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[tapBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[mileageLbl(40)]-[mileageTxt(40)]-20-[serviceSegmentedControl(40)]-[serviceTable]-[addServiceBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBottom-[mileageLbl(40)]-[mileageBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[image(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tapBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[mileageLbl(40)]-[mileageTxt(40)]-20-[serviceSegmentedControl(40)]-[serviceTable]-[addServiceBtn(40)]-10-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[mileageLbl(40)]-[mileageBtn(40)]", options: [], metrics: sizeVals, views: viewsDictionary))
         
     }
     

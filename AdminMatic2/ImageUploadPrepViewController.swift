@@ -6,6 +6,7 @@
 //  Copyright © 2017 Nick. All rights reserved.
 //
 
+//  Edited for safeView
 
 //this class is the user interface to be subclassed for gallery, field note, task and equipment image upload and edits
 
@@ -39,7 +40,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     var indicator: SDevIndicator!
     var backButton:UIButton!
     
-    
+    let safeContainer:UIView = UIView()
     //header view
     var groupImages:Bool = false
     var groupSwitch:UISwitch = UISwitch()
@@ -360,13 +361,25 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         groupSwitch.removeTarget(self, action: #selector(ImageUploadPrepViewController.switchValueDidChange(sender:)), for: .valueChanged)
         groupSwitch.isHidden = true
         
+        
+        //set container to safe bounds of view
+        
+        safeContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(safeContainer)
+        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+        safeContainer.rightAnchor.constraint(equalTo: view.safeRightAnchor).isActive = true
+        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
+        
+        
+        
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         imageCollectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height - 50), collectionViewLayout: layout)
         self.imageCollectionView.delegate  =  self
         self.imageCollectionView.dataSource = self
         self.imageCollectionView.register(ImageUploadPrepCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         self.imageCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.imageCollectionView!)
+        safeContainer.addSubview(self.imageCollectionView!)
 
         self.imageCollectionView.alwaysBounceVertical = true
         self.imageCollectionView.backgroundColor = UIColor.darkGray
@@ -374,7 +387,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         if imageType != "Equipment" && imageType != "Receipt"{
             self.groupNameView.backgroundColor = UIColor.lightGray
             self.groupNameView.translatesAutoresizingMaskIntoConstraints = false
-            self.view.addSubview(self.groupNameView)
+            safeContainer.addSubview(self.groupNameView)
             groupSwitch.isOn = groupImages
             groupSwitch.translatesAutoresizingMaskIntoConstraints = false
             groupSwitch.addTarget(self, action: #selector(ImageUploadPrepViewController.switchValueDidChange(sender:)), for: .valueChanged)
@@ -429,12 +442,12 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             //might want to change to custom linkCell class
             self.groupResultsTableView.register(CustomerTableViewCell.self, forCellReuseIdentifier: "linkCell")
             self.groupResultsTableView.alpha = 0.0
-            self.view.addSubview(self.groupResultsTableView)
+            safeContainer.addSubview(self.groupResultsTableView)
             
             
             
             self.addImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.addImages), for: UIControl.Event.touchUpInside)
-            self.view.addSubview(self.addImageBtn)
+            safeContainer.addSubview(self.addImageBtn)
             
             
             
@@ -442,7 +455,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 self.submitBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.pickImageUploadSize), for: UIControl.Event.touchUpInside)
             
             
-            self.view.addSubview(self.submitBtn)
+            safeContainer.addSubview(self.submitBtn)
             
         }else if imageType == "Equipment" || imageType == "Receipt"{
             print("Equipment or Receipt")
@@ -450,14 +463,14 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             
             self.changeImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.changeImage), for: UIControl.Event.touchUpInside)
-            self.view.addSubview(self.changeImageBtn)
+            safeContainer.addSubview(self.changeImageBtn)
             
            
             
             
             
             self.submitBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.forceSmallUpload), for: UIControl.Event.touchUpInside)
-            self.view.addSubview(self.submitBtn)
+            safeContainer.addSubview(self.submitBtn)
             print("end")
             
             
@@ -489,12 +502,12 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             }
             
             self.addImageBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.addImages), for: UIControl.Event.touchUpInside)
-            self.view.addSubview(self.addImageBtn)
+            safeContainer.addSubview(self.addImageBtn)
             
 
             
             self.submitBtn.addTarget(self, action: #selector(ImageUploadPrepViewController.pickImageUploadSize), for: UIControl.Event.touchUpInside)
-            self.view.addSubview(self.submitBtn)
+            safeContainer.addSubview(self.submitBtn)
              print("end")
             
         }
@@ -541,20 +554,20 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 ] as [String:Any]
             
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[groupNameView]|", options: [], metrics: nil, views: viewsDictionary))
-            //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topImageView]|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[imageCollection]-|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchTable]-|", options: [], metrics: nil, views: viewsDictionary))
-             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[addImageBtn]-|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[groupNameView]|", options: [], metrics: nil, views: viewsDictionary))
+            //safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topImageView]|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[imageCollection]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[searchTable]-|", options: [], metrics: nil, views: viewsDictionary))
+             safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[addImageBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
             
             
             if(groupImages == true){
-                self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[groupNameView(90)]-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                 
                 
                 
-                self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]-[searchTable]-keyboardHeight-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[groupNameView(90)]-[searchTable]-keyboardHeight-|", options: [], metrics: sizeVals, views: viewsDictionary))
                 
                 
             }else{
@@ -563,13 +576,13 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
                 
                 if(self.imageType != "Customer"){
-                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(50)]-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                    safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[groupNameView(50)]-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                     
-                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(50)]-[searchTable]-keyboardHeight-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                    safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[groupNameView(50)]-[searchTable]-keyboardHeight-|", options: [], metrics: sizeVals, views: viewsDictionary))
                 }else{
-                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                    safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                     
-                   // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(50)]-[searchTable]-keyboardHeight-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                   // safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(50)]-[searchTable]-keyboardHeight-|", options: [], metrics: sizeVals, views: viewsDictionary))
                 }
                
             }
@@ -613,11 +626,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                  "imageCollection":self.imageCollectionView, "changeImageBtn":self.changeImageBtn, "submitBtn":self.submitBtn
                 ] as [String:Any]
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[imageCollection]-|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[changeImageBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[imageCollection]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[changeImageBtn]-|", options: [], metrics: nil, views: viewsDictionary))
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[imageCollection]-[changeImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[imageCollection]-[changeImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
             
             
             
@@ -629,32 +642,32 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 ] as [String:Any]
             
             if(self.imageType != "Customer"){
-                self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[groupNameView]|", options: [], metrics: nil, views: viewsDictionary))
-                //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topImageView]|", options: [], metrics: nil, views: viewsDictionary))
+                safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[groupNameView]|", options: [], metrics: nil, views: viewsDictionary))
+                //safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topImageView]|", options: [], metrics: nil, views: viewsDictionary))
             }
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[imageCollection]-|", options: [], metrics: nil, views: viewsDictionary))
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
-             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[addImageBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[imageCollection]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[submitBtn]-|", options: [], metrics: nil, views: viewsDictionary))
+             safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[addImageBtn]-|", options: [], metrics: nil, views: viewsDictionary))
             
             
             if(images.count > 0){
                 if(self.imageType != "Customer"){
-                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                    safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[groupNameView(90)]-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                 }else{
-                     self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                     safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                 }
                 
                
             }else{
                 if(self.imageType != "Customer"){
 
-                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]", options: [], metrics: sizeVals, views: viewsDictionary))
-                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:"V:|-130-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                    safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[groupNameView(90)]", options: [], metrics: sizeVals, views: viewsDictionary))
+                    safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:"V:|-60-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                 }else{
                     
-                    //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]", options: [], metrics: sizeVals, views: viewsDictionary))
-                    self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:"V:|-90-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+                    //safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]", options: [], metrics: sizeVals, views: viewsDictionary))
+                    safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:"V:|-20-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                     
                 }
                 
