@@ -14,6 +14,7 @@ class ScheduleTableViewCell: UITableViewCell {
     var workOrder:WorkOrder!
     var lead:Lead?
     var contract:Contract?
+    var invoice:Invoice?
     var dateLbl: UILabel!
     var customerLbl: UILabel!
     var firstItemLbl: UILabel!
@@ -321,6 +322,23 @@ class ScheduleTableViewCell: UITableViewCell {
                 break;
             default:
                 let statusImg = UIImage(named:"inProgressStatus.png")
+                statusIcon.image = statusImg
+                break;
+            }
+            break
+        case "INVOICE":
+            switch (status) {
+            case "0":
+                let statusImg = UIImage(named:"unDoneStatus.png")
+                statusIcon.image = statusImg
+                break;
+            case "1":
+                let statusImg = UIImage(named:"doneStatus.png")
+                statusIcon.image = statusImg
+                break;
+            
+            default:
+                let statusImg = UIImage(named:"unDoneStatus.png")
                 statusIcon.image = statusImg
                 break;
             }

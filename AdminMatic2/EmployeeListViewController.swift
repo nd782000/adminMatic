@@ -185,6 +185,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         //cell.imageView?.image = nil
         
         cell.employee = appDelegate.employeeArray[indexPath.row]
+        cell.layoutViews()
         cell.activityView.startAnimating()
         
         //print("setImageUrl http://atlanticlawnandgarden.com/uploads/general/thumbs/\(cell.employee.pic!)")
@@ -194,8 +195,15 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+cell.employee.pic!)
         
+        cell.badgeCount = 0
         
-        
+        for license in cell.employee.licenseArray{
+            if license.status == "0"{
+                cell.addBadge(_active: false)
+            }else{
+                cell.addBadge(_active: true)
+            }
+        }
         
         
         return cell;

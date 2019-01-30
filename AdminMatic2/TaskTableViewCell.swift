@@ -49,7 +49,7 @@ class TaskTableViewCell: UITableViewCell {
         self.setBlankImage()
         
         taskLbl.translatesAutoresizingMaskIntoConstraints = false
-        taskLbl.numberOfLines = 0;
+        taskLbl.numberOfLines = 0
         
         contentView.addSubview(taskLbl)
         

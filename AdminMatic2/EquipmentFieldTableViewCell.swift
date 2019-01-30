@@ -36,10 +36,17 @@ class EquipmentFieldTableViewCell: UITableViewCell {
     func layoutViews(_name:String, _ID:String){
         self.name = _name
         self.ID = _ID
+        titleLbl.numberOfLines = 0
         titleLbl.text = _name
+        
+        self.separatorInset = UIEdgeInsets.zero
+        self.layoutMargins = UIEdgeInsets.zero
+        self.preservesSuperviewLayoutMargins = false
+        
+        
         let viewsDictionary = ["title":titleLbl] as [String : Any]
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[title]-|", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[title(30)]", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[title(>=30)]-|", options: [], metrics: nil, views: viewsDictionary))
     }
 }
 

@@ -360,7 +360,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         self.infoView.layer.cornerRadius = 4.0
         safeContainer.addSubview(infoView)
         
-        //date
+        //title
         self.titleLbl = GreyLabel()
         self.titleLbl.text = "Title:"
         self.titleLbl.textAlignment = .left
@@ -1336,7 +1336,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     @objc func sendContract(){
         
-        let emailViewController:EmailViewController = EmailViewController(_customerID: self.contract.customer, _customerName: self.contract.customerName, _type: "1", _docID: self.contract.ID)
+        let emailViewController:EmailViewController = EmailViewController(_customerID: self.contract.customer, _customerName: self.contract.customerName, _type: "2", _docID: self.contract.ID)
         emailViewController.contractDelegate = self
         navigationController?.pushViewController(emailViewController, animated: false )
     
@@ -1983,7 +1983,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     func newWorkOrderView(_workOrder:WorkOrder){
         
-        let workOrderViewController:WorkOrderViewController = WorkOrderViewController(_workOrder: _workOrder, _customerName: _workOrder.customerName)
+        let workOrderViewController:WorkOrderViewController = WorkOrderViewController(_workOrderID: _workOrder.ID)
         workOrderViewController.editLeadDelegate = self
         self.navigationController?.pushViewController(workOrderViewController, animated: false )
         
@@ -1991,6 +1991,9 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     func newInvoiceView(_invoice:Invoice){
+        
+        let invoiceViewController:InvoiceViewController = InvoiceViewController(_invoice: _invoice)
+        self.navigationController?.pushViewController(invoiceViewController, animated: false )
         
         //self.navigationController?.pushViewController(_view, animated: false )
         

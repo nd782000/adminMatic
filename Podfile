@@ -8,9 +8,7 @@ target ‘AdminMatic2’ do
     pod 'ObjectMapper'
     pod 'AlamofireImage', '~> 3.4'
     pod 'DKImagePickerController'
-    pod 'AKImageCropperView'
     pod 'SwiftEntryKit', '0.8.2'
-    
     
 end
 

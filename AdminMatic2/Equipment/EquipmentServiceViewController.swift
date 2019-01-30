@@ -24,7 +24,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
     
-    var serviceListDelegate:ServiceListDelegate!
+    var serviceListDelegate:EditEquipmentDelegate!
     
     var equipmentJSON: JSON!
     var equipmentService:EquipmentService!
@@ -141,7 +141,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
-        editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(EquipmentViewController.displayEditView))
+        editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(self.displayEditView))
         navigationItem.rightBarButtonItem = editButton
         
         dateFormatter.dateFormat = "MM/dd/yy"
@@ -1121,6 +1121,12 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.equipmentService = _equipmentService
         self.layoutViews()
         self.serviceListDelegate.updateServiceList()
+        
+        print("equipmentService.type \(equipmentService.type)")
+        if self.equipmentService.type == "4"{
+            goBack()
+        }
+        
     }
     
     

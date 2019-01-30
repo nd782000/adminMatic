@@ -42,7 +42,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     var workOrder:WorkOrder!
     var workOrderID:String!
     //var customerID:String!
-    var customerName:String!
+    //var customerName:String!
     
     var editLeadDelegate:EditLeadDelegate!
     var stackController:StackController!
@@ -74,6 +74,9 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
     var deadLineValue:String = ""
+    
+    var titleLbl:GreyLabel!
+    var titleValue:GreyLabel!
     
     var chargeLbl:GreyLabel!
     var charge:GreyLabel!
@@ -145,33 +148,37 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     //var customerDelegate:CustomerDelegate!
     
     
-    init(_workOrderID:String,_customerName:String){
+    init(_workOrderID:String){
         //init(_workOrder:WorkOrder){
         //init(_workOrderID:String,_customerName:String){
         
         super.init(nibName:nil,bundle:nil)
-        print("workorder init ID = \(_workOrderID) custName = \(_customerName)")
+        print("workorder init ID = \(_workOrderID)")
         self.workOrderID = _workOrderID
         //self.workOrderID = _workOrderID
-        self.customerName = _customerName
+       // self.customerName = _customerName
         
-        self.workOrder = WorkOrder(_ID: self.workOrderID, _customerName: self.customerName)
+        //self.workOrder = WorkOrder(_ID: self.workOrderID, _customerName: self.customerName)
         
     }
     
     
-    
+    /*
     init(_workOrder:WorkOrder,_customerName:String){
     //init(_workOrder:WorkOrder){
     //init(_workOrderID:String,_customerName:String){
         
         super.init(nibName:nil,bundle:nil)
-        print("workorder init")
+       // print("workorder init")
+        
+        print("_workorder.ID init ID = \(_workOrder.ID) custName = \(_customerName)")
         self.workOrder = _workOrder
         //self.workOrderID = _workOrderID
         self.customerName = _customerName
         
     }
+ */
+    
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -315,19 +322,20 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
         
+        /*
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
-        
+        */
       
-        let id:String
-        if self.workOrder == nil{
-            id = self.workOrderID
-        }else{
-            id = self.workOrder.ID
-        }
-        Alamofire.request(API.Router.workOrder(["woID":id as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
+        //let id:String
+        //if self.workOrder == nil{
+           // id = self.workOrderID
+        //}else{
+           // id = self.workOrder.ID
+        //}
+        Alamofire.request(API.Router.workOrder(["woID":self.workOrderID as AnyObject])).responseJSON() {
             
             response in
             // ////print(response.request)  // original URL request
@@ -359,6 +367,8 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         //(_ID:String?, _statusID: String?, _date:String?, _firstItem:String?, _statusName:String?, _customer:String?, _type:String?, _progress:String?, _totalPrice:String?, _totalCost:String?, _totalPriceRaw:String?, _totalCostRaw:String?, _charge:String?,_title:String?, _customerName:String?)
         
         print(" parseJSON()")
+        self.workOrder = WorkOrder(_ID: self.workOrderID, _customerName: self.json["customer"]["sysname"].stringValue)
+        
         self.workOrder.statusId = self.json["statusID"].stringValue
         self.workOrder.date = self.json["date"].stringValue
         
@@ -495,7 +505,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
                     //print("update woItemVC \(self.currentWoItem?.usageQty)")
                     self.woItemViewController!.woItem = self.currentWoItem
                     self.woItemViewController?.customerID = self.workOrder.customer
-                    self.woItemViewController?.customerName = self.customerName
+                    self.woItemViewController?.customerName = self.workOrder.customerName
                     self.woItemViewController?.saleRepName = self.salesRepValue
                     self.woItemViewController?.layoutViews()
                 }
@@ -713,7 +723,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             self.woItemViewController?.woItem = currentWoItem
             //self.woItemViewController!.woItem = self.currentWoItem
             self.woItemViewController?.customerID = self.workOrder.customer
-            self.woItemViewController?.customerName = self.customerName
+            self.woItemViewController?.customerName = self.workOrder.customerName
             self.woItemViewController?.saleRepName = self.salesRepValue
             self.woItemViewController?.layoutViews()
         }
@@ -724,7 +734,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         stackController = StackController()
         stackController.delegate = self
-        stackController.getStack(_type:2,_ID:self.workOrder.ID)
+        stackController.getStack(_type:2,_ID:self.workOrderID)
         self.workOrderView.addSubview(stackController)
         
         
@@ -773,7 +783,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         statusTxtField.inputAccessoryView = toolBar
 
         
-        self.customerBtn = Button(titleText: "\(self.customerName!) \(self.locationValue!)")
+        self.customerBtn = Button(titleText: self.workOrder.customerName)
         self.customerBtn.contentHorizontalAlignment = .left
         let custIcon:UIImageView = UIImageView()
         custIcon.backgroundColor = UIColor.clear
@@ -809,7 +819,22 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.schedule.textAlignment = .left
         self.schedule.translatesAutoresizingMaskIntoConstraints = false
         self.infoView.addSubview(schedule)
-
+        
+        
+        //title
+        self.titleLbl = GreyLabel()
+        self.titleLbl.text = "Title:"
+        self.titleLbl.textAlignment = .left
+        self.titleLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.infoView.addSubview(titleLbl)
+        
+        self.titleValue = GreyLabel()
+        self.titleValue.text = self.workOrder.title
+        self.titleValue.font = layoutVars.labelBoldFont
+        self.titleValue.textAlignment = .left
+        self.titleValue.translatesAutoresizingMaskIntoConstraints = false
+        self.infoView.addSubview(titleValue)
+        
         
         //charge
         self.chargeLbl = GreyLabel()
@@ -1057,13 +1082,15 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[profitView]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(90)]-[attachments(40)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(90)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(120)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         //auto layout group
         let infoDictionary = [
+            "titleLbl":self.titleLbl,
+            "title":self.titleValue,
             "scheduleLbl":self.scheduleLbl,
             "schedule":self.schedule,
             "chargeLbl":self.chargeLbl,
@@ -1074,17 +1101,16 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             "salesRep":self.salesRep
         ] as [String:AnyObject]
         
-        
-        
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[titleLbl]-[title]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[scheduleLbl]-[schedule]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[chargeLbl]-[charge]", options: [], metrics: metricsDictionary, views: infoDictionary))
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[crewLbl]-[crew]", options: [], metrics: metricsDictionary, views: infoDictionary))
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[salesRepLbl]-[salesRep]-10-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[scheduleLbl(22)]-[chargeLbl(22)]-[crewLbl(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[schedule(22)]-[charge(22)]-[crew(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[scheduleLbl(22)]-[chargeLbl(22)]-[salesRepLbl(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[scheduleLbl(22)]-[charge(22)]-[salesRep(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)]-[scheduleLbl(22)]-[chargeLbl(22)]-[crewLbl(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[title(22)]-[schedule(22)]-[charge(22)]-[crew(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)]-[scheduleLbl(22)]-[chargeLbl(22)]-[salesRepLbl(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)]-[scheduleLbl(22)]-[charge(22)]-[salesRep(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
         
         /*
         //auto layout group
@@ -1213,7 +1239,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     @objc func showCustInfo() {
         ////print("SHOW CUST INFO")
-        let customerViewController = CustomerViewController(_customerID: self.workOrder.customer,_customerName: self.customerName)
+        let customerViewController = CustomerViewController(_customerID: self.workOrder.customer,_customerName: self.workOrder.customerName)
         navigationController?.pushViewController(customerViewController, animated: false )
     }
     
@@ -1409,7 +1435,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
                 
                 //self.woItemViewController!.woItem = self.currentWoItem
                 self.woItemViewController?.customerID = self.workOrder.customer
-                self.woItemViewController?.customerName = self.customerName
+                self.woItemViewController?.customerName = self.workOrder.customerName
                 self.woItemViewController?.saleRepName = self.salesRepValue
                 
                 self.woItemViewController!.woDelegate = self
@@ -1644,6 +1670,11 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func newInvoiceView(_invoice:Invoice){
+        
+        
+        let invoiceViewController:InvoiceViewController = InvoiceViewController(_invoice: _invoice)
+        self.navigationController?.pushViewController(invoiceViewController, animated: false )
+        
         
         //self.navigationController?.pushViewController(_view, animated: false )
         

@@ -215,9 +215,11 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.titleLbl.text = "Email Title:"
         safeContainer.addSubview(titleLbl)
         
+        
+        
         //titleTxtField
         self.titleTxt = PaddedTextField()
-        self.titleTxt.text = "Atlantic Contract #\(self.docID!)"
+        
         self.titleTxt.returnKeyType = .done
         
         self.titleTxt.delegate = self
@@ -231,7 +233,22 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         
         //messageTxt
-       let messagePlaceHolder = "Here is your contract.  Please review, sign and return to us. Thanks"
+        var messagePlaceHolder = ""
+        
+        
+        switch type {
+        case "1":
+            self.titleTxt.text = "Atlantic Invoice #\(self.docID!)"
+             messagePlaceHolder = "Here is your invoice. Thank you for your business."
+            break
+        case "2":
+            self.titleTxt.text = "Atlantic Contract #\(self.docID!)"
+             messagePlaceHolder = "Here is your contract.  Please review, sign and return to us. Thanks"
+            break
+        default:
+            self.titleTxt.text = "Atlantic Contract #\(self.docID!)"
+            messagePlaceHolder = "Here is your contract.  Please review, sign and return to us. Thanks"
+        }
         
         self.messageTxt = UITextView()
         self.messageTxt.text = messagePlaceHolder
@@ -515,10 +532,11 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
             
             
             self.indicator = SDevIndicator.generate(self.view)!
-            let parameters:[String:String]
+            var parameters:[String:String]
+            
+            
             
             parameters = ["contactID": ID!, "custID":self.customerID]
-            
             
             print("parameters = \(parameters)")
             
@@ -658,35 +676,79 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     let emails:String = emailsToSend.joined(separator: ", ")
     
-    //print("docID = \(self.docID)")
-    print("title = \(self.titleTxt.text!)")
-    print("emails = \(emails)")
-    //print("message = \(self.messageTxt.text)")
-    print("pdf = \(self.convertToPDF)")
-                    
-    parameters = ["contractID": self.docID!, "emails":emails,  "title":self.titleTxt.text!, "message":self.messageTxt.text!, "pdf":self.convertToPDF, "senderID": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId)!]
     
     
-    print("parameters = \(parameters)")
     
-    layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/send/contract.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
-        .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
-        .responseString { response in
-            print("send response = \(response)")
-        }
-        .responseJSON(){
-            response in
-            if let json = response.result.value {
-                print("JSON: \(json)")
-                
-                self.contractDelegate.suggestStatusChange(_emailCount:self.emailsToSend.count)
-                
-                
+    
+        switch self.type {
+        case "1":
+            //print("docID = \(self.docID)")
+            print("title = \(self.titleTxt.text!)")
+            print("emails = \(emails)")
+            //print("message = \(self.messageTxt.text)")
+            print("pdf = \(self.convertToPDF)")
+            
+            parameters = ["invoiceID": self.docID!, "emails":emails,  "title":self.titleTxt.text!, "message":self.messageTxt.text!, "pdf":self.convertToPDF, "senderID": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId)!]
+            
+            
+            print("parameters = \(parameters)")
+            
+            layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/send/invoice.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+                .responseString { response in
+                    print("send response = \(response)")
+                }
+                .responseJSON(){
+                    response in
+                    if let json = response.result.value {
+                        print("JSON: \(json)")
+                        
+                        //self.invoiceDelegate.suggestStatusChange(_emailCount:self.emailsToSend.count)
+                        
+                        
+                    }
+                    print(" dismissIndicator")
+                    self.indicator.dismissIndicator()
+                    self.title =  "Email \(self.customerName!)"
             }
-            print(" dismissIndicator")
-            self.indicator.dismissIndicator()
-            self.title =  "Email \(self.customerName!)"
+        break
+        case "2":
+            //print("docID = \(self.docID)")
+            print("title = \(self.titleTxt.text!)")
+            print("emails = \(emails)")
+            //print("message = \(self.messageTxt.text)")
+            print("pdf = \(self.convertToPDF)")
+            
+            parameters = ["contractID": self.docID!, "emails":emails,  "title":self.titleTxt.text!, "message":self.messageTxt.text!, "pdf":self.convertToPDF, "senderID": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId)!]
+            
+            
+            print("parameters = \(parameters)")
+            
+            layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/send/contract.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+                .responseString { response in
+                    print("send response = \(response)")
+                }
+                .responseJSON(){
+                    response in
+                    if let json = response.result.value {
+                        print("JSON: \(json)")
+                        
+                        self.contractDelegate.suggestStatusChange(_emailCount:self.emailsToSend.count)
+                        
+                        
+                    }
+                    print(" dismissIndicator")
+                    self.indicator.dismissIndicator()
+                    self.title =  "Email \(self.customerName!)"
+            }
+        break
+        default:
+            print("default")
         }
+    
+    
+    
     }
     
     

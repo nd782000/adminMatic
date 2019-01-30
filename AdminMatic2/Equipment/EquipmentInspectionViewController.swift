@@ -21,10 +21,10 @@ protocol EquipmentInspectionDelegate{
 
  
 
-class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, EquipmentInspectionDelegate{
+class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, EquipmentInspectionDelegate,  EditEquipmentServiceDelegate {
     var indicator: SDevIndicator!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var serviceListDelegate:ServiceListDelegate!
+    var serviceListDelegate:EditEquipmentDelegate!
     
     var equipment:Equipment!
     var equipmentService:EquipmentService!
@@ -41,6 +41,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
     var notesLbl:GreyLabel!
     var notesTxtView:UITextView = UITextView()
     
+    var editButton:UIBarButtonItem!
     var editsMade:Bool = false
     var keyBoardShown:Bool = false
     
@@ -53,7 +54,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
     
     init(_equipment:Equipment,_equipmentService:EquipmentService){
         super.init(nibName:nil,bundle:nil)
-        //print("init _equipmentService.ID = \(_equipmentService.ID)")
+        print("init _equipmentService.status = \(_equipmentService.status)")
         //print("init current = \(_equipmentService.currentValue)")
         self.equipment = _equipment
         self.equipmentService = _equipmentService
@@ -160,6 +161,11 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
+        
+        editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(self.displayEditView))
+        navigationItem.rightBarButtonItem = editButton
+        
+        
         DispatchQueue.main.async {
             
             
@@ -220,38 +226,95 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
         
         
         
-       
+        
         
         self.submitBtn.addTarget(self, action: #selector(self.submit), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.submitBtn)
         
         
-        self.inspectionTableView.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
-        self.inspectionTableView.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
-        self.inspectionTableView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
-        self.inspectionTableView.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor, constant:-158.0).isActive = true
+        if equipmentService.status == "2" || equipmentService.status == "3"{
+            print("lock down inspection")
+            self.notesTxtView.isUserInteractionEnabled = false
+            self.inspectionTableView.alpha = 0.5
+            self.notesLbl.alpha = 0.5
+            self.notesTxtView.alpha = 0.5
+            self.submitBtn.isHidden = true
+            navigationItem.rightBarButtonItem = nil
+            
+            let completionLabel = Label(text: "Completed By: \(self.equipmentService.completedBy!) on \(self.equipmentService.completionDate!)")
+            completionLabel.translatesAutoresizingMaskIntoConstraints = false
+            completionLabel.numberOfLines = 0
+            completionLabel.font = layoutVars.smallFont
+            self.view.addSubview(completionLabel)
+            
+            completionLabel.leftAnchor.constraint(equalTo: view.safeLeftAnchor, constant:50.0).isActive = true
+            completionLabel.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+            completionLabel.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+            completionLabel.heightAnchor.constraint(equalToConstant: 60.0).isActive = true
+            
+            
+            self.inspectionTableView.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+            self.inspectionTableView.topAnchor.constraint(equalTo: view.safeTopAnchor, constant:60.0).isActive = true
+            self.inspectionTableView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+            self.inspectionTableView.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor, constant:-158.0).isActive = true
+            
+            self.notesLbl.leftAnchor.constraint(equalTo: view.safeLeftAnchor, constant:10.0).isActive = true
+            self.notesLbl.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor, constant:-130.0).isActive = true
+            self.notesLbl.widthAnchor.constraint(equalToConstant: self.view.frame.width - 20.0).isActive = true
+            self.notesLbl.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            self.notesTxtView.leftAnchor.constraint(equalTo: view.safeLeftAnchor, constant:10.0).isActive = true
+            self.notesTxtView.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor, constant: 10.0).isActive = true
+            self.notesTxtView.widthAnchor.constraint(equalToConstant: self.view.frame.width - 20).isActive = true
+            self.notesTxtView.heightAnchor.constraint(equalToConstant: 120).isActive = true
+            
+           
+            
+        }else{
+            self.inspectionTableView.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+            self.inspectionTableView.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
+            self.inspectionTableView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+            self.inspectionTableView.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor, constant:-158.0).isActive = true
+            
+            self.notesLbl.leftAnchor.constraint(equalTo: view.safeLeftAnchor, constant:10.0).isActive = true
+            self.notesLbl.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor, constant:-128.0).isActive = true
+            self.notesLbl.widthAnchor.constraint(equalToConstant: self.view.frame.width - 20.0).isActive = true
+            self.notesLbl.heightAnchor.constraint(equalToConstant: 30).isActive = true
+            
+            self.notesTxtView.leftAnchor.constraint(equalTo: view.safeLeftAnchor, constant:10.0).isActive = true
+            self.notesTxtView.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor, constant:-48.0).isActive = true
+            self.notesTxtView.widthAnchor.constraint(equalToConstant: self.view.frame.width - 20).isActive = true
+            self.notesTxtView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+            
+            self.submitBtn.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
+            self.submitBtn.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor).isActive = true
+            self.submitBtn.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+            self.submitBtn.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            
+        }
         
-        self.notesLbl.leftAnchor.constraint(equalTo: view.safeLeftAnchor, constant:10.0).isActive = true
-        self.notesLbl.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor, constant:-128.0).isActive = true
-        self.notesLbl.widthAnchor.constraint(equalToConstant: self.view.frame.width - 20.0).isActive = true
-        self.notesLbl.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        self.notesTxtView.leftAnchor.constraint(equalTo: view.safeLeftAnchor, constant:10.0).isActive = true
-        self.notesTxtView.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor, constant:-48.0).isActive = true
-        self.notesTxtView.widthAnchor.constraint(equalToConstant: self.view.frame.width - 20.032).isActive = true
-        self.notesTxtView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-        
-        self.submitBtn.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
-        self.submitBtn.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor).isActive = true
-        self.submitBtn.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
-        self.submitBtn.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        
+       
         
         
     }
     
     
-    
+    @objc func displayEditView(){
+        print("display Edit View")
+        
+        
+        //need userLevel greater then 1 to access this
+        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+            return
+        }
+        
+        //self.equipmentDelegate.disableSearch()
+        let editEquipmentServiceViewController = NewEditEquipmentServiceViewController(_equipmentService: self.equipmentService)
+        editEquipmentServiceViewController.editDelegate = self
+        navigationController?.pushViewController(editEquipmentServiceViewController, animated: false )
+        
+        
+    }
     
    
     
@@ -294,7 +357,9 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
        
         cell.layoutViews()
         
-       
+        if equipmentService.status == "2" || equipmentService.status == "3"{
+            cell.isUserInteractionEnabled = false
+        }
         
         
         
@@ -514,7 +579,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
                         print("Service")
                         self.equipment.status = "1"
                         self.serviceListDelegate.updateServiceList()
-                        self.serviceListDelegate.updateEquipmentStatus(_equipment: self.equipment)
+                        self.serviceListDelegate.updateEquipment(_equipment: self.equipment)
                         self.goBack()
                     }
                     
@@ -523,7 +588,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
                         print("Broken")
                         self.equipment.status = "2"
                         self.serviceListDelegate.updateServiceList()
-                        self.serviceListDelegate.updateEquipmentStatus(_equipment: self.equipment)
+                        self.serviceListDelegate.updateEquipment(_equipment: self.equipment)
                         self.goBack()
                     }
                     
@@ -558,6 +623,22 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
         
         
     }
+    
+    func updateEquipmentService(_equipmentService:EquipmentService){
+        print("updateEquipmentService")
+        self.equipmentService = _equipmentService
+        self.layoutViews()
+        self.serviceListDelegate.updateServiceList()
+        
+        print("equipmentService.type \(equipmentService.type)")
+
+        
+        if self.equipmentService.type != "4"{
+            goBack()
+        }
+    }
+    
+    
     
     
     @objc func goBack(){

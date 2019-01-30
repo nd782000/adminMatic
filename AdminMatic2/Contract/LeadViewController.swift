@@ -994,7 +994,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     func newWorkOrderView(_workOrder:WorkOrder){
         
         //self.navigationController?.pushViewController(_view, animated: false )
-        let workOrderViewController:WorkOrderViewController = WorkOrderViewController(_workOrder: _workOrder, _customerName: _workOrder.customerName)
+        let workOrderViewController:WorkOrderViewController = WorkOrderViewController(_workOrderID: _workOrder.ID)
         workOrderViewController.editLeadDelegate = self
         self.navigationController?.pushViewController(workOrderViewController, animated: false )
         
@@ -1002,6 +1002,10 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     }
     
     func newInvoiceView(_invoice:Invoice){
+        
+        
+        let invoiceViewController:InvoiceViewController = InvoiceViewController(_invoice: _invoice)
+        self.navigationController?.pushViewController(invoiceViewController, animated: false )
         
         //self.navigationController?.pushViewController(_view, animated: false )
         
@@ -1136,7 +1140,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
        // print("handle new work order in lead view workOrder.ID: \(_workOrder.ID)")
 
         
-        let workOrderViewController:WorkOrderViewController = WorkOrderViewController(_workOrder: _workOrder, _customerName: _workOrder.customerName)
+        let workOrderViewController:WorkOrderViewController = WorkOrderViewController(_workOrderID: _workOrder.ID)
         workOrderViewController.workOrder.lead = self.lead
         
         self.navigationController?.pushViewController(workOrderViewController, animated: false )

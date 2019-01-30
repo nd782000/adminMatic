@@ -12,14 +12,14 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
-//import Nuke
 
 protocol EditEquipmentDelegate{
     func updateEquipment(_equipment:Equipment)
+    func updateServiceList()
 }
 
- 
-class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, EditEquipmentDelegate {
+
+class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UITableViewDelegate, UITableViewDataSource, EditEquipmentDelegate{
     
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
@@ -29,8 +29,15 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     
     var equipmentJSON: JSON!
     var equipment:Equipment!
+    var equipmentServiceJSON: JSON!
+    var serviceCurrentArray:[EquipmentService] = []
+    var equipmentHistoryJSON: JSON!
+    var serviceHistoryArray:[EquipmentService] = []
     
-
+    
+    var keyBoardShown:Bool = false
+    var tableViewMode:String = "CURRENT"
+    let items = ["Current","History"]
     
     var editButton:UIBarButtonItem!
     var editsMade:Bool = false
@@ -41,7 +48,11 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     
     var tapBtn:Button!
     
+    
     var nameLbl:GreyLabel!
+    var typeLbl:GreyLabel!
+    var crewLbl:GreyLabel!
+    
     
     var statusIcon:UIImageView = UIImageView()
     
@@ -53,28 +64,23 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     var statusValue: String!
     var statusValueToUpdate: String!
     
-    var typeLbl:GreyLabel!
-    var makeModelLbl:GreyLabel!
-    var descriptionView:UITextView = UITextView()
-    var serialLbl:GreyLabel!
-    var crewLbl:GreyLabel!
-    var fuelLbl:GreyLabel!
-    var engineLbl:GreyLabel!
-    var dealerLbl:GreyLabel!
-    var dealerValueBtn:Button!
-    var purchaseDateLbl:GreyLabel!
-    var serviceBtn:Button!
+    
+    var detailsBtn:Button!
     
     
+    var mileageLbl:GreyLabel!
+    var mileageTxtField:PaddedTextField!
+    var mileageButton:Button = Button(titleText: "Check")
+    var currentValue:String = "0"
+ 
     
-   
+    let dateFormatter = DateFormatter()
     
-    var keyBoardShown:Bool = false
+    var serviceSC:SegmentedControl!
+    var serviceTableView:TableView! // = TableView()
+    var addServiceButton:Button = Button(titleText: "Add Service")
     
-    
-    
-    
-    
+
     var imageFullViewController:ImageFullViewController!
     
     
@@ -82,6 +88,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         super.init(nibName:nil,bundle:nil)
         //print("init _equipmentID = \(_equipment.ID)")
         self.equipment = _equipment
+         self.getEquipmentServiceInfo()
     }
     
     
@@ -91,10 +98,24 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = layoutVars.backgroundColor
+        title = "Equipment"
         
+        //custom back button
+        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
+        backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.setTitle("Back", for: UIControl.State.normal)
+        backButton.titleLabel!.font =  layoutVars.buttonFont
+        backButton.sizeToFit()
+        let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
+        navigationItem.leftBarButtonItem  = backButtonItem
+        
+        
+        dateFormatter.dateFormat = "MM/dd/yy"
+        //getEquipmentServiceInfo()
     }
     
-    
+    /*
     override func viewWillAppear(_ animated: Bool) {
         // Do any additional setup after loading the view.
         
@@ -113,17 +134,90 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
-        layoutViews()
         
-        DispatchQueue.main.async {
-            self.descriptionView.contentOffset = CGPoint.zero
-            self.descriptionView.scrollRangeToVisible(NSRange(location:0, length:0))
-        }
+        dateFormatter.dateFormat = "MM/dd/yy"
         
+      //  self.getEquipmentServiceInfo()
         
     }
+    */
     
-   
+
+    func getEquipmentServiceInfo(){
+        
+        self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        indicator = SDevIndicator.generate(self.view)!
+        
+        self.serviceCurrentArray = []
+        self.serviceHistoryArray = []
+        
+        //cache buster
+        let now = Date()
+        let timeInterval = now.timeIntervalSince1970
+        let timeStamp = Int(timeInterval)
+        
+        //Get service lists
+        var parameters:[String:String]
+        parameters = ["cb":"\(timeStamp)",
+            "equipmentID":"\(equipment.ID!)"]
+        print("parameters = \(parameters)")
+        
+        self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/equipment.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("equipment service response = \(response)")
+            }
+            .responseJSON() {
+                response in
+                
+                //native way
+                
+                do {
+                    if let data = response.data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        let currentServices = json["services"] as? [[String: Any]],
+                        let serviceHistory = json["serviceHistory"] as? [[String: Any]] {
+                        
+                        
+                        
+                        
+                        let currentServiceCount = currentServices.count
+                        //print("currentServices count = \(currentServices)")
+                        
+                        
+                        for i in 0 ..< currentServiceCount{
+                            
+                            let equipmentService = EquipmentService(_ID: currentServices[i]["ID"] as? String, _name: currentServices[i]["name"] as? String, _type: currentServices[i]["type"] as? String, _typeName: currentServices[i]["typeName"] as? String, _frequency: currentServices[i]["frequency"] as? String, _instruction: currentServices[i]["instructions"] as? String, _creationDate: currentServices[i]["createDate"] as? String, _createdBy: currentServices[i]["addedByName"] as? String, _completionDate: currentServices[i]["completionDate"] as? String, _completionMileage: currentServices[i]["completionMileage"] as? String, _completedBy: currentServices[i]["completedByName"] as? String, _notes: currentServices[i]["completionNotes"] as? String, _status: currentServices[i]["status"] as? String, _currentValue: currentServices[i]["currentValue"] as? String, _nextValue: currentServices[i]["nextValue"] as? String, _equipmentID: currentServices[i]["equipmentID"] as? String)
+                            
+                            self.serviceCurrentArray.append(equipmentService)
+                        }
+                        
+                        
+                        
+                        let serviceHistoryCount = serviceHistory.count
+                        //print("serviceHistoryCount = \(serviceHistoryCount)")
+                        
+                        
+                        for i in 0 ..< serviceHistoryCount{
+                            
+                            let equipmentService = EquipmentService(_ID: serviceHistory[i]["ID"] as? String, _name: serviceHistory[i]["name"] as? String, _type: serviceHistory[i]["type"] as? String, _typeName: serviceHistory[i]["typeName"] as? String, _frequency: serviceHistory[i]["frequency"] as? String, _instruction: serviceHistory[i]["instructions"] as? String, _creationDate: serviceHistory[i]["createDate"] as? String, _createdBy: serviceHistory[i]["addedByName"] as? String, _completionDate: serviceHistory[i]["completionDate"] as? String, _completionMileage: serviceHistory[i]["completionMileage"] as? String, _completedBy: serviceHistory[i]["completedByName"] as? String, _notes: serviceHistory[i]["completionNotes"] as? String, _status: serviceHistory[i]["status"] as? String, _currentValue: serviceHistory[i]["currentValue"] as? String, _nextValue: serviceHistory[i]["nextValue"] as? String, _equipmentID: serviceHistory[i]["equipmentID"] as? String)
+                            
+                            self.serviceHistoryArray.append(equipmentService)
+                        }
+                        
+                    }
+                    
+                    self.indicator.dismissIndicator()
+                    self.layoutViews()
+                    
+                } catch {
+                    print("Error deserializing JSON: \(error)")
+                }
+                
+        }
+        
+    }
     
     
     
@@ -131,9 +225,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         
         print("layoutViews")
         
-        
-        
-        
+    
         editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(EquipmentViewController.displayEditView))
         navigationItem.rightBarButtonItem = editButton
         
@@ -152,26 +244,11 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.equipmentImage = UIImageView()
     
         activityView = UIActivityIndicatorView(style: .whiteLarge)
-        //activityView.center = CGPoint(x: self.equipmentImage.frame.size.width / 2, y: self.equipmentImage.frame.size.height / 2)
-        
+       
         activityView.translatesAutoresizingMaskIntoConstraints = false
         
         equipmentImage.addSubview(activityView)
         activityView.startAnimating()
-        
-        /*
-        let imgURL:URL = URL(string: self.equipment.image.thumbPath!)!
-    
-        print("imgURL = \(imgURL)")
-        
-        Nuke.loadImage(with: imgURL, into: self.equipmentImage!){
-            print("nuke loadImage")
-            self.equipmentImage?.handle(response: $0, isFromMemoryCache: $1)
-            self.activityView.stopAnimating()
-            
-            self.imageFullViewController = ImageFullViewController(_image: self.equipment.image)
-        }
-        */
         
         
         Alamofire.request(self.equipment.image.thumbPath!).responseImage { response in
@@ -185,14 +262,9 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
                 print("image downloaded: \(image)")
                 self.imageFullViewController = ImageFullViewController(_image: self.equipment.image)
                 self.equipmentImage.image = image
-                //cell.imageView.image = image
                 self.activityView.stopAnimating()
             }
         }
-        
-        
-        
-        
         
         
         self.equipmentImage.layer.cornerRadius = 5.0
@@ -212,11 +284,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.tapBtn.setTitle("", for: UIControl.State.normal)
         safeContainer.addSubview(self.tapBtn)
         
-        //name
-        self.nameLbl = GreyLabel()
-        self.nameLbl.text = self.equipment.name!
-        self.nameLbl.font = layoutVars.largeFont
-        safeContainer.addSubview(self.nameLbl)
+       
         
         //status
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
@@ -252,126 +320,81 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         
         statusTxtField.inputAccessoryView = toolBar
         
-        //crew
-        self.crewLbl = GreyLabel()
-        self.crewLbl.text = "Crew: \(self.equipment.crewName!)"
-        self.crewLbl.font = layoutVars.smallFont
-        safeContainer.addSubview(self.crewLbl)
-        
-        //make model
-        self.makeModelLbl = GreyLabel()
-        self.makeModelLbl.text = "\(self.equipment.make!) - \(self.equipment.model!)"
-        self.makeModelLbl.font = layoutVars.smallFont
-        safeContainer.addSubview(self.makeModelLbl)
-        
-        //serial
-        self.serialLbl = GreyLabel()
-        self.serialLbl.text = "Serial#: \(self.equipment.serial!)"
-        self.serialLbl.font = layoutVars.smallFont
-        safeContainer.addSubview(self.serialLbl)
+        //name
+        self.nameLbl = GreyLabel()
+        self.nameLbl.text = self.equipment.name!
+        self.nameLbl.font = layoutVars.largeFont
+        safeContainer.addSubview(self.nameLbl)
         
         //type
         self.typeLbl = GreyLabel()
-        self.typeLbl.text = "Type: \(self.equipment.typeName!)"
+        self.typeLbl.text = self.equipment.typeName!
         self.typeLbl.font = layoutVars.smallFont
         safeContainer.addSubview(self.typeLbl)
         
-        //fuelType
-        self.fuelLbl = GreyLabel()
-        self.fuelLbl.text = "Fuel Type: \(self.equipment.fuelTypeName!)"
-        self.fuelLbl.font = layoutVars.smallFont
-        safeContainer.addSubview(self.fuelLbl)
+        //crew
+        self.crewLbl = GreyLabel()
+        self.crewLbl.text = "Crew: \(self.equipment.crewName!)"
+        self.crewLbl.textAlignment = .right
+        self.crewLbl.font = layoutVars.smallFont
+        safeContainer.addSubview(self.crewLbl)
         
-        //engineType
-        self.engineLbl = GreyLabel()
-        self.engineLbl.text = "Engine Type: \(self.equipment.engineTypeName!)"
-        self.engineLbl.font = layoutVars.smallFont
-        safeContainer.addSubview(self.engineLbl)
-        
-        //dealer
-        self.dealerLbl = GreyLabel()
-        self.dealerLbl.text = "Dealer:"
-        self.dealerLbl.font = layoutVars.smallFont
-        safeContainer.addSubview(self.dealerLbl)
-        
-        //dealer value (vendor btn)
-        self.dealerValueBtn = Button()
-        self.dealerValueBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.dealerValueBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
-        
-        self.dealerValueBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
-        self.dealerValueBtn.backgroundColor = UIColor.clear
-        //self.dealerValueBtn.titleLabel?.textColor = layoutVars.buttonBackground
-        
-        if equipment.dealer != "0"{
-            self.dealerValueBtn.addTarget(self, action: #selector(EquipmentViewController.showVendorView), for: UIControl.Event.touchUpInside)
-            self.dealerValueBtn.setTitle(equipment.dealerName!, for: UIControl.State.normal)
-        }else{
-            self.dealerValueBtn.setTitle("No Dealer on File", for: UIControl.State.normal)
-        }
-        
-       
-        
-        self.dealerValueBtn.setTitleColor(layoutVars.buttonColor1, for: .normal)
-        
-        
-        safeContainer.addSubview(self.dealerValueBtn)
-        
-        //purchase date
+        //details btn
+        self.detailsBtn = Button(titleText: "View Equipment Details")
+        self.detailsBtn.translatesAutoresizingMaskIntoConstraints = false
+        self.detailsBtn.addTarget(self, action: #selector(EquipmentViewController.showDetailsView), for: UIControl.Event.touchUpInside)
+        safeContainer.addSubview(self.detailsBtn)
         
         
         
+        //mileageLbl
+        self.mileageLbl = GreyLabel()
+        self.mileageLbl.text = "Current Service Check:"
+        self.mileageLbl.font = layoutVars.smallFont
+        safeContainer.addSubview(self.mileageLbl)
         
-        self.purchaseDateLbl = GreyLabel()
-        print("purchaseDate = \(self.equipment.purchaseDate!)")
-        if self.equipment.purchaseDate! != "" && self.equipment.purchaseDate! != "0000-00-00"{
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let date = dateFormatter.date(from: self.equipment.purchaseDate!)!
-            
-            let dateFormatter2 = DateFormatter()
-            dateFormatter2.dateFormat = "MM-dd-yyyy"
-            let convertedDate = dateFormatter2.string(from: date)
-            self.purchaseDateLbl.text = "Purchased: \(convertedDate)"
-        }else{
-             self.purchaseDateLbl.text = "No Date"
-        }
+        self.mileageTxtField = PaddedTextField(placeholder: "Mileage/Hours...")
+        self.mileageTxtField.translatesAutoresizingMaskIntoConstraints = false
+        self.mileageTxtField.delegate = self
+        self.mileageTxtField.keyboardType = UIKeyboardType.numberPad
+        self.mileageTxtField.returnKeyType = .done
+        safeContainer.addSubview(self.mileageTxtField)
         
-        self.purchaseDateLbl.font = layoutVars.smallFont
-        safeContainer.addSubview(self.purchaseDateLbl)
+        let mileageToolBar = UIToolbar()
+        mileageToolBar.barStyle = UIBarStyle.default
+        mileageToolBar.barTintColor = UIColor(hex:0x005100, op:1)
+        mileageToolBar.sizeToFit()
         
+        let setMileageButton = UIBarButtonItem(title: "Set Mileage", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleSetMileage))
+        mileageToolBar.setItems([spaceButton, setMileageButton], animated: false)
+        mileageToolBar.isUserInteractionEnabled = true
+        mileageTxtField.inputAccessoryView = mileageToolBar
         
-        //description
-        
-        //self.descriptionView = UITextView()
-        if self.equipment.description == ""{
-            self.descriptionView.text = "No Description Provided"
-        }else{
-            self.descriptionView.text = self.equipment.description
-        }
-        
-        self.descriptionView.font = layoutVars.smallFont
-        self.descriptionView.backgroundColor = UIColor.clear
-        self.descriptionView.isEditable = false
-        self.descriptionView.translatesAutoresizingMaskIntoConstraints = false
-        safeContainer.addSubview(descriptionView)
+    
+        self.mileageButton.addTarget(self, action: #selector(self.checkForServices), for: UIControl.Event.touchUpInside)
+        safeContainer.addSubview(self.mileageButton)
         
         
         
-        //service btn
+        //service
+        serviceSC = SegmentedControl(items: items)
+        serviceSC.selectedSegmentIndex = 0
         
-        //dealer value (vendor btn)
-        self.serviceBtn = Button(titleText: "View Service Lists")
-        self.serviceBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.serviceBtn.addTarget(self, action: #selector(EquipmentViewController.showServiceListView), for: UIControl.Event.touchUpInside)
-        safeContainer.addSubview(self.serviceBtn)
+        serviceSC.addTarget(self, action: #selector(self.changeServiceView(sender:)), for: .valueChanged)
+        safeContainer.addSubview(serviceSC)
         
+    
+        self.serviceTableView = TableView()
+        self.serviceTableView.delegate  =  self
+        self.serviceTableView.dataSource = self
+        self.serviceTableView.rowHeight = 60.0
+        self.serviceTableView.register(EquipmentServiceTableViewCell.self, forCellReuseIdentifier: "cell")
+        safeContainer.addSubview(serviceTableView)
         
+        self.addServiceButton.addTarget(self, action: #selector(self.addService), for: UIControl.Event.touchUpInside)
+        safeContainer.addSubview(self.addServiceButton)
         
-        
-        
-        
-        
+    
         let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": (layoutVars.fullWidth/2)-15, "height": 24,"fullHeight":layoutVars.fullHeight - 344, "navBottom":layoutVars.navAndStatusBarHeight + 8] as [String:Any]
         
         //auto layout group
@@ -379,54 +402,49 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
             "image":self.equipmentImage,
             "activity":self.activityView,
             "tapBtn":self.tapBtn,
-            "name":self.nameLbl,
             "statusIcon":self.statusIcon,
             "statusTxtField":self.statusTxtField,
-            "crew":self.crewLbl,
-            "makeModel":self.makeModelLbl,
-            "description":self.descriptionView,
-            "serial":self.serialLbl,
+            "name":self.nameLbl,
             "type":self.typeLbl,
-            "fuel":self.fuelLbl,
-            "engine":self.engineLbl,
-            "dealer":self.dealerLbl,
-            "dealerValue":self.dealerValueBtn,
-            "purchaseDate":self.purchaseDateLbl,
-            "serviceBtn":self.serviceBtn
+            "crew":self.crewLbl,
+            "detailsBtn":self.detailsBtn,
+            "mileageLbl":self.mileageLbl,
+            "mileageTxt":self.mileageTxtField,
+            "mileageBtn":self.mileageButton,
+            "serviceSegmentedControl":self.serviceSC,
+            "serviceTable":self.serviceTableView,
+            "addServiceBtn":self.addServiceButton
             ] as [String:Any]
         
-        
+        print("auto layout 1")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[name]-[statusIcon(40)]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapBtn(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activity(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[name]-[statusTxtField(40)]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[type]-[crew]-|", options: [], metrics: nil,views: equipmentViewsDictionary))
+       
         
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[image(80)]-[makeModel]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[description]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[type]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serial]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[crew]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[detailsBtn]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
         
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[fuel]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[engine]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[dealer(80)][dealerValue]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[purchaseDate]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[mileageLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[mileageTxt]-[mileageBtn(80)]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
         
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceBtn]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceSegmentedControl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[serviceTable]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[addServiceBtn]-|", options: [], metrics: nil, views: equipmentViewsDictionary))
         
-        
+    
+        print("auto layout 4")
         
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[image(80)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tapBtn(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activity(80)]", options: [], metrics: nil, views: equipmentViewsDictionary))
-        
+        print("auto layout 5")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusIcon(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusTxtField(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(40)][makeModel(40)]-[description(40)][type(30)][serial(30)][crew(30)][fuel(30)][engine(30)][dealer(30)][purchaseDate(30)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[serviceBtn(40)]-16-|", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
         
-        
-        
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(40)]-[type(30)]-[detailsBtn(40)]-[mileageLbl(30)]-[mileageTxt(40)]-[serviceSegmentedControl(40)][serviceTable]-[addServiceBtn(40)]-10-|", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(40)]-[crew(30)]-[detailsBtn(40)]-[mileageLbl(30)]-[mileageBtn(40)]", options: [], metrics: sizeVals, views: equipmentViewsDictionary))
         
         
     }
@@ -438,7 +456,6 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
         }
-        
         
         self.equipmentDelegate.disableSearch()
         let editEquipmentViewController = NewEditEquipmentViewController(_equipment: self.equipment)
@@ -458,26 +475,14 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     
     
     
-    
-    @objc func showVendorView(){
-        //print("vendor = \(equipment.dealer)")
-        let vendorViewController = VendorViewController(_vendorID: equipment.dealer)
-        navigationController?.pushViewController(vendorViewController, animated: false )
+    @objc func showDetailsView(){
+        print("show details view")
+        let detailsViewController = EquipmentDetailsViewController(_equipment: self.equipment)
+        //detailsViewController.editEquipmentDelegate = self
+        navigationController?.pushViewController(detailsViewController, animated: false )
     }
     
-    @objc func showServiceListView(){
-        print("show service list view")
-        let serviceListViewController = EquipmentServiceListViewController(_equipment: self.equipment)
-        serviceListViewController.editEquipmentDelegate = self
-        navigationController?.pushViewController(serviceListViewController, animated: false )
-    }
-    
-    
-    
-    
-    
-    
-    
+
     @objc func keyboardWillShow(notification: NSNotification) {
         
         if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as AnyObject).cgRectValue {
@@ -507,6 +512,90 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
     }
+    
+    
+    /////////////// TableView Delegate Methods   ///////////////////////
+    
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        var count:Int!
+        switch self.tableViewMode{
+        case "CURRENT":
+            count = self.serviceCurrentArray.count
+            break
+        case "HISTORY":
+            count = self.serviceHistoryArray.count
+            break
+            
+        default:
+            count = self.serviceCurrentArray.count
+            break
+        }
+        
+        return count
+    }
+    
+    
+    internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = serviceTableView.dequeueReusableCell(withIdentifier: "cell") as! EquipmentServiceTableViewCell
+        switch self.tableViewMode{
+        case "CURRENT":
+            
+            cell.equipmentService = self.serviceCurrentArray[indexPath.row]
+            cell.layoutViews()
+            break
+        case "HISTORY":
+            
+            cell.equipmentService = self.serviceHistoryArray[indexPath.row]
+            cell.layoutViews()
+        default:
+            
+            break
+        }
+        
+        return cell
+        
+    }
+    
+    
+    
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //print("You selected cell #\(indexPath.row)!")
+        
+        
+        
+        let indexPath = tableView.indexPathForSelectedRow
+        let currentCell = tableView.cellForRow(at: indexPath!) as! EquipmentServiceTableViewCell
+        
+        if self.mileageTxtField.text == ""{
+            currentCell.equipmentService.currentValue = "0"
+        }else{
+            currentCell.equipmentService.currentValue = self.mileageTxtField.text
+        }
+        
+        
+        if(currentCell.equipmentService.frequency != "0" && currentCell.equipmentService.currentValue != "0" && Int(currentCell.equipmentService.type)! > 1){
+            currentCell.equipmentService.nextValue = "\(Int(currentCell.equipmentService.frequency)! + Int(currentCell.equipmentService.currentValue)!)"
+            //print("next value = \(currentCell.equipmentService.nextValue)")
+        }
+        
+        if currentCell.equipmentService.type == "4"{
+            let equipmentInspectionViewController = EquipmentInspectionViewController(_equipment: self.equipment,_equipmentService:currentCell.equipmentService)
+            navigationController?.pushViewController(equipmentInspectionViewController, animated: false )
+            equipmentInspectionViewController.serviceListDelegate = self
+        }else{
+            let equipmentServiceViewController = EquipmentServiceViewController(_equipmentService: currentCell.equipmentService)
+            navigationController?.pushViewController(equipmentServiceViewController, animated: false )
+            equipmentServiceViewController.serviceListDelegate = self
+        }
+        
+        tableView.deselectRow(at: indexPath!, animated: true)
+        
+    }
+    
+    
+    
     
     
     // returns the number of 'columns' to display.
@@ -647,6 +736,204 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     
     
     
+    @objc func handleSetMileage(){
+        self.mileageTxtField.resignFirstResponder()
+        
+    }
+    
+    
+    
+    @objc func checkForServices(){
+        print("check for services")
+        mileageTxtField.resignFirstResponder()
+        if mileageTxtField.text == ""{
+            currentValue = "0"
+        }else{
+            currentValue = mileageTxtField.text!
+        }
+        
+        var n:Int = 0 //number of services that are due
+        //loop through all current services
+        for i in 0 ..< serviceCurrentArray.count {
+            //check if they are of type 2 or 3
+            
+            if serviceCurrentArray[i].type == "0" {
+                n += 1
+            }
+            
+            if serviceCurrentArray[i].type == "1"{
+                //let date = dateFormatter.date(from: determineUpcomingDate(_equipmentService: serviceCurrentArray[i]))
+                let date = dateFormatter.date(from:layoutVars.determineUpcomingDate(_equipmentService: serviceCurrentArray[i]))
+                let dateFormatter2 = DateFormatter()
+                dateFormatter2.dateFormat = "MM/dd/yy"
+                let date2 = dateFormatter2.string(from: date!)
+                
+                print("date = \(date2)")
+                //dueByValueLbl.text = date2
+                if date! < Date()  {
+                    print("date1 is earlier than Now")
+                    
+                    n += 1
+                }
+                
+                
+            }
+            
+            if serviceCurrentArray[i].type == "2" || serviceCurrentArray[i].type == "3"{
+                //check if the current value is greater then their nextValue
+                if Int(currentValue)! >= Int(serviceCurrentArray[i].nextValue)!{
+                    
+                    serviceCurrentArray[i].serviceDue = true
+                    n += 1
+                }else{
+                    serviceCurrentArray[i].serviceDue = false
+                }
+                //if greater, color their next lbl red
+            }
+            
+            
+        }//end of loop
+        
+        switch n {
+        case let x where x == 0:
+            //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "No Services Due Now", _message: "")
+            
+            
+            if self.equipment.status == "1" || self.equipment.status == "2"{
+                print("update equipment status")
+                
+                let alertController = UIAlertController(title: "No Services Due Now", message: "\(self.equipment.name!) looks good, would you like to update its status to \"Online\"?", preferredStyle: UIAlertController.Style.alert)
+                let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
+                    (result : UIAlertAction) -> Void in
+                    print("No")
+                }
+                
+                let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
+                    (result : UIAlertAction) -> Void in
+                    print("Yes")
+                    self.equipment.status = "0"
+                    self.updateEquipment(_equipment: self.equipment)
+                }
+                
+                alertController.addAction(cancelAction)
+                alertController.addAction(okAction)
+                self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+                
+            }else{
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "No Services Due Now", _message: "")
+            }
+        
+            break
+        case let x where x == 1:
+            
+            if self.equipment.status == "0"{
+                print("update equipment status")
+                
+                let alertController = UIAlertController(title: "1 Service Due Now", message: "\(self.equipment.name!) needs service now, would you like to update its status to \"Needs Service\"?", preferredStyle: UIAlertController.Style.alert)
+                let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
+                    (result : UIAlertAction) -> Void in
+                    print("No")
+                }
+                
+                let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
+                    (result : UIAlertAction) -> Void in
+                    print("Yes")
+                    self.equipment.status = "1"
+                    self.updateEquipment(_equipment: self.equipment)
+                }
+                
+                alertController.addAction(cancelAction)
+                alertController.addAction(okAction)
+                self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+                
+            }else{
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Service Due Now", _message: "There is 1 service due now.")
+            }
+            
+            
+            
+            self.serviceSC.selectedSegmentIndex = 0
+            self.tableViewMode = "CURRENT"
+            
+            //need to set equipment status to Needs Repair/Service
+            break
+        case let x where x > 1:
+            
+            if self.equipment.status == "0"{
+                print("update equipment status")
+                
+                let alertController = UIAlertController(title: "\(n) Services Due Now", message: "\(self.equipment.name!) needs service now, would you like to update its status to \"Needs Service\"?", preferredStyle: UIAlertController.Style.alert)
+                let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
+                    (result : UIAlertAction) -> Void in
+                    print("No")
+                }
+                
+                let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
+                    (result : UIAlertAction) -> Void in
+                    print("Yes")
+                    self.equipment.status = "1"
+                    self.updateEquipment(_equipment: self.equipment)
+                }
+                
+                alertController.addAction(cancelAction)
+                alertController.addAction(okAction)
+                self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+                
+            }else{
+                self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Services Due Now", _message: "There are \(n) services due now.")
+            }
+            self.serviceSC.selectedSegmentIndex = 0
+            self.tableViewMode = "CURRENT"
+            self.serviceTableView.reloadData()
+            
+            //need to set equipment status to Needs Repair/Service
+            break
+        default:
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "No Services Due Now", _message: "")
+            break
+        }
+        serviceTableView.reloadData()
+    }
+    
+    
+    @objc func addService(){
+        print("add service")
+        
+        if self.mileageTxtField.text == ""{
+            self.currentValue = "0"
+        }else{
+            self.currentValue = self.mileageTxtField.text!
+        }
+        
+        let newEditEquipmentServiceViewController = NewEditEquipmentServiceViewController(_equipmentID: self.equipment.ID,_currentValue:self.currentValue)
+        navigationController?.pushViewController(newEditEquipmentServiceViewController, animated: false )
+        newEditEquipmentServiceViewController.serviceListDelegate = self
+        
+    }
+    
+    
+    @objc func changeServiceView(sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+            
+        case 0://current
+            self.tableViewMode = "CURRENT"
+            
+            break
+        case 1://history
+            self.tableViewMode = "HISTORY"
+            break
+            
+        default:
+            self.tableViewMode = "CURRENT"
+            break
+        }
+        
+        serviceTableView.reloadData()
+        
+    }
+    
+    
+    
     
 
     func updateEquipment(_equipment: Equipment){
@@ -657,9 +944,16 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         statusValueToUpdate = equipment.status
         handleStatusChange()
         self.layoutViews()
-        //self.equipmentDelegate.reDrawEquipmentList()
         
     }
+    
+    
+    // equipment service list delegates
+    func updateServiceList() {
+        print("updateServiceList")
+        getEquipmentServiceInfo()
+    }
+    
     
 
     @objc func goBack(){
@@ -671,9 +965,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-        //print("Test")
     }
  
     
 }
-

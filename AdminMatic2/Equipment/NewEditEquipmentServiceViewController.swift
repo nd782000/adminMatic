@@ -26,7 +26,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     var equipmentService:EquipmentService!
     var submitButton:UIBarButtonItem!
     
-    var serviceListDelegate:ServiceListDelegate!
+    var serviceListDelegate:EditEquipmentDelegate!
     var editDelegate:EditEquipmentServiceDelegate!
     var editsMade:Bool = false
     
@@ -87,7 +87,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     //init for edit
     init(_equipmentService:EquipmentService){
         super.init(nibName:nil,bundle:nil)
-        //print("lead init \(_leadID)")
+        print("service edit \(_equipmentService.ID)")
         self.equipmentService = _equipmentService
         print("init self.currentValue = \(self.currentValue)")
     }
@@ -173,7 +173,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         safeContainer.addSubview(self.nameTxtField)
         
         
-       
+       print("22")
         
         //type
         self.typeLbl = GreyLabel()
@@ -214,7 +214,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         typeTxtField.inputAccessoryView = typeToolBar
         
         
-        
+        print("33")
         
         //frequency
         self.frequencyLbl = GreyLabel()
@@ -255,7 +255,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         safeContainer.addSubview(currentLbl)
         
         
-        
+        print("44")
        
        // setCurrentText()
         
@@ -298,7 +298,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         currentToolBar.isUserInteractionEnabled = true
         self.currentTxtField.inputAccessoryView = currentToolBar
         
-        
+        print("55")
         
         //next
         self.nextLbl = GreyLabel()
@@ -346,11 +346,11 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         nextToolBar.isUserInteractionEnabled = true
         self.nextTxtField.inputAccessoryView = nextToolBar
         
+        print("66")
         
         
         
-        self.typePicker.selectRow(Int(self.equipmentService.type)!, inComponent: 0, animated: false)
-        editInputLabels()
+        
         
        
         
@@ -386,13 +386,13 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         self.instructionsToolBar.isUserInteractionEnabled = true
         self.instructionsView.inputAccessoryView = self.instructionsToolBar
         
-        
+        print("77")
         
         self.submitButtonBottom.addTarget(self, action: #selector(NewEditEquipmentServiceViewController.submit), for: UIControl.Event.touchUpInside)
         safeContainer.addSubview(self.submitButtonBottom)
         
-        
-        
+        self.typePicker.selectRow(Int(self.equipmentService.type)!, inComponent: 0, animated: false)
+        editInputLabels()
         /////////  Auto Layout   //////////////////////////////////////
         
         let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30, "halfWidth": layoutVars.halfWidth, "nameWidth": layoutVars.fullWidth - 150, "navBottom":layoutVars.navAndStatusBarHeight + 8] as [String:Any]
@@ -506,6 +506,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     }
     
     @objc func handleTypeChange(){
+        print("handleTypeChange")
         self.typeTxtField.resignFirstResponder()
         
         equipmentService.type = "\(self.typePicker.selectedRow(inComponent: 0))"
@@ -805,7 +806,9 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         print("editInputLabels")
         switch self.typePicker.selectedRow(inComponent: 0) {
         case 0:
+            
             //One Time
+            print("One Time")
             self.frequencyLbl.text = "Frequency:"
             self.frequencyTxtField.isEnabled = false
             self.frequencyLbl.alpha = 0.5
@@ -818,10 +821,14 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             self.nextTxtField.isEnabled = false
             self.nextLbl.alpha = 0.5
             self.nextTxtField.alpha = 0.5
+            self.instructionsLbl.alpha = 1.0
+            self.instructionsView.alpha = 1.0
+            self.instructionsView.isEditable = true
             self.instructionsView.inputAccessoryView = self.instructionsToolBar
             break
         case 1:
             //Date Based
+            
             print("date based")
             self.frequencyLbl.text = "Frequency(Days):"
             self.frequencyTxtField.isEnabled = true
@@ -837,11 +844,15 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             self.nextTxtField.isEnabled = true
             self.nextLbl.alpha = 1.0
             self.nextTxtField.alpha = 1.0
+            self.instructionsLbl.alpha = 1.0
+            self.instructionsView.alpha = 1.0
+            self.instructionsView.isEditable = true
             self.instructionsView.inputAccessoryView = self.instructionsToolBar
             break
             
         case 2:
             //Mileage Based
+            print("milegae")
             self.frequencyLbl.text = "Frequency(Miles/Km.):"
             self.frequencyTxtField.isEnabled = true
             self.frequencyLbl.alpha = 1.0
@@ -854,10 +865,14 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             self.nextTxtField.isEnabled = true
             self.nextLbl.alpha = 1.0
             self.nextTxtField.alpha = 1.0
+            self.instructionsLbl.alpha = 1.0
+            self.instructionsView.alpha = 1.0
+            self.instructionsView.isEditable = true
             self.instructionsView.inputAccessoryView = self.instructionsToolBar
             break
         case 3:
             //Engine Hour Based
+            print("hour")
             self.frequencyLbl.text = "Frequency(Engine Hours):"
             self.frequencyTxtField.isEnabled = true
             self.frequencyLbl.alpha = 1.0
@@ -870,10 +885,14 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             self.nextTxtField.isEnabled = true
             self.nextLbl.alpha = 1.0
             self.nextTxtField.alpha = 1.0
+            self.instructionsLbl.alpha = 1.0
+            self.instructionsView.alpha = 1.0
+            self.instructionsView.isEditable = true
             self.instructionsView.inputAccessoryView = self.instructionsToolBar
             break
         case 4:
             //Inspection
+            print("Inspection")
             self.frequencyLbl.text = "Frequency:"
             self.frequencyTxtField.isEnabled = false
             self.frequencyLbl.alpha = 0.5
@@ -893,6 +912,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             break
         default:
             //One Time
+            print("default")
             self.frequencyLbl.text = "Frequency:"
             self.frequencyTxtField.isEnabled = false
             self.frequencyLbl.alpha = 0.5
@@ -905,6 +925,10 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             self.nextTxtField.isEnabled = false
             self.nextLbl.alpha = 0.5
             self.nextTxtField.alpha = 0.5
+            self.instructionsLbl.alpha = 1.0
+            self.instructionsView.alpha = 1.0
+            self.instructionsView.isEditable = true
+            self.instructionsView.inputAccessoryView = self.instructionsToolBar
         }
     }
     

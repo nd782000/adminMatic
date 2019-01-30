@@ -40,10 +40,14 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     var emailBtn:Button!
     
-    var departmentsBtn:Button!
-    var crewsBtn:Button!
+    var deptCrewBtn:Button!
+    //var crewsBtn:Button!
+    var usageBtn:Button!
     var shiftsBtn:Button!
     var payrollBtn:Button!
+    
+    var licensesBtn:Button!
+    var trainingBtn:Button!
     
     
     //employee images
@@ -78,9 +82,11 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
 
     var imageFullViewController:ImageFullViewController!
     var departmentListViewController:DepartmentListViewController!
-    var crewListViewController:CrewListViewController!
+    //var crewListViewController:CrewListViewController!
     var shiftsViewController:ShiftsViewController!
     var payrollEntryViewController:PayrollEntryViewController!
+    var usageViewController:PerformanceViewController!
+    var licenseViewController:LicenseViewController!
     
     var methodStart:Date!
     var methodFinish:Date!
@@ -182,6 +188,21 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                             self.email = empJSON[i]["email"] as! String
                             
                             print("email = \(self.email)")
+                            
+                            
+                            let licenseJSON = empJSON[i]["licenses"] as! [[String: Any]]
+                            let licenseCount = licenseJSON.count
+                            
+                            //let licenseCount = empJSON[i]["licenses"].count
+                            //self.totalItems = jsonCount
+                            print("licenseCount: \(licenseCount)")
+                            for n in 0 ..< licenseCount {
+                                let license = License(_ID: licenseJSON[n]["ID"] as? String, _name: licenseJSON[n]["name"] as? String, _expiration: licenseJSON[n]["expirationDate"] as? String, _number: licenseJSON[n]["licenceNumber"] as? String, _status: licenseJSON[n]["status"] as? String, _issuer: licenseJSON[n]["issuer"] as? String)
+                                
+                                self.employee.licenseArray.append(license)
+                                
+                                
+                            }
                             
                             self.getImages()
                            
@@ -425,7 +446,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         
         safeContainer.addSubview(self.emailBtn)
         
-        
+        /*
         self.departmentsBtn = Button()
         self.departmentsBtn.setTitle("Departments", for: UIControl.State.normal)
         self.departmentsBtn.addTarget(self, action: #selector(self.showDepartments), for: UIControl.Event.touchUpInside)
@@ -435,6 +456,19 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         self.crewsBtn.setTitle("Crews", for: UIControl.State.normal)
         self.crewsBtn.addTarget(self, action: #selector(self.showCrews), for: UIControl.Event.touchUpInside)
         safeContainer.addSubview(self.crewsBtn)
+        */
+        
+        self.deptCrewBtn = Button()
+        self.deptCrewBtn.setTitle("Depts/Crews", for: UIControl.State.normal)
+        self.deptCrewBtn.addTarget(self, action: #selector(self.showDepartments), for: UIControl.Event.touchUpInside)
+        safeContainer.addSubview(self.deptCrewBtn)
+        
+        self.usageBtn = Button()
+        self.usageBtn.setTitle("Usage", for: UIControl.State.normal)
+        self.usageBtn.addTarget(self, action: #selector(self.showUsage), for: UIControl.Event.touchUpInside)
+        safeContainer.addSubview(self.usageBtn)
+        
+        
         
         self.shiftsBtn = Button()
         self.shiftsBtn.setTitle("Shifts", for: UIControl.State.normal)
@@ -445,6 +479,16 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         self.payrollBtn.setTitle("Payroll", for: UIControl.State.normal)
         self.payrollBtn.addTarget(self, action: #selector(self.showPayroll), for: UIControl.Event.touchUpInside)
         safeContainer.addSubview(self.payrollBtn)
+        
+        self.licensesBtn = Button()
+        self.licensesBtn.setTitle("Licenses", for: UIControl.State.normal)
+        self.licensesBtn.addTarget(self, action: #selector(self.showLicenses), for: UIControl.Event.touchUpInside)
+        safeContainer.addSubview(self.licensesBtn)
+        
+        self.trainingBtn = Button()
+        self.trainingBtn.setTitle("Training", for: UIControl.State.normal)
+        self.trainingBtn.addTarget(self, action: #selector(self.showTraining), for: UIControl.Event.touchUpInside)
+        safeContainer.addSubview(self.trainingBtn)
         
         
         
@@ -498,6 +542,8 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         }
         safeContainer.addSubview(self.logInOutBtn)
         
+        
+        print("1")
         let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30, "halfWidth": layoutVars.halfWidth, "nameWidth": layoutVars.fullWidth - 150, "navBottom":layoutVars.navAndStatusBarHeight + 8] as [String:Any]
         
         //auto layout group
@@ -508,10 +554,12 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
             "name":self.employeeLbl,
             "phone":self.employeePhoneBtn,
             "email":self.emailBtn,
-            "departmentsBtn":self.departmentsBtn,
-            "crewsBtn":self.crewsBtn,
+            "deptsCrewsBtn":self.deptCrewBtn,
+            "usageBtn":self.usageBtn,
             "shiftsBtn":self.shiftsBtn,
             "payrollBtn":self.payrollBtn,
+            "licensesBtn":self.licensesBtn,
+            "trainingBtn":self.trainingBtn,
             "imageCollection":self.imageCollectionView!,
             "noImagesLbl":self.noImagesLbl,
             "userTxt":self.userTxt,
@@ -520,29 +568,38 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
             
             ] as [String:Any]
         
-        
+        print("2")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[name]-10-|", options: [], metrics: nil, views: viewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[tapBtn(100)]", options: [], metrics: nil, views: viewsDictionary))
          safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[activity(100)]", options: [], metrics: nil, views: viewsDictionary))
-        
+        print("3")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[phone]-10-|", options: [], metrics: nil, views: viewsDictionary))
+        print("3.1")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[email]-10-|", options: [], metrics: nil, views: viewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[departmentsBtn(halfWidth)]-5-[crewsBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        print("3.2")
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[deptsCrewsBtn(halfWidth)]-5-[usageBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        print("3.3")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[shiftsBtn(halfWidth)]-5-[payrollBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        print("3.4")
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[licensesBtn(halfWidth)]-5-[trainingBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        print("3.5")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[imageCollection]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        print("3.6")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[noImagesLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        print("3.7")
          safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[userTxt(halfWidth)]-5-[passTxt]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        print("3.8")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[logInBtn]-10-|", options: [], metrics: nil, views: viewsDictionary))
-        
+        print("4")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[image(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tapBtn(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activity(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)][phone(30)]-10-[email(30)]-[departmentsBtn(30)]-[shiftsBtn(30)]-[imageCollection]-[userTxt(30)]-[logInBtn(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)][phone(30)]-10-[email(30)]-[crewsBtn(30)]-[payrollBtn(30)]-[imageCollection]-[passTxt(30)]-[logInBtn(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)][phone(30)]-10-[email(30)]-[crewsBtn(30)]-[payrollBtn(30)]-20-[noImagesLbl(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        print("5")
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)][phone(30)]-10-[email(30)]-[deptsCrewsBtn(30)]-[shiftsBtn(30)]-[licensesBtn(30)]-[imageCollection]-[userTxt(30)]-[logInBtn(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)][phone(30)]-10-[email(30)]-[usageBtn(30)]-[payrollBtn(30)]-[trainingBtn(30)]-[imageCollection]-[passTxt(30)]-[logInBtn(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        print("6")
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)][phone(30)]-10-[email(30)]-[usageBtn(30)]-[payrollBtn(30)]-[trainingBtn(30)]-20-[noImagesLbl(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
     }
     
@@ -629,13 +686,22 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         
     }
     
-    @objc func showCrews(){
-        print("show crews")
+    @objc func showUsage(){
+        print("show usage")
         if(appDelegate.loggedInEmployee != nil){
+            
+            self.usageViewController = PerformanceViewController(_empID: (self.employee.ID)!)
+            navigationController?.pushViewController(self.usageViewController, animated: false )
+           // navigationController = UINavigationController(rootViewController: self.usageViewController)
+            
+            
+            /*
             self.crewListViewController = CrewListViewController(_empID: self.employee.ID, _empFirstName: self.employee.fname)
             navigationController?.pushViewController(self.crewListViewController, animated: false )
+ */
+            
         }else{
-            appDelegate.requireLogIn(_destination: "crews", _vc:self)
+            appDelegate.requireLogIn(_destination: "usage", _vc:self)
         }
     }
     
@@ -658,6 +724,33 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
             appDelegate.requireLogIn(_destination: "payroll", _vc:self)
         }
     }
+    
+    @objc func showLicenses(){
+        print("showLicenses")
+        if(appDelegate.loggedInEmployee != nil){
+            
+            self.licenseViewController = LicenseViewController(_employee: self.employee)
+            navigationController?.pushViewController(self.licenseViewController, animated: false )
+        }else{
+            appDelegate.requireLogIn(_destination: "licenses", _vc:self)
+        }
+    }
+    
+    @objc func showTraining(){
+        print("showTraining")
+        layoutVars.simpleAlert(_vc: self, _title: "Training System Coming Soon", _message: "")
+        /*
+        if(appDelegate.loggedInEmployee != nil){
+            self.payrollEntryViewController = PayrollEntryViewController(_employee: self.employee)
+            navigationController?.pushViewController(self.payrollEntryViewController, animated: false )
+        }else{
+            appDelegate.requireLogIn(_destination: "payroll", _vc:self)
+        }
+ */
+        
+    }
+    
+    
     
     
     //image methods

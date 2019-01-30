@@ -32,6 +32,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
     
     let dateFormatter = DateFormatter()
     
+    var safeContainer:UIView!
     
     var submitButton:UIBarButtonItem!
     
@@ -50,7 +51,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
     var customerNames = [String]()
     
     
-    
+    //title
+    var titleLbl:GreyLabel!
+    var titleTxtField:PaddedTextField!
     
     
     //charge type
@@ -93,10 +96,6 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
     var repResultsTableView:TableView = TableView()
     var repSearchResults:[String] = []
     
-   
-    //title
-    var titleLbl:GreyLabel!
-    var titleTxtField:PaddedTextField!
     
     //description textview
     var notesLbl:GreyLabel!
@@ -273,8 +272,10 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         navigationItem.rightBarButtonItem = submitButton
         
        
+        
         //set container to safe bounds of view
-        let safeContainer:UIView = UIView()
+        //let safeContainer:UIView = UIView()
+        safeContainer = UIView()
         safeContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(safeContainer)
         safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
@@ -338,6 +339,36 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         self.customerResultsTableView.alpha = 0.0
         
         
+        
+        //title
+        self.titleLbl = GreyLabel()
+        self.titleLbl.text = "Title:"
+        safeContainer.addSubview(titleLbl)
+        
+        
+        if(wo.title != ""){
+            self.titleTxtField = PaddedTextField()
+            self.titleTxtField.text = wo.title!
+        }else{
+            
+            self.titleTxtField = PaddedTextField(placeholder: "Title...")
+        }
+        
+        self.titleTxtField.translatesAutoresizingMaskIntoConstraints = false
+        self.titleTxtField.delegate = self
+        self.titleTxtField.autocapitalizationType = .words
+        self.titleTxtField.returnKeyType = .done
+        safeContainer.addSubview(self.titleTxtField)
+        
+        let titleToolBar = UIToolbar()
+        titleToolBar.barStyle = UIBarStyle.default
+        titleToolBar.barTintColor = UIColor(hex:0x005100, op:1)
+        titleToolBar.sizeToFit()
+        let closeTitleButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelTitleInput))
+        
+        titleToolBar.setItems([closeTitleButton], animated: false)
+        titleToolBar.isUserInteractionEnabled = true
+        self.titleTxtField.inputAccessoryView = titleToolBar
         
         
         //charge type
@@ -634,36 +665,6 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         
         
         
-        //title
-        self.titleLbl = GreyLabel()
-        self.titleLbl.text = "Title:"
-        safeContainer.addSubview(titleLbl)
-        
-        
-        if(wo.title != ""){
-            self.titleTxtField = PaddedTextField()
-            self.titleTxtField.text = wo.title!
-        }else{
-            
-            self.titleTxtField = PaddedTextField(placeholder: "Title...")
-        }
-        
-        self.titleTxtField.translatesAutoresizingMaskIntoConstraints = false
-        self.titleTxtField.delegate = self
-        self.titleTxtField.autocapitalizationType = .words
-        self.titleTxtField.returnKeyType = .done
-        safeContainer.addSubview(self.titleTxtField)
-        
-        let titleToolBar = UIToolbar()
-        titleToolBar.barStyle = UIBarStyle.default
-        titleToolBar.barTintColor = UIColor(hex:0x005100, op:1)
-        titleToolBar.sizeToFit()
-        let closeTitleButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelTitleInput))
-        
-        titleToolBar.setItems([closeTitleButton], animated: false)
-        titleToolBar.isUserInteractionEnabled = true
-        self.titleTxtField.inputAccessoryView = titleToolBar
-        
         
         
         //notes
@@ -707,6 +708,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
             "customerSearchBar":self.customerSearchBar,
             "customerTable":self.customerResultsTableView,
             
+            "titleLbl":self.titleLbl,
+            "titleTxtField":self.titleTxtField,
+            
             "chargeTypeLbl":self.chargeTypeLbl,
             "chargeTypeTxtField":self.chargeTypeTxtField,
             
@@ -732,10 +736,6 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
             
             
             
-            "titleLbl":self.titleLbl,
-            "titleTxtField":self.titleTxtField,
-            
-            
             
             "notesLbl":self.notesLbl,
             "notesView":self.notesView
@@ -747,6 +747,10 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         
         
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[customerTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleLbl]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleTxtField]-|", options: [], metrics: metricsDictionary, views: dictionary))
+        
         
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeLbl(halfWidth)]-[invoiceTypeLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeTxtField(halfWidth)]-[invoiceTypeTxtField]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: metricsDictionary, views: dictionary))
@@ -765,23 +769,20 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[repTable]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleLbl]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleTxtField]-|", options: [], metrics: metricsDictionary, views: dictionary))
-        
         
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesLbl]-|", options: [], metrics: metricsDictionary, views: dictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesView]-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         
         
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerLbl(40)]-[chargeTypeLbl(30)]-[chargeTypeTxtField(40)]-[scheduleTypeLbl(30)]-[scheduleTypeTxtField(40)]-[departmentLbl(30)]-[departmentTxtField(40)]-10-[repLbl(40)]-[titleLbl(30)][titleTxtField(40)]-[notesLbl(30)][notesView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerLbl(40)]-[titleLbl(30)][titleTxtField(40)]-[chargeTypeLbl(30)][chargeTypeTxtField(40)]-[scheduleTypeLbl(30)][scheduleTypeTxtField(40)]-[departmentLbl(30)][departmentTxtField(40)]-10-[repLbl(40)]-[notesLbl(30)][notesView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerSearchBar(40)]-[invoiceTypeLbl(30)]-[invoiceTypeTxtField(40)]-[scheduleTypeLbl(30)]-[scheduleOptions(40)]-[crewLbl(30)]-[crewTxtField(40)]-10-[repSearchBar(40)]-[titleLbl(30)][titleTxtField(40)]-[notesLbl(30)][notesView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerSearchBar(40)]-[titleLbl(30)][titleTxtField(40)]-[invoiceTypeLbl(30)][invoiceTypeTxtField(40)]-[scheduleTypeLbl(30)][scheduleOptions(40)]-[crewLbl(30)][crewTxtField(40)]-10-[repSearchBar(40)]-[notesLbl(30)][notesView]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerSearchBar(40)][customerTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerSearchBar(40)]-[invoiceTypeLbl(30)]-[invoiceTypeTxtField(40)]-[scheduleTypeLbl(30)]-[scheduleOptions(40)]-[crewLbl(30)]-[crewTxtField(40)]-10-[repSearchBar(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerSearchBar(40)]-[titleLbl(30)][titleTxtField(40)]-[invoiceTypeLbl(30)][invoiceTypeTxtField(40)]-[scheduleTypeLbl(30)][scheduleOptions(40)]-[crewLbl(30)]-[crewTxtField(40)]-10-[repSearchBar(40)][repTable]-10-|", options: [], metrics: metricsDictionary, views: dictionary))
         
         
     }
@@ -825,6 +826,15 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         print("Cancel Rep Input")
         self.repSearchBar.resignFirstResponder()
         self.repResultsTableView.alpha = 0.0
+        
+        if(self.view.frame.origin.y < 0){
+            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+                self.view.frame.origin.y = 0
+                
+                
+            }, completion: { finished in
+            })
+        }
     }
     
     @objc func cancelTitleInput(){
@@ -838,8 +848,11 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+       // CGPoint coordinates = sender.frame.origin;
+        print("textField y = \(textField.frame.origin.y)")
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-            self.view.frame.origin.y -= 250
+            self.view.frame.origin.y -= textField.frame.origin.y
             
             
         }, completion: { finished in
@@ -851,7 +864,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         editsMade = true
         if(self.view.frame.origin.y < 0){
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                self.view.frame.origin.y += 250
+                self.view.frame.origin.y = 0
                 
                 
             }, completion: { finished in
@@ -872,7 +885,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
     func textViewDidBeginEditing(_ textView: UITextView) {        print("textFieldDidBeginEditing")
         
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-            self.view.frame.origin.y -= 250
+            self.view.frame.origin.y -= textView.frame.origin.y
             
             
         }, completion: { finished in
@@ -886,7 +899,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         editsMade = true
         if(self.view.frame.origin.y < 0){
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                self.view.frame.origin.y += 250
+                self.view.frame.origin.y = 0
                 
                 
             }, completion: { finished in
@@ -1181,7 +1194,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
             self.repResultsTableView.reloadData()
             
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                self.view.frame.origin.y -= 160
+                self.view.frame.origin.y -= searchBar.frame.origin.y
                 
                 
             }, completion: { finished in
@@ -1208,7 +1221,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
             
             if(self.view.frame.origin.y < 0){
                 UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                    self.view.frame.origin.y += 160
+                    self.view.frame.origin.y == 0
                     
                     
                 }, completion: { finished in

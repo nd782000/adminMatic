@@ -21,9 +21,9 @@ protocol PerformanceDelegate{
 
  
 
-class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIPickerViewDelegate, PerformanceDelegate{
+class PerformanceViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIPickerViewDelegate, PerformanceDelegate{
     
-   // let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     
     var layoutVars:LayoutVars = LayoutVars()
@@ -48,6 +48,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
     var usageTotalLbl: Label!
     let shortDateFormatter = DateFormatter()
     let timeFormatter = DateFormatter()
+    var usageLoaded:Bool = false
     
     let tableHead:UIView! = UIView()
     let stsTH: THead = THead(text: "Sts")
@@ -117,9 +118,29 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         
         
         
-        getPerformance()
+        //getPerformance()
         
     }
+    
+    
+    override func viewWillLayoutSubviews() {
+        print("viewWillLayoutSubviews")
+        
+        if usageLoaded == false{
+            self.getPerformance()
+        }else{
+            if (UIDevice.current.orientation.isLandscape == true) {
+                print("Landscape")
+                self.layoutViewsLandscape()
+            } else {
+                print("Portrait")
+                self.layoutViewsPortrait()
+            }
+        }
+        
+    }
+    
+    
     
     
     
@@ -245,6 +266,8 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
                             
                             self.usages.append(usage)
                         }
+                        
+                        self.usageLoaded = true
                     }
                     
                     
@@ -690,7 +713,7 @@ class PerformanceViewController: ViewControllerWithMenu, UITableViewDelegate, UI
         let currentCell = tableView.cellForRow(at: indexPath!) as! UsageTableViewCell;
         
         
-        let workOrderViewController = WorkOrderViewController(_workOrderID: currentCell.usage.woID!,_customerName: currentCell.usage.custName!)
+        let workOrderViewController = WorkOrderViewController(_workOrderID: currentCell.usage.woID!)
         
         workOrderViewController.tableCellID = indexPath?.row
         workOrderViewController.performanceDelegate = self

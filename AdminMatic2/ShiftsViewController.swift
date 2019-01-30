@@ -103,6 +103,7 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         self.shortDateFormatter.dateFormat = "M/dd"
         self.timeFormatter.dateFormat = "h:mm a"
         
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM-dd-yy"
         let dateFormatterDB = DateFormatter()

@@ -19,7 +19,6 @@ import CoreData
 import Alamofire
 import AlamofireImage
 import SwiftyJSON
-//import Nuke
 import AVFoundation
 
 
@@ -54,7 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.4.3"
+    var appVersion:String = "1.4.4"
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
     var employeeListViewController:EmployeeListViewController!
@@ -65,7 +64,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var scheduleViewController:ScheduleViewController!
     var imageCollectionViewController:ImageCollectionViewController!
     var equipmentListViewController:EquipmentListViewController!
-    var performanceViewController:PerformanceViewController!
+    //var performanceViewController:PerformanceViewController!
+    var invoiceListViewController:InvoiceListViewController!
     var leadListViewController:LeadListViewController!
     var contractListViewController:ContractListViewController!
     //var bugsListViewController:BugsListViewController!
@@ -189,25 +189,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                     
                 }
                 
-                /*
-                let chargeCount:Int = self.fieldsJson["chargeType"].count
-                for i in 0 ..< chargeCount {
-                    let charge = self.fieldsJson["charge"][i].stringValue
-                    self.chargeTypeArray.append(charge)
-                }
-                
-                let invoiceCount:Int = self.fieldsJson["invoiceType"].count
-                for i in 0 ..< invoiceCount {
-                    let invoice = self.fieldsJson["invoiceType"][i].stringValue
-                    self.invoiceTypeArray.append(invoice)
-                }
-                
-                let scheduleCount:Int = self.fieldsJson["scheduleType"].count
-                for i in 0 ..< scheduleCount {
-                    let schedule = self.fieldsJson["scheduleType"][i].stringValue
-                    self.scheduleTypeArray.append(schedule)
-                }
-                */
+               
             }
         }
         
@@ -249,6 +231,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                         
                         if self.employees["employees"][i]["hasSignature"].stringValue == "1"{
                             employee.hasSignature = true
+                        }
+                        
+                        let licenseCount = self.employees["employees"][i]["licenses"].count
+                        //self.totalItems = jsonCount
+                        print("licenseCount: \(licenseCount)")
+                        for n in 0 ..< licenseCount {
+                            let license = License(_ID: self.employees["employees"][i]["licenses"][n]["ID"].stringValue, _name: self.employees["employees"][i]["licenses"][n]["name"].stringValue, _expiration: self.employees["employees"][i]["licenses"][n]["expirationDate"].stringValue, _number: self.employees["employees"][i]["licenses"][n]["licenceNumber"].stringValue, _status: self.employees["employees"][i]["licenses"][n]["status"].stringValue, _issuer: self.employees["employees"][i]["licenses"][n]["issuer"].stringValue)
+                            
+                        employee.licenseArray.append(license)
+                            
+                            
                         }
                         
                         self.employeeArray.append(employee)
@@ -478,8 +471,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         case 7:
             //print("Show  Performance")
             if(loggedInEmployee != nil){
-                self.performanceViewController = PerformanceViewController(_empID: (self.loggedInEmployee?.ID)!)
-                navigationController = UINavigationController(rootViewController: self.performanceViewController)
+               // self.performanceViewController = PerformanceViewController(_empID: (self.loggedInEmployee?.ID)!)
+               // navigationController = UINavigationController(rootViewController: self.performanceViewController)
+                
+                self.invoiceListViewController = InvoiceListViewController()
+                navigationController = UINavigationController(rootViewController: self.invoiceListViewController)
                 window?.rootViewController = navigationController
                 window?.makeKeyAndVisible()
             }else{

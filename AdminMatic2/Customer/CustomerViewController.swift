@@ -11,14 +11,10 @@
 import Foundation
 import UIKit
 import Alamofire
-//import AlamofireImage
 import SwiftyJSON
-//import Nuke
 import DKImagePickerController
 
-//protocol CustomerDelegate{
-    //func cancelSearch()//to resolve problem with imageSelection bug when search mode is active
-//}
+
 
 
 class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ScheduleDelegate, ImageViewDelegate, ImageLikeDelegate, LeadListDelegate, ContractListDelegate{
@@ -54,47 +50,42 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     //details view
     var detailsView:UIView!
-    let items = ["Leads","Contracts","Schedule","History","Images"]
+    let items = ["Leads","Contracts","W.O.s","Invoices","Images"]
     var customSC:SegmentedControl!
     
     
     var customerDetailsTableView:TableView = TableView()
     var tableViewMode:String = "SCHEDULE"
     
-    var leadsLoaded:Bool = false
-    //var customerLeads: JSON!
+    
     var customerLeadArray:[Lead] = []
     
     var leadViewController:LeadViewController!
     
     var addLeadBtn:Button!
     
-    var contractsLoaded:Bool = false
     var customerContractArray:[Contract] = []
     
     var contractViewController:LeadViewController!
     
     var addContractBtn:Button!
     
-    var scheduleLoaded:Bool = false
-    //var customerSchedule: JSON!
     var customerScheduleArray:[WorkOrder] = []
     
-    var historyLoaded:Bool = false
-    //var customerHistory: JSON!
-    var customerHistoryArray:[WorkOrder] = []
     
-    var addWorkBtn:Button!
+    var addWorkOrderBtn:Button!
     
-    //var customerCommunication: JSON!
+    
+    var customerInvoiceArray:[Invoice] = []
+    var addInvoiceBtn:Button!
     
     var noLeadsLabel:Label = Label()
     var noContractsLabel:Label = Label()
     var noScheduleLabel:Label = Label()
-    var noHistoryLabel:Label = Label()
+    var noInvoicesLabel:Label = Label()
+    var noImagesLbl:Label = Label()
     
     var totalImages:Int!
-    //var images: JSON!
     var imageArray:[Image] = []
     
     let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -106,14 +97,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var currentImageIndex:Int = 0
     var imageDetailViewController:ImageDetailViewController!
     var portraitMode:Bool = true
-    var refresher:UIRefreshControl!
     var displayImages:Bool?
     var viewsLoaded:Bool = false
     var customerListDelegate:CustomerListDelegate!
     
-    //var leadListDelegate:LeadListDelegate!
     
-    var noImagesLbl:Label = Label()
+    
     
     
     var order:String = "ID DESC"
@@ -125,8 +114,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var batch = 0
     
     
-    var methodStart:Date!
-    var methodFinish:Date!
     
     init(_customerID:String,_customerName:String){
         self.customerID = _customerID
@@ -189,11 +176,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         // Show Indicator
         indicator = SDevIndicator.generate(self.view)!
-        
-        
-        methodStart = Date()
-        
-        /* ... Do whatever you need to do ... */
         
         
         
@@ -260,12 +242,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 
             //job site address
             case "4":
-                //check if address is same as one displayed in customer list
-                //print("case = address")
-                //print(self.customerJSON["customer"]["contacts"][i]["main"].stringValue)
-                //print(self.customerJSON["customer"]["contacts"][i]["ID"].stringValue)
-                ////print(self.customer.contactID)
-                //print(self.customerJSON["customer"]["contacts"][i])
                 
                 self.jobSiteAddress = self.customerJSON["customer"]["contacts"][i]["fullAddress"].stringValue
                 self.lat = self.customerJSON["customer"]["contacts"][i]["lat"].stringValue as NSString
@@ -282,12 +258,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
         }
         
-        methodFinish = Date()
-        let executionTime = methodFinish.timeIntervalSince(methodStart)
-        print("Execution time: \(executionTime)")
         
-        
-        //getCustomerSchedule(_id: self.customerID)
         self.getLeads(_openNewLead:false)
     }
     
@@ -357,42 +328,13 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     }
                     
                     
-                    
-                    
-                    
-                    
-                    self.methodFinish = Date()
-                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    print("Execution time: \(executionTime)")
-                    
-                    
-                    //self.indicator.dismissIndicator()
-                    
-                    
-                   // self.layoutViews()
-                    
-                    
-                    self.leadsLoaded = true
-                    
-                    if self.customerLeadArray.count > 0 {
-                        self.customerDetailsTableView.isHidden = false
-                        self.customerDetailsTableView.alpha = 1.0
-                        self.noLeadsLabel.isHidden = true
-                    } else {
-                        //self.customerDetailsTableView.isHidden = true
-                        self.customerDetailsTableView.alpha = 0.5
-                        self.noLeadsLabel.isHidden = false
-                    }
-                    
-                    
-                    
-                    
+                   
+                  
                     if _openNewLead {
                         print("open new lead")
                         
                         
                         
-                        self.customerDetailsTableView.reloadData()
                         
                         self.leadViewController = LeadViewController(_lead: self.customerLeadArray[0])
                         self.leadViewController.delegate = self
@@ -401,14 +343,10 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                         
                         
                     }else{
-                        if !self.contractsLoaded{
                             //for initial view, continue on to load cust schedule
                             self.getContracts(_openNewContract: false)
                             
-                        }else{
-                            //for returning views
-                            self.customerDetailsTableView.reloadData()
-                        }
+                       
                         
                     }
                     
@@ -417,13 +355,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 } catch {
                     print("Error deserializing JSON: \(error)")
                 }
-                
-                
-                
-                
-                
-                
-               
                 
                 
                 
@@ -506,52 +437,14 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     
                     
                     
-                    
-                    
-                    
-                    self.methodFinish = Date()
-                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    print("Execution time: \(executionTime)")
-                    
-                    
-                    
-                    
-                    
-                    self.contractsLoaded = true
-                    
-                    if self.customerContractArray.count > 0 {
-                        self.customerDetailsTableView.isHidden = false
-                        self.customerDetailsTableView.alpha = 1.0
-                        self.noContractsLabel.isHidden = true
-                    } else {
-                        //self.customerDetailsTableView.isHidden = true
-                        self.customerDetailsTableView.alpha = 0.5
-                        self.noContractsLabel.isHidden = false
-                    }
-                    
-                    
-                    
-                    if !self.scheduleLoaded{
-                        //for initial view, continue on to load cust schedule
-                        self.getCustomerSchedule(_id: self.customerID)
+                   
+                self.getCustomerSchedule(_id: self.customerID)
                         
-                    }else{
-                        //for returning views
-                        self.customerDetailsTableView.reloadData()
-                    }
-                   //getCustomerSchedule(_id: self.customerID
-                    
-                    
+                  
                     
                 } catch {
                     print("Error deserializing JSON: \(error)")
                 }
-                
-                
-                
-                
-                
-                
                 
                 
         }
@@ -607,45 +500,97 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                         
                         
                         
-                        
-                        
-                        
                     }
                 }
                 
-                
-                
-                
-                
-                
-                self.methodFinish = Date()
-                let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                print("Execution time: \(executionTime)")
-                
-                
-                
-                
-                self.scheduleLoaded = true
-                self.indicator.dismissIndicator()
-                //self.getImages()
-                
-                self.layoutViews()
-                
-                
-                
-                
-                
+                    self.getInvoices()
                 
             } catch {
                 print("Error deserializing JSON: \(error)")
             }
-            
-            
-            
            
         }
         
     }
+    
+    
+    func getInvoices(){
+        print("getInvoices")
+        
+        self.customerInvoiceArray = []
+        
+        //cache buster
+        let now = Date()
+        let timeInterval = now.timeIntervalSince1970
+        let timeStamp = Int(timeInterval)
+        
+        //Get lead list
+        var parameters:[String:String]
+        parameters = ["cb":"\(timeStamp)", "custID":self.customerID]
+        print("parameters = \(parameters)")
+        
+        self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/invoices.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("invoice response = \(response)")
+            }
+            .responseJSON() {
+                response in
+                
+                
+                
+                //native way
+                
+                do {
+                    if let data = response.data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        let invoices = json["invoices"] as? [[String: Any]] {
+                        
+                        let invoiceCount = invoices.count
+                        print("invoice count = \(invoiceCount)")
+                        
+                        
+                        for i in 0 ..< invoiceCount {
+                            
+                            
+                            //create an object
+                            print("create a invoice object \(i)")
+                            
+                            let invoice = Invoice(_ID: (invoices[i]["ID"] as? String)!, _date: (invoices[i]["invoiceDate"] as? String)!,_customer: (invoices[i]["customer"] as? String)!, _customerName: (invoices[i]["custName"] as? String)!, _totalPrice: self.layoutVars.numberAsCurrency(_number:(invoices[i]["total"] as? String)!), _paid: (invoices[i]["paid"] as? String)!)
+                            
+                            
+                            invoice.title = (invoices[i]["title"] as? String)!
+                            
+                            
+                            self.customerInvoiceArray.append(invoice)
+                            
+                            
+                            
+                        }
+                    }
+                    
+                    
+                    
+                    self.indicator.dismissIndicator()
+                    
+                    
+                  
+                    
+                    
+                     self.layoutViews()
+                    
+                    
+                } catch {
+                    print("Error deserializing JSON: \(error)")
+                }
+                
+                
+                
+        }
+        
+    }
+    
+    
     
     
     
@@ -657,6 +602,10 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         print("get images")
        // imageArray = []
        
+        if imagesLoadedInitial{
+            switchTableView(_displayMode: "IMAGES")
+            return
+        }
         indicator = SDevIndicator.generate(self.view)!
         
         let parameters:[String:String]
@@ -719,146 +668,28 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                            
                             self.imageArray.append(image)
                             
-                            
-                            
-                            
+                           
                             
                         }
                     }
                     
-                    if self.self.imageArray.count > 0 {
-                        self.noImagesLbl.isHidden = true
-                    } else {
-                        self.noImagesLbl.isHidden = false
-                    }
                     
-                    if self.imagesLoadedInitial{
-                        self.imageCollectionView?.reloadData()
-                    }
+                    self.imagesLoadedInitial = true
                     
+                    self.switchTableView(_displayMode: "IMAGES")
+                    
+                   
                     if(self.lazyLoad != 0){
                         self.lazyLoad = 0
                         self.imageCollectionView?.reloadData()
                     }
                     
-                    self.methodFinish = Date()
-                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    print("Execution time: \(executionTime)")
-                    
+                   
                 } catch {
                     print("Error deserializing JSON: \(error)")
                 }
                 
-               
-                
-                
-               
                 self.indicator.dismissIndicator()
-        }
-    }
-    
-   
-    
-
-    //history is delayed until user clicks history tab
-    
-    func getCustomerHistory(_id:String){
-        
-        indicator = SDevIndicator.generate(self.view)!
-        
-        //cache buster
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
-
-        
-        Alamofire.request(API.Router.workOrderList(["empID":"" as AnyObject,"custID":_id as AnyObject,"active":"0" as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
-
-            
-            
-            response in
-            //print(response.request ?? "")  // original URL request
-            //print(response.response ?? "") // URL response
-            //print(response.data ?? "")     // server data
-            //print(response.result)   // result of response serialization
-            
-            
-            
-            //native way
-            
-            do {
-                if let data = response.data,
-                    let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                    let workOrders = json["workOrder"] as? [[String: Any]] {
-                    
-                    let workOrderCount = workOrders.count
-                    print("work order count = \(workOrderCount)")
-                    
-                    
-                    for i in 0 ..< workOrderCount {
-                        
-                        
-                        //create an object
-                        print("create a work order object \(i)")
-                        
-                        
-                        
-                        let workOrder = WorkOrder(_ID: workOrders[i]["ID"] as? String, _statusID: workOrders[i]["statusID"] as? String, _date: workOrders[i]["date"] as? String, _firstItem: workOrders[i]["firstItem"] as? String, _statusName: workOrders[i]["statusName"] as? String, _customer: workOrders[i]["customer"] as? String, _type: workOrders[i]["type"] as? String, _progress: workOrders[i]["progress"] as? String, _totalPrice: workOrders[i]["totalPrice"] as? String, _totalCost: workOrders[i]["totalCost"] as? String, _totalPriceRaw: workOrders[i]["totalPriceRaw"] as? String, _totalCostRaw: workOrders[i]["totalCostRaw"] as? String, _charge: workOrders[i]["charge"] as? String, _title: workOrders[i]["title"] as? String, _customerName: workOrders[i]["customerName"] as? String)
-                        
-                       
-                        
-                            self.customerHistoryArray.append(workOrder)
-                        
-                        
-                        
-                        
-                        
-                        
-                    }
-                }
-                
-                
-                
-                
-                
-                
-                self.methodFinish = Date()
-                let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                print("Execution time: \(executionTime)")
-                
-                self.historyLoaded = true
-                
-                if self.viewsLoaded == false{
-                    self.layoutViews()
-                }
-                
-                self.imageCollectionView?.alpha = 0.0
-                
-                self.customerDetailsTableView.reloadData()
-                
-                if self.customerHistoryArray.count > 0 {
-                    //self.customerDetailsTableView.isHidden = false;
-                    self.customerDetailsTableView.alpha = 1.0
-                    self.noHistoryLabel.isHidden = true
-                } else {
-                    //self.customerDetailsTableView.isHidden = true;
-                    self.customerDetailsTableView.alpha = 0.5
-                    self.noHistoryLabel.isHidden = false
-                }
-                
-                self.indicator.dismissIndicator()
-                
-                
-                
-            } catch {
-                print("Error deserializing JSON: \(error)")
-            }
-            
-            
-            
-           
-            
-            
         }
     }
     
@@ -887,26 +718,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.detailsView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.detailsView)
         
-        
-        /*
-        //print("1")
-        //auto layout group
-        let viewsDictionary = [
-            "view1":self.customerView,
-        "view2":self.detailsView] as [String:Any]
-        
-        
-        
-        //////////////   auto layout position constraints   /////////////////////////////
-        
-        
-        
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1(width)]", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[view2(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-64-[view1(250)][view2]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        
-        */
-        
+      
         
         let sizeVals = ["halfWidth": layoutVars.halfWidth,"width": layoutVars.fullWidth,"height": 24,"fullHeight":layoutVars.fullHeight - 235,"collectionViewOffset":(layoutVars.navAndStatusBarHeight - 35) * -1] as [String:Any]
         
@@ -921,8 +733,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         self.detailsView.topAnchor.constraint(equalTo: view.safeTopAnchor, constant: 250.0).isActive = true
         self.detailsView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
-        //self.detailsView.heightAnchor.constraint(equalToConstant: 250).isActive = true
-        //self.detailsView.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
         self.detailsView.heightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.heightAnchor, multiplier: 1.0, constant: -250.0).isActive = true
         
@@ -1058,17 +868,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
        
         customSC = SegmentedControl(items: items)
-        if self.displayImages == true{
-            customSC.selectedSegmentIndex = 4
-        }else{
-            customSC.selectedSegmentIndex = 2
-        }
-        
         customSC.layer.cornerRadius = 0.0
-        
-        
-        
-        customSC.addTarget(self, action: #selector(self.changeSearchOptions(sender:)), for: .valueChanged)
         self.detailsView.addSubview(customSC)
         
         self.customerDetailsTableView.delegate  =  self
@@ -1083,7 +883,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         noLeadsLabel.textAlignment = NSTextAlignment.center
         noLeadsLabel.font = layoutVars.largeFont
         self.detailsView.addSubview(self.noLeadsLabel)
-        noLeadsLabel.isHidden = true
+        //noLeadsLabel.isHidden = true
         
         self.addLeadBtn = Button()
         self.addLeadBtn.translatesAutoresizingMaskIntoConstraints = false
@@ -1093,14 +893,14 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.addLeadBtn.setTitle("Add Lead", for: UIControl.State.normal)
         self.addLeadBtn.addTarget(self, action: #selector(CustomerViewController.addLead), for: UIControl.Event.touchUpInside)
         self.detailsView.addSubview(self.addLeadBtn)
-        self.addLeadBtn.isHidden = true
+        //self.addLeadBtn.isHidden = true
         
         
         noContractsLabel.text = "No Contracts"
         noContractsLabel.textAlignment = NSTextAlignment.center
         noContractsLabel.font = layoutVars.largeFont
         self.detailsView.addSubview(self.noContractsLabel)
-        noContractsLabel.isHidden = true
+        //noContractsLabel.isHidden = true
         
         self.addContractBtn = Button()
         self.addContractBtn.translatesAutoresizingMaskIntoConstraints = false
@@ -1110,7 +910,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.addContractBtn.setTitle("Add Contract", for: UIControl.State.normal)
         self.addContractBtn.addTarget(self, action: #selector(CustomerViewController.addContract), for: UIControl.Event.touchUpInside)
         self.detailsView.addSubview(self.addContractBtn)
-        self.addContractBtn.isHidden = true
+        //self.addContractBtn.isHidden = true
         
         
         
@@ -1119,37 +919,32 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         noScheduleLabel.font = layoutVars.largeFont
         self.detailsView.addSubview(self.noScheduleLabel)
         
-        self.addWorkBtn = Button()
-        self.addWorkBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.addWorkBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.center
-        self.addWorkBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
+        self.addWorkOrderBtn = Button()
+        self.addWorkOrderBtn.translatesAutoresizingMaskIntoConstraints = false
+        self.addWorkOrderBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.center
+        self.addWorkOrderBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         
-        self.addWorkBtn.setTitle("Add Work Order", for: UIControl.State.normal)
-        self.addWorkBtn.addTarget(self, action: #selector(CustomerViewController.addWorkOrder), for: UIControl.Event.touchUpInside)
-        self.detailsView.addSubview(self.addWorkBtn)
-        self.addWorkBtn.isHidden = false
+        self.addWorkOrderBtn.setTitle("Add Work Order", for: UIControl.State.normal)
+        self.addWorkOrderBtn.addTarget(self, action: #selector(CustomerViewController.addWorkOrder), for: UIControl.Event.touchUpInside)
+        self.detailsView.addSubview(self.addWorkOrderBtn)
+        //self.addWorkBtn.isHidden = false
         
+        noInvoicesLabel.text = "No Invoices"
+        noInvoicesLabel.textAlignment = NSTextAlignment.center
+        noInvoicesLabel.font = layoutVars.largeFont
+        self.detailsView.addSubview(self.noInvoicesLabel);
+        //noInvoicesLabel.isHidden = true
         
+        self.addInvoiceBtn = Button()
+        self.addInvoiceBtn.translatesAutoresizingMaskIntoConstraints = false
+        self.addInvoiceBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.center
+        self.addInvoiceBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         
+        self.addInvoiceBtn.setTitle("Add Invoice", for: UIControl.State.normal)
+        self.addInvoiceBtn.addTarget(self, action: #selector(CustomerViewController.addInvoice), for: UIControl.Event.touchUpInside)
+        self.detailsView.addSubview(self.addInvoiceBtn)
         
-        noHistoryLabel.text = "No Work History"
-        noHistoryLabel.textAlignment = NSTextAlignment.center
-        noHistoryLabel.font = layoutVars.largeFont
-        self.detailsView.addSubview(self.noHistoryLabel);
-        noHistoryLabel.isHidden = true
-        
-        if self.customerScheduleArray.count > 0 {
-            //self.customerDetailsTableView.isHidden = false;
-            self.customerDetailsTableView.alpha = 1.0
-            self.noScheduleLabel.isHidden = true
-        } else {
-            //self.customerDetailsTableView.isHidden = true;
-            self.customerDetailsTableView.alpha = 0.5
-            self.noScheduleLabel.isHidden = false
-        }
-        
-        
-        
+       
         
         //Images
         imageCollectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height - 50), collectionViewLayout: layout)
@@ -1169,13 +964,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
        
         self.edgesForExtendedLayout = UIRectEdge.top
         
-        let refresher = UIRefreshControl()
         self.imageCollectionView?.alwaysBounceVertical = true
-        
-        
-        refresher.addTarget(self, action: #selector(CustomerViewController.loadData), for: .valueChanged)
-        imageCollectionView?.addSubview(refresher)
-        
         
         
         //self.noImagesLbl = GreyLabel()
@@ -1184,18 +973,27 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.noImagesLbl.textAlignment = .center
         self.noImagesLbl.font = layoutVars.largeFont
         self.detailsView.addSubview(self.noImagesLbl)
-        self.noImagesLbl.isHidden = true
+        //self.noImagesLbl.isHidden = true
         
         
         self.addImageBtn.addTarget(self, action: #selector(CustomerViewController.addImage), for: UIControl.Event.touchUpInside)
         
         self.addImageBtn.layer.cornerRadius = 0.0
         self.detailsView.addSubview(self.addImageBtn)
-        addImageBtn.isHidden = true
+        //addImageBtn.isHidden = true
         
 
         
+        if self.displayImages == true{
+            customSC.selectedSegmentIndex = 4
+            
+            self.switchTableView(_displayMode: "IMAGES")
+        }else{
+            customSC.selectedSegmentIndex = 2
+            self.switchTableView(_displayMode: "WORKORDERS")
+        }
         
+        customSC.addTarget(self, action: #selector(self.changeSearchOptions(sender:)), for: .valueChanged)
         
         
         
@@ -1209,11 +1007,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             "view5":self.noLeadsLabel,
             "view6":self.noContractsLabel,
             "view7":self.noScheduleLabel,
-            "view8":self.noHistoryLabel,
+            "view8":self.noInvoicesLabel,
             "view9":self.noImagesLbl,
             "view10":self.addLeadBtn,
             "view11":self.addContractBtn,
-            "view12":self.addWorkBtn
+            "view12":self.addWorkOrderBtn,
+            "view13":addInvoiceBtn,
         ] as [String : Any]
         
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
@@ -1228,6 +1027,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view10(width)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view11(width)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view12(width)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view13(width)]", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(40)][view2]-40-|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-40-[view3]-40-|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
@@ -1240,10 +1040,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view10(40)]|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view11(40)]|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view12(40)]|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
-        
-        if (self.displayImages == true && self.imageArray.count == 0){
-            self.showImages()
-        }
+        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[view13(40)]|", options: [], metrics: sizeVals, views: customerDetailsViewsDictionary))
         
     }
     
@@ -1300,148 +1097,52 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
     }
     
+    @objc func addInvoice(){
+       self.layoutVars.simpleAlert(_vc: self, _title: "New Invoice Creation Coming Soon", _message: "")
+    }
+    
     
     @objc func changeSearchOptions(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
             
         case 0://leads
-            self.tableViewMode = "LEADS"
             
-            if(!self.leadsLoaded){
-                getLeads(_openNewLead: false)
-            }else{
-                
-                self.customerDetailsTableView.reloadData()
-                //noResultsLabel.text = "No Work on Schedule"
-                
-                
-                if self.customerLeadArray.count > 0 {
-                    self.customerDetailsTableView.isHidden = false
-                    self.customerDetailsTableView.alpha = 1.0
-                    self.noLeadsLabel.isHidden = true
-                } else {
-                    //self.customerDetailsTableView.isHidden = true
-                    self.customerDetailsTableView.alpha = 0.5
-                    self.noLeadsLabel.isHidden = false
-                }
-                
-                addLeadBtn.isHidden = false
-                
-                addContractBtn.isHidden = true
-                addWorkBtn.isHidden = true
-                
-                self.noContractsLabel.isHidden = true
-                
-                self.noScheduleLabel.isHidden = true
-                self.noHistoryLabel.isHidden = true
             
-                imageCollectionView?.isHidden = true
-                self.noImagesLbl.isHidden = true
-                addImageBtn.isHidden = true
-            }
+            self.switchTableView(_displayMode: "LEADS")
+            
+            
             
             
             break
             
         case 1://contracts
-            self.tableViewMode = "CONTRACTS"
-            self.customerDetailsTableView.reloadData()
-            //noResultsLabel.text = "No Work on Schedule"
-            if self.customerContractArray.count > 0 {
-                self.customerDetailsTableView.isHidden = false
-                self.customerDetailsTableView.alpha = 1.0
-                self.noContractsLabel.isHidden = true
-            } else {
-                //self.customerDetailsTableView.isHidden = true
-                self.customerDetailsTableView.alpha = 0.5
-                self.noContractsLabel.isHidden = false
-            }
             
-            addContractBtn.isHidden = false
+            self.switchTableView(_displayMode: "CONTRACTS")
             
-            addWorkBtn.isHidden = true
-            addLeadBtn.isHidden = true
-            
-            self.noLeadsLabel.isHidden = true
-            self.noScheduleLabel.isHidden = true
-            self.noHistoryLabel.isHidden = true
-            
-            imageCollectionView?.isHidden = true
-            self.noImagesLbl.isHidden = true
-            addImageBtn.isHidden = true
-            
+           
             
             break
             
             
         case 2://schedule
-            self.tableViewMode = "SCHEDULE"
-            self.customerDetailsTableView.reloadData()
-            //noResultsLabel.text = "No Work on Schedule"
-            if self.customerScheduleArray.count > 0 {
-                self.customerDetailsTableView.isHidden = false
-                self.customerDetailsTableView.alpha = 1.0
-                self.noScheduleLabel.isHidden = true
-            } else {
-                //self.customerDetailsTableView.isHidden = true
-                self.customerDetailsTableView.alpha = 0.5
-                self.noScheduleLabel.isHidden = false
-            }
             
-            addLeadBtn.isHidden = true
-            addWorkBtn.isHidden = false
-            self.noLeadsLabel.isHidden = true
-            self.noHistoryLabel.isHidden = true
+            self.switchTableView(_displayMode: "WORKORDERS")
             
-            addContractBtn.isHidden = true
-            
-            self.noContractsLabel.isHidden = true
-            
-            imageCollectionView?.isHidden = true
-            self.noImagesLbl.isHidden = true
-            addImageBtn.isHidden = true
-
             
             break
-        case 3://history
-            print("history loaded = \(historyLoaded)")
-            self.tableViewMode = "HISTORY"
-            if(!self.historyLoaded){
-                getCustomerHistory(_id: self.customerID)
-            }else{
-                self.customerDetailsTableView.reloadData()
-                //noResultsLabel.text = "No Work in History"
-                if self.customerHistoryArray.count > 0 {
-                    self.customerDetailsTableView.isHidden = false
-                    self.customerDetailsTableView.alpha = 1.0
-                    self.noHistoryLabel.isHidden = true
-                } else {
-                    //self.customerDetailsTableView.isHidden = true
-                    self.customerDetailsTableView.alpha = 0.5
-                    self.noHistoryLabel.isHidden = false
-                }
-                
-            }
+        case 3://Invoices
             
-            addLeadBtn.isHidden = true
-            addWorkBtn.isHidden = false
-            self.noLeadsLabel.isHidden = true
+            self.switchTableView(_displayMode: "INVOICES")
             
-            addContractBtn.isHidden = true
+           
             
-            self.noContractsLabel.isHidden = true
-            
-            self.noScheduleLabel.isHidden = true
-            
-            imageCollectionView?.isHidden = true
-            self.noImagesLbl.isHidden = true
-            addImageBtn.isHidden = true
-
             break
             
         case 4://images
             
-            showImages()
+            
+            getImages()
+            
             
             break
         default:
@@ -1451,53 +1152,9 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
     }
     
-    func showImages(){
-        print("show images")
-        self.customerDetailsTableView.isHidden = true
-        
-        //displayImages = false
-        addLeadBtn.isHidden = true
-        addContractBtn.isHidden = true
-        addWorkBtn.isHidden = true
-        
-        self.noLeadsLabel.isHidden = true
-        self.noScheduleLabel.isHidden = true
-        self.noHistoryLabel.isHidden = true
-        
-        
-        print("imageArray.count = \(imageArray.count)")
-        
-        
-        if(!self.imagesLoaded){
-            getImages()
-        }else{
-        
-            if self.imageArray.count > 0 {
-                self.noImagesLbl.isHidden = true
-            } else {
-                self.noImagesLbl.isHidden = false
-            }
-            
-            
-        }
-        imageCollectionView?.isHidden = false
-        addImageBtn.isHidden = false
-        
-        //customSC.selectedSegmentIndex = 4
-    }
     
     
     
-    @objc func loadData()
-    {
-        print("loadData")
-       getImages()
-        stopRefresher()         //Call this to stop refresher
-    }
-    
-    func stopRefresher()
-    {   print("stopRefresher")
-    }
     
     
     func updateLikes(_index:Int, _liked:String, _likes:String){
@@ -1509,6 +1166,9 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if tableViewMode != "IMAGES"{
+            return
+        }
         if (scrollView.bounds.maxY == scrollView.contentSize.height) {
             print("scrolled to bottom")
             lazyLoad = 1
@@ -1739,24 +1399,19 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             //print("schedule count = \(count)", terminator: "")
             
             break
-        case "SCHEDULE":
+        case "WORKORDERS":
             count = self.customerScheduleArray.count
             //print("schedule count = \(count)", terminator: "")
             
             break
-        case "HISTORY":
-            count = self.customerHistoryArray.count
-            //print("history count = \(count)", terminator: "")
+        case "INVOICES":
+            count = self.customerInvoiceArray.count
+            //print("schedule count = \(count)", terminator: "")
             
             break
-            /*
-        case "COMMUNICATION":
-            break
- */
-        case "IMAGES":
-            break
+        
         default:
-            
+            count = 0
             break
         }
         
@@ -1843,7 +1498,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             
             
-        case "SCHEDULE":
+        case "WORKORDERS":
             
             print("Schedule customer")
             cell.workOrder = self.customerScheduleArray[indexPath.row]
@@ -1869,35 +1524,29 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             
             break
-        case "HISTORY":
+        
+        case "INVOICES":
             
-            //print("a")
-            cell.workOrder = self.customerHistoryArray[indexPath.row]
-            
+            print("invoice customer")
+            cell.invoice = self.customerInvoiceArray[indexPath.row]
             
             cell.layoutViews(_scheduleMode: "CUSTOMER")
-            cell.dateLbl.text = cell.workOrder.date
-            cell.firstItemLbl.text = "\(cell.workOrder.title!) #\(cell.workOrder.ID!)"
-            cell.setStatus(status: cell.workOrder.statusId)
-           
+            cell.dateLbl.text = "\(cell.invoice!.totalPrice!)  \(cell.invoice!.title!)"
             
-            cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
+            //cell.setStatus(status: cell.invoice!.paid!)
             
-           
-            cell.priceLbl.text = cell.workOrder.totalPrice!
+            print("set invoice cell status paid = \(cell.invoice!.paid!)")
+            cell.setStatus(status: cell.invoice!.paid!, type: "INVOICE")
             
-            
-            cell.priceLbl.text = cell.workOrder.totalPrice!
+            cell.priceLbl.text = cell.invoice!.date!
+            cell.profitBarView.isHidden = true
             
             
             
-           cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
             
-            //print("e")
-            break
-        case "COMMUNICATION":
-            break
-        case "IMAGES":
+            
+            
+            
             break
         default:
             
@@ -1930,11 +1579,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             navigationController?.pushViewController(leadViewController, animated: false )
             
             leadViewController.delegate = self
-            //workOrderViewController.scheduleDelegate = self
-            //workOrderViewController.customerDelegate = self
-            
-            
-            //workOrderViewController.scheduleIndex = indexPath?.row
             
             
             tableView.deselectRow(at: indexPath!, animated: false)
@@ -1945,38 +1589,25 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             navigationController?.pushViewController(contractViewController, animated: false )
             
             contractViewController.delegate = self
-            //workOrderViewController.scheduleDelegate = self
-            //workOrderViewController.customerDelegate = self
-            
-            
-            //workOrderViewController.scheduleIndex = indexPath?.row
-            
             
             tableView.deselectRow(at: indexPath!, animated: false)
             break
-        case "SCHEDULE":
-            let workOrderViewController = WorkOrderViewController(_workOrder: currentCell.workOrder,_customerName: currentCell.workOrder.customer)
+        case "WORKORDERS":
+            let workOrderViewController = WorkOrderViewController(_workOrderID: currentCell.workOrder.ID)
             navigationController?.pushViewController(workOrderViewController, animated: false )
             
             workOrderViewController.scheduleDelegate = self
-            //workOrderViewController.customerDelegate = self
-            
             
             workOrderViewController.scheduleIndex = indexPath?.row
             
             
             tableView.deselectRow(at: indexPath!, animated: false)
             break
-        case "HISTORY":
-            let workOrderViewController = WorkOrderViewController(_workOrder: currentCell.workOrder,_customerName: currentCell.workOrder.customer)
-            navigationController?.pushViewController(workOrderViewController, animated: false )
+        case "INVOICES":
+           
             
-            workOrderViewController.scheduleDelegate = self
-            //workOrderViewController.customerDelegate = self
-            
-            
-            workOrderViewController.scheduleIndex = indexPath?.row
-            
+            let invoiceViewController = InvoiceViewController(_invoice: currentCell.invoice!)
+            navigationController?.pushViewController(invoiceViewController, animated: false )
             
             tableView.deselectRow(at: indexPath!, animated: false)
             break
@@ -2001,22 +1632,15 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //print("_index =  \(_index)")
         
         
-            if(self.tableViewMode == "SCHEDULE"){
+        
                 
-                customerScheduleArray[_index].statusId = _status
-                customerScheduleArray[_index].totalPrice = _price
-                customerScheduleArray[_index].totalCost = _cost
-                customerScheduleArray[_index].totalPriceRaw = _priceRaw
-                customerScheduleArray[_index].totalCostRaw = _costRaw
-            }else{//HISTORY
-               
-                customerHistoryArray[_index].statusId = _status
-                customerHistoryArray[_index].totalPrice = _price
-                customerHistoryArray[_index].totalCost = _cost
-                customerHistoryArray[_index].totalPriceRaw = _priceRaw
-                customerHistoryArray[_index].totalCostRaw = _costRaw
-            }
-        self.customerDetailsTableView.reloadData()
+            customerScheduleArray[_index].statusId = _status
+            customerScheduleArray[_index].totalPrice = _price
+            customerScheduleArray[_index].totalCost = _cost
+            customerScheduleArray[_index].totalPriceRaw = _priceRaw
+            customerScheduleArray[_index].totalCostRaw = _costRaw
+        
+            self.customerDetailsTableView.reloadData()
  
         
     }
@@ -2102,14 +1726,156 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         print("update settings")
     }
     
-    //func cancelSearch() {
-        // print("cancelSearch")
-       // customerListDelegate.cancelSearch()
-    //}
-    
-   
     
     
+    func switchTableView(_displayMode:String){
+        print("switch table view")
+        
+        
+        switch _displayMode {
+        case "LEADS":
+            self.tableViewMode = "LEADS"
+            self.customerDetailsTableView.reloadData()
+            self.imageCollectionView?.isHidden = true
+            
+            
+            addLeadBtn.isHidden = false
+            addContractBtn.isHidden = true
+            addWorkOrderBtn.isHidden = true
+            addInvoiceBtn.isHidden = true
+            addImageBtn.isHidden = true
+            
+            noContractsLabel.isHidden = true
+            noScheduleLabel.isHidden = true
+            noInvoicesLabel.isHidden = true
+            noImagesLbl.isHidden = true
+            
+        if self.customerLeadArray.count > 0 {
+            self.customerDetailsTableView.isHidden = false;
+            self.customerDetailsTableView.alpha = 1.0
+            self.noLeadsLabel.isHidden = true
+        } else {
+            //self.customerDetailsTableView.isHidden = true;
+            self.customerDetailsTableView.alpha = 0.5
+            self.noLeadsLabel.isHidden = false
+        }
+        
+            break
+        case "CONTRACTS":
+            self.tableViewMode = "CONTRACTS"
+            self.customerDetailsTableView.reloadData()
+            self.imageCollectionView?.isHidden = true
+            
+            addLeadBtn.isHidden = true
+            addContractBtn.isHidden = false
+            addWorkOrderBtn.isHidden = true
+            addInvoiceBtn.isHidden = true
+            addImageBtn.isHidden = true
+            
+            noLeadsLabel.isHidden = true
+            noScheduleLabel.isHidden = true
+            noInvoicesLabel.isHidden = true
+            noImagesLbl.isHidden = true
+            
+            if self.customerContractArray.count > 0 {
+                self.customerDetailsTableView.isHidden = false;
+                self.customerDetailsTableView.alpha = 1.0
+                self.noContractsLabel.isHidden = true
+            } else {
+                //self.customerDetailsTableView.isHidden = true;
+                self.customerDetailsTableView.alpha = 0.5
+                self.noContractsLabel.isHidden = false
+            }
+            
+            break
+        case "WORKORDERS":
+            self.tableViewMode = "WORKORDERS"
+            self.customerDetailsTableView.reloadData()
+            self.imageCollectionView?.isHidden = true
+            
+            addLeadBtn.isHidden = true
+            addContractBtn.isHidden = true
+            addWorkOrderBtn.isHidden = false
+            addInvoiceBtn.isHidden = true
+            addImageBtn.isHidden = true
+            
+            noLeadsLabel.isHidden = true
+            noContractsLabel.isHidden = true
+            noInvoicesLabel.isHidden = true
+            noImagesLbl.isHidden = true
+            
+            if self.customerScheduleArray.count > 0 {
+                self.customerDetailsTableView.isHidden = false;
+                self.customerDetailsTableView.alpha = 1.0
+                self.noScheduleLabel.isHidden = true
+            } else {
+                //self.customerDetailsTableView.isHidden = true;
+                self.customerDetailsTableView.alpha = 0.5
+                self.noScheduleLabel.isHidden = false
+            }
+            
+            break
+        case "INVOICES":
+            self.tableViewMode = "INVOICES"
+            self.customerDetailsTableView.reloadData()
+            self.imageCollectionView?.isHidden = true
+            
+            addLeadBtn.isHidden = true
+            addContractBtn.isHidden = true
+            addWorkOrderBtn.isHidden = true
+            addInvoiceBtn.isHidden = false
+            addImageBtn.isHidden = true
+            
+            noLeadsLabel.isHidden = true
+            noContractsLabel.isHidden = true
+            noScheduleLabel.isHidden = true
+            noImagesLbl.isHidden = true
+            
+            if self.customerInvoiceArray.count > 0 {
+                self.customerDetailsTableView.isHidden = false;
+                self.customerDetailsTableView.alpha = 1.0
+                self.noInvoicesLabel.isHidden = true
+            } else {
+                //self.customerDetailsTableView.isHidden = true;
+                self.customerDetailsTableView.alpha = 0.5
+                self.noInvoicesLabel.isHidden = false
+            }
+            
+            break
+        case "IMAGES":
+            
+            self.customerDetailsTableView.isHidden = true
+            
+            addLeadBtn.isHidden = true
+            addContractBtn.isHidden = true
+            addWorkOrderBtn.isHidden = true
+            addInvoiceBtn.isHidden = true
+            addImageBtn.isHidden = false
+            
+            noLeadsLabel.isHidden = true
+            noContractsLabel.isHidden = true
+            noScheduleLabel.isHidden = true
+            noInvoicesLabel.isHidden = true
+            
+            if self.imageArray.count > 0 {
+                self.imageCollectionView!.isHidden = false;
+                self.imageCollectionView!.alpha = 1.0
+                self.imageCollectionView!.reloadData()
+                self.noImagesLbl.isHidden = true
+            } else {
+                //self.customerDetailsTableView.isHidden = true;
+                self.imageCollectionView!.alpha = 0.5
+                self.noImagesLbl.isHidden = false
+            }
+            
+            break
+        default:
+            print("default")
+        }
+        
+        
+        
+    }
     
     
     

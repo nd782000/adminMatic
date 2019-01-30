@@ -47,7 +47,7 @@
 		015EB5511FF695ED000CA2A7 /* EquipmentFieldsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015EB5501FF695ED000CA2A7 /* EquipmentFieldsListViewController.swift */; };
 		015EB55A1FF6D6D0000CA2A7 /* EquipmentFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015EB5591FF6D6D0000CA2A7 /* EquipmentFieldTableViewCell.swift */; };
 		015EB55C1FF6E639000CA2A7 /* NewEditEquipmentFieldViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015EB55B1FF6E639000CA2A7 /* NewEditEquipmentFieldViewController.swift */; };
-		015EB55E1FF9611B000CA2A7 /* EquipmentServiceListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015EB55D1FF9611B000CA2A7 /* EquipmentServiceListViewController.swift */; };
+		015EB55E1FF9611B000CA2A7 /* EquipmentDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015EB55D1FF9611B000CA2A7 /* EquipmentDetailsViewController.swift */; };
 		015EB5602002E31F000CA2A7 /* EquipmentServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015EB55F2002E31F000CA2A7 /* EquipmentServiceViewController.swift */; };
 		0160A1B21E873F3D00C2AB4A /* ImageSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0160A1B11E873F3D00C2AB4A /* ImageSettingsViewController.swift */; };
 		0160A1B41E89BD2D00C2AB4A /* BugsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0160A1B31E89BD2C00C2AB4A /* BugsListViewController.swift */; };
@@ -70,6 +70,14 @@
 		016634281E3415FE002F7763 /* VendorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016634271E3415FE002F7763 /* VendorListViewController.swift */; };
 		0166342A1E341616002F7763 /* VendorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016634291E341616002F7763 /* VendorViewController.swift */; };
 		016DD5901E9AF8EC00359405 /* PerformanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */; };
+		017F083621FE65D800CC751D /* InvoiceListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083521FE65D800CC751D /* InvoiceListViewController.swift */; };
+		017F083821FE65EF00CC751D /* InvoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083721FE65EF00CC751D /* InvoiceViewController.swift */; };
+		017F083A21FE6FDE00CC751D /* InvoiceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083921FE6FDE00CC751D /* InvoiceTableViewCell.swift */; };
+		017F083C21FFD1C100CC751D /* InvoiceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083B21FFD1C100CC751D /* InvoiceItem.swift */; };
+		017F084021FFDF9700CC751D /* InvoiceItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083F21FFDF9700CC751D /* InvoiceItemTableViewCell.swift */; };
+		017F08422200C80F00CC751D /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F08412200C80F00CC751D /* License.swift */; };
+		017F08442200DA4900CC751D /* LicenseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F08432200DA4900CC751D /* LicenseViewController.swift */; };
+		017F08462200DEA100CC751D /* LicenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F08452200DEA100CC751D /* LicenseTableViewCell.swift */; };
 		019B24591EB6D1BB008D4475 /* NewWoItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019B24581EB6D1BB008D4475 /* NewWoItemViewController.swift */; };
 		019B24621EB82EC5008D4475 /* NewWoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019B24611EB82EC5008D4475 /* NewWoItemTableViewCell.swift */; };
 		019B24641EB8BEC0008D4475 /* ScheduleSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019B24631EB8BEC0008D4475 /* ScheduleSettingsViewController.swift */; };
@@ -362,7 +370,7 @@
 		015EB5501FF695ED000CA2A7 /* EquipmentFieldsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentFieldsListViewController.swift; sourceTree = "<group>"; };
 		015EB5591FF6D6D0000CA2A7 /* EquipmentFieldTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentFieldTableViewCell.swift; sourceTree = "<group>"; };
 		015EB55B1FF6E639000CA2A7 /* NewEditEquipmentFieldViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditEquipmentFieldViewController.swift; sourceTree = "<group>"; };
-		015EB55D1FF9611B000CA2A7 /* EquipmentServiceListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentServiceListViewController.swift; sourceTree = "<group>"; };
+		015EB55D1FF9611B000CA2A7 /* EquipmentDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentDetailsViewController.swift; sourceTree = "<group>"; };
 		015EB55F2002E31F000CA2A7 /* EquipmentServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentServiceViewController.swift; sourceTree = "<group>"; };
 		0160A1B11E873F3D00C2AB4A /* ImageSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSettingsViewController.swift; sourceTree = "<group>"; };
 		0160A1B31E89BD2C00C2AB4A /* BugsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BugsListViewController.swift; sourceTree = "<group>"; };
@@ -385,6 +393,14 @@
 		016634271E3415FE002F7763 /* VendorListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VendorListViewController.swift; sourceTree = "<group>"; };
 		016634291E341616002F7763 /* VendorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VendorViewController.swift; sourceTree = "<group>"; };
 		016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceViewController.swift; sourceTree = "<group>"; };
+		017F083521FE65D800CC751D /* InvoiceListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceListViewController.swift; sourceTree = "<group>"; };
+		017F083721FE65EF00CC751D /* InvoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceViewController.swift; sourceTree = "<group>"; };
+		017F083921FE6FDE00CC751D /* InvoiceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceTableViewCell.swift; sourceTree = "<group>"; };
+		017F083B21FFD1C100CC751D /* InvoiceItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceItem.swift; sourceTree = "<group>"; };
+		017F083F21FFDF9700CC751D /* InvoiceItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceItemTableViewCell.swift; sourceTree = "<group>"; };
+		017F08412200C80F00CC751D /* License.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = License.swift; sourceTree = "<group>"; };
+		017F08432200DA4900CC751D /* LicenseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseViewController.swift; sourceTree = "<group>"; };
+		017F08452200DEA100CC751D /* LicenseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseTableViewCell.swift; sourceTree = "<group>"; };
 		019B24581EB6D1BB008D4475 /* NewWoItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewWoItemViewController.swift; sourceTree = "<group>"; };
 		019B24611EB82EC5008D4475 /* NewWoItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewWoItemTableViewCell.swift; sourceTree = "<group>"; };
 		019B24631EB8BEC0008D4475 /* ScheduleSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleSettingsViewController.swift; sourceTree = "<group>"; };
@@ -619,10 +635,12 @@
 				015231AB1E1A982F009949BD /* EmployeeListViewController.swift */,
 				015231AD1E1A9EFF009949BD /* EmployeeViewController.swift */,
 				01C43C5F203725150068A5E0 /* DepartmentListViewController.swift */,
+				017F08432200DA4900CC751D /* LicenseViewController.swift */,
 				01C43C652037AE8C0068A5E0 /* CrewListViewController.swift */,
 				01C43C692039F04F0068A5E0 /* ShiftsViewController.swift */,
 				01C43C78203DB9D20068A5E0 /* PayrollEntryViewController.swift */,
 				01C43C72203CC88D0068A5E0 /* PayrollSummaryViewController.swift */,
+				016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */,
 				01A81E591E92FC090089B55F /* GroupMessageViewController.swift */,
 			);
 			name = Employee;
@@ -672,12 +690,13 @@
 			name = "Work Order";
 			sourceTree = "<group>";
 		};
-		01D8675E212DAA7D005379E1 /* Performance */ = {
+		01D8675E212DAA7D005379E1 /* Invoices */ = {
 			isa = PBXGroup;
 			children = (
-				016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */,
+				017F083521FE65D800CC751D /* InvoiceListViewController.swift */,
+				017F083721FE65EF00CC751D /* InvoiceViewController.swift */,
 			);
-			name = Performance;
+			name = Invoices;
 			sourceTree = "<group>";
 		};
 		01D8675F212DAA92005379E1 /* Item */ = {
@@ -705,7 +724,7 @@
 				015EB5501FF695ED000CA2A7 /* EquipmentFieldsListViewController.swift */,
 				015EB55B1FF6E639000CA2A7 /* NewEditEquipmentFieldViewController.swift */,
 				01A9DDE01FE409A80075AC72 /* EquipmentViewController.swift */,
-				015EB55D1FF9611B000CA2A7 /* EquipmentServiceListViewController.swift */,
+				015EB55D1FF9611B000CA2A7 /* EquipmentDetailsViewController.swift */,
 				015EB55F2002E31F000CA2A7 /* EquipmentServiceViewController.swift */,
 				01A23AC721F7DD7900C872FC /* EquipmentInspectionViewController.swift */,
 				01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */,
@@ -740,7 +759,7 @@
 				01D8675C212DA960005379E1 /* Lead */,
 				01D8675B212DA932005379E1 /* Contract */,
 				01D8675D212DA9A7005379E1 /* Work Order */,
-				01D8675E212DAA7D005379E1 /* Performance */,
+				01D8675E212DAA7D005379E1 /* Invoices */,
 				01D8675F212DAA92005379E1 /* Item */,
 				01D86760212DAAA8005379E1 /* Vendor */,
 				01D86761212DAAC5005379E1 /* Equipment */,
@@ -770,6 +789,7 @@
 				01C8B97E1FB278AA00ADF284 /* Lead.swift */,
 				01634B5120811BCD00D22832 /* Contract.swift */,
 				01C0F1A6216928E50018300E /* Invoice.swift */,
+				017F083B21FFD1C100CC751D /* InvoiceItem.swift */,
 				01A9DDDC1FE0BAD60075AC72 /* Equipment.swift */,
 				01C43C61203725DD0068A5E0 /* Department.swift */,
 				01C43C672037AFB20068A5E0 /* Crew.swift */,
@@ -777,6 +797,7 @@
 				01A23ACB21F90A9700C872FC /* InspectionQuestion.swift */,
 				014B029B1E21585A002A41DE /* Customer.swift */,
 				014B02A31E2168C6002A41DE /* Employee.swift */,
+				017F08412200C80F00CC751D /* License.swift */,
 				014B02A51E2168D3002A41DE /* Attachment.swift */,
 				014B02A71E2168DF002A41DE /* WoItem.swift */,
 				01634B572086D13500D22832 /* ContractItem.swift */,
@@ -801,15 +822,18 @@
 			children = (
 				01DDE0721E071FEC002C0F8B /* EmployeeTableViewCell.swift */,
 				01C43C6D203A4AD60068A5E0 /* ShiftTableViewCell.swift */,
+				017F08452200DEA100CC751D /* LicenseTableViewCell.swift */,
 				01C43C76203CD5800068A5E0 /* PayrollSummaryTableViewCell.swift */,
 				01C43C7A203DE4FA0068A5E0 /* PayrollEntryTableViewCell.swift */,
 				0116A7FA1E1DD4B7002C5051 /* ScheduleTableViewCell.swift */,
 				01C8B97C1FB2755200ADF284 /* LeadTableViewCell.swift */,
 				0121DEF41FBA71BF00AD6039 /* LeadTaskTableViewCell.swift */,
-				015EB5591FF6D6D0000CA2A7 /* EquipmentFieldTableViewCell.swift */,
 				01634B532084F09B00D22832 /* ContractTableViewCell.swift */,
 				01634B592086E35700D22832 /* ContractItemTableViewCell.swift */,
+				017F083921FE6FDE00CC751D /* InvoiceTableViewCell.swift */,
+				017F083F21FFDF9700CC751D /* InvoiceItemTableViewCell.swift */,
 				01A9DDDE1FE0D4480075AC72 /* EquipmentTableViewCell.swift */,
+				015EB5591FF6D6D0000CA2A7 /* EquipmentFieldTableViewCell.swift */,
 				01A9DDE41FE715E20075AC72 /* EquipmentServiceTableViewCell.swift */,
 				01A23AC921F7F18800C872FC /* EquipmentInspectionTableViewCell.swift */,
 				01EE1B2D1E20105A00E5E061 /* HomeCollectionViewCell.swift */,
@@ -1197,6 +1221,7 @@
 				015231BB1E1D69FF009949BD /* LogInView.swift in Sources */,
 				01A9DDE31FE430C90075AC72 /* EquipmentService.swift in Sources */,
 				0160A1B41E89BD2D00C2AB4A /* BugsListViewController.swift in Sources */,
+				017F08442200DA4900CC751D /* LicenseViewController.swift in Sources */,
 				01D8670A2121BFF9005379E1 /* TermsViewController.swift in Sources */,
 				014B02A81E2168DF002A41DE /* WoItem.swift in Sources */,
 				01C43C77203CD5810068A5E0 /* PayrollSummaryTableViewCell.swift in Sources */,
@@ -1207,6 +1232,7 @@
 				01D86714212B1853005379E1 /* ContractTaskTableViewCell.swift in Sources */,
 				01C0F19D21654BF80018300E /* EmailViewController.swift in Sources */,
 				0160A1B21E873F3D00C2AB4A /* ImageSettingsViewController.swift in Sources */,
+				017F083A21FE6FDE00CC751D /* InvoiceTableViewCell.swift in Sources */,
 				01A23AC821F7DD7C00C872FC /* EquipmentInspectionViewController.swift in Sources */,
 				010937BE1E802313007865FB /* ImageUploadProgressTableViewCell.swift in Sources */,
 				01DC793E1E2805200022566C /* UsageTableViewCell.swift in Sources */,
@@ -1217,10 +1243,12 @@
 				016634221E340F6D002F7763 /* Item.swift in Sources */,
 				01D86706211B3554005379E1 /* YPDrawSignatureView.swift in Sources */,
 				019B24641EB8BEC0008D4475 /* ScheduleSettingsViewController.swift in Sources */,
+				017F083621FE65D800CC751D /* InvoiceListViewController.swift in Sources */,
 				015EB5602002E31F000CA2A7 /* EquipmentServiceViewController.swift in Sources */,
 				01D8670C21221901005379E1 /* Signature.swift in Sources */,
 				014B029E1E215DB5002A41DE /* CustomerTableViewCell.swift in Sources */,
 				0125B6D91E26B10E00BAC949 /* ImageDrawingViewController.swift in Sources */,
+				017F083C21FFD1C100CC751D /* InvoiceItem.swift in Sources */,
 				0125B6D41E26AE2500BAC949 /* NetData.swift in Sources */,
 				01C0F1A121663CBF0018300E /* EmailTableViewCell.swift in Sources */,
 				014CC8EA1E53F4E000D48A26 /* ImageFullViewController.swift in Sources */,
@@ -1243,14 +1271,16 @@
 				01C0F1A7216928E50018300E /* Invoice.swift in Sources */,
 				01EC4E751E1EF8BC009CE261 /* HomeViewController.swift in Sources */,
 				01A9DDE51FE715E20075AC72 /* EquipmentServiceTableViewCell.swift in Sources */,
-				015EB55E1FF9611B000CA2A7 /* EquipmentServiceListViewController.swift in Sources */,
+				015EB55E1FF9611B000CA2A7 /* EquipmentDetailsViewController.swift in Sources */,
 				016634281E3415FE002F7763 /* VendorListViewController.swift in Sources */,
 				01D9AD971E6DD14900BD35AE /* UnderConstructionViewController.swift in Sources */,
+				017F083821FE65EF00CC751D /* InvoiceViewController.swift in Sources */,
 				015EB5511FF695ED000CA2A7 /* EquipmentFieldsListViewController.swift in Sources */,
 				01DDE0701E071FB3002C0F8B /* JsonDataHolder.swift in Sources */,
 				0137DA562080300400A29F4E /* NewEditContractViewController.swift in Sources */,
 				01C43C6E203A4AD60068A5E0 /* ShiftTableViewCell.swift in Sources */,
 				015B9AF71E27DDFD0020FB58 /* Date.swift in Sources */,
+				017F08462200DEA100CC751D /* LicenseTableViewCell.swift in Sources */,
 				01DC79421E281C8B0022566C /* UsageListViewController.swift in Sources */,
 				014B02B01E2169BF002A41DE /* WoItemViewController.swift in Sources */,
 				01C8B9811FB27D0400ADF284 /* LeadViewController.swift in Sources */,
@@ -1264,6 +1294,7 @@
 				01E01C1A1E7DB54D00385B86 /* ImageUploadPrepViewController.swift in Sources */,
 				014B02A41E2168C6002A41DE /* Employee.swift in Sources */,
 				0109382B1E835394007865FB /* CustomImageCropperOverlayView.swift in Sources */,
+				017F08422200C80F00CC751D /* License.swift in Sources */,
 				01DDE0651E071689002C0F8B /* API.swift in Sources */,
 				01DDE0671E0719F7002C0F8B /* LayoutVars.swift in Sources */,
 				01C43C7B203DE4FA0068A5E0 /* PayrollEntryTableViewCell.swift in Sources */,
@@ -1309,6 +1340,7 @@
 				01634B5A2086E35700D22832 /* ContractItemTableViewCell.swift in Sources */,
 				01634B582086D13500D22832 /* ContractItem.swift in Sources */,
 				015EB55A1FF6D6D0000CA2A7 /* EquipmentFieldTableViewCell.swift in Sources */,
+				017F084021FFDF9700CC751D /* InvoiceItemTableViewCell.swift in Sources */,
 				014CC8E41E539EB100D48A26 /* ImageCollectionViewController.swift in Sources */,
 				014B02B81E26A8E6002A41DE /* AttachmentTableViewCell.swift in Sources */,
 				01634B5220811BCD00D22832 /* Contract.swift in Sources */,

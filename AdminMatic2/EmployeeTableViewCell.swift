@@ -9,7 +9,6 @@
 import Foundation
 import UIKit
 import Alamofire
-//import Nuke
 
 
 
@@ -19,8 +18,11 @@ class EmployeeTableViewCell: UITableViewCell {
     var nameLbl: UILabel! = UILabel()
     var phoneLbl: UILabel! = UILabel()
     var employeeImageView:UIImageView = UIImageView()
+    
     var activityView:UIActivityIndicatorView!
     var layoutVars:LayoutVars = LayoutVars()
+    
+    var badgeCount:Int = 0
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -28,6 +30,15 @@ class EmployeeTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+       
+        
+    }
+    
+    func layoutViews(){
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        
         self.selectionStyle = .none
         self.employeeImageView.layer.cornerRadius = 5.0
         self.employeeImageView.layer.borderWidth = 1
@@ -36,6 +47,7 @@ class EmployeeTableViewCell: UITableViewCell {
         self.employeeImageView.translatesAutoresizingMaskIntoConstraints = false
         self.contentView.addSubview(self.employeeImageView)
         nameLbl.translatesAutoresizingMaskIntoConstraints = false
+        nameLbl.font = layoutVars.smallBoldFont
         contentView.addSubview(nameLbl)
         phoneLbl.translatesAutoresizingMaskIntoConstraints = false
         phoneLbl.isHidden = true
@@ -44,21 +56,21 @@ class EmployeeTableViewCell: UITableViewCell {
         activityView.translatesAutoresizingMaskIntoConstraints = false
         //activityView.center = CGPoint(x: self.employeeImageView.frame.size.width / 2, y: self.employeeImageView.frame.size.height / 2)
         employeeImageView.addSubview(activityView)
-
+        
         self.separatorInset = UIEdgeInsets.zero
         self.layoutMargins = UIEdgeInsets.zero
         self.preservesSuperviewLayoutMargins = false
         
         let viewsDictionary = ["pic":self.employeeImageView,"name":nameLbl] as [String : Any]
-    
+        
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[pic(50)]", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[name]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
         
         let viewsDictionary2 = ["activityView":activityView] as [String : Any]
         
         employeeImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activityView]-|", options: [], metrics: nil, views: viewsDictionary2))
         employeeImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activityView]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
-        
     }
     
     func setImageUrl(_url:String){
@@ -89,23 +101,28 @@ class EmployeeTableViewCell: UITableViewCell {
         
         
         
-        /*
-        let imgURL:URL = URL(string: _url)!
-        Nuke.loadImage(with: imgURL, into: self.employeeImageView){ 
-            //print("nuke loadImage")
-            self.employeeImageView.handle(response: $0, isFromMemoryCache: $1)
-            self.activityView.stopAnimating()
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+    
+    func addBadge(_active:Bool){
+        let badgeXPos:CGFloat = CGFloat(70 + (self.badgeCount * 25))
+        let badgeView:UIImageView = UIImageView(frame: CGRect(x: badgeXPos, y: 36.0, width: 20.0, height: 20.0))
+        
+        badgeView.clipsToBounds = true
+        self.contentView.addSubview(badgeView)
+        if _active{
+            badgeView.image = UIImage(named: "badgeStarIcon")
+        }else{
+            badgeView.image = UIImage(named: "badgeStarGrayIcon")
         }
- */
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        self.badgeCount += 1
     }
     
     func setPhone(){

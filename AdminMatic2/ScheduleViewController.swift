@@ -1102,7 +1102,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //print("currentCell.workOrder.ID #\(currentCell.workOrder.ID)!")
         //print("currentCell.workOrder.customer: \(currentCell.workOrder.customer)!")
         
-        let workOrderViewController = WorkOrderViewController(_workOrder: currentCell.workOrder,_customerName: currentCell.workOrder.customer)
+        let workOrderViewController = WorkOrderViewController(_workOrderID: currentCell.workOrder.ID)
         navigationController?.pushViewController(workOrderViewController, animated: false )
         
         workOrderViewController.scheduleDelegate = self

@@ -46,6 +46,7 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
     var leadBtn:Button = Button(titleText: "Lead(0)")
     var selectedLead: Lead!
     
+    var loadingView:UIView = UIView()
     var contractBtn:Button = Button(titleText: "Contract(0)")
     var contractTxtField:PaddedTextField!
     var contractPicker: Picker!
@@ -64,6 +65,7 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
     
     var delegate:StackDelegate!
    
+    let stackHeight:CGFloat = 40.0
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -263,12 +265,15 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
         workOrderTxtField.isHidden = true
         invoiceTxtField.isHidden = true
         
-        
+    //loading view
+        self.loadingView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: layoutVars.fullWidth, height: stackHeight))
+        self.loadingView.backgroundColor = UIColor(hex: 0x005100, op: 1.0)
+        self.addSubview(self.loadingView)
         
         
         
         /////////  Auto Layout   //////////////////////////////////////
-        let metricsDictionary = ["quarterWidth": layoutVars.fullWidth/4, ] as [String:Any]
+        let metricsDictionary = ["quarterWidth": layoutVars.fullWidth/4, "height":stackHeight] as [String:Any]
         
         //main views
         let viewsDictionary = [
@@ -281,13 +286,13 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
             "invoiceTxt":self.invoiceTxtField
             ] as [String:AnyObject]
         
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[lead(40)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[contract(40)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
-         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[contractTxt(40)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[workOrder(40)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
-         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[workOrderTxt(40)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[invoice(40)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
-         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[invoiceTxt(40)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[lead(height)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[contract(height)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
+         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[contractTxt(height)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[workOrder(height)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
+         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[workOrderTxt(height)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[invoice(height)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
+         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[invoiceTxt(height)]", options: [], metrics:metricsDictionary, views: viewsDictionary))
         
         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[lead(quarterWidth)][contract(quarterWidth)][workOrder(quarterWidth)][invoice(quarterWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[lead(quarterWidth)][contractTxt(quarterWidth)][workOrderTxt(quarterWidth)][invoiceTxt(quarterWidth)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
@@ -436,8 +441,10 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
         //self.fullScheduleArray = []
         for i in 0 ..< invoiceCount {
             
-            let invoice = Invoice(_ID: self.stackJson["invoices"][i]["ID"].stringValue, _date: self.stackJson["invoices"][i]["ID"].stringValue, _customer: self.stackJson["invoices"][i]["ID"].stringValue, _totalPrice: self.stackJson["invoices"][i]["ID"].stringValue, _totalCost: self.stackJson["invoices"][i]["ID"].stringValue, _totalPriceRaw: self.stackJson["invoices"][i]["ID"].stringValue, _totalCostRaw: self.stackJson["invoices"][i]["ID"].stringValue, _charge: self.stackJson["invoices"][i]["ID"].stringValue)
+           // let invoice = Invoice(_ID: self.stackJson["invoices"][i]["ID"].stringValue, _date: self.stackJson["invoices"][i]["ID"].stringValue, _customer: self.stackJson["invoices"][i]["ID"].stringValue, _totalPrice: self.stackJson["invoices"][i]["ID"].stringValue, _totalCost: self.stackJson["invoices"][i]["ID"].stringValue, _totalPriceRaw: self.stackJson["invoices"][i]["ID"].stringValue, _totalCostRaw: self.stackJson["invoices"][i]["ID"].stringValue, _charge: self.stackJson["invoices"][i]["ID"].stringValue)
             
+            
+            let invoice = Invoice(_ID: self.stackJson["invoices"][i]["ID"].stringValue, _date: self.stackJson["invoices"][i]["invoiceDate"].stringValue,_customer: self.stackJson["invoices"][i]["customer"].stringValue, _customerName: self.stackJson["invoices"][i]["custName"].stringValue, _totalPrice: "$\(self.stackJson["invoices"][i]["total"].stringValue)", _paid: self.stackJson["invoices"][i]["paid"].stringValue)
             
             
             self.invoices.append(invoice)
@@ -463,6 +470,8 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
         contractBtn.isEnabled = true
         workOrderBtn.isEnabled = true
         invoiceBtn.isEnabled = true
+        
+        self.hideLoadingView()
         
         
     }
@@ -542,8 +551,8 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
         
         if type != 3{
             if invoices.count > 0{
-               // let invoiceViewController:LeadViewController = LeadViewController(_lead: leads[0])
-               // self.delegate.callNewView(_view: leadViewController)
+               // let invoiceViewController:InvoiceViewController = InvoiceViewController(_invoice: invoices[0])
+                self.delegate.newInvoiceView(_invoice: invoices[0])
                // self.delegate.newInvoiceView(_invoice: <#T##Invoice#>)
             }else{
                 cancelPicker()
@@ -622,7 +631,7 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
         case 2:
             return "#\(self.workOrders[row].ID!) \(self.workOrders[row].title!)"
         case 3:
-            return "#\(self.invoices[row].ID!) \(self.invoices[row].title!)"
+            return "#\(self.invoices[row].ID!) \(self.invoices[row].customerName!)"
             
         default:
             return "default"
@@ -683,7 +692,8 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
         self.invoiceTxtField.resignFirstResponder()
        // let invoiceViewController:InvoiceViewController = InvoiceViewController(_invoice: self.selectedInvoice)
         //self.delegate.callNewView(_view: invoiceViewController)
-        
+       // self.selectedInvoice = self.selectedInvoice
+        self.delegate.newInvoiceView(_invoice: self.selectedInvoice)
         
     }
     
@@ -707,7 +717,20 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
     
     
     
-    
+    func hideLoadingView(){
+        print("hide loading view")
+        
+        let originalTransform = self.loadingView.transform
+       // let scaledTransform = originalTransform.scaledBy(x: 1.0, y: 1.0)
+        let scaledAndTranslatedTransform = originalTransform.translatedBy(x: layoutVars.fullWidth, y: 0)
+        UIView.animate(withDuration: 0.5, animations: {
+            self.loadingView.transform = scaledAndTranslatedTransform
+            //self.loadingView.alpha = 0.0
+        }, completion: { _ in
+            print("stack loading complete")
+            self.loadingView.isHidden = true
+        })
+    }
     
     
     

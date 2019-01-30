@@ -100,7 +100,6 @@ class EquipmentFieldsListViewController: UIViewController, UITableViewDelegate, 
         
          typeNameArray = []
          typeIDArray = []
-         //typeCodeArray = []
         
          fuelNameArray = []
          fuelIDArray = []
@@ -291,11 +290,13 @@ class EquipmentFieldsListViewController: UIViewController, UITableViewDelegate, 
     /////////////// Search Methods   ///////////////////////
     
     @objc func changeView(sender: UISegmentedControl) {
+        equipmentFieldsTableView.isEditing = false
         switch sender.selectedSegmentIndex {
         case 0:
             //equipmentArray.sorted(by: { $0.crew > $1.crew })
             viewMode = "TYPE"
             navigationItem.rightBarButtonItem = nil
+            
             break
         case 1:
             //equipmentArray.sorted(by: { $0.type > $1.type })

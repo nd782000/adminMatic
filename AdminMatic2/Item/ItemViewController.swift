@@ -763,7 +763,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
             
         case "WORKORDER":
             let currentCell = tableView.cellForRow(at: indexPath!) as! ScheduleTableViewCell;
-            let workOrderViewController = WorkOrderViewController(_workOrder: currentCell.workOrder,_customerName: currentCell.workOrder.customer)
+            let workOrderViewController = WorkOrderViewController(_workOrderID: currentCell.workOrder.ID)
             navigationController?.pushViewController(workOrderViewController, animated: false )
             
             //workOrderViewController.scheduleDelegate = self

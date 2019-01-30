@@ -128,71 +128,15 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
                         self.createSections()
                     }
                     
-                    
-                    /*
-                    // build sections based on first letter(json is already sorted alphabetically)
-                    
-                    var index = 0;
-                    var firstCharacterArray:[String] = [" "]
-                    
-                    for i in 0 ..< self.itemsArray.count {
-                        let stringToTest = self.itemsArray[i].name.uppercased()
-                        let firstCharacter = String(stringToTest[stringToTest.startIndex])
-                        if(i == 0){
-                            firstCharacterArray.append(firstCharacter)
-                        }
-                        
-                        
-                        
-                        
-                        if !firstCharacterArray.contains(firstCharacter) {
-                            
-                            //print("new")
-                            let title = firstCharacterArray[firstCharacterArray.count - 1]
-                            firstCharacterArray.append(firstCharacter)
-                            
-                            let newSection = (index: index, length: i - index, title: title)
-                            self.sections.append(newSection)
-                            index = i;
-                        }
-                        
-                        if(i == self.itemsArray.count - 1){
-                            let title = firstCharacterArray[firstCharacterArray.count - 1]
-                            let newSection = (index: index, length: i - index + 1, title: title)
-                            self.sections.append(newSection)
-                        }
-                        
-                        
-                    }*/
-                    
-                    
                     self.indicator.dismissIndicator()
                     
                     
                     self.layoutViews()
                     
-                    
-                    
-                    
-                    
                 } catch {
                     print("Error deserializing JSON: \(error)")
                 }
-                
-                
-                
-                
-                //if let json = response.result.value {
-                    
-                    //print(" dismissIndicator")
-                    //self.indicator.dismissIndicator()
-                    
-                    
-                    //print("JSON: \(json)")
-                    //self.equipment = JSON(json)
-                    //self.parseJSON()
-                //}
-                
+            
         }
         
     }
