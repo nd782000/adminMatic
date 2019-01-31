@@ -5,6 +5,18 @@
 //  Created by Nick on 10/6/18.
 //  Copyright © 2018 Nick. All rights reserved.
 //
+
+
+/*
+ Status
+ 0 = syncing to QB
+ 1 = pending
+ 2 = final
+ 3 = sent (printed/emailed)
+ 4 = paid
+ 5 = void
+ */
+
  
 
 import Foundation
@@ -15,7 +27,8 @@ class Invoice {
     var totalPrice:String!
     var customer:String!
     var customerName:String!
-    var paid:String!
+    //var paid:String!
+    var status:String!
     
     
     var title:String?
@@ -41,7 +54,7 @@ class Invoice {
     //var custAndPrice:String?
     
     
-    required init(_ID:String?, _date:String?, _customer:String?, _customerName:String?, _totalPrice:String?, _paid:String?) {
+    required init(_ID:String?, _date:String?, _customer:String?, _customerName:String?, _totalPrice:String?, _status:String?) {
         //print(json)
         if _ID != nil {
             self.ID = _ID
@@ -74,10 +87,10 @@ class Invoice {
         }
         
        
-        if _paid != nil {
-            self.paid = _paid
+        if _status != nil {
+            self.status = _status
         }else{
-            self.paid = ""
+            self.status = ""
         }
         
        

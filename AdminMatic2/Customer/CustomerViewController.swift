@@ -97,7 +97,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var currentImageIndex:Int = 0
     var imageDetailViewController:ImageDetailViewController!
     var portraitMode:Bool = true
-    var displayImages:Bool?
+    var displayImages:Bool = false
     var viewsLoaded:Bool = false
     var customerListDelegate:CustomerListDelegate!
     
@@ -556,7 +556,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                             //create an object
                             print("create a invoice object \(i)")
                             
-                            let invoice = Invoice(_ID: (invoices[i]["ID"] as? String)!, _date: (invoices[i]["invoiceDate"] as? String)!,_customer: (invoices[i]["customer"] as? String)!, _customerName: (invoices[i]["custName"] as? String)!, _totalPrice: self.layoutVars.numberAsCurrency(_number:(invoices[i]["total"] as? String)!), _paid: (invoices[i]["paid"] as? String)!)
+                            let invoice = Invoice(_ID: (invoices[i]["ID"] as? String)!, _date: (invoices[i]["invoiceDate"] as? String)!,_customer: (invoices[i]["customer"] as? String)!, _customerName: (invoices[i]["custName"] as? String)!, _totalPrice: self.layoutVars.numberAsCurrency(_number:(invoices[i]["total"] as? String)!), _status: (invoices[i]["invoiceStatus"] as? String)!)
                             
                             
                             invoice.title = (invoices[i]["title"] as? String)!
@@ -570,37 +570,30 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     }
                     
                     
-                    
                     self.indicator.dismissIndicator()
-                    
-                    
                   
+                    if self.displayImages{
+                        self.getImages()
+                    }else{
+                        
+                        self.layoutViews()
+                    }
                     
-                    
-                     self.layoutViews()
                     
                     
                 } catch {
                     print("Error deserializing JSON: \(error)")
                 }
                 
-                
-                
         }
         
     }
     
     
-    
-    
-    
-    
-
     func getImages() {
         //remove any added views (needed for table refresh
         
         print("get images")
-       // imageArray = []
        
         if imagesLoadedInitial{
             switchTableView(_displayMode: "IMAGES")
@@ -622,8 +615,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             .responseJSON(){
                 response in
-                
-                
                 
                 //native way
                 
@@ -653,10 +644,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                             
                             //create a item object
                             print("create an image object \(i)")
-                            
-                            
-                            
-                            
+                           
                             let image = Image(_id: images[i]["ID"] as? String,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: images[i]["name"] as? String,_width: images[i]["width"] as? String,_height: images[i]["height"] as? String,_description: images[i]["description"] as? String,_dateAdded: images[i]["dateAdded"] as? String,_createdBy: images[i]["createdByName"] as? String,_type: images[i]["type"] as? String)
                             
                             image.customer = images[i]["customer"] as! String
@@ -676,13 +664,18 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     
                     self.imagesLoadedInitial = true
                     
-                    self.switchTableView(_displayMode: "IMAGES")
-                    
-                   
-                    if(self.lazyLoad != 0){
-                        self.lazyLoad = 0
-                        self.imageCollectionView?.reloadData()
+                    if self.viewsLoaded == false{
+                        self.layoutViews()
+                    }else{
+                        self.switchTableView(_displayMode: "IMAGES")
+                        
+                        
+                        if(self.lazyLoad != 0){
+                            self.lazyLoad = 0
+                            self.imageCollectionView?.reloadData()
+                        }
                     }
+                    
                     
                    
                 } catch {
@@ -692,10 +685,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 self.indicator.dismissIndicator()
         }
     }
-    
-   
-    
-    
     
     func layoutViews(){
         //print("customer view layoutViews")
@@ -708,10 +697,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.customerView.layer.borderWidth = 1.0
         self.customerView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.customerView)
-        
-        
-        
-        
         
         self.detailsView = UIView()
         self.detailsView.backgroundColor = layoutVars.backgroundColor
@@ -729,14 +714,11 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         self.detailsView.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
-        //self.detailsView.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
         
         self.detailsView.topAnchor.constraint(equalTo: view.safeTopAnchor, constant: 250.0).isActive = true
         self.detailsView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
         
         self.detailsView.heightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.heightAnchor, multiplier: 1.0, constant: -250.0).isActive = true
-        
-        
         
         
         ///////////   customer contact section   /////////////
@@ -776,9 +758,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.customerView.addSubview(self.customerPhoneBtn)
         //print("customer view layoutViews 3")
         
-        
-        
-        
         self.customerEmailBtn = Button()
         self.customerEmailBtn.translatesAutoresizingMaskIntoConstraints = false
         self.customerEmailBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
@@ -800,9 +779,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         self.customerView.addSubview(self.customerEmailBtn)
-        
-        
-        
         
         self.customerAddressBtn = Button()
         self.customerAddressBtn.translatesAutoresizingMaskIntoConstraints = false
@@ -840,9 +816,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         self.customerView.addSubview(self.allContactsBtn)
         
-        
-        
-        
         //auto layout group
         let customersViewsDictionary = [
             
@@ -853,16 +826,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             "view6":self.allContactsBtn
             //"view7":self.addLeadBtn
         ] as [String : Any]
-        
-        
-        self.customerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view2]-10-|", options: [], metrics: sizeVals, views: customersViewsDictionary))
+         self.customerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view2]-10-|", options: [], metrics: sizeVals, views: customersViewsDictionary))
         self.customerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view3]-10-|", options: [], metrics: sizeVals, views: customersViewsDictionary))
         self.customerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view4]-10-|", options: [], metrics: sizeVals, views: customersViewsDictionary))
         self.customerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view5]-10-|", options: [], metrics: sizeVals, views: customersViewsDictionary))
         self.customerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[view6]-10-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: sizeVals, views: customersViewsDictionary))
         self.customerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[view2(35)]-[view3(40)]-[view4(40)]-[view5(40)]-[view6(40)]", options: [], metrics: sizeVals, views: customersViewsDictionary))
-        
-        
         
         ///////////   Customer Details Section   /////////////
         
@@ -883,7 +852,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         noLeadsLabel.textAlignment = NSTextAlignment.center
         noLeadsLabel.font = layoutVars.largeFont
         self.detailsView.addSubview(self.noLeadsLabel)
-        //noLeadsLabel.isHidden = true
         
         self.addLeadBtn = Button()
         self.addLeadBtn.translatesAutoresizingMaskIntoConstraints = false
@@ -893,14 +861,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.addLeadBtn.setTitle("Add Lead", for: UIControl.State.normal)
         self.addLeadBtn.addTarget(self, action: #selector(CustomerViewController.addLead), for: UIControl.Event.touchUpInside)
         self.detailsView.addSubview(self.addLeadBtn)
-        //self.addLeadBtn.isHidden = true
         
         
         noContractsLabel.text = "No Contracts"
         noContractsLabel.textAlignment = NSTextAlignment.center
         noContractsLabel.font = layoutVars.largeFont
         self.detailsView.addSubview(self.noContractsLabel)
-        //noContractsLabel.isHidden = true
         
         self.addContractBtn = Button()
         self.addContractBtn.translatesAutoresizingMaskIntoConstraints = false
@@ -910,7 +876,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.addContractBtn.setTitle("Add Contract", for: UIControl.State.normal)
         self.addContractBtn.addTarget(self, action: #selector(CustomerViewController.addContract), for: UIControl.Event.touchUpInside)
         self.detailsView.addSubview(self.addContractBtn)
-        //self.addContractBtn.isHidden = true
         
         
         
@@ -927,13 +892,11 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.addWorkOrderBtn.setTitle("Add Work Order", for: UIControl.State.normal)
         self.addWorkOrderBtn.addTarget(self, action: #selector(CustomerViewController.addWorkOrder), for: UIControl.Event.touchUpInside)
         self.detailsView.addSubview(self.addWorkOrderBtn)
-        //self.addWorkBtn.isHidden = false
         
         noInvoicesLabel.text = "No Invoices"
         noInvoicesLabel.textAlignment = NSTextAlignment.center
         noInvoicesLabel.font = layoutVars.largeFont
         self.detailsView.addSubview(self.noInvoicesLabel);
-        //noInvoicesLabel.isHidden = true
         
         self.addInvoiceBtn = Button()
         self.addInvoiceBtn.translatesAutoresizingMaskIntoConstraints = false
@@ -944,8 +907,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.addInvoiceBtn.addTarget(self, action: #selector(CustomerViewController.addInvoice), for: UIControl.Event.touchUpInside)
         self.detailsView.addSubview(self.addInvoiceBtn)
         
-       
-        
+
         //Images
         imageCollectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height - 50), collectionViewLayout: layout)
         
@@ -967,20 +929,17 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.imageCollectionView?.alwaysBounceVertical = true
         
         
-        //self.noImagesLbl = GreyLabel()
         self.noImagesLbl.text = "No Images Uploaded"
         self.noImagesLbl.textColor = UIColor.white
         self.noImagesLbl.textAlignment = .center
         self.noImagesLbl.font = layoutVars.largeFont
         self.detailsView.addSubview(self.noImagesLbl)
-        //self.noImagesLbl.isHidden = true
         
         
         self.addImageBtn.addTarget(self, action: #selector(CustomerViewController.addImage), for: UIControl.Event.touchUpInside)
         
         self.addImageBtn.layer.cornerRadius = 0.0
         self.detailsView.addSubview(self.addImageBtn)
-        //addImageBtn.isHidden = true
         
 
         
@@ -994,9 +953,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         }
         
         customSC.addTarget(self, action: #selector(self.changeSearchOptions(sender:)), for: .valueChanged)
-        
-        
-        
         
         //auto layout group
         let customerDetailsViewsDictionary = [
@@ -1047,7 +1003,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     @objc func phoneHandler(){
         //print("phone handler")
-        
         callPhoneNumber(self.phoneNumberClean)
     }
     
@@ -1059,10 +1014,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     @objc func mapHandler() {
         //print("map handler")
         openMapForPlace(self.customerName, _lat: self.lat!, _lng: self.lng!)
-        
-        
-        
-        
     }
     
     
@@ -1074,7 +1025,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     @objc func addLead(){
-        //self.customerListDelegate.cancelSearch()//to avoid problem with search controller blocking alerts
         let newLeadViewController = NewEditLeadViewController(_customer: self.customerID, _customerName: self.customerName)
         newLeadViewController.delegate = self
         navigationController?.pushViewController(newLeadViewController, animated: false )
@@ -1082,7 +1032,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     @objc func addContract(){
-        //self.customerListDelegate.cancelSearch()//to avoid problem with search controller blocking alerts
         let newContractViewController = NewEditContractViewController(_customer: self.customerID, _customerName: self.customerName)
         newContractViewController.delegate = self
         navigationController?.pushViewController(newContractViewController, animated: false )
@@ -1090,7 +1039,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     @objc func addWorkOrder(){
-        //self.customerListDelegate.cancelSearch()//to avoid problem with search controller blocking alerts
         let newWorkOrderViewController = NewEditWoViewController(_customer: self.customerID, _customerName: self.customerName)
         newWorkOrderViewController.delegate = self
         navigationController?.pushViewController(newWorkOrderViewController, animated: false )
@@ -1104,46 +1052,20 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     @objc func changeSearchOptions(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
-            
         case 0://leads
-            
-            
             self.switchTableView(_displayMode: "LEADS")
-            
-            
-            
-            
             break
-            
         case 1://contracts
-            
             self.switchTableView(_displayMode: "CONTRACTS")
-            
-           
-            
             break
-            
-            
         case 2://schedule
-            
             self.switchTableView(_displayMode: "WORKORDERS")
-            
-            
             break
         case 3://Invoices
-            
             self.switchTableView(_displayMode: "INVOICES")
-            
-           
-            
             break
-            
         case 4://images
-            
-            
             getImages()
-            
-            
             break
         default:
             
@@ -1151,10 +1073,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         }
         
     }
-    
-    
-    
-    
     
     
     func updateLikes(_index:Int, _liked:String, _likes:String){
@@ -1210,8 +1128,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 selectedAssets.append(assets[i])
                 //print(self.selectedAssets)
                 
-                
-                //assets[i].fetchOriginalImage(completeBlock: T##(UIImage?, [AnyHashable : Any]?) -> Void)
                 assets[i].fetchOriginalImage(completeBlock: { image, info in
                     
                     
@@ -1238,7 +1154,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                         let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Customer", _customerID: self.customerID, _images: selectedImages)
                         
                         
-                        // print("url = https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
                         
                         print("self.selectedImages.count = \(selectedImages.count)")
                         
@@ -1423,21 +1338,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        //let cell = customerDetailsTableView.dequeueReusableCell(withIdentifier: "cell") as! ScheduleTableViewCell
-        
-       // if self.customerListDelegate != nil{
-            //self.customerListDelegate.cancelSearch()//to avoid problem with search controller blocking alerts
-       // }
-        
-
-        
         let cell = customerDetailsTableView.dequeueReusableCell(withIdentifier: "cell") as! ScheduleTableViewCell
         
         switch self.tableViewMode{
             
         case "LEADS":
             
-            //let cell = customerDetailsTableView.dequeueReusableCell(withIdentifier: "cell") as! ScheduleTableViewCell
             
             print("Leads customer")
             cell.lead = self.customerLeadArray[indexPath.row]
@@ -1473,7 +1379,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             cell.contract = self.customerContractArray[indexPath.row]
             cell.layoutViews(_scheduleMode: "CONTRACT")
-            //cell.dateLbl.text = cell.contract?.daysAged
             
             cell.dateLbl.textColor = UIColor.red
             switch cell.contract!.daysAged! {
@@ -1533,20 +1438,14 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             cell.layoutViews(_scheduleMode: "CUSTOMER")
             cell.dateLbl.text = "\(cell.invoice!.totalPrice!)  \(cell.invoice!.title!)"
             
-            //cell.setStatus(status: cell.invoice!.paid!)
             
-            print("set invoice cell status paid = \(cell.invoice!.paid!)")
-            cell.setStatus(status: cell.invoice!.paid!, type: "INVOICE")
+            print("set invoice cell status = \(cell.invoice!.status!)")
+            cell.setStatus(status: cell.invoice!.status!, type: "INVOICE")
             
             cell.priceLbl.text = cell.invoice!.date!
             cell.profitBarView.isHidden = true
             
-            
-            
-            
-            
-            
-            
+        
             break
         default:
             

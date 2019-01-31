@@ -327,21 +327,40 @@ class ScheduleTableViewCell: UITableViewCell {
             }
             break
         case "INVOICE":
-            switch (status) {
-            case "0":
-                let statusImg = UIImage(named:"unDoneStatus.png")
-                statusIcon.image = statusImg
-                break;
-            case "1":
-                let statusImg = UIImage(named:"doneStatus.png")
-                statusIcon.image = statusImg
-                break;
             
-            default:
-                let statusImg = UIImage(named:"unDoneStatus.png")
-                statusIcon.image = statusImg
-                break;
-            }
+           
+                switch (status) {
+                case "0":
+                    let statusImg = UIImage(named:"unDoneStatus.png")
+                    statusIcon.image = statusImg
+                    break;
+                case "1":
+                    let statusImg = UIImage(named:"waitingStatus.png")
+                    statusIcon.image = statusImg
+                    break;
+                case "2":
+                    let statusImg = UIImage(named:"inProgressStatus.png")
+                    statusIcon.image = statusImg
+                    break;
+                case "3":
+                    let statusImg = UIImage(named:"acceptedStatus.png")
+                    statusIcon.image = statusImg
+                    break;
+                case "4":
+                    let statusImg = UIImage(named:"doneStatus.png")
+                    statusIcon.image = statusImg
+                    break;
+                case "5":
+                    let statusImg = UIImage(named:"cancelStatus.png")
+                    statusIcon.image = statusImg
+                    break;
+                    
+                default:
+                    let statusImg = UIImage(named:"unDoneStatus.png")
+                    statusIcon.image = statusImg
+                    break;
+                }
+            
             break
         default:
             switch (status) {

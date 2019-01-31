@@ -444,7 +444,7 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
            // let invoice = Invoice(_ID: self.stackJson["invoices"][i]["ID"].stringValue, _date: self.stackJson["invoices"][i]["ID"].stringValue, _customer: self.stackJson["invoices"][i]["ID"].stringValue, _totalPrice: self.stackJson["invoices"][i]["ID"].stringValue, _totalCost: self.stackJson["invoices"][i]["ID"].stringValue, _totalPriceRaw: self.stackJson["invoices"][i]["ID"].stringValue, _totalCostRaw: self.stackJson["invoices"][i]["ID"].stringValue, _charge: self.stackJson["invoices"][i]["ID"].stringValue)
             
             
-            let invoice = Invoice(_ID: self.stackJson["invoices"][i]["ID"].stringValue, _date: self.stackJson["invoices"][i]["invoiceDate"].stringValue,_customer: self.stackJson["invoices"][i]["customer"].stringValue, _customerName: self.stackJson["invoices"][i]["custName"].stringValue, _totalPrice: "$\(self.stackJson["invoices"][i]["total"].stringValue)", _paid: self.stackJson["invoices"][i]["paid"].stringValue)
+            let invoice = Invoice(_ID: self.stackJson["invoices"][i]["ID"].stringValue, _date: self.stackJson["invoices"][i]["invoiceDate"].stringValue,_customer: self.stackJson["invoices"][i]["customer"].stringValue, _customerName: self.stackJson["invoices"][i]["custName"].stringValue, _totalPrice: "$\(self.stackJson["invoices"][i]["total"].stringValue)", _status: self.stackJson["invoices"][i]["invoiceStatus"].stringValue)
             
             
             self.invoices.append(invoice)

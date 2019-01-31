@@ -14,18 +14,16 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-
 /*
- // updates status icons without getting new db data
-protocol ContractListDelegate{
-    func getContracts(_openNewContract:Bool)
-    
-}
+ Status
+ 0 = syncing to QB
+ 1 = pending
+ 2 = final
+ 3 = sent (printed/emailed)
+ 4 = paid
+ 5 = void
+ */
 
-protocol ContractSettingsDelegate{
-    func updateSettings(_status:String, _salesRep:String, _salesRepName:String)
-}
-*/
 
 
 class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource{
@@ -36,8 +34,6 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
     var invoices:JSON!
     var invoiceArray:[Invoice] = []
     var invoiceSearchResults:[Invoice] = []
-    //var invoiceSearchNameResults:[String] = []
-    //var invoiceSearchIDResults:[String] = []
     var shouldShowSearchResults:Bool = false
     
     
@@ -52,8 +48,6 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
     let settingsEditedImg = UIImage(named:"settingsEditedIcon.png")
     
     //settings
-    var status:String = ""
-    var unpaid:String = ""
     var salesRep:String = ""
     var salesRepName:String = ""
     var custID:String = ""
@@ -61,22 +55,11 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
     var startDate:String = ""
     var endDate:String = ""
     var sort:String = "0"
+    var status:String = ""
     
     var invoiceViewController:InvoiceViewController!
     
-    /*
-    var names = [String]()
-    var ids = [String]()
-    var totals = [String]()
-    var dates = [String]()
-    var paid = [String]()
-    */
-    
-    //var methodStart:Date!
-    //var methodFinish:Date!
-    
-    //let dateFormatter = DateFormatter()
-    
+   
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -100,24 +83,17 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
         
         
         self.invoiceArray = []
-        /*
-        self.names = []
-        self.ids = []
-        self.totals = []
-        self.dates = []
-        self.paid = []
-        */
         
        
         //Get lead list
         var parameters:[String:String]
-        parameters = ["status":self.status,"unpaid":self.unpaid,"salesRep":self.salesRep,"custID":self.custID,"startDate":self.startDate,"endDate":self.endDate,"sort":self.sort]
+        parameters = ["status":self.status,"salesRep":self.salesRep,"custID":self.custID,"startDate":self.startDate,"endDate":self.endDate,"sort":self.sort]
         print("parameters = \(parameters)")
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/invoices.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-               // print("invoice response = \(response)")
+                print("invoice response = \(response)")
             }
             .responseJSON() {
                 response in
@@ -135,21 +111,14 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
                         
                         
                         for i in 0 ..< invoiceCount {
-                            
+                            print("invoice status = \(String(describing: invoices[i]["status"] as? String))!)")
                             
                             //create an object
                             print("create a invoice object \(i)")
-                            let invoice = Invoice(_ID: (invoices[i]["ID"] as? String)!, _date: (invoices[i]["invoiceDate"] as? String)!, _customer: (invoices[i]["customer"] as? String)!, _customerName: (invoices[i]["custName"] as? String)!, _totalPrice: "$\((invoices[i]["total"] as? String)!)", _paid: (invoices[i]["paid"] as? String)!)
+                            let invoice = Invoice(_ID: (invoices[i]["ID"] as? String)!, _date: (invoices[i]["invoiceDate"] as? String)!, _customer: (invoices[i]["customer"] as? String)!, _customerName: (invoices[i]["custName"] as? String)!, _totalPrice: "$\((invoices[i]["total"] as? String)!)", _status: (invoices[i]["invoiceStatus"] as? String)!)
                             
                             self.invoiceArray.append(invoice)
-                          /*
-                            self.names.append((invoices[i]["custName"] as? String)!)
-                            self.ids.append((invoices[i]["ID"] as? String)!)
-                            self.totals.append((invoices[i]["total"] as? String)!)
-                            self.dates.append((invoices[i]["invoiceDate"] as? String)!)
-                            self.paid.append((invoices[i]["paid"] as? String)!)
-                            */
-                            
+                          
                             
                         }
                     }
@@ -231,57 +200,8 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
         
         
         
-        
-        /*
-        self.addContractBtn.layer.borderColor = UIColor.white.cgColor
-        self.addContractBtn.layer.borderWidth = 1.0
-        self.addContractBtn.addTarget(self, action: #selector(ContractListViewController.addContract), for: UIControl.Event.touchUpInside)
-        safeContainer.addSubview(self.addContractBtn)
-        
-        
-        
-        self.contractSettingsBtn.addTarget(self, action: #selector(ContractListViewController.contractSettings), for: UIControl.Event.touchUpInside)
-        
-        // self.contractSettingsBtn.frame = CGRect(x:self.view.frame.width - 50, y: self.view.frame.height - 50, width: 50, height: 50)
-        //self.contractSettingsBtn.translatesAutoresizingMaskIntoConstraints = true
-        self.contractSettingsBtn.layer.borderColor = UIColor.white.cgColor
-        self.contractSettingsBtn.layer.borderWidth = 1.0
-        safeContainer.addSubview(self.contractSettingsBtn)
-        
-        self.contractSettingsBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
-        
-        
-        
-        
-        settingsIcon.backgroundColor = UIColor.clear
-        settingsIcon.contentMode = .scaleAspectFill
-        settingsIcon.frame = CGRect(x: 11, y: 11, width: 28, height: 28)
-        
-        
-        if(self.status != "" || self.salesRep != ""){
-            print("changes made")
-            settingsIcon.image = settingsEditedImg
-        }else{
-            settingsIcon.image = settingsImg
-        }
-        
-        
-        
-        self.contractSettingsBtn.addSubview(settingsIcon)
-        
-        */
-        
-        
-        
-        
-        
-        //auto layout group
-       /* let viewsDictionary = [
-            "contractTable":self.contractTableView,
-            "countView":self.countView,
-            "addContractBtn":self.addContractBtn,"contractSettingsBtn":contractSettingsBtn
-            ] as [String : Any]
-        */
+       
+       
         
         let viewsDictionary = [
             "invoiceTable":self.invoiceTableView,
@@ -292,9 +212,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
         //////////////   auto layout position constraints   /////////////////////////////
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[invoiceTable(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[countView(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-       // safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[addContractBtn][contractSettingsBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        //safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[contractTable][countView(30)][addContractBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        //safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[contractTable][countView(30)][contractSettingsBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+       
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[invoiceTable][countView(30)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[invoiceTable][countView(30)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         let viewsDictionary2 = [
@@ -317,20 +235,10 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
         print("filterSearchResults")
         self.invoiceSearchResults = []
         
-        //self.invoiceSearchNameResults = []
-       // self.invoiceSearchIDResults = []
-        
-        
-        
-        
-       // self.invoiceSearchNameResults = self.names.filter({( aInvoice: String) -> Bool in
         self.invoiceSearchResults = self.invoiceArray.filter({( aInvoice: Invoice) -> Bool in
             
-            //return type name or name
-            //return (aInvoice.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
-        //})
+          //search by 4 fields (ID, customerName, date, totalPrice)
             
-            //return type name or name
             return (aInvoice.customerName!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil  || aInvoice.ID!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil || aInvoice.date!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil || aInvoice.totalPrice!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
             
         })
@@ -340,22 +248,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
         self.invoiceTableView.reloadData()
     }
     
-    /*
-    func filterSearchResults(){
-        self.equipmentSearchResults = self.equipmentArray.filter({( aEquipment: Equipment) -> Bool in
-            
-            
-            
-            
-            //return type name or name
-            return (aEquipment.name!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil  || aEquipment.typeName!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
-            
-        })
-        //self.equipmentTableView.reloadData()
-    }
-    */
-    
-    
+   
     
     
     
@@ -391,14 +284,10 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         if shouldShowSearchResults{
-            //self.countLbl.text = "\(self.invoiceSearchNameResults.count) Invoice(s) Found"
+            
             self.countLbl.text = "\(self.invoiceSearchResults.count) Invoice(s) Found"
-           // return self.invoiceSearchNameResults.count
             return self.invoiceSearchResults.count
         } else {
-           // print("self.invoiceArray.count = \(self.invoiceArray.count)")
-            //self.countLbl.text = "\(self.names.count) Invoices(s) "
-            //return self.names.count
             
             self.countLbl.text = "\(self.invoiceArray.count) Invoices(s) "
             return self.invoiceArray.count
@@ -411,19 +300,13 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
         print("cellForRowAt")
         
         let cell:InvoiceTableViewCell = invoiceTableView.dequeueReusableCell(withIdentifier: "cell") as! InvoiceTableViewCell
-        
-        
-        
-        
-        
+    
         if shouldShowSearchResults{
             
             cell.invoice = self.invoiceSearchResults[indexPath.row]
             
             
             let searchString = self.searchController.searchBar.text!.lowercased()
-            
-            
             
             let baseString1:NSString = cell.invoice.customerName as NSString
             let highlightedText1 = NSMutableAttributedString(string: cell.invoice.customerName!)
@@ -443,7 +326,6 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
                 }
                 
             }
-            //cell.nameLbl.attributedText = highlightedText
             cell.titleLbl.attributedText = highlightedText1
             
             
@@ -466,8 +348,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
                 }
                 
             }
-            //cell.nameLbl.attributedText = highlightedText
-           // cell.nameLbl.attributedText = highlightedText2
+            
             
             cell.IDLbl.attributedText = highlightedText2
             
@@ -491,8 +372,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
                 }
                 
             }
-            //cell.nameLbl.attributedText = highlightedText
-            // cell.nameLbl.attributedText = highlightedText2
+            
             
             cell.dateLbl.attributedText = highlightedText3
             
@@ -515,18 +395,8 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
                 }
                 
             }
-            //cell.nameLbl.attributedText = highlightedText
-            // cell.nameLbl.attributedText = highlightedText2
-            
             cell.totalLbl.attributedText = highlightedText4
-            
-            
-            
-            
-            cell.setStatus(status: cell.invoice.paid)
-            
-            
-            
+            cell.setStatus(status: cell.invoice.status)
             
         } else {
             
@@ -537,7 +407,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
             cell.totalLbl.text = self.invoiceArray[indexPath.row].totalPrice!
             cell.IDLbl.text = self.invoiceArray[indexPath.row].ID!
             cell.dateLbl.text = self.invoiceArray[indexPath.row].date!
-            cell.setStatus(status: self.invoiceArray[indexPath.row].paid)
+            cell.setStatus(status: self.invoiceArray[indexPath.row].status)
             
             
         }
@@ -551,7 +421,6 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
         let indexPath = tableView.indexPathForSelectedRow;
         let currentCell = tableView.cellForRow(at: indexPath!) as! InvoiceTableViewCell;
         self.invoiceViewController = InvoiceViewController(_invoice: currentCell.invoice)
-        //invoiceViewController.delegate = self
         tableView.deselectRow(at: indexPath!, animated: true)
        navigationController?.pushViewController(self.invoiceViewController, animated: false )
     }

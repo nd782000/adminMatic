@@ -12,9 +12,9 @@
 import Foundation
 import UIKit
 import Alamofire
-//import SwiftyJSON
+import MessageUI
 
-class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ImageViewDelegate, ImageLikeDelegate  {
+class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, MFMessageComposeViewControllerDelegate, ImageViewDelegate, ImageLikeDelegate  {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -628,6 +628,14 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
            
         }))
         
+        actionSheet.addAction(UIAlertAction(title: "Send Recruit Text", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
+            print("Send Recruit Text")
+            
+            self.sendRecruitmentText()
+            
+            
+        }))
+        
         
         
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: { (alert:UIAlertAction!) -> Void in
@@ -666,7 +674,27 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     
     
+    func sendRecruitmentText(){
+        print("send recruitment text")
+        
+        if (MFMessageComposeViewController.canSendText()) {
+            let controller = MFMessageComposeViewController()
+            controller.body = "Atlantic is Hiring! Go to www.AtlanticLawnandGarden.com/careers/\((self.appDelegate.loggedInEmployee?.ID!)!) to apply today.  Help \(String(describing: self.appDelegate.loggedInEmployee?.name!)) earn a bonus. Thanks"
+            //controller.recipients = self.batchOfTexts
+            controller.messageComposeDelegate = self
+           
+            
+            self.present(controller, animated: true, completion: nil)
+        }
+        
+        
+    }
     
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        //... handle sms screen actions
+        self.dismiss(animated: true, completion: nil)
+        self.layoutVars.simpleAlert(_vc: self, _title: "Message Sent. Thanks!", _message: "")
+    }
     
     
     @objc func showDepartments(){

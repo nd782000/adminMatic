@@ -89,7 +89,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         navigationItem.leftBarButtonItem  = backButtonItem
 
         for index in 0 ..< self.appDelegate.employeeArray.count {
-            print("emp phone = \(appDelegate.employeeArray[index].phone)")
+            print("emp phone = \(String(describing: appDelegate.employeeArray[index].phone))")
         //for _ in self.appDelegate.employeeArray{
               if  appDelegate.employeeArray[index].phone! != "No Phone Number"{
                 selectedStates.append(true)
@@ -281,7 +281,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
                     selectedStates[n] = true
                 }
                 
-                print("emp phone = \(appDelegate.employeeArray[n].phone)")
+                print("emp phone = \(String(describing: appDelegate.employeeArray[n].phone))")
                 if appDelegate.employeeArray[n].phone == "" || appDelegate.employeeArray[n].phone == "No Phone Number"{
                     selectedStates[n] = false
                 }
@@ -289,30 +289,11 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
             
         }
         
-        /*
-            if self.employees[index] == nil{
-                selectedStates[index] = false
-            }else{
-                if appDelegate.employeeArray[index].ID == self.employees[index].ID {
-                    selectedStates[index] = true
-                }else{
-                    selectedStates[index] = false
-                }
-            }
-            
-        }
-        */
+       
         
          self.employeeTableView.reloadData()
         
-        /*
-        for index in 0 ..< selectedStates.count {
-            
-            
-            selectedStates[index] = false
-        }
        
- */
         
         
     }

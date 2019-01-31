@@ -1122,7 +1122,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         self.layoutViews()
         self.serviceListDelegate.updateServiceList()
         
-        print("equipmentService.type \(equipmentService.type)")
+        print("equipmentService.type \(String(describing: equipmentService.type))")
         if self.equipmentService.type == "4"{
             goBack()
         }

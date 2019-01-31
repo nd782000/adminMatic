@@ -54,7 +54,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
     
     init(_equipment:Equipment,_equipmentService:EquipmentService){
         super.init(nibName:nil,bundle:nil)
-        print("init _equipmentService.status = \(_equipmentService.status)")
+        print("init _equipmentService.status = \(String(describing: _equipmentService.status))")
         //print("init current = \(_equipmentService.currentValue)")
         self.equipment = _equipment
         self.equipmentService = _equipmentService
@@ -247,7 +247,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
             completionLabel.font = layoutVars.smallFont
             self.view.addSubview(completionLabel)
             
-            completionLabel.leftAnchor.constraint(equalTo: view.safeLeftAnchor, constant:50.0).isActive = true
+            completionLabel.leftAnchor.constraint(equalTo: view.safeLeftAnchor, constant:10.0).isActive = true
             completionLabel.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
             completionLabel.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
             completionLabel.heightAnchor.constraint(equalToConstant: 60.0).isActive = true
@@ -511,7 +511,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
         questionsToLogJSON = []
         
         
-        for (index, question) in self.questionArray.enumerated() {
+        for (_, question) in self.questionArray.enumerated() {
             
                         let JSONString = question.toJSONString(prettyPrint: true)
                         questionsToLogJSON.append(JSON(JSONString ?? ""))
@@ -630,7 +630,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
         self.layoutViews()
         self.serviceListDelegate.updateServiceList()
         
-        print("equipmentService.type \(equipmentService.type)")
+        print("equipmentService.type \(String(describing: equipmentService.type))")
 
         
         if self.equipmentService.type != "4"{

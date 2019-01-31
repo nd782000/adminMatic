@@ -17,16 +17,16 @@ import SwiftyJSON
 
 
 /*
-protocol EditContractDelegate{
-    func updateContract(_contract:Contract)
-    func updateContract(_contractItem:ContractItem)
-    func updateContract(_contract:Contract, _status:String)
-    //func updateContractLead(_lead:Lead)
-    func suggestStatusChange(_emailCount:Int)
-}
+ Status
+ 0 = syncing to QB
+ 1 = pending
+ 2 = final
+ 3 = sent (printed/emailed)
+ 4 = paid
+ 5 = void
+ */
 
 
-*/
 
 //class InvoiceViewController: UIViewController{
 class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableViewDelegate, UITableViewDataSource, StackDelegate{
@@ -35,21 +35,15 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     var layoutVars:LayoutVars = LayoutVars()
     var json:JSON!
     var invoice:Invoice!
-    //var delegate:ContractListDelegate!
     
-   // var editLeadDelegate:EditLeadDelegate!
-   // var sortEditsMade:Bool = false
     
     var stackController:StackController!
     
     var optionsButton:UIBarButtonItem!
-    //var editsMade:Bool = false
     var statusIcon:UIImageView = UIImageView()
-   // var statusTxtField:PaddedTextField!
-    //var statusPicker: Picker!
-    var statusArray = ["Un-Paid","Paid"]
+   
+    var statusArray = ["Syncing to QB","Pending","Final","Sent","Paid","Void"]
     var statusValue: String!
-    //var statusValueToUpdate: String!
     var customerBtn: Button!
     var infoView: UIView! = UIView()
     
@@ -65,24 +59,15 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     var salesRepLbl:GreyLabel!
     var salesRep:GreyLabel!
     
-    //var notesLbl:GreyLabel!
-    //var notesView:UITextView!
+    
     var itemsLbl:GreyLabel!
     var items: JSON!
     var itemsArray:[InvoiceItem] = []
-    //var itemIDArray:[String] = []
-    //var signatureArray:[Signature] = []
-    //var itemRowToEdit:Int?
     
-    //var customerSignature:Signature!
+    
     var itemsTableView: TableView!
     
-    //var signBtn:Button = Button(titleText: "Sign")
-    //var signatureImageContainerView:UIView!
-    //var signatureImage:UIImage!
-    //var signatureImageView:UIImageView!
-    
-    //var tapBtn:UIButton!
+   
     
     var subLbl:GreyLabel!
     var subValueLbl:GreyLabel!
@@ -92,14 +77,6 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     var totalLbl:GreyLabel!
     
     
-    //var leadTasksWaiting:String?
-    
-    //var employeeSignature:Bool = false
-    
-    
-    //var contractItemViewController:ContractItemViewController?
-    
-    //var lead:Lead?
     
     init(_invoice:Invoice){
         super.init(nibName:nil,bundle:nil)
@@ -153,12 +130,12 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/invoice.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("invoice response = \(response)")
+                //print("invoice response = \(response)")
             }
             .responseJSON(){
                 response in
                 if let json = response.result.value {
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     //self.json = JSON(json)
                     
                     self.json = JSON(json)["invoice"]
@@ -175,14 +152,9 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         
         //primary info
         
-        /*
-        self.contract.subTotal =  self.json["contract"]["subTotal"].stringValue
-        self.contract.taxTotal =  self.json["contract"]["taxTotal"].stringValue
-        self.contract.total =  self.json["contract"]["total"].stringValue
-        self.contract.terms = self.json["contract"]["termsDescription"].stringValue
+        print("invoice status = \(self.json["invoiceStatus"].stringValue)")
         
-        */
-        self.invoice = Invoice(_ID: self.json["ID"].stringValue, _date: self.json["invoiceDate"].stringValue, _customer: self.json["customer"].stringValue, _customerName: self.json["custName"].stringValue, _totalPrice: self.layoutVars.numberAsCurrency(_number: self.json["total"].stringValue) , _paid: self.json["paid"].stringValue)
+        self.invoice = Invoice(_ID: self.json["ID"].stringValue, _date: self.json["invoiceDate"].stringValue, _customer: self.json["customer"].stringValue, _customerName: self.json["custName"].stringValue, _totalPrice: self.layoutVars.numberAsCurrency(_number: self.json["total"].stringValue) , _status: self.json["invoiceStatus"].stringValue)
         
         self.invoice.title = self.json["title"].stringValue
         self.invoice.chargeType = self.json["chargeType"].stringValue
@@ -210,13 +182,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
             
         }
         
-        /*
-        self.itemIDArray = []
-        for item in itemsArray{
-            let ID = item.ID!
-            self.itemIDArray.append(ID)
-        }
-        */
+       
     
         self.layoutViews()
     }
@@ -259,7 +225,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
         safeContainer.addSubview(statusIcon)
-        setStatus(status: invoice.paid)
+        setStatus(status: invoice.status)
         
        
         self.customerBtn = Button(titleText: "\(self.invoice.customerName!)")
@@ -399,11 +365,6 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         self.totalLbl.translatesAutoresizingMaskIntoConstraints = false
         safeContainer.addSubview(totalLbl)
         
-        
-        
-       
-       
-        
        
         /////////  Auto Layout   //////////////////////////////////////
         
@@ -436,12 +397,6 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
             
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[totalLbl(200)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-       
-            
-        
-        
-       // safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(90)]-[itemsLbl(22)][table]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(85)]-[itemsLbl(22)][table]-[subLbl(15)]-4-[taxLbl(15)]-4-[totalLbl(35)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
@@ -468,41 +423,14 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[salesRepLbl]-[salesRep]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         
         
-       // self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllTop, metrics: metricsDictionary, views: infoDictionary))
-        //self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notes]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
-        
+       
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)][chargeTypeLbl(22)][salesRepLbl(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[title(22)][chargeType(22)][salesRep(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
         
         
     }
     
-    
-    /*
-    func newContractMessage(){
-        //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Add Items", _message: "You should add items to this contract.")
-        
-        
-        let alertController = UIAlertController(title: "Add Items?", message: "This contract has no items.  Add items now?", preferredStyle: UIAlertController.Style.alert)
-        let cancelAction = UIAlertAction(title: "Not Now", style: UIAlertAction.Style.destructive) {
-            (result : UIAlertAction) -> Void in
-            print("No")
-            return
-        }
-        
-        let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
-            (result : UIAlertAction) -> Void in
-            print("Yes")
-            
-            self.addItem()
-        }
-        alertController.addAction(cancelAction)
-        alertController.addAction(okAction)
-        layoutVars.getTopController().present(alertController, animated: true, completion: nil)
-        
-    }
-    */
-    
+   
     @objc func showCustInfo() {
         ////print("SHOW CUST INFO")
         let customerViewController = CustomerViewController(_customerID: self.invoice.customer!,_customerName: self.invoice.customerName)
@@ -561,13 +489,28 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     
     @objc func displayInvoiceOptions(){
         print("display Options")
-        if self.layoutVars.grantAccess(_level: 1,_view: self) {
+        if self.layoutVars.grantAccess(_level: 2,_view: self) {
             return
         }else{
             
             let actionSheet = UIAlertController(title: "Invoice Options", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
             actionSheet.view.backgroundColor = UIColor.white
             actionSheet.view.layer.cornerRadius = 5;
+            
+            if invoice.status == "1"{
+                actionSheet.addAction(UIAlertAction(title: "Mark as Final", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
+                    print("markInvoiceFinal")
+                    self.markInvoiceFinal()
+                }))
+            }
+            
+            if invoice.status == "2"{
+                actionSheet.addAction(UIAlertAction(title: "Mark as Pending", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
+                    print("markInvoicePending")
+                    self.markInvoicePending()
+                }))
+            }
+            
             
             actionSheet.addAction(UIAlertAction(title: "Send Invoice", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                 print("send invoice")
@@ -621,11 +564,151 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     
     
     
-    
+    @objc func markInvoiceFinal(){
+        let parameters:[String:String]
+        parameters = ["invoiceID": self.invoice.ID!]
+        
+        indicator = SDevIndicator.generate(self.view)!
+        print("parameters = \(parameters)")
+        
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/invoiceToFinal.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("send response = \(response)")
+            }
+            .responseJSON(){
+                response in
+                if let json = response.result.value {
+                    print("JSON: \(json)")
+                    
+                    //self.contractDelegate.suggestStatusChange(_emailCount:self.emailsToSend.count)
+                    self.invoice.status = "2"
+                    self.setStatus(status: self.invoice.status)
+                    
+                    self.layoutVars.simpleAlert(_vc: self, _title: "Invoice Marked to Final", _message: "")
+                }
+                print(" dismissIndicator")
+                self.indicator.dismissIndicator()
+        }
+        
+    }
    
+    
+    @objc func markInvoicePending(){
+        let parameters:[String:String]
+        parameters = ["invoiceID": self.invoice.ID!]
+        
+        indicator = SDevIndicator.generate(self.view)!
+        print("parameters = \(parameters)")
+        
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/invoiceToPending.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("send response = \(response)")
+            }
+            .responseJSON(){
+                response in
+                if let json = response.result.value {
+                    print("JSON: \(json)")
+                    
+                    //self.contractDelegate.suggestStatusChange(_emailCount:self.emailsToSend.count)
+                    self.invoice.status = "1"
+                    self.setStatus(status: self.invoice.status)
+                    
+                    self.layoutVars.simpleAlert(_vc: self, _title: "Invoice Marked to Pending", _message: "")
+                }
+                print(" dismissIndicator")
+                self.indicator.dismissIndicator()
+        }
+        
+    }
     
     
     @objc func sendInvoice(){
+        switch invoice.status {
+        case "0":
+            layoutVars.simpleAlert(_vc: self, _title: "Can't Send Invoice", _message: "Invoice needs to sync with Quick Books before sending.  Try back in a few minutes.")
+            return
+        case "1":
+            
+            let alertController = UIAlertController(title: "Can't Send Invoice", message: "Invoice is pending.  Please mark to Final before sending", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
+                (result : UIAlertAction) -> Void in
+                print("No")
+                return
+            }
+            
+            let okAction = UIAlertAction(title: "Final", style: UIAlertAction.Style.default) {
+                (result : UIAlertAction) -> Void in
+                print("Yes")
+                
+                //self.addItem()
+                self.markInvoiceFinal()
+                return
+            }
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+            
+            
+        case "3":
+            
+            let alertController = UIAlertController(title: "Invoice Already Sent", message: "This invoice has been already sent.  Do you want to re-send?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
+                (result : UIAlertAction) -> Void in
+                print("No")
+                return
+            }
+            
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
+                (result : UIAlertAction) -> Void in
+                print("Yes")
+                
+                
+            }
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+            
+        case "4":
+            
+            let alertController = UIAlertController(title: "Invoice Already Paid", message: "This invoice has been already been paid.  Do you want to send it anyway?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
+                (result : UIAlertAction) -> Void in
+                print("No")
+                return
+            }
+            
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
+                (result : UIAlertAction) -> Void in
+                print("Yes")
+                
+                
+            }
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+        case "5":
+            
+            let alertController = UIAlertController(title: "Invoice Voided", message: "This invoice has been voided.  Do you want to send it anyway?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
+                (result : UIAlertAction) -> Void in
+                print("No")
+                return
+            }
+            
+            let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
+                (result : UIAlertAction) -> Void in
+                print("Yes")
+                
+                
+            }
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+        default:
+            print("default")
+        }
         
         let emailViewController:EmailViewController = EmailViewController(_customerID: self.invoice.customer!, _customerName: self.invoice.customerName, _type: "1", _docID: self.invoice.ID)
         //emailViewController.contractDelegate = self
@@ -670,7 +753,23 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
             statusIcon.image = statusImg
             break;
         case "1":
+            let statusImg = UIImage(named:"waitingStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "2":
+            let statusImg = UIImage(named:"inProgressStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "3":
+            let statusImg = UIImage(named:"acceptedStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "4":
             let statusImg = UIImage(named:"doneStatus.png")
+            statusIcon.image = statusImg
+            break;
+        case "5":
+            let statusImg = UIImage(named:"cancelStatus.png")
             statusIcon.image = statusImg
             break;
         
