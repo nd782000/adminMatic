@@ -82,26 +82,7 @@ class InvoiceTableViewCell: UITableViewCell {
         
         
         
-        //titleLbl.text = ""
-        //setStatus(status: contract.status)
-        
-        
-        
-        //titleLbl.text = self.name!
-        
-        //titleLbl.text = self.invoice.custAndPrice!
-        
-        /*descriptionLbl.text = contract.title!
-        
-        if contract.daysAged! == "0"{
-            daysAgedLbl.text = "Today"
-        }else if contract.daysAged! == "1"{
-            daysAgedLbl.text = "Yesterday"
-        }else{
-            daysAgedLbl.text = "\(contract.daysAged!) Days"
-        }
-        */
-        
+       
         
         
         
@@ -127,11 +108,11 @@ class InvoiceTableViewCell: UITableViewCell {
         print("set status \(status)")
         switch (status) {
         case "0":
-            let statusImg = UIImage(named:"unDoneStatus.png")
+            let statusImg = UIImage(named:"syncIcon.png")
             statusIcon.image = statusImg
             break;
         case "1":
-            let statusImg = UIImage(named:"waitingStatus.png")
+            let statusImg = UIImage(named:"pendingIcon.png")
             statusIcon.image = statusImg
             break;
         case "2":

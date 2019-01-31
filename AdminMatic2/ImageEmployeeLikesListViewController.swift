@@ -366,7 +366,7 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         cell.employee = self.employeeArray[indexPath.row]
         
         //print("cell.employee.ID = \(cell.employee.ID)")
-        
+        cell.layoutViews()
         cell.activityView.startAnimating()
         cell.nameLbl.text = cell.employee.name
         cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+cell.employee.pic!)

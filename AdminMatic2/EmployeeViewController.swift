@@ -92,7 +92,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     var methodFinish:Date!
     
     
-    
+    //var controller:MFMessageComposeViewController?
     
     init(_employee:Employee){
         super.init(nibName:nil,bundle:nil)
@@ -676,15 +676,16 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     func sendRecruitmentText(){
         print("send recruitment text")
+        var controller:MFMessageComposeViewController?
         
         if (MFMessageComposeViewController.canSendText()) {
-            let controller = MFMessageComposeViewController()
-            controller.body = "Atlantic is Hiring! Go to www.AtlanticLawnandGarden.com/careers/\((self.appDelegate.loggedInEmployee?.ID!)!) to apply today.  Help \(String(describing: self.appDelegate.loggedInEmployee?.name!)) earn a bonus. Thanks"
+            controller = MFMessageComposeViewController()
+            controller!.body = "Atlantic is Hiring! Go to www.AtlanticLawnandGarden.com/careers/\((self.appDelegate.loggedInEmployee?.ID!)!) to apply today.  Help \(self.appDelegate.loggedInEmployee!.name!) earn a bonus. Thanks"
             //controller.recipients = self.batchOfTexts
-            controller.messageComposeDelegate = self
+            controller!.messageComposeDelegate = self
            
             
-            self.present(controller, animated: true, completion: nil)
+            layoutVars.getTopController().present(controller!, animated: true, completion: nil)
         }
         
         
@@ -692,8 +693,11 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
         //... handle sms screen actions
-        self.dismiss(animated: true, completion: nil)
+        print("message delegate")
         self.layoutVars.simpleAlert(_vc: self, _title: "Message Sent. Thanks!", _message: "")
+        
+        self.dismiss(animated: true, completion: nil)
+        
     }
     
     

@@ -103,7 +103,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     func layoutViews(){
         
-       
+       print("layout views")
         //set container to safe bounds of view
         let safeContainer:UIView = UIView()
         safeContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -129,6 +129,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         self.messageTxt.isEditable = true
         self.messageTxt.delegate = self
         self.messageTxt.translatesAutoresizingMaskIntoConstraints = false
+        self.messageTxt.textContainerInset = UIEdgeInsets(top: 4, left: 0, bottom: 0, right: 0)
         safeContainer.addSubview(self.messageTxt)
         
        
@@ -158,6 +159,8 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         self.sendMessageBtn.addTarget(self, action: #selector(GroupMessageViewController.buildRecipientList), for: UIControl.Event.touchUpInside)
         safeContainer.addSubview(self.sendMessageBtn)
         
+        
+        print("layout views 1")
         //auto layout group
         let viewsDictionary = [
             "messageTxt":self.messageTxt,
@@ -169,13 +172,18 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         
         let sizeVals = ["width": layoutVars.fullWidth,"halfWidth":(layoutVars.fullWidth - 15)/2,"height": self.view.frame.size.height ,"navBarHeight":self.layoutVars.navAndStatusBarHeight + 5] as [String : Any]
         
+        print("layout views 2")
     //////////////   auto layout position constraints   /////////////////////////////
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[messageTxt]-|", options: [], metrics: sizeVals, views: viewsDictionary))
          safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[selectNoneBtn(halfWidth)]-5-[selectAllBtn(halfWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[empTable]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        print("layout views 3")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[sendMessageBtn]-|", options: [], metrics: sizeVals, views: viewsDictionary))
+        print("layout views 4")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[messageTxt(90)]-[selectNoneBtn(40)]-[empTable]-[sendMessageBtn(40)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        print("layout views 5")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[messageTxt(90)]-[selectAllBtn(40)]-[empTable]-[sendMessageBtn(40)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        print("layout views 6")
         
     }
     
@@ -186,31 +194,41 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         //print("appDelegate.employeeArray.count = \(appDelegate.employeeArray.count)")
+       print("cell count\(appDelegate.employeeArray.count)")
         return appDelegate.employeeArray.count
     }
     
     
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
+        
+        print("cell create")
         let cell:EmployeeTableViewCell = employeeTableView.dequeueReusableCell(withIdentifier: "cell") as! EmployeeTableViewCell
         cell.employee = appDelegate.employeeArray[indexPath.row]
+        print("cell create 1")
         cell.setPhone()
         cell.activityView.startAnimating()
+        print("cell create 2")
         cell.nameLbl.text = cell.employee.name
         cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+cell.employee.pic!)
+        print("cell create 3")
         if(self.selectedStates[indexPath.row] == true){
+            print("cell create 3.1")
             cell.accessoryType = .checkmark
             cell.isSelected = true
         }else{
+            print("cell create 3.2")
             cell.accessoryType = .none
             cell.isSelected = false
         }
         if(cell.employee.phone == ""){
+            print("cell create 3.3")
             cell.isUserInteractionEnabled = false
             self.selectedStates[indexPath.row] = false
             cell.accessoryType = .none
             cell.isSelected = false
             //cell.alpha = 0.5
         }else{
+            print("cell create 3.4")
             cell.isUserInteractionEnabled = true
         }
         return cell;

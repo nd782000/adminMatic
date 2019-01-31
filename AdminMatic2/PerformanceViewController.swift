@@ -805,11 +805,24 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         super.didReceiveMemoryWarning()
     }
     
-    func canRotate() -> Void {}
+    @objc func canRotate() -> Void {}
     
     
     
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        if UIDevice.current.orientation.isLandscape {
+            print("Landscape")
+            self.layoutViewsLandscape()
+        } else {
+            print("Portrait")
+            self.layoutViewsPortrait()
+            
+        }
+    }
+    
+    /*
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         print("view will transition")
         if (UIDevice.current.orientation.isLandscape == true) {
@@ -820,7 +833,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
             self.layoutViewsPortrait()
         }
     }
-    
+    */
     
     
     

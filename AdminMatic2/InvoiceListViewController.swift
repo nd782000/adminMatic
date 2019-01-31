@@ -24,9 +24,12 @@ import SwiftyJSON
  5 = void
  */
 
+protocol InvoiceListDelegate{
+    func updateInvoice(_atIndex:Int,_status:String)
+    
+}
 
-
-class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource{
+class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource, InvoiceListDelegate{
     
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
@@ -37,7 +40,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
     var shouldShowSearchResults:Bool = false
     
     
-    var refreshControl: UIRefreshControl!
+    //var refreshControl: UIRefreshControl!
     var invoiceTableView: TableView!
     var countView:UIView = UIView()
     var countLbl:Label = Label()
@@ -93,7 +96,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/invoices.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("invoice response = \(response)")
+                print("invoice response")
             }
             .responseJSON() {
                 response in
@@ -115,19 +118,21 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
                             
                             //create an object
                             print("create a invoice object \(i)")
-                            let invoice = Invoice(_ID: (invoices[i]["ID"] as? String)!, _date: (invoices[i]["invoiceDate"] as? String)!, _customer: (invoices[i]["customer"] as? String)!, _customerName: (invoices[i]["custName"] as? String)!, _totalPrice: "$\((invoices[i]["total"] as? String)!)", _status: (invoices[i]["invoiceStatus"] as? String)!)
+                            let invoice = Invoice(_ID: (invoices[i]["ID"] as? String)!, _date: (invoices[i]["invoiceDate"] as? String)!, _customer: (invoices[i]["customer"] as? String)!, _customerName: (invoices[i]["custName"] as? String)!, _totalPrice: self.layoutVars.numberAsCurrency(_number: (invoices[i]["total"] as? String)!), _status: (invoices[i]["invoiceStatus"] as? String)!)
                             
                             self.invoiceArray.append(invoice)
                           
                             
                         }
+                        
+                        self.indicator.dismissIndicator()
+                        
+                        
+                        self.layoutViews()
                     }
                    
                     
-                    self.indicator.dismissIndicator()
-                    
-                    
-                    self.layoutViews()
+                   
                     
                    
                 } catch {
@@ -182,10 +187,10 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
         self.invoiceTableView.register(InvoiceTableViewCell.self, forCellReuseIdentifier: "cell")
         safeContainer.addSubview(self.invoiceTableView)
         
-        refreshControl = UIRefreshControl()
-        refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-        invoiceTableView.addSubview(refreshControl)
-        refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: UIControl.Event.valueChanged)
+        //refreshControl = UIRefreshControl()
+        //refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        //invoiceTableView.addSubview(refreshControl)
+        //refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: UIControl.Event.valueChanged)
         
         
         
@@ -399,7 +404,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
             cell.setStatus(status: cell.invoice.status)
             
         } else {
-            
+            print("count = \(self.invoiceArray.count)")
             cell.layoutViews()
             cell.invoice = self.invoiceArray[indexPath.row]
             
@@ -421,13 +426,19 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
         let indexPath = tableView.indexPathForSelectedRow;
         let currentCell = tableView.cellForRow(at: indexPath!) as! InvoiceTableViewCell;
         self.invoiceViewController = InvoiceViewController(_invoice: currentCell.invoice)
+        self.invoiceViewController.delegate = self
+        self.invoiceViewController.index = indexPath?.row
+        
         tableView.deselectRow(at: indexPath!, animated: true)
        navigationController?.pushViewController(self.invoiceViewController, animated: false )
     }
     
+    func updateInvoice(_atIndex:Int,_status:String){
+        self.invoiceArray[_atIndex].status  = _status
+        self.invoiceTableView.reloadData()
+    }
     
-    
-    
+    /*
     
     @objc func refresh(_ sender: AnyObject){
         //print("refresh")
@@ -435,6 +446,8 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
         getInvoices()
         
     }
+ */
+    
     
     
     /*

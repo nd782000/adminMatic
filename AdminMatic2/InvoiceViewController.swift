@@ -27,15 +27,22 @@ import SwiftyJSON
  */
 
 
+protocol EditInvoiceDelegate{
+    
+    func suggestStatusChange(_emailCount:Int)
+}
+
 
 //class InvoiceViewController: UIViewController{
-class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableViewDelegate, UITableViewDataSource, StackDelegate{
+class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableViewDelegate, UITableViewDataSource, StackDelegate, EditInvoiceDelegate{
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
     var json:JSON!
     var invoice:Invoice!
     
+    var delegate:InvoiceListDelegate?
+    var index:Int?
     
     var stackController:StackController!
     
@@ -564,14 +571,14 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     
     
     
-    @objc func markInvoiceFinal(){
+    @objc func markInvoiceFinal(_send:Bool = false){
         let parameters:[String:String]
-        parameters = ["invoiceID": self.invoice.ID!]
+        parameters = ["invoiceID": self.invoice.ID!,"final":"1"]
         
         indicator = SDevIndicator.generate(self.view)!
         print("parameters = \(parameters)")
         
-        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/invoiceToFinal.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/invoiceFinal.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
                 print("send response = \(response)")
@@ -584,8 +591,15 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
                     //self.contractDelegate.suggestStatusChange(_emailCount:self.emailsToSend.count)
                     self.invoice.status = "2"
                     self.setStatus(status: self.invoice.status)
+                    if self.delegate != nil{
+                         self.delegate!.updateInvoice(_atIndex: self.index!, _status: self.invoice.status)
+                    }
+                    if _send{
+                        self.displayEmailView()
+                    }else{
+                        self.layoutVars.simpleAlert(_vc: self, _title: "Invoice Marked to Final", _message: "")
+                    }
                     
-                    self.layoutVars.simpleAlert(_vc: self, _title: "Invoice Marked to Final", _message: "")
                 }
                 print(" dismissIndicator")
                 self.indicator.dismissIndicator()
@@ -596,12 +610,12 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     
     @objc func markInvoicePending(){
         let parameters:[String:String]
-        parameters = ["invoiceID": self.invoice.ID!]
+        parameters = ["invoiceID": self.invoice.ID!,"final":"0"]
         
         indicator = SDevIndicator.generate(self.view)!
         print("parameters = \(parameters)")
         
-        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/invoiceToPending.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/invoiceFinal.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
                 print("send response = \(response)")
@@ -614,6 +628,10 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
                     //self.contractDelegate.suggestStatusChange(_emailCount:self.emailsToSend.count)
                     self.invoice.status = "1"
                     self.setStatus(status: self.invoice.status)
+                    
+                    if self.delegate != nil{
+                        self.delegate!.updateInvoice(_atIndex: self.index!, _status: self.invoice.status)
+                    }
                     
                     self.layoutVars.simpleAlert(_vc: self, _title: "Invoice Marked to Pending", _message: "")
                 }
@@ -631,7 +649,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
             return
         case "1":
             
-            let alertController = UIAlertController(title: "Can't Send Invoice", message: "Invoice is pending.  Please mark to Final before sending", preferredStyle: UIAlertController.Style.alert)
+            let alertController = UIAlertController(title: "Mark to Final?", message: "Invoice is pending.  Please mark to Final before sending", preferredStyle: UIAlertController.Style.alert)
             let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 print("No")
@@ -643,7 +661,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
                 print("Yes")
                 
                 //self.addItem()
-                self.markInvoiceFinal()
+                self.markInvoiceFinal(_send:true)
                 return
             }
             alertController.addAction(cancelAction)
@@ -664,6 +682,8 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
                 (result : UIAlertAction) -> Void in
                 print("Yes")
                 
+                self.displayEmailView()
+                return
                 
             }
             alertController.addAction(cancelAction)
@@ -683,6 +703,9 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
                 (result : UIAlertAction) -> Void in
                 print("Yes")
                 
+                self.displayEmailView()
+                return
+                
                 
             }
             alertController.addAction(cancelAction)
@@ -701,6 +724,8 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
                 (result : UIAlertAction) -> Void in
                 print("Yes")
                 
+                self.displayEmailView()
+                return
                 
             }
             alertController.addAction(cancelAction)
@@ -710,15 +735,96 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
             print("default")
         }
         
+        //let emailViewController:EmailViewController = EmailViewController(_customerID: self.invoice.customer!, _customerName: self.invoice.customerName, _type: "1", _docID: self.invoice.ID)
+        
+        
+        //emailViewController.invoiceDelegate = self
+        
+       // navigationController?.pushViewController(emailViewController, animated: false )
+        
+        self.displayEmailView()
+        
+    }
+    
+    func displayEmailView(){
+        print("display email view")
+        
         let emailViewController:EmailViewController = EmailViewController(_customerID: self.invoice.customer!, _customerName: self.invoice.customerName, _type: "1", _docID: self.invoice.ID)
-        //emailViewController.contractDelegate = self
+        
+        
+        emailViewController.invoiceDelegate = self
+        
         navigationController?.pushViewController(emailViewController, animated: false )
+        
         
     }
     
     
     
-    
+    func suggestStatusChange(_emailCount:Int) {
+        print("suggestStatusChange")
+        
+        var messageString:String = "Email Sent"
+        if _emailCount > 1{
+            messageString = "Emails Sent"
+        }
+        if self.invoice.status == "2" {
+            
+            
+            
+            let alertController = UIAlertController(title: messageString, message:  "Set invoice status to SENT?", preferredStyle: UIAlertController.Style.alert)
+            let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
+                (result : UIAlertAction) -> Void in
+                
+                //self.getContract()
+                
+                
+                
+            }
+            let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
+                (result : UIAlertAction) -> Void in
+                
+                
+                var parameters:[String:String]
+                parameters = [
+                    "invoiceID":self.invoice.ID,
+                    "emailed":"1"
+                ]
+                
+                self.invoice.status = "3"
+                self.setStatus(status: "3")
+                print("parameters = \(parameters)")
+                if self.delegate != nil{
+                    self.delegate?.updateInvoice(_atIndex: self.index!, _status: self.invoice.status)
+                }
+                
+                self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/changeInvoiceEmailed.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+                    response in
+                    print(response.request ?? "")  // original URL request
+                    print(response.result)   // result of response serialization
+                    
+                    
+                    
+                    self.layoutVars.playSaveSound()
+                    
+                }
+                
+            }
+            alertController.addAction(cancelAction)
+            alertController.addAction(okAction)
+            layoutVars.getTopController().present(alertController, animated: true)
+            
+            
+            
+            //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Email Sent", _message: "")
+            
+        }else{
+            
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: messageString, _message: "")
+            
+        }
+        
+    }
     
     
     
@@ -749,11 +855,11 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         print("set status \(status)")
         switch (status) {
         case "0":
-            let statusImg = UIImage(named:"unDoneStatus.png")
+            let statusImg = UIImage(named:"syncIcon.png")
             statusIcon.image = statusImg
             break;
         case "1":
-            let statusImg = UIImage(named:"waitingStatus.png")
+            let statusImg = UIImage(named:"pendingIcon.png")
             statusIcon.image = statusImg
             break;
         case "2":

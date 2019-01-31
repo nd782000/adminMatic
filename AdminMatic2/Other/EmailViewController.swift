@@ -68,7 +68,8 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     
     
-    var contractDelegate:EditContractDelegate!
+    var contractDelegate:EditContractDelegate?
+    var invoiceDelegate:EditInvoiceDelegate?
     
     var sendBtn: Button!
     
@@ -704,7 +705,11 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
                         print("JSON: \(json)")
                         
                         //self.invoiceDelegate.suggestStatusChange(_emailCount:self.emailsToSend.count)
-                        
+                        if self.invoiceDelegate != nil{
+                           self.goBack()
+                            self.invoiceDelegate!.suggestStatusChange(_emailCount:self.emailsToSend.count)
+                            
+                        }
                         
                     }
                     print(" dismissIndicator")
@@ -734,7 +739,12 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
                     if let json = response.result.value {
                         print("JSON: \(json)")
                         
-                        self.contractDelegate.suggestStatusChange(_emailCount:self.emailsToSend.count)
+                        if self.contractDelegate != nil{
+                           
+                            self.goBack()
+                            self.contractDelegate!.suggestStatusChange(_emailCount:self.emailsToSend.count)
+                            
+                        }
                         
                         
                     }

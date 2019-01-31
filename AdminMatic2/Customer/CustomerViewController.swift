@@ -17,7 +17,7 @@ import DKImagePickerController
 
 
 
-class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ScheduleDelegate, ImageViewDelegate, ImageLikeDelegate, LeadListDelegate, ContractListDelegate{
+class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ScheduleDelegate, ImageViewDelegate, ImageLikeDelegate, LeadListDelegate, ContractListDelegate, InvoiceListDelegate{
     
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
@@ -1435,15 +1435,17 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             print("invoice customer")
             cell.invoice = self.customerInvoiceArray[indexPath.row]
             
-            cell.layoutViews(_scheduleMode: "CUSTOMER")
-            cell.dateLbl.text = "\(cell.invoice!.totalPrice!)  \(cell.invoice!.title!)"
-            
+            cell.layoutViews(_scheduleMode: "INVOICE")
+            cell.dateLbl.text = cell.invoice!.date!
+            cell.titleLbl.text = cell.invoice!.title!
+            cell.IDLbl.text = cell.invoice!.ID!
+            cell.priceLbl.text = cell.invoice!.totalPrice!
+
             
             print("set invoice cell status = \(cell.invoice!.status!)")
             cell.setStatus(status: cell.invoice!.status!, type: "INVOICE")
             
-            cell.priceLbl.text = cell.invoice!.date!
-            cell.profitBarView.isHidden = true
+            
             
         
             break
@@ -1506,6 +1508,9 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
            
             
             let invoiceViewController = InvoiceViewController(_invoice: currentCell.invoice!)
+            invoiceViewController.delegate = self
+            invoiceViewController.index = indexPath?.row
+            
             navigationController?.pushViewController(invoiceViewController, animated: false )
             
             tableView.deselectRow(at: indexPath!, animated: false)
@@ -1776,6 +1781,11 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
     }
     
+    func updateInvoice(_atIndex:Int,_status:String){
+        self.customerInvoiceArray[_atIndex].status  = _status
+        self.customerDetailsTableView.reloadData()
+        self.switchTableView(_displayMode: "INVOICES")
+    }
     
     
     

@@ -36,7 +36,11 @@ class EmployeeTableViewCell: UITableViewCell {
     }
     
     func layoutViews(){
+        print("layoutViews")
         self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        
+        phoneLbl.isHidden = true
         
         
         self.selectionStyle = .none
@@ -49,9 +53,7 @@ class EmployeeTableViewCell: UITableViewCell {
         nameLbl.translatesAutoresizingMaskIntoConstraints = false
         nameLbl.font = layoutVars.smallBoldFont
         contentView.addSubview(nameLbl)
-        phoneLbl.translatesAutoresizingMaskIntoConstraints = false
-        phoneLbl.isHidden = true
-        contentView.addSubview(phoneLbl)
+        
         activityView = UIActivityIndicatorView(style: .gray)
         activityView.translatesAutoresizingMaskIntoConstraints = false
         //activityView.center = CGPoint(x: self.employeeImageView.frame.size.width / 2, y: self.employeeImageView.frame.size.height / 2)
@@ -126,7 +128,55 @@ class EmployeeTableViewCell: UITableViewCell {
     }
     
     func setPhone(){
+        print("set phone")
+        
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        
+        //phoneLbl.isHidden = true
+        
+        
+        self.selectionStyle = .none
+        self.employeeImageView.layer.cornerRadius = 5.0
+        self.employeeImageView.layer.borderWidth = 1
+        self.employeeImageView.layer.borderColor = layoutVars.borderColor
+        self.employeeImageView.clipsToBounds = true
+        self.employeeImageView.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(self.employeeImageView)
+        nameLbl.translatesAutoresizingMaskIntoConstraints = false
+        nameLbl.font = layoutVars.smallBoldFont
+        contentView.addSubview(nameLbl)
+        
+        activityView = UIActivityIndicatorView(style: .gray)
+        activityView.translatesAutoresizingMaskIntoConstraints = false
+        //activityView.center = CGPoint(x: self.employeeImageView.frame.size.width / 2, y: self.employeeImageView.frame.size.height / 2)
+        employeeImageView.addSubview(activityView)
+        
+        self.separatorInset = UIEdgeInsets.zero
+        self.layoutMargins = UIEdgeInsets.zero
+        self.preservesSuperviewLayoutMargins = false
+        
+        
+        /*
+        let viewsDictionary = ["pic":self.employeeImageView,"name":nameLbl] as [String : Any]
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[pic(50)]", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)]", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[name]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        
+        let viewsDictionary2 = ["activityView":activityView] as [String : Any]
+        
+        employeeImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activityView]-|", options: [], metrics: nil, views: viewsDictionary2))
+        employeeImageView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[activityView]-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary2))
+        
+        */
+        
+        
+        phoneLbl.translatesAutoresizingMaskIntoConstraints = false
+        
+        contentView.addSubview(phoneLbl)
         self.phoneLbl.isHidden = false
+        
         if(self.employee.phone == "" || self.employee.phone == "No Phone Number"){
             self.phoneLbl.text = "No Phone on File"
             self.phoneLbl.textColor = UIColor.red
@@ -135,12 +185,17 @@ class EmployeeTableViewCell: UITableViewCell {
             self.phoneLbl.textColor = UIColor.black
         }
         
-        
+        print("set phone 1")
         //contentView.removeConstraints(contentView.constraints)
         let viewsDictionary = ["pic":self.employeeImageView,"name":nameLbl,"phone":phoneLbl] as [String : Any]
+        
+        print("set phone 2")
+        
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[pic(50)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[name(25)][phone(25)]", options: [], metrics: nil, views: viewsDictionary))
+        print("set phone 3")
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-10-[name]", options: [], metrics: nil, views: viewsDictionary))
+        print("set phone 4")
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[pic(50)]-20-[phone]", options: [], metrics: nil, views: viewsDictionary))
         
     }

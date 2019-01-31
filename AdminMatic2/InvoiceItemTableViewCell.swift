@@ -57,26 +57,7 @@ class InvoiceItemTableViewCell: UITableViewCell {
         totalPriceLbl.font = self.layoutVars.labelBoldFont
         contentView.addSubview(totalPriceLbl)
         
-       // var taskDescription:String = ""
-        
-        /*
-        let taskCount = self.invoiceItem.tasks.count
-        if taskCount == 0{
-            taskDescription = "No Tasks or Description"
-        }else{
-            for i in 0 ..< taskCount {
-                if i == taskCount - 1{
-                    taskDescription += "-\(self.contractItem.tasks[i].taskDescription!)"
-                }else{
-                    taskDescription += "-\(self.contractItem.tasks[i].taskDescription!)\n"
-                }
-                
-            }
-        }
-        */
-        
-        
-        
+      
         
         
         descriptionLbl.translatesAutoresizingMaskIntoConstraints = false

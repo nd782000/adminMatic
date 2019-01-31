@@ -53,7 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.4.4"
+    var appVersion:String = "1.4.5"
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
     var employeeListViewController:EmployeeListViewController!
@@ -631,10 +631,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         
         if let rootViewController = self.topViewControllerWithRootViewController(rootViewController: window?.rootViewController) {
-            if (rootViewController.responds(to: #selector(ImageFullViewController.canRotate))) {
+            if (rootViewController.responds(to: #selector(ImageFullViewController.canRotate)) || rootViewController.responds(to: #selector(PerformanceViewController.canRotate)) || rootViewController.responds(to: #selector(SignatureViewController.canRotate))) {
                 // Unlock landscape view orientations for this view controller
                 return .allButUpsideDown;
             }
+            
+            /*
+            if (rootViewController.responds(to: #selector(PerformanceViewController.canRotate))) {
+                // Unlock landscape view orientations for this view controller
+                return .allButUpsideDown;
+            }
+            
+            if (rootViewController.responds(to: #selector(SignatureViewController.canRotate))) {
+                // Unlock landscape view orientations for this view controller
+                return .allButUpsideDown;
+            }
+ */
+            
         }
         
         
