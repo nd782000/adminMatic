@@ -73,6 +73,9 @@ class NewEditCustomerViewController: UIViewController, UIPickerViewDelegate, UIP
     var sysNameTxtField:PaddedTextField!
     var sysNameValue:String = ""
     
+    var originalSysName:String = ""
+    var nameChange:String = "0"
+    
     //jobsite
     var jobSiteLbl:GreyLabel!
     
@@ -276,6 +279,7 @@ class NewEditCustomerViewController: UIViewController, UIPickerViewDelegate, UIP
         self.miValue = self.customerJSON["customer"]["mname"].stringValue
         self.lNameValue = self.customerJSON["customer"]["lname"].stringValue
         self.sysNameValue = self.customerJSON["customer"]["name"].stringValue
+        self.originalSysName = self.sysNameValue
         self.referredByValue = self.customerJSON["customer"]["hear"].stringValue
         self.active = self.customerJSON["customer"]["active"].stringValue
         
@@ -1636,8 +1640,14 @@ class NewEditCustomerViewController: UIViewController, UIPickerViewDelegate, UIP
  
         
     
+        print("originalSysName = \(originalSysName)")
+        print("sysNameTextField.text = \(String(describing: sysNameTxtField.text!))")
         
-        
+        if  sysNameTxtField.text! == originalSysName{
+            self.nameChange = "0"
+        }else{
+            self.nameChange = "1"
+        }
        
         var parameters:[String:String] = [:]
         
@@ -1647,6 +1657,8 @@ class NewEditCustomerViewController: UIViewController, UIPickerViewDelegate, UIP
         parameters["middleName"] = self.miTxtField.text
         parameters["lastName"] = self.lNameTxtField.text
         parameters["sysName"] = self.sysNameTxtField.text
+        
+        parameters["nameChange"] = self.nameChange
         
         parameters["jobStreet1"] = self.jobAddr1TxtField.text
         parameters["jobStreet2"] = self.jobAddr2TxtField.text
@@ -1695,6 +1707,10 @@ class NewEditCustomerViewController: UIViewController, UIPickerViewDelegate, UIP
                         self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Name Taken", _message: "The system name provided is already used.  Please create a unique name.")
                         return
                     }
+                    
+                    
+                    self.originalSysName = self.sysNameTxtField.text!
+                    
                     
                     self.customerID = self.json["custID"].stringValue
                     

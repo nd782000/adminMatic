@@ -66,13 +66,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var scheduleViewController:ScheduleViewController!
     var imageCollectionViewController:ImageCollectionViewController!
     var equipmentListViewController:EquipmentListViewController!
-    //var performanceViewController:PerformanceViewController!
     var invoiceListViewController:InvoiceListViewController!
     var leadListViewController:LeadListViewController!
     var contractListViewController:ContractListViewController!
+    
+    
     //var bugsListViewController:BugsListViewController!
-    
-    
+    //var performanceViewController:PerformanceViewController!
     //var underConstructionViewController:UnderConstructionViewController!
 
     
