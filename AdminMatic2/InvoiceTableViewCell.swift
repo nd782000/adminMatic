@@ -30,8 +30,8 @@ class InvoiceTableViewCell: UITableViewCell {
     var totalLbl: UILabel!
     var dateLbl: UILabel!
     var IDLbl: UILabel!
-    //var name: String!
-    //var daysAgedLbl: UILabel!
+    var statusNameLbl: UILabel!
+    
     
     
     required init?(coder aDecoder: NSCoder) {
@@ -79,6 +79,12 @@ class InvoiceTableViewCell: UITableViewCell {
         IDLbl.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(IDLbl)
         
+        statusNameLbl = UILabel()
+        statusNameLbl.font = layoutVars.extraSmallFont
+        statusNameLbl.textAlignment = .center
+        statusNameLbl.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(statusNameLbl)
+        
         
         
         
@@ -86,15 +92,16 @@ class InvoiceTableViewCell: UITableViewCell {
         
         
         
-        let viewsDictionary = ["status":statusIcon,"title":titleLbl,"total":totalLbl,"ID":IDLbl,"date":dateLbl] as [String : Any]
+        let viewsDictionary = ["status":statusIcon,"title":titleLbl,"total":totalLbl,"ID":IDLbl,"statusName":statusNameLbl,"date":dateLbl] as [String : Any]
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[status(40)]-[title]-[total(90)]-|", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-60-[ID(60)]", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[date(80)]-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-60-[ID(60)][statusName][date(80)]-|", options: [], metrics: nil, views: viewsDictionary))
+        //contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[date(80)]-|", options: [], metrics: nil, views: viewsDictionary))
         
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[status(40)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[title(30)][ID(20)]", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[total(30)][statusName(20)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[total(30)][date(20)]", options: [], metrics: nil, views: viewsDictionary))
         
        
@@ -110,31 +117,42 @@ class InvoiceTableViewCell: UITableViewCell {
         case "0":
             let statusImg = UIImage(named:"syncIcon.png")
             statusIcon.image = statusImg
+            statusNameLbl.text = "Syncing to QuickBooks"
+            statusNameLbl.textColor = UIColor.red
             break;
         case "1":
             let statusImg = UIImage(named:"pendingIcon.png")
             statusIcon.image = statusImg
+            statusNameLbl.text = "Invoice Pending"
+            statusNameLbl.textColor = UIColor.red
             break;
         case "2":
             let statusImg = UIImage(named:"inProgressStatus.png")
             statusIcon.image = statusImg
+            statusNameLbl.text = "Invoice Final"
             break;
         case "3":
             let statusImg = UIImage(named:"acceptedStatus.png")
             statusIcon.image = statusImg
+            statusNameLbl.text = "Invoice Emailed/Printed"
             break;
         case "4":
             let statusImg = UIImage(named:"doneStatus.png")
             statusIcon.image = statusImg
+            statusNameLbl.text = "Invoice Paid"
             break;
         case "5":
             let statusImg = UIImage(named:"cancelStatus.png")
             statusIcon.image = statusImg
+            statusNameLbl.text = "Invoice Voided"
+            statusNameLbl.textColor = UIColor.red
             break;
             
         default:
             let statusImg = UIImage(named:"unDoneStatus.png")
             statusIcon.image = statusImg
+            statusNameLbl.text = "Syncing to QuickBooks"
+            statusNameLbl.textColor = UIColor.red
             break;
         }
     }

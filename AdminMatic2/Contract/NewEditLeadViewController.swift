@@ -87,8 +87,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     var repResultsTableView:TableView = TableView()
     var repSearchResults:[String] = []
     
-    //var repIDs = [String]()
-    //var repNames = [String]()
+    
     
     //requested by customer switch
     var reqByCustLbl:GreyLabel!
@@ -134,7 +133,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("viewdidload")
+        //print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
@@ -155,7 +154,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
  
     func getPickerInfo(){
-        print("get picker info")
+        //print("get picker info")
         indicator = SDevIndicator.generate(self.view)!
         
         dateFormatter.dateFormat = "MM-dd-yyyy"
@@ -173,8 +172,8 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
             response in
             //print(response.request ?? "")  // original URL request
             //print(response.response ?? "") // URL response
-            print(response.data ?? "")     // server data
-            print(response.result)   // result of response serialization
+            //print(response.data ?? "")     // server data
+            //print(response.result)   // result of response serialization
             do {
                 if let data = response.data,
                     let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -191,7 +190,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 self.indicator.dismissIndicator()
                 self.layoutViews()
             } catch {
-                print("Error deserializing JSON: \(error)")
+                //print("Error deserializing JSON: \(error)")
             }
         }
         
@@ -199,7 +198,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     
     func layoutViews(){
-        //print("layout views")
+        ////print("layout views")
         if(self.lead == nil){
             title =  "New Lead"
             submitButton = UIBarButtonItem(title: "Submit", style: .plain, target: self, action: #selector(NewEditLeadViewController.submit))
@@ -266,7 +265,6 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         //customer select
         customerSearchBar.placeholder = "Customer..."
         customerSearchBar.translatesAutoresizingMaskIntoConstraints = false
-        //customerSearchBar.layer.cornerRadius = 4
         
         customerSearchBar.layer.borderWidth = 1
         customerSearchBar.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
@@ -411,7 +409,6 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
             self.aptTimeTxtField.alpha = 1.0
             
             
-            //let currentDate = Date()  //5 -  get the current date
             //print("lead.date = \(lead.date)")
             //print("lead.dateRaw = \(lead.dateRaw)")
             if(lead.date != "" && lead.date != "null"){
@@ -676,53 +673,53 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     @objc func cancelStatusInput(){
-        print("Cancel Cust Input")
+        //print("Cancel Cust Input")
         self.statusTxtField.resignFirstResponder()
     }
     
     
     @objc func cancelCustInput(){
-        print("Cancel Cust Input")
+        //print("Cancel Cust Input")
         self.customerSearchBar.resignFirstResponder()
         self.customerResultsTableView.alpha = 0.0
     }
     
     
     @objc func cancelScheduleTypeInput(){
-        print("Cancel Schedule Type Input")
+        //print("Cancel Schedule Type Input")
         self.scheduleTypeTxtField.resignFirstResponder()
     }
     
     @objc func cancelAptDateInput(){
-        print("Cancel Apt Date Input")
+        //print("Cancel Apt Date Input")
         self.aptDateTxtField.resignFirstResponder()
     }
     
     @objc func cancelAptTimeInput(){
-        print("Cancel Apt Time Input")
+        //print("Cancel Apt Time Input")
         self.aptTimeTxtField.resignFirstResponder()
     }
     
     @objc func cancelDeadlineInput(){
-        print("Cancel Deadline Input")
+        //print("Cancel Deadline Input")
         self.deadlineTxtField.resignFirstResponder()
     }
     
     @objc func cancelRepInput(){
-        print("Cancel Rep Input")
+        //print("Cancel Rep Input")
         self.repSearchBar.resignFirstResponder()
         self.repResultsTableView.alpha = 0.0
     }
     
     @objc func cancelDescriptionInput(){
-        print("Cancel Description Input")
+        //print("Cancel Description Input")
         self.descriptionView.resignFirstResponder()
     }
     
     
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        print("shouldChangeTextInRange")
+        //print("shouldChangeTextInRange")
         if (text == "\n") {
             textView.resignFirstResponder()
         }
@@ -731,21 +728,22 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
    
     
-    func textViewDidBeginEditing(_ textView: UITextView) {        print("textFieldDidBeginEditing")
-        
+    func textViewDidBeginEditing(_ textView: UITextView) {        //print("textFieldDidBeginEditing")
+        /*
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.frame.origin.y -= 250
             
             
             }, completion: { finished in
-            // //print("Napkins opened!")
+            // ////print("Napkins opened!")
             })
-        
+        */
     }
     
      func textViewDidEndEditing(_ textView: UITextView) {
-        print("textFieldDidEndEditing")
+        //print("textFieldDidEndEditing")
         editsMade = true
+        /*
          if(self.view.frame.origin.y < 0){
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.frame.origin.y += 250
@@ -753,7 +751,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 
             }, completion: { finished in
             })
-        }
+        }*/
     }
     
 
@@ -771,17 +769,18 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
        return 1
     }
     
-    
+    /*
     // returns the number of 'columns' to display.
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
+    func numberOfComponentsInPickerView(_ pickerView: UIPickerView) -> Int{
         return 1
     }
+    */
     
     
     // returns the # of rows in each component..
-    func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
         // shows first 3 status options, not cancel or waiting
-        print("pickerview tag: \(pickerView.tag)")
+        //print("pickerview tag: \(pickerView.tag)")
         var count:Int = 0
         if(pickerView.tag == 1){
             count = self.statusArray.count
@@ -797,7 +796,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-        print("pickerview tag: \(pickerView.tag)")
+        //print("pickerview tag: \(pickerView.tag)")
         let myView = UIView(frame: CGRect(x:0, y:0, width:pickerView.bounds.width - 30, height:60))
         
         var rowString = String()
@@ -847,13 +846,11 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
     {
         
-        print("pickerview tag: \(pickerView.tag)")
+        //print("pickerview tag: \(pickerView.tag)")
         if(pickerView.tag == 1){
-            //self.statusValueToUpdate = "\(row + 1)"
             lead.statusId = "\(row + 1)"
             
         }else{
-            //self.scheduleTypeValueToUpdate = "\(row + 1)"
             lead.scheduleType = "\(row)"
             self.scheduleTypeTxtField.text = self.scheduleTypeArray[self.scheduleTypePicker.selectedRow(inComponent: 0)]
             
@@ -884,7 +881,6 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     
     func cancelPicker(){
-        //self.statusValueToUpdate = self.statusValue
         self.statusTxtField.resignFirstResponder()
         self.scheduleTypeTxtField.resignFirstResponder()
     }
@@ -892,13 +888,12 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     @objc func handleStatusChange(){
         self.statusTxtField.resignFirstResponder()
         lead.statusId = "\(self.statusPicker.selectedRow(inComponent: 0) + 1)"
-        //self.statusValue = "\(self.statusPicker.selectedRow(inComponent: 0))"
         setStatus(status: lead.statusId)
         editsMade = true
     }
     
     func setStatus(status: String) {
-        print("set status \(status)")
+        //print("set status \(status)")
         switch (status) {
         case "1":
             let statusImg = UIImage(named:"unDoneStatus.png")
@@ -930,10 +925,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     
     @objc func handleScheduleTypeChange(){
-        print("handle scheduleType change")
+        //print("handle scheduleType change")
         self.scheduleTypeTxtField.resignFirstResponder()
         lead.scheduleType = "\(self.scheduleTypePicker.selectedRow(inComponent: 0))"
-        //self.scheduleTypeValue = "\(self.scheduleTypePicker.selectedRow(inComponent: 0))"
         self.scheduleTypeTxtField.text = self.scheduleTypeArray[self.scheduleTypePicker.selectedRow(inComponent: 0)]
         
         if(self.scheduleTypePicker.selectedRow(inComponent: 0) == 0){
@@ -957,7 +951,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     
     @objc func handleAptDatePicker(){
-        print("handleAptDatePicker")
+        //print("handleAptDatePicker")
         self.aptDateTxtField.resignFirstResponder()
         lead.date = dateFormatterDB.string(from: aptDatePickerView.date)
         self.aptDateTxtField.text = dateFormatter.string(from: aptDatePickerView.date)
@@ -965,7 +959,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     @objc func handleAptTimePicker(){
-        print("handleAptTimePicker")
+        //print("handleAptTimePicker")
         self.aptTimeTxtField.resignFirstResponder()
         lead.time = timeFormatterDB.string(from: aptTimePickerView.date)
         self.aptTimeTxtField.text = timeFormatter.string(from: aptTimePickerView.date)
@@ -973,7 +967,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     @objc func handleDeadlinePicker(){
-        print("handleDeadlinePicker")
+        //print("handleDeadlinePicker")
         self.deadlineTxtField.resignFirstResponder()
         
         lead.deadline = dateFormatterDB.string(from: aptDatePickerView.date)
@@ -993,8 +987,8 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         // Filter the data you have. For instance:
-        print("search edit")
-        print("searchText.count = \(searchText.count)")
+        //print("search edit")
+        //print("searchText.count = \(searchText.count)")
         if(searchBar.tag == 1){
             //Customer
             self.tableViewMode = "CUSTOMER"
@@ -1034,16 +1028,15 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         switch self.tableViewMode{
         case "CUSTOMER":
-            print("CUSTOMER filter")
-            //count = self.tasksArray.count + 1
+            //print("CUSTOMER filter")
             customerSearchResults = []
-            print(" text = \(customerSearchBar.text!.lowercased())")
+            //print(" text = \(customerSearchBar.text!.lowercased())")
             self.customerSearchResults = self.customerNames.filter({( aCustomer: String ) -> Bool in
                 return (aCustomer.lowercased().range(of: customerSearchBar.text!.lowercased(), options:.regularExpression) != nil)})
             self.customerResultsTableView.reloadData()
             break
         default://Rep
-            print("Rep filter")
+            //print("Rep filter")
             repSearchResults = []
             self.repSearchResults = self.appDelegate.salesRepNameArray.filter({( aRep: String ) -> Bool in
                 return (aRep.lowercased().range(of: repSearchBar.text!.lowercased(), options:.regularExpression) != nil)})
@@ -1076,8 +1069,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        print("searchBarTextDidEndEditing")
-       // self.tableViewMode = "TASK"
+        //print("searchBarTextDidEndEditing")
         
         if(searchBar.tag == 1){
             self.customerResultsTableView.reloadData()
@@ -1092,13 +1084,10 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 })
             }
         }
-        
-        
-        
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        print("search btn clicked self.tableViewMode = \(self.tableViewMode)")
+        //print("search btn clicked self.tableViewMode = \(self.tableViewMode)")
         switch self.tableViewMode{
         case "CUSTOMER":
             self.customerResultsTableView.reloadData()
@@ -1112,7 +1101,6 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         }
         searchBar.resignFirstResponder()
 
-       // self.tableViewMode = "TASK"
         
     }
     
@@ -1139,11 +1127,11 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
-        print("cell for row tableViewMode = \(self.tableViewMode)")
+        //print("cell for row tableViewMode = \(self.tableViewMode)")
         switch self.tableViewMode{
         case "CUSTOMER":
             
-            //print("customer name: \(self.customerNames[indexPath.row])")
+            ////print("customer name: \(self.customerNames[indexPath.row])")
             let searchString = self.customerSearchBar.text!.lowercased()
             let cell:CustomerTableViewCell = customerResultsTableView.dequeueReusableCell(withIdentifier: "customerCell") as! CustomerTableViewCell
             
@@ -1277,27 +1265,27 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         //print("switchValueDidChange groupImages = \(groupImages)")
         
         if (sender.isOn == true){
-            print("on")
+            //print("on")
             lead.urgent = "1"
             editsMade = true
         }
         else{
-            print("off")
+            //print("off")
             lead.urgent = "0"
         }
     }
     
     @objc func reqByCustSwitchValueDidChange(sender:UISwitch!)
     {
-        //print("switchValueDidChange groupImages = \(groupImages)")
+        ////print("switchValueDidChange groupImages = \(groupImages)")
         
         if (sender.isOn == true){
-            print("on")
+            //print("on")
             lead.requestedByCust = "1"
             editsMade = true
         }
         else{
-            print("off")
+            //print("off")
             lead.requestedByCust = "0"
         }
     }
@@ -1310,11 +1298,11 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     func validateFields()->Bool{
-        print("validate fields")
+        //print("validate fields")
        // print("lead.scheduleType = \(lead.scheduleType)")
         //customer check
         if(lead.customer == ""){
-            print("select a customer")
+            //print("select a customer")
             self.layoutVars.playErrorSound()
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Lead", _message: "Select a Customer")
             return false
@@ -1322,7 +1310,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         //type check
         if(lead.scheduleType == ""){
-            print("select a schedule type")
+            //print("select a schedule type")
             self.layoutVars.playErrorSound()
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Lead", _message: "Select a Schedule Type")
             return false
@@ -1330,7 +1318,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         if(lead.scheduleType == "1"){
             if(lead.date == "" || lead.date == "null"){
-                print("select an apt date")
+                //print("select an apt date")
                 self.layoutVars.playErrorSound()
                 self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Lead", _message: "Select an Appointment Date")
                 return false
@@ -1342,7 +1330,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         //rep check
         if(lead.rep == ""){
-            print("select a sales rep")
+            //print("select a sales rep")
             self.layoutVars.playErrorSound()
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Lead", _message: "Select a Sales Rep.")
             return false
@@ -1351,7 +1339,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         //description check
         if(descriptionView.text.count == 0){
-            print("add a description")
+            //print("add a description")
             self.layoutVars.playErrorSound()
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Lead", _message: "Provide a General Description")
             return false
@@ -1366,14 +1354,11 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     
     @objc func submit(){
-        print("submit lead")
-        //var newLead:Bool = false
-        //if self.lead.ID == "0"{
-            //newLead = true
-        //}
+        //print("submit lead")
+        
         
         if(!validateFields()){
-            print("didn't pass validation")
+            //print("didn't pass validation")
             return
         }
         //validate all fields
@@ -1386,17 +1371,17 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         let parameters:[String:String]
         parameters = ["leadID": self.lead.ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "custID": self.lead.customer, "urgent": self.lead.urgent,"repID": self.lead.rep, "requestedByCust": self.lead.requestedByCust, "description": lead.description , "timeType": self.lead.scheduleType, "date": self.lead.date, "time": self.lead.time, "deadline": self.lead.deadline, "status": self.lead.statusId] as! [String : String]
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/lead.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("lead response = \(response)")
+                //print("lead response = \(response)")
             }
             .responseJSON(){
                 response in
                 if let json = response.result.value {
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     self.layoutVars.playSaveSound()
                     self.json = JSON(json)
                     let newLeadID = self.json["leadID"].stringValue
@@ -1406,15 +1391,12 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
                     self.editsMade = false // avoids the back without saving check
                     
                     if(self.title == "New Lead"){
-                        
-                        //self.goBack()
                         _ = self.navigationController?.popViewController(animated: false)
                         
                         self.delegate.getLeads(_openNewLead: true)
                     }else if(self.title == "New Customer Lead"){
                         //no delegate method
                         
-                        //self.goBack()
                         _ = self.navigationController?.popViewController(animated: false)
                         self.delegate.getLeads(_openNewLead: true)
                         
@@ -1432,7 +1414,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
                     
                     
                 }
-                print(" dismissIndicator")
+                //print(" dismissIndicator")
                 self.indicator.dismissIndicator()
         }
     }
@@ -1442,16 +1424,16 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     @objc func goBack(){
         if(self.editsMade == true){
-            print("editsMade = true")
+            //print("editsMade = true")
             let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertController.Style.alert)
             let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
-                print("Cancel")
+                //print("Cancel")
             }
             
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+                //print("OK")
                 _ = self.navigationController?.popViewController(animated: false)
             }
             
@@ -1486,7 +1468,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     
     func updateTable(_points:Int){
-        print("updateTable")
+        //print("updateTable")
         //getLead()
     }
 }

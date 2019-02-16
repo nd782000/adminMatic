@@ -170,7 +170,7 @@ class TermsViewController: UIViewController, UITextViewDelegate{
     
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        print("shouldChangeTextInRange")
+       // print("shouldChangeTextInRange")
         
         return true
     }
@@ -179,13 +179,13 @@ class TermsViewController: UIViewController, UITextViewDelegate{
     
     
     
-    func textViewDidBeginEditing(_ textView: UITextView) {        print("textFieldDidBeginEditing")
+    func textViewDidBeginEditing(_ textView: UITextView) {       // print("textFieldDidBeginEditing")
         editsMade = true
         
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        print("textFieldDidEndEditing")
+        //print("textFieldDidEndEditing")
         editsMade = true
         self.terms = self.termsView.text!
         
@@ -202,12 +202,12 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         let alertController = UIAlertController(title: "Regenerate Contract Terms?", message: "Would you like to regenerate the contract terms now based on current items?  All custom edits to terms will be overwritten.", preferredStyle: UIAlertController.Style.alert)
         let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
-            print("Cancel")
+            //print("Cancel")
         }
         
         let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
-            print("OK")
+           // print("OK")
             
             self.editsMade = true
             
@@ -221,26 +221,26 @@ class TermsViewController: UIViewController, UITextViewDelegate{
                 
             ]
             
-            print("parameters = \(parameters)")
+           // print("parameters = \(parameters)")
             
             self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contractTerms.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                 response in
-                print(response.request ?? "")  // original URL request
+                //print(response.request ?? "")  // original URL request
                 //print(response.response ?? "") // URL response
                 //print(response.data ?? "")     // server data
-                print(response.result)   // result of response serialization
+               // print(response.result)   // result of response serialization
                 
                 }.responseJSON(){
                     response in
                     if let json = response.result.value {
-                        print("JSON: \(json)")
+                        //print("JSON: \(json)")
                         self.json = JSON(json)
                         let newTerms = self.json["newTerms"].stringValue
                         self.terms = newTerms
                         self.termsView.text = newTerms
                         
                     }
-                    print(" dismissIndicator")
+                   // print(" dismissIndicator")
                     self.indicator.dismissIndicator()
             }
             
@@ -257,7 +257,7 @@ class TermsViewController: UIViewController, UITextViewDelegate{
     
     
     @objc func submit() {
-        print("share")
+       // print("share")
         
         if editsMade == false{
             
@@ -275,14 +275,14 @@ class TermsViewController: UIViewController, UITextViewDelegate{
                 
             ]
             
-            print("parameters = \(parameters)")
+           // print("parameters = \(parameters)")
             
             self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contractTerms.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                 response in
-                print(response.request ?? "")  // original URL request
+                //print(response.request ?? "")  // original URL request
                 //print(response.response ?? "") // URL response
                 //print(response.data ?? "")     // server data
-                print(response.result)   // result of response serialization
+                //print(response.result)   // result of response serialization
                 
                 
                 self.delegate.updateTerms(_terms: self.terms)
@@ -300,16 +300,16 @@ class TermsViewController: UIViewController, UITextViewDelegate{
     @objc func goBack(){
         
         if(self.editsMade == true){
-            print("editsMade = true")
+            //print("editsMade = true")
             let alertController = UIAlertController(title: "Edits Made", message: "Leave without updating?", preferredStyle: UIAlertController.Style.alert)
             let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
-                print("Cancel")
+               // print("Cancel")
             }
             
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+               // print("OK")
                 _ = self.navigationController?.popViewController(animated: false)
             }
             

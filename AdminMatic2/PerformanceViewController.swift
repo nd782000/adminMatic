@@ -124,16 +124,16 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     
     
     override func viewWillLayoutSubviews() {
-        print("viewWillLayoutSubviews")
+        //print("viewWillLayoutSubviews")
         
         if usageLoaded == false{
             self.getPerformance()
         }else{
             if (UIDevice.current.orientation.isLandscape == true) {
-                print("Landscape")
+                //print("Landscape")
                 self.layoutViewsLandscape()
             } else {
-                print("Portrait")
+                //print("Portrait")
                 self.layoutViewsPortrait()
             }
         }
@@ -146,7 +146,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     
     
     func getPerformance(){
-        print("get all usage")
+        //print("get all usage")
         
         methodStart = Date()
         indicator = SDevIndicator.generate(self.view)!
@@ -155,12 +155,12 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         let parameters:[String:String]
         parameters = ["startDate":  startDateDB,"endDate": endDateDB,"empID":appDelegate.loggedInEmployee?.ID] as! [String : String]
         
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/usageByEmp.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("usageByEmp response = \(response)")
+                //print("usageByEmp response = \(response)")
             }
             
             .responseJSON(){
@@ -170,7 +170,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
                 
                 /*
                 if let json = response.result.value {
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     //self.images = JSON(json)
                     self.usageJSON = JSON(json)
                     self.parseUsageJSON()
@@ -197,7 +197,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
                         self.totalPrice = json["usageTotalPrice"] as! String
                         
                         let usageCount = usages.count
-                        print("usage count = \(usageCount)")
+                        //print("usage count = \(usageCount)")
                         
                         
                         for n in 0 ..< usageCount {
@@ -277,7 +277,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
                     
                     self.methodFinish = Date()
                     let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    print("Execution time: \(executionTime)")
+                    //print("Execution time: \(executionTime)")
                     
                     
                     self.indicator.dismissIndicator()
@@ -285,7 +285,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
                     
                     //self.layoutViews()
                     
-                    print("usage count \(self.usages.count)")
+                    //print("usage count \(self.usages.count)")
                     
                     
                     
@@ -293,10 +293,10 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
                     
                     
                     if (UIDevice.current.orientation.isLandscape == true) {
-                        print("Landscape")
+                        //print("Landscape")
                         self.layoutViewsLandscape()
                     } else {
-                        print("Portrait")
+                        //print("Portrait")
                         self.layoutViewsPortrait()
                     }
                     
@@ -308,7 +308,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
                    
                     
                 } catch {
-                    print("Error deserializing JSON: \(error)")
+                    //print("Error deserializing JSON: \(error)")
                 }
                 
                 
@@ -331,7 +331,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     
     
     func layoutViewsPortrait(){
-        print("layoutViewsPortrait")
+        //print("layoutViewsPortrait")
         
         for view in self.view.subviews{
             view.removeFromSuperview()
@@ -488,7 +488,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     
     
     func layoutViewsLandscape(){
-        print("layoutViewsPortrait")
+        //print("layoutViewsPortrait")
         
         for view in self.view.subviews{
             view.removeFromSuperview()
@@ -651,7 +651,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        print("usages.count = \(usages.count)")
+        //print("usages.count = \(usages.count)")
         return self.usages.count
     }
     
@@ -662,7 +662,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         
         
         if (UIDevice.current.orientation.isLandscape == true) {
-            print("Landscape")
+            //print("Landscape")
             
             cell.usage = usages[indexPath.row]
             cell.layoutLandscape()
@@ -681,7 +681,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
             
             
         } else {
-            print("Portrait")
+            //print("Portrait")
             cell.usage = usages[indexPath.row]
              cell.layoutPortrait()
             cell.usageNameLbl.text = usages[indexPath.row].custName
@@ -787,7 +787,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     
     
     func reDrawList(_index:Int, _status:String){
-        print("reDraw List")
+        //print("reDraw List")
         self.usages[_index].woStatus = _status
         self.performanceTableView.reloadData()
     }
@@ -796,7 +796,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     
     
     @objc func goBack(){
-        print("go back")
+        //print("go back")
         _ = navigationController!.popViewController(animated: false)
         
     }
@@ -813,10 +813,10 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         if UIDevice.current.orientation.isLandscape {
-            print("Landscape")
+            //print("Landscape")
             self.layoutViewsLandscape()
         } else {
-            print("Portrait")
+            //print("Portrait")
             self.layoutViewsPortrait()
             
         }
@@ -824,12 +824,12 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     
     /*
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        print("view will transition")
+        //print("view will transition")
         if (UIDevice.current.orientation.isLandscape == true) {
-            print("Landscape")
+            //print("Landscape")
             self.layoutViewsLandscape()
         } else {
-            print("Portrait")
+            //print("Portrait")
             self.layoutViewsPortrait()
         }
     }

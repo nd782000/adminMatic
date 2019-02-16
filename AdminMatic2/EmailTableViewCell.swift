@@ -167,11 +167,14 @@ class EmailTableViewCell: UITableViewCell,UITextFieldDelegate {
         if(!validateEmail()){
             print("didn't pass validation")
             return
+        }else{
+            print("passed validation")
         }
     
         if self.email != nil{
             //edit
-                
+            
+            print("self.email != nil")
                 self.delegate.showLoadingView()
                 
                 let parameters:[String:String]
@@ -251,6 +254,7 @@ class EmailTableViewCell: UITableViewCell,UITextFieldDelegate {
             
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
+            //self.layoutVars.getTopController().presentale
             self.delegate.presentAlert(_alert: alertController)
         
             }

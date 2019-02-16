@@ -23,6 +23,7 @@ class ScheduleTableViewCell: UITableViewCell {
     
     var titleLbl :UILabel!
     var IDLbl: UILabel!
+    var statusNameLbl: UILabel!
     
     var priorityLbl: UILabel!
     var depthLbl: UILabel!
@@ -72,6 +73,7 @@ class ScheduleTableViewCell: UITableViewCell {
         remainingQtyLbl = UILabel()
         titleLbl = UILabel()
         IDLbl = UILabel()
+        statusNameLbl = UILabel()
         
         customerLbl.font = layoutVars.smallFont
         firstItemLbl.font = layoutVars.smallFont
@@ -106,6 +108,7 @@ class ScheduleTableViewCell: UITableViewCell {
         remainingQtyLbl.text = ""
         titleLbl.text = ""
         IDLbl.text = ""
+        statusNameLbl.text = ""
         
         setStatus(status: "")
         
@@ -121,7 +124,7 @@ class ScheduleTableViewCell: UITableViewCell {
         remainingQtyLbl.translatesAutoresizingMaskIntoConstraints = false
         titleLbl.translatesAutoresizingMaskIntoConstraints = false
         IDLbl.translatesAutoresizingMaskIntoConstraints = false
-        
+        statusNameLbl.translatesAutoresizingMaskIntoConstraints = false
         
         print("layout views 2")
             
@@ -134,7 +137,7 @@ class ScheduleTableViewCell: UITableViewCell {
         
         
         print("layout views 3")
-        let viewsDictionary = ["dateLbl":dateLbl,"customerLbl":customerLbl,"firstItemLbl":firstItemLbl,"statusIcon":statusIcon, "chargeLbl":self.chargeLbl, "profitBarView":self.profitBarView, "priceLbl":self.priceLbl, "priorityLbl":self.priorityLbl, "depthLbl":self.depthLbl, "monitoringLbl":self.monitoringLbl, "remainingQtyLbl":self.remainingQtyLbl, "titleLbl":self.titleLbl,"IDLbl":self.IDLbl] as [String : Any]
+        let viewsDictionary = ["dateLbl":dateLbl,"customerLbl":customerLbl,"firstItemLbl":firstItemLbl,"statusIcon":statusIcon, "chargeLbl":self.chargeLbl, "profitBarView":self.profitBarView, "priceLbl":self.priceLbl, "priorityLbl":self.priorityLbl, "depthLbl":self.depthLbl, "monitoringLbl":self.monitoringLbl, "remainingQtyLbl":self.remainingQtyLbl, "titleLbl":self.titleLbl,"IDLbl":self.IDLbl,"statusNameLbl":self.statusNameLbl] as [String : Any]
         
         
         print("layout views 4")
@@ -174,7 +177,6 @@ class ScheduleTableViewCell: UITableViewCell {
                 
                 
                 contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[dateLbl]-[firstItemLbl]", options: [], metrics: nil, views: viewsDictionary))
-                // contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-42-[chargeLbl(25)]-[profitBarView(100)]-[priceLbl]", options: [], metrics: nil, views: viewsDictionary))
                 contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[dateLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
                 contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[firstItemLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
                 contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
@@ -189,11 +191,6 @@ class ScheduleTableViewCell: UITableViewCell {
                     contentView.addSubview(firstItemLbl)
                     contentView.addSubview(chargeLbl)
                     contentView.addSubview(priceLbl)
-                    //contentView.addSubview(priorityLbl)
-                    //contentView.addSubview(depthLbl)
-                   // contentView.addSubview(monitoringLbl)
-                   // contentView.addSubview(remainingQtyLbl)
-                    
                     
                     contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[dateLbl]-[firstItemLbl]", options: [], metrics: nil, views: viewsDictionary))
                     contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-42-[chargeLbl(25)]-[profitBarView(100)]-[priceLbl]", options: [], metrics: nil, views: viewsDictionary))
@@ -212,10 +209,7 @@ class ScheduleTableViewCell: UITableViewCell {
                     contentView.addSubview(firstItemLbl)
                     contentView.addSubview(chargeLbl)
                     contentView.addSubview(priceLbl)
-                    //contentView.addSubview(priorityLbl)
-                    //contentView.addSubview(depthLbl)
-                    //contentView.addSubview(monitoringLbl)
-                    contentView.addSubview(remainingQtyLbl)
+                   
                     print("layout views 4b")
                     contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[customerLbl]-|", options: [], metrics: nil, views: viewsDictionary))
                     contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-60-[remainingQtyLbl]-|", options: [], metrics: nil, views: viewsDictionary))
@@ -233,10 +227,7 @@ class ScheduleTableViewCell: UITableViewCell {
                     contentView.addSubview(firstItemLbl)
                     contentView.addSubview(chargeLbl)
                     contentView.addSubview(priceLbl)
-                    //contentView.addSubview(priorityLbl)
-                    //contentView.addSubview(depthLbl)
-                    //contentView.addSubview(monitoringLbl)
-                    //contentView.addSubview(remainingQtyLbl)
+                    
                     print("layout views 5")
                     contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[customerLbl]", options: [], metrics: nil, views: viewsDictionary))
                     contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-42-[chargeLbl(25)]-[profitBarView(100)]-[priceLbl]", options: [], metrics: nil, views: viewsDictionary))
@@ -255,6 +246,7 @@ class ScheduleTableViewCell: UITableViewCell {
                 contentView.addSubview(priceLbl)
                 contentView.addSubview(IDLbl)
                 contentView.addSubview(titleLbl)
+                contentView.addSubview(statusNameLbl)
                 profitBarView.isHidden = true
                 
                 priceLbl.font = layoutVars.smallFont
@@ -262,13 +254,12 @@ class ScheduleTableViewCell: UITableViewCell {
                 dateLbl.textAlignment = .right
                 dateLbl.font = layoutVars.textFieldFont
                 
-                //contentView.addSubview(priorityLbl)
-                //contentView.addSubview(depthLbl)
-                //contentView.addSubview(monitoringLbl)
-                //contentView.addSubview(remainingQtyLbl)
+                statusNameLbl.font = layoutVars.textFieldFont
+                statusNameLbl.textAlignment = .center
+                
                 print("layout views 5")
                 contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[statusIcon(30)]-8-[titleLbl]-[priceLbl]-|", options: [], metrics: nil, views: viewsDictionary))
-                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-48-[IDLbl]-[dateLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-48-[IDLbl(60)][statusNameLbl][dateLbl(80)]-|", options: [], metrics: nil, views: viewsDictionary))
                 print("layout views 5a")
                 
                 contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-6-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
@@ -278,6 +269,8 @@ class ScheduleTableViewCell: UITableViewCell {
                 print("layout views 5b")
                 
                 contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[dateLbl(15)]-2-|", options: [], metrics: nil, views: viewsDictionary))
+                
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[statusNameLbl(15)]-2-|", options: [], metrics: nil, views: viewsDictionary))
                 
                 break
                 
@@ -377,35 +370,47 @@ class ScheduleTableViewCell: UITableViewCell {
             
             
            
+            
                 switch (status) {
                 case "0":
                     let statusImg = UIImage(named:"syncIcon.png")
                     statusIcon.image = statusImg
+                    statusNameLbl.text = "Syncing to QuickBooks"
+                    statusNameLbl.textColor = UIColor.red
                     break;
                 case "1":
                     let statusImg = UIImage(named:"pendingIcon.png")
                     statusIcon.image = statusImg
+                    statusNameLbl.text = "Invoice Pending"
+                    statusNameLbl.textColor = UIColor.red
                     break;
                 case "2":
                     let statusImg = UIImage(named:"inProgressStatus.png")
                     statusIcon.image = statusImg
+                    statusNameLbl.text = "Invoice Final"
                     break;
                 case "3":
                     let statusImg = UIImage(named:"acceptedStatus.png")
                     statusIcon.image = statusImg
+                    statusNameLbl.text = "Invoice Emailed/Printed"
                     break;
                 case "4":
                     let statusImg = UIImage(named:"doneStatus.png")
                     statusIcon.image = statusImg
+                    statusNameLbl.text = "Invoice Paid"
                     break;
                 case "5":
                     let statusImg = UIImage(named:"cancelStatus.png")
                     statusIcon.image = statusImg
+                    statusNameLbl.text = "Invoice Voided"
+                    statusNameLbl.textColor = UIColor.red
                     break;
                     
                 default:
                     let statusImg = UIImage(named:"unDoneStatus.png")
                     statusIcon.image = statusImg
+                    statusNameLbl.text = "Syncing to QuickBooks"
+                    statusNameLbl.textColor = UIColor.red
                     break;
                 }
             

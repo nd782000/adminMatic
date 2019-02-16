@@ -9,6 +9,7 @@ target ‘AdminMatic2’ do
     pod 'AlamofireImage', '~> 3.4'
     pod 'DKImagePickerController'
     pod 'SwiftEntryKit', '0.8.2'
+    pod 'IQKeyboardManagerSwift'
     
 end
 

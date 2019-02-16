@@ -21,7 +21,7 @@ import  AlamofireImage
 import UIKit
 class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource  {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
+    var indicator: SDevIndicator!
     var employeeImage:UIImageView!
     var loggedInBtn: Button = Button()
     var layout: UICollectionViewFlowLayout!
@@ -57,25 +57,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     func layoutViews(){
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
-        if(appDelegate.loggedInEmployee == nil){
-            self.loggedInBtn = Button(titleText: "Log In")
-            self.loggedInBtn.contentHorizontalAlignment = .center
-        }else{
-            self.setLoggedInUserBtn()
-        }
-        
-        
-        //self.loggedInBtn.frame = CGRect(x: 10, y:layoutVars.navAndStatusBarHeight + 10, width: self.view.frame.width - 20, height: 40)
-        self.loggedInBtn.addTarget(self, action: #selector(HomeViewController.showLoggedInUser), for: UIControl.Event.touchUpInside)
-        
-        self.view.addSubview(self.loggedInBtn)
-    
-        self.loggedInBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.loggedInBtn.leftAnchor.constraint(equalTo: view.safeLeftAnchor, constant: 10.0).isActive = true
-        self.loggedInBtn.topAnchor.constraint(equalTo: view.safeTopAnchor, constant: 10.0).isActive = true
-        self.loggedInBtn.widthAnchor.constraint(equalToConstant: self.view.frame.width - 20).isActive = true
-        self.loggedInBtn.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        
+       
         
         
         // Do any additional setup after loading the view, typically from a nib.
@@ -95,12 +77,37 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         homeCollectionView!.backgroundColor = UIColor.white
        self.view.addSubview(homeCollectionView!)
         
+       // indicator = SDevIndicator.generate(self.view)!
+        
         self.homeCollectionView!.translatesAutoresizingMaskIntoConstraints = false
         self.homeCollectionView!.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
         self.homeCollectionView!.topAnchor.constraint(equalTo: view.safeTopAnchor, constant: 60.0).isActive = true
         //self.loggedInBtn.widthAnchor.constraint(equalToConstant: 100).isActive = true
         self.homeCollectionView!.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
         self.homeCollectionView!.bottomAnchor.constraint(equalTo: self.view.safeBottomAnchor).isActive = true
+        
+        if(appDelegate.loggedInEmployee == nil){
+            self.loggedInBtn = Button(titleText: "Log In")
+            self.loggedInBtn.contentHorizontalAlignment = .center
+            
+            //self.indicator.dismissIndicator()
+            
+        }else{
+            self.setLoggedInUserBtn()
+        }
+        
+        
+        //self.loggedInBtn.frame = CGRect(x: 10, y:layoutVars.navAndStatusBarHeight + 10, width: self.view.frame.width - 20, height: 40)
+        self.loggedInBtn.addTarget(self, action: #selector(HomeViewController.showLoggedInUser), for: UIControl.Event.touchUpInside)
+        
+        self.view.addSubview(self.loggedInBtn)
+        
+        self.loggedInBtn.translatesAutoresizingMaskIntoConstraints = false
+        self.loggedInBtn.leftAnchor.constraint(equalTo: view.safeLeftAnchor, constant: 10.0).isActive = true
+        self.loggedInBtn.topAnchor.constraint(equalTo: view.safeTopAnchor, constant: 10.0).isActive = true
+        self.loggedInBtn.widthAnchor.constraint(equalToConstant: self.view.frame.width - 20).isActive = true
+        self.loggedInBtn.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
     }
     
     
@@ -108,35 +115,29 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
 
         if(appDelegate.loggedInEmployee != nil){
             //print("logged in emp is not nil")
+            
+            
             self.loggedInBtn.setTitle("Welcome \(appDelegate.loggedInEmployee!.fname!)!", for: .normal)
             self.loggedInBtn.contentHorizontalAlignment = .left
             
             //image
             self.employeeImage = UIImageView()
             
-            /*
-            let imgUrl = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!)
             
-            print("imgURL = \(String(describing: imgUrl))")
-            
-            
-            
-                
-            }
-            */
             
             
             
             Alamofire.request("https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(appDelegate.loggedInEmployee?.pic)!).responseImage { response in
-                debugPrint(response)
+               // debugPrint(response)
                 
                 //print(response.request)
                 //print(response.response)
-                debugPrint(response.result)
+                //debugPrint(response.result)
                 
                 if let image = response.result.value {
-                    print("image downloaded: \(image)")
+                   // print("image downloaded: \(image)")
                     self.employeeImage.image = image
+                   // self.indicator.dismissIndicator()
                 }
             }
             

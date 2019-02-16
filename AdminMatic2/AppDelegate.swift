@@ -24,7 +24,9 @@ import AVFoundation
 
 import SystemConfiguration
 
+//import IQKeyboardManagerSwift
 
+import  IQKeyboardManagerSwift
 
 protocol MenuDelegate{
     func menuChange(_ menuItem:Int)
@@ -53,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.4.5"
+    var appVersion:String = "1.4.6"
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
     var employeeListViewController:EmployeeListViewController!
@@ -92,6 +94,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     //var invoiceTypeArray:[String] = []
     //var scheduleTypeArray:[String] = []
     
+    var customerHearIDs:[String] = []
+    var customerHearTypes:[String] = []
     
     var loggedInEmployee:Employee?
     var loggedInEmployeeJSON: JSON!
@@ -110,6 +114,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
         
+        
+        //IQKeyboardManager.sharedManager().enable = true
+        IQKeyboardManager.shared.enable = true
+        
         defaults = UserDefaults.standard
         
         self.messageView = UIView()
@@ -124,7 +132,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         
         if(defaults.string(forKey: loggedInKeys.loggedInId) != nil){
-            print("stored login data detected")
+           // print("stored login data detected")
             if(Int(defaults.string(forKey: loggedInKeys.loggedInId)!)! > 0){
                 getLoggedInEmployeeData(_id: defaults.string(forKey: loggedInKeys.loggedInId)!)
                 
@@ -143,28 +151,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             response in
             ////print(response.request ?? "default request")  // original URL request
             print(response.response ?? "default response") // URL response
-            print(response.data ?? "default data")     // server data
-            print(response.result)   // result of response serialization
+           // print(response.data ?? "default data")     // server data
+           // print(response.result)   // result of response serialization
             
             if let json = response.result.value {
                 jsonDataHolder.jsonData = JSON(json)
                 self.fieldsJson = JSON(json)
                 
+                print("fieldsJson \(self.fieldsJson )") // URL response
                 let zonesCount:Int = self.fieldsJson["zones"].count
                 
                 for i in 0 ..< zonesCount {
                     
                     let zone = Zone(_ID: self.fieldsJson["zones"][i][0].stringValue, _name: self.fieldsJson["zones"][i][1].stringValue)
                     
-                    print("zone.id = \(zone.ID)")
-                    print("zone.name = \(zone.name)")
+                    //print("zone.id = \(zone.ID)")
+                    //print("zone.name = \(zone.name)")
                     self.zones.append(zone)
                     
                 }
                 
                 
                 let departmentCount:Int = self.fieldsJson["departments"].count
-                print("dept count = \(departmentCount)")
+                //print("dept count = \(departmentCount)")
                 for n in 0 ..< departmentCount {
                     
                     let department = Department(_ID: self.fieldsJson["departments"][n]["id"].stringValue, _name: self.fieldsJson["departments"][n]["name"].stringValue, _status: self.fieldsJson["departments"][n]["status"].stringValue, _color: self.fieldsJson["departments"][n]["color"].stringValue, _depHead: self.fieldsJson["departments"][n]["depHead"].stringValue)
@@ -177,7 +186,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 
                 
                 let crewCount:Int = self.fieldsJson["crews"].count
-                print("crew count = \(crewCount)")
+                //print("crew count = \(crewCount)")
                 for p in 0 ..< crewCount {
                     
                     let crew = Crew(_ID: self.fieldsJson["crews"][p]["ID"].stringValue, _name: self.fieldsJson["crews"][p]["name"].stringValue)
@@ -186,6 +195,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                     //print("zone.id = \(zone.ID)")
                     //print("zone.name = \(zone.name)")
                     self.crews.append(crew)
+                    
+                }
+                
+                let hearCount:Int = self.fieldsJson["hearTypes"].count
+                print("hear count = \(hearCount)")
+                for n in 0 ..< hearCount {
+                    
+                    let id = self.fieldsJson["hearTypes"][n]["ID"].stringValue
+                    let type = self.fieldsJson["hearTypes"][n]["type"].stringValue
+                    
+                    
+                    //let department = Department(_ID: self.fieldsJson["departments"][n]["id"].stringValue, _name: self.fieldsJson["departments"][n]["name"].stringValue, _status: self.fieldsJson["departments"][n]["status"].stringValue, _color: self.fieldsJson["departments"][n]["color"].stringValue, _depHead: self.fieldsJson["departments"][n]["depHead"].stringValue)
+                    
+                    //print("zone.id = \(zone.ID)")
+                    //print("zone.name = \(zone.name)")
+                    self.customerHearIDs.append(id)
+                    self.customerHearTypes.append(type)
                     
                 }
                 
@@ -208,12 +234,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         //Get employee list
         var parameters:[String:String]
         parameters = ["cb":"\(timeStamp)"]
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/employees.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("employee response = \(response)")
+               // print("employee response = \(response)")
             }
             .responseJSON() {
                 response in
@@ -223,10 +249,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                     
                     let jsonCount = self.employees["employees"].count
                     //self.totalItems = jsonCount
-                    print("JSONcount: \(jsonCount)")
+                   // print("JSONcount: \(jsonCount)")
                     for i in 0 ..< jsonCount {
                         
-                        print("emp ID = \(self.employees["employees"][i]["ID"].stringValue)")
+                        //print("emp ID = \(self.employees["employees"][i]["ID"].stringValue)")
                         let employee = Employee(_ID: self.employees["employees"][i]["ID"].stringValue, _name: self.employees["employees"][i]["name"].stringValue, _lname: self.employees["employees"][i]["lname"].stringValue, _fname: self.employees["employees"][i]["fname"].stringValue, _username: self.employees["employees"][i]["username"].stringValue, _pic: self.employees["employees"][i]["pic"].stringValue, _phone: self.employees["employees"][i]["phone"].stringValue, _depID: self.employees["employees"][i]["depID"].stringValue, _payRate: self.employees["employees"][i]["payRate"].stringValue, _appScore: self.employees["employees"][i]["appScore"].stringValue, _userLevel: self.employees["employees"][i]["level"].intValue, _userLevelName: self.employees["employees"][i]["levelName"].stringValue)
                         
                         if self.employees["employees"][i]["hasSignature"].stringValue == "1"{
@@ -235,7 +261,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                         
                         let licenseCount = self.employees["employees"][i]["licenses"].count
                         //self.totalItems = jsonCount
-                        print("licenseCount: \(licenseCount)")
+                       // print("licenseCount: \(licenseCount)")
                         for n in 0 ..< licenseCount {
                             let license = License(_ID: self.employees["employees"][i]["licenses"][n]["ID"].stringValue, _name: self.employees["employees"][i]["licenses"][n]["name"].stringValue, _expiration: self.employees["employees"][i]["licenses"][n]["expirationDate"].stringValue, _number: self.employees["employees"][i]["licenses"][n]["licenceNumber"].stringValue, _status: self.employees["employees"][i]["licenses"][n]["status"].stringValue, _issuer: self.employees["employees"][i]["licenses"][n]["issuer"].stringValue)
                             
@@ -260,7 +286,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 }
         }
         
-        print("getEmployeeList JSON = \(self.employees)")
+        //print("getEmployeeList JSON = \(self.employees)")
         
         
        
@@ -350,7 +376,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     func getLoggedInEmployeeData(_id:String){
         
         print("getLoggedInEmployeeData id = \(_id)")
-        // indicator = SDevIndicator.generate(self.view)!
+         //indicator = SDevIndicator.generate(self.view)!
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
@@ -362,10 +388,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             //print(response.request ?? "")  // original URL request
             //print(response.response ?? "") // URL response
             //print(response.data ?? "")     // server data
-            print(response.result)   // result of response serialization
+           // print(response.result)   // result of response serialization
             
             if let json = response.result.value {
-                print("Logged In Employee JSON: \(json)")
+              //  print("Logged In Employee JSON: \(json)")
                 self.loggedInEmployeeJSON = JSON(json)
                 self.parseLoggedInEmployeeJSON()
             }
@@ -375,7 +401,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     
     
     func parseLoggedInEmployeeJSON(){
-        print("parseLoggedInEmployeeJSON")
+       // print("parseLoggedInEmployeeJSON")
         
         let logInEmployee = Employee(_ID: self.loggedInEmployeeJSON["employees"][0]["ID"].stringValue, _name: self.loggedInEmployeeJSON["employees"][0]["name"].stringValue, _lname: self.loggedInEmployeeJSON["employees"][0]["lname"].stringValue, _fname: self.loggedInEmployeeJSON["employees"][0]["fname"].stringValue, _username: self.loggedInEmployeeJSON["employees"][0]["username"].stringValue, _pic: self.loggedInEmployeeJSON["employees"][0]["pic"].stringValue, _phone: self.loggedInEmployeeJSON["employees"][0]["phone"].stringValue, _depID: self.loggedInEmployeeJSON["employees"][0]["depID"].stringValue, _payRate: self.loggedInEmployeeJSON["employees"][0]["payRate"].stringValue, _appScore: self.loggedInEmployeeJSON["employees"][0]["appScore"].stringValue, _userLevel: self.loggedInEmployeeJSON["employees"][0]["level"].intValue, _userLevelName: self.loggedInEmployeeJSON["employees"][0]["levelName"].stringValue)
         
@@ -383,7 +409,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         //logInEmployee.userLevel = self.loggedInEmployeeJSON["employees"][0]["level"].intValue
         //logInEmployee.userLevelName = self.loggedInEmployeeJSON["employees"][0]["levelName"].stringValue
         
-        print("logInEmployee.userLevelName \(String(describing: logInEmployee.userLevelName))")
+        //print("logInEmployee.userLevelName \(String(describing: logInEmployee.userLevelName))")
         
         self.loggedInEmployee = logInEmployee
         self.homeViewController.layoutViews()
@@ -434,7 +460,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             }
             break
         case 4:
-            print("Show  Lead List")
+          //  print("Show  Lead List")
             if(loggedInEmployee != nil){
                 navigationController = UINavigationController(rootViewController: self.leadListViewController)
                 window?.rootViewController = navigationController
@@ -668,7 +694,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     }
     
     func requireLogIn(_destination:String, _vc:UIViewController){
-        print("requireLogIn")
+       // print("requireLogIn")
         if(loggedInEmployee == nil){
             let alertController = UIAlertController(title: "Log In", message: "You must log in to use \(_destination).", preferredStyle: UIAlertController.Style.alert)
             
@@ -717,14 +743,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.messageView?.alpha = 0.0
         
         Alamofire.request("https://atlanticlawnandgarden.com/uploads/general/thumbs/"+(self.loggedInEmployee?.pic)!).responseImage { response in
-            debugPrint(response)
+            //debugPrint(response)
             
-            print(response.request)
-            print(response.response)
-            debugPrint(response.result)
+            //print(response.request)
+           // print(response.response)
+            //debugPrint(response.result)
             
             if let image = response.result.value {
-                print("image downloaded: \(image)")
+               // print("image downloaded: \(image)")
                 self.messageImageView.image = image
             }
         }
@@ -826,7 +852,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     
 
     @objc func closeMessage(){
-        print("close message")
+        //print("close message")
         
         self.messageView?.isHidden = true
         

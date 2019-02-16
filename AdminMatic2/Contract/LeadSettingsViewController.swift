@@ -61,7 +61,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
     
     init(_status:String, _salesRep:String, _salesRepName:String, _zoneID:String, _zoneName:String){
         super.init(nibName:nil,bundle:nil)
-        print("init _status = \(_status)  _salesRep = \(_salesRep) _zoneID = \(_zoneID) _zoneName = \(_zoneName)")
+        //print("init _status = \(_status)  _salesRep = \(_salesRep) _zoneID = \(_zoneID) _zoneName = \(_zoneName)")
         
         self.status = _status
         self.salesRep = _salesRep
@@ -111,7 +111,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
     
     func layoutViews(){
         
-        print("layoutViews")
+        //print("layoutViews")
         // indicator.dismissIndicator()
         
         //set container to safe bounds of view
@@ -152,7 +152,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         safeContainer.addSubview(self.statusTxtField)
         
         
-        print("layoutViews 1")
+        //print("layoutViews 1")
         let statusToolBar = UIToolbar()
         statusToolBar.barStyle = UIBarStyle.default
         statusToolBar.barTintColor = UIColor(hex:0x005100, op:1)
@@ -234,7 +234,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         safeContainer.addSubview(self.zoneTxtField)
         
         
-        print("layoutViews 1")
+        //print("layoutViews 1")
         let zoneToolBar = UIToolbar()
         zoneToolBar.barStyle = UIBarStyle.default
         zoneToolBar.barTintColor = UIColor(hex:0x005100, op:1)
@@ -330,14 +330,14 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
             
             
             //if pickerView == filterPicker {
-            print("numberOfComponents = \(statusArray.count )")
+            //print("numberOfComponents = \(statusArray.count )")
             count = statusArray.count
             //}
         }else{
             //var count:Int = 1
             
             //if pickerView == filterPicker {
-            print("numberOfComponents = \(statusArray.count )")
+            //print("numberOfComponents = \(statusArray.count )")
             count = self.appDelegate.zones.count
         }
         
@@ -348,7 +348,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         var title = ""
         if pickerView.tag == 1{
             // if pickerView == filterPicker {
-            print("titleForRow = \(statusArray[row])")
+            //print("titleForRow = \(statusArray[row])")
             title = statusArray[row]
             //}
         }else{
@@ -394,8 +394,8 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         // Filter the data you have. For instance:
-        print("search edit")
-        print("searchText.count = \(searchText.count)")
+        //print("search edit")
+        //print("searchText.count = \(searchText.count)")
         
         
         if (searchText.count == 0) {
@@ -417,7 +417,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
     func filterSearchResults(){
         
         
-        print("Rep filter")
+        //print("Rep filter")
         repSearchResults = []
         self.repSearchResults = self.appDelegate.salesRepNameArray.filter({( aRep: String ) -> Bool in
             return (aRep.lowercased().range(of: repSearchBar.text!.lowercased(), options:.regularExpression) != nil)})
@@ -435,7 +435,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
             
             
         }, completion: { finished in
-            print("Napkins opened!")
+            //print("Napkins opened!")
         })
         
         
@@ -443,7 +443,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        print("searchBarTextDidEndEditing")
+        //print("searchBarTextDidEndEditing")
         // self.tableViewMode = "TASK"
         
         
@@ -511,7 +511,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
             regex = nil
         }
         if let regexError = error {
-            print("Oh no! \(regexError)")
+            //print("Oh no! \(regexError)")
         } else {
             for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
                 highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
@@ -547,7 +547,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
     
     
     @objc func cancelRepInput(){
-        print("Cancel Rep Input")
+        //print("Cancel Rep Input")
         self.repSearchBar.resignFirstResponder()
         self.repResultsTableView.alpha = 0.0
     }
@@ -566,7 +566,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
     @objc func setStatus() {
         statusTxtField.resignFirstResponder()
         
-        print("set Status")
+        //print("set Status")
         
         let row = self.statusPicker.selectedRow(inComponent: 0)
         
@@ -595,7 +595,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
     @objc func setZone() {
         zoneTxtField.resignFirstResponder()
         
-        print("set Zone")
+        //print("set Zone")
         
         let row = self.zonePicker.selectedRow(inComponent: 0)
         
@@ -630,7 +630,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
     }
     
     func resetVals(){
-        print("resetVals")
+        //print("resetVals")
         self.status = ""
         self.salesRep = ""
         self.salesRepName = ""

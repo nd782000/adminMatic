@@ -68,7 +68,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("view did load")
+        //print("view did load")
         view.backgroundColor = layoutVars.backgroundColor
         
         if employees.count > 0{
@@ -89,7 +89,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         navigationItem.leftBarButtonItem  = backButtonItem
 
         for index in 0 ..< self.appDelegate.employeeArray.count {
-            print("emp phone = \(String(describing: appDelegate.employeeArray[index].phone))")
+            //print("emp phone = \(String(describing: appDelegate.employeeArray[index].phone))")
         //for _ in self.appDelegate.employeeArray{
               if  appDelegate.employeeArray[index].phone! != "No Phone Number"{
                 selectedStates.append(true)
@@ -103,7 +103,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     func layoutViews(){
         
-       print("layout views")
+       //print("layout views")
         //set container to safe bounds of view
         let safeContainer:UIView = UIView()
         safeContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -160,7 +160,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         safeContainer.addSubview(self.sendMessageBtn)
         
         
-        print("layout views 1")
+        //print("layout views 1")
         //auto layout group
         let viewsDictionary = [
             "messageTxt":self.messageTxt,
@@ -172,18 +172,18 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         
         let sizeVals = ["width": layoutVars.fullWidth,"halfWidth":(layoutVars.fullWidth - 15)/2,"height": self.view.frame.size.height ,"navBarHeight":self.layoutVars.navAndStatusBarHeight + 5] as [String : Any]
         
-        print("layout views 2")
+        //print("layout views 2")
     //////////////   auto layout position constraints   /////////////////////////////
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[messageTxt]-|", options: [], metrics: sizeVals, views: viewsDictionary))
          safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[selectNoneBtn(halfWidth)]-5-[selectAllBtn(halfWidth)]", options: [], metrics: sizeVals, views: viewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[empTable]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        print("layout views 3")
+        //print("layout views 3")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[sendMessageBtn]-|", options: [], metrics: sizeVals, views: viewsDictionary))
-        print("layout views 4")
+        //print("layout views 4")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[messageTxt(90)]-[selectNoneBtn(40)]-[empTable]-[sendMessageBtn(40)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        print("layout views 5")
+        //print("layout views 5")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[messageTxt(90)]-[selectAllBtn(40)]-[empTable]-[sendMessageBtn(40)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        print("layout views 6")
+        //print("layout views 6")
         
     }
     
@@ -194,41 +194,41 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         //print("appDelegate.employeeArray.count = \(appDelegate.employeeArray.count)")
-       print("cell count\(appDelegate.employeeArray.count)")
+       //print("cell count\(appDelegate.employeeArray.count)")
         return appDelegate.employeeArray.count
     }
     
     
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         
-        print("cell create")
+        //print("cell create")
         let cell:EmployeeTableViewCell = employeeTableView.dequeueReusableCell(withIdentifier: "cell") as! EmployeeTableViewCell
         cell.employee = appDelegate.employeeArray[indexPath.row]
-        print("cell create 1")
+        //print("cell create 1")
         cell.setPhone()
         cell.activityView.startAnimating()
-        print("cell create 2")
+        //print("cell create 2")
         cell.nameLbl.text = cell.employee.name
         cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+cell.employee.pic!)
-        print("cell create 3")
+        //print("cell create 3")
         if(self.selectedStates[indexPath.row] == true){
-            print("cell create 3.1")
+            //print("cell create 3.1")
             cell.accessoryType = .checkmark
             cell.isSelected = true
         }else{
-            print("cell create 3.2")
+            //print("cell create 3.2")
             cell.accessoryType = .none
             cell.isSelected = false
         }
         if(cell.employee.phone == ""){
-            print("cell create 3.3")
+            //print("cell create 3.3")
             cell.isUserInteractionEnabled = false
             self.selectedStates[indexPath.row] = false
             cell.accessoryType = .none
             cell.isSelected = false
             //cell.alpha = 0.5
         }else{
-            print("cell create 3.4")
+            //print("cell create 3.4")
             cell.isUserInteractionEnabled = true
         }
         return cell;
@@ -236,7 +236,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("You selected cell #\(indexPath.row)!")
+        //print("You selected cell #\(indexPath.row)!")
         
         if appDelegate.employeeArray[indexPath.row].phone != "" && appDelegate.employeeArray[indexPath.row].phone != "No Phone Number"{
             if let cell = tableView.cellForRow(at: indexPath) {
@@ -258,7 +258,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        print("shouldChangeTextInRange")
+        //print("shouldChangeTextInRange")
         if (text == "\n") {
             textView.resignFirstResponder()
         }
@@ -268,7 +268,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        print("textFieldDidBeginEditing")
+        //print("textFieldDidBeginEditing")
         
         if self.messageTxt.textColor == UIColor.lightGray {
             self.messageTxt.text = nil
@@ -278,7 +278,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        print("textFieldDidEndEditing")
+        //print("textFieldDidEndEditing")
         if (self.messageTxt.text?.isEmpty)! {
             self.messageTxt.text = messagePlaceHolder
             self.messageTxt.textColor = UIColor.lightGray
@@ -288,7 +288,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     func handleSelectVarious(){
         
-        print("select various")
+        //print("select various")
         for index in 0 ..< selectedStates.count {
             selectedStates[index] = false
         }
@@ -299,7 +299,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
                     selectedStates[n] = true
                 }
                 
-                print("emp phone = \(String(describing: appDelegate.employeeArray[n].phone))")
+                //print("emp phone = \(String(describing: appDelegate.employeeArray[n].phone))")
                 if appDelegate.employeeArray[n].phone == "" || appDelegate.employeeArray[n].phone == "No Phone Number"{
                     selectedStates[n] = false
                 }
@@ -334,12 +334,12 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     }
     
     @objc func buildRecipientList(){
-        print("buildRecipientList")
+        //print("buildRecipientList")
         
         for index in 0 ..< appDelegate.employeeArray.count {
             if(selectedStates[index] == true){
                 textRecipients.append(appDelegate.employeeArray[index].phone)
-               // print("phone = \(appDelegate.employeeArray[index].phone)")
+               // //print("phone = \(appDelegate.employeeArray[index].phone)")
             }
         }
         
@@ -347,7 +347,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
             let alertController = UIAlertController(title: "Select some recipients", message: "", preferredStyle: UIAlertController.Style.alert)
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+                //print("OK")
             }
             alertController.addAction(okAction)
             layoutVars.getTopController().present(alertController, animated: true, completion: nil)
@@ -361,11 +361,11 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     
     func getBatch(){
-        print("get batch")
+        //print("get batch")
         batchOfTexts = []
     //get next 5 numbers in list
         for index in 1...self.textBatchQty{
-            print("adding index \(index) to batch")
+            //print("adding index \(index) to batch")
             if((textRecipients.count) > i){
                 batchOfTexts.append(textRecipients[i])
             }
@@ -376,9 +376,9 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     }
 
     func sendTexts(){
-        print("Send texts")
+        //print("Send texts")
         if(batchOfTexts.count == 0){
-            print("no texts to send")
+            //print("no texts to send")
             doneSendingBatches()
             return
         }
@@ -386,7 +386,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
             let alertController = UIAlertController(title: "Message is Empty", message: "", preferredStyle: UIAlertController.Style.alert)
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+                //print("OK")
             }
             alertController.addAction(okAction)
             layoutVars.getTopController().present(alertController, animated: true, completion: nil)
@@ -431,7 +431,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     }
     
     func doneSendingBatches(){
-        print ("done with batches")
+        //print ("done with batches")
         self.messageTxt.text = self.messagePlaceHolder
         self.messageTxt.textColor = UIColor.lightGray
         textBatchNumber = 0

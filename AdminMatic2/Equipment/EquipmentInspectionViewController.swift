@@ -380,7 +380,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         print("textFieldDidBeginEditing")
-        
+        /*
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
             self.view.frame.origin.y -= 256
             
@@ -388,11 +388,12 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
         }, completion: { finished in
             // //print("Napkins opened!")
         })
-        
+        */
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         print("textFieldDidEndEditing")
+        /*
         if(self.view.frame.origin.y < 0){
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.frame.origin.y += 256
@@ -401,6 +402,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
             }, completion: { finished in
             })
         }
+ */
         
     }
     
@@ -421,7 +423,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
     
     
     
-    
+    /*
     
     @objc func keyboardWillShow(notification: NSNotification) {
         
@@ -448,7 +450,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
         
     }
     
-    
+    */
    
    
     

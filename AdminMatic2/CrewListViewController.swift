@@ -52,13 +52,13 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     init(){
         super.init(nibName:nil,bundle:nil)
-        print("init")
+        //print("init")
     }
     
     
     init(_empID:String,_empFirstName:String){
         super.init(nibName:nil,bundle:nil)
-        print("init _empID = \(_empID)")
+        //print("init _empID = \(_empID)")
         self.empID = _empID
         self.empFirstName = _empFirstName
     }
@@ -110,23 +110,23 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         let parameters:[String:String]
             parameters = ["empID":self.empID, "crewView":"1"]
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/departments.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("crew response = \(response)")
+                //print("crew response = \(response)")
             }
             .responseJSON(){
                 response in
                 if let json = response.result.value {
                     
-                    print(" dismissIndicator")
+                    //print(" dismissIndicator")
                     self.indicator.dismissIndicator()
                     
                     
-                    //print("JSON: \(json)")
+                    ////print("JSON: \(json)")
                     self.crews = JSON(json)
                     self.parseJSON()
                 }
@@ -152,11 +152,11 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             let crew = Crew(_ID: self.crews["crews"][i]["id"].stringValue, _name: self.crews["crews"][i]["name"].stringValue, _status: self.crews["crews"][i]["status"].stringValue, _color: self.crews["crews"][i]["subcolor"].stringValue, _crewHead: self.crews["crews"][i]["crewHead"].stringValue)
             
-           // print("crew name = \(crew.name)")
+           // //print("crew name = \(crew.name)")
             
             let empCount = self.crews["crews"][i]["employees"].count
             //self.totalItems = jsonCount
-            print("emp count: \(empCount)")
+            //print("emp count: \(empCount)")
             for n in 0 ..< empCount {
                 
                 
@@ -166,7 +166,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 employee.crewColor = crew.color!
                 //employee.crewColor2 = crew.color2!
                 
-               // print("employee.crewColor = \(employee.crewColor)")
+               // //print("employee.crewColor = \(employee.crewColor)")
                 
                 
                 //crew.employeeArray.append(employee)
@@ -197,9 +197,9 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         // build sections based on first letter(json is already sorted alphabetically)
-        print("build sections")
+        //print("build sections")
         
-        print("self.employeeArray.count = \(self.employeeArray.count)")
+        //print("self.employeeArray.count = \(self.employeeArray.count)")
         
         var index = 0;
         var titleArray:[String] = [" "]
@@ -216,7 +216,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 
             }
             if !titleArray.contains(stringToTest) {
-                print("new")
+                //print("new")
                 let title = titleArray[titleArray.count - 1]
                 let color = colorArray[colorArray.count - 1]
                 titleArray.append(stringToTest)
@@ -234,7 +234,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             }
         }
         
-        print("sections \(sections)")
+        //print("sections \(sections)")
     }
     
     
@@ -321,7 +321,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     @objc func addCrew(){
-        print("add crew")
+        //print("add crew")
         
     }
     
@@ -338,13 +338,13 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        ////print("titleForHeaderInSection")
+        //////print("titleForHeaderInSection")
         return "                " + sections[section].title //hack way of indenting section text
     }
     
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        //print("heightForHeaderInSection")
+        ////print("heightForHeaderInSection")
         return 60
     }
     
@@ -354,7 +354,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("numberOfRowsInSection")
+        //print("numberOfRowsInSection")
         
         
         return sections[section].length
@@ -364,7 +364,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
     {
-        print("viewForHeaderInSection")
+        //print("viewForHeaderInSection")
         //let headerView = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         
         let headerView = UIView(frame: CGRect(x: 0, y: 0, width: layoutVars.fullWidth, height: 60.0))
@@ -392,7 +392,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         headerView.addSubview(titleLbl)
         
-        print("color = \(sections[section].color)")
+        //print("color = \(sections[section].color)")
         
         let colorSwatch = UIView(frame: CGRect(x: 10.0, y: 5.0, width: 50.0, height: 50.0))
         colorSwatch.backgroundColor = layoutVars.hexStringToUIColor(hex: sections[section].color)
@@ -401,7 +401,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         colorSwatch.layer.borderColor = layoutVars.borderColor
         headerView.addSubview(colorSwatch)
         
-        print("colorSwatch.width = \(colorSwatch.frame.width)")
+        //print("colorSwatch.width = \(colorSwatch.frame.width)")
         
         return headerView
     }
@@ -415,7 +415,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        print("cell for row \(indexPath.row)")
+        //print("cell for row \(indexPath.row)")
         
         let cell:EmployeeTableViewCell = crewTableView.dequeueReusableCell(withIdentifier: "cell") as! EmployeeTableViewCell
         
@@ -429,7 +429,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //print("You selected cell #\(indexPath.row)!")
+        ////print("You selected cell #\(indexPath.row)!")
         
         let indexPath = tableView.indexPathForSelectedRow;
         let currentCell = tableView.cellForRow(at: indexPath!) as! EmployeeTableViewCell
@@ -446,7 +446,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let currentCell = tableView.cellForRow(at: indexPath as IndexPath) as! EmployeeTableViewCell;
         let call = UITableViewRowAction(style: .normal, title: "Call") { action, index in
-            //print("call button tapped")
+            ////print("call button tapped")
             //callPhoneNumber(currentCell.employee.phone)
             if (cleanPhoneNumber(currentCell.employee.phone) != "No Number Saved"){
                 UIApplication.shared.open(NSURL(string: "tel://\(cleanPhoneNumber(currentCell.employee.phone))")! as URL, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
@@ -484,18 +484,18 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
-        print("didfinish")
+        //print("didfinish")
         //... handle sms screen actions
         self.dismiss(animated: true, completion: nil)
         //getBatch()
-        //print("try and send text")
+        ////print("try and send text")
         
         
     }
     
     
     @objc func dismissMessage(){
-        print("dismiss")
+        //print("dismiss")
         controller.dismiss(animated: true, completion: nil)
         
     }

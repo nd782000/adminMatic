@@ -77,7 +77,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         self.employee = _employee
         //self.empID = self.employee.ID
         
-        print("payroll entry view init ID = \(self.employee.ID!)")
+        //print("payroll entry view init ID = \(self.employee.ID!)")
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -122,7 +122,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     
     
     func getPayroll(){
-        print("get payroll")
+        //print("get payroll")
         
         
         
@@ -136,19 +136,19 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         let parameters:[String:String]
             parameters = ["endDate": endDateDB,"empID":self.employee.ID]
         
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/payroll.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("payroll response = \(response)")
+                //print("payroll response = \(response)")
             }
             
             .responseJSON(){
                 response in
                 
                 if let json = response.result.value {
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     
                     
                     
@@ -174,7 +174,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     func parsePayrollJSON(){
         
         
-       // print("parse payrollJSON: \(self.payrollJSON)")
+       // //print("parse payrollJSON: \(self.payrollJSON)")
         
         self.payroll = []
         numberOfValidShifts = 0
@@ -184,24 +184,24 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         
-        //print("shift count = \(payrollCount)")
+        ////print("shift count = \(payrollCount)")
         
         
         let dayOfWeek = layoutVars.getDayOfWeek(self.dateFormatterDB.string(from: Date()))!
         
-        print("dayOfWeek = \(String(describing: dayOfWeek))")
+        //print("dayOfWeek = \(String(describing: dayOfWeek))")
         
         
         for day in 0 ..< 7 {
             
-            print("day = \(day)")
+            //print("day = \(day)")
             if dayOfWeek == day{
                 
-                 print("payroll day = \(String(describing: self.payrollJSON!["payroll"]["\(day)"]))")
+                 //print("payroll day = \(String(describing: self.payrollJSON!["payroll"]["\(day)"]))")
                 
                 let i = 0
                 
-                print("payroll day = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["date"].string))")
+                //print("payroll day = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["date"].string))")
                 
                 if self.payrollJSON?["payroll"]["\(day)"][i]["date"].string != nil{
                     
@@ -212,7 +212,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     
                     
                     
-                    print("payrollDate = \(self.payrollJSON!["payroll"]["\(day)"][i]["date"].string!)")
+                    //print("payrollDate = \(self.payrollJSON!["payroll"]["\(day)"][i]["date"].string!)")
                     
                     //for i in 0 ..< payrollShiftCount {
                     
@@ -222,13 +222,13 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     let date = dateFormatter.date(from: "\( self.payrollJSON!["payroll"]["\(day)"][i]["date"].string!) 00:00:00")!
                     
                     
-                    print("date = \(date)")
-                    print("ID = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["ID"].string!))")
-                    print("empID = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["empID"].string!))")
-                    print("lunch = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["lunch"].string!))")
-                    print("total = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["total"].string!))")
-                    print("verified = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["verified"].string!))")
-                    print("createdBy = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["createdBy"].string!))")
+                    //print("date = \(date)")
+                    //print("ID = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["ID"].string!))")
+                    //print("empID = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["empID"].string!))")
+                    //print("lunch = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["lunch"].string!))")
+                    //print("total = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["total"].string!))")
+                    //print("verified = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["verified"].string!))")
+                    //print("createdBy = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["createdBy"].string!))")
                     
                     
                     let payroll:Payroll!
@@ -270,7 +270,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     
                 }else{
                     //shifts for day do not exist, create a blank one
-                    print("payroll = nil")
+                    //print("payroll = nil")
                     
                     
                     
@@ -285,7 +285,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         }
         
         
-        print("payroll count \(self.payroll.count)")
+        //print("payroll count \(self.payroll.count)")
         if self.payrollJSON!["week"]["pending"].stringValue == "1"{
             self.payrollTotalLbl.text = "Today's total hours: Pending"
         }else{
@@ -306,7 +306,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     
     
     func layoutViews(){
-        print("layoutViews")
+        //print("layoutViews")
         
         
         viewsLayedOut = true
@@ -402,7 +402,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     }
     
     @objc func selectEmployee(){
-        print("selectEmployee")
+        //print("selectEmployee")
         self.employeeTxtField.resignFirstResponder()
         
         let row = employeePicker.selectedRow(inComponent: 0)
@@ -417,7 +417,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     }
     
    @objc func displayPayrollSummary(){
-        print("display Summary View")
+        //print("display Summary View")
         let payrollSummaryViewController = PayrollSummaryViewController(_empID: self.employee.ID, _empFirstName: self.employee.fname!)
         navigationController?.pushViewController(payrollSummaryViewController, animated: false )
     }
@@ -487,16 +487,16 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
             //count = 4 //start, stop, break and add
         //}
         
-        print("count = \((self.payroll.count * 3) + 1)")
+        //print("count = \((self.payroll.count * 3) + 1)")
         return (self.payroll.count * 3) + 1
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
-        print("payroll.count = \(payroll.count)")
-        print("indexPath.row = \(indexPath.row)")
-        print("tableCellCounter = \(tableCellCounter)")
-        print("payrollArrayCounter = \(payrollArrayCounter)")
+        //print("payroll.count = \(payroll.count)")
+        //print("indexPath.row = \(indexPath.row)")
+        //print("tableCellCounter = \(tableCellCounter)")
+        //print("payrollArrayCounter = \(payrollArrayCounter)")
         let cell:PayrollEntryTableViewCell = payrollTableView.dequeueReusableCell(withIdentifier: "cell") as! PayrollEntryTableViewCell
         
        /* if indexPath.row == (self.payroll.count * 3){
@@ -538,7 +538,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                 payrollArrayCounter += 1
                 break;
             default:
-                print("default in switch statement")
+                //print("default in switch statement")
                 break;
             }
             
@@ -558,8 +558,8 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         //need userLevel greater then 1 to access this
         
         
-        print("row = \(row)")
-        print("edit start \(start)")
+        //print("row = \(row)")
+        //print("edit start \(start)")
         
         //print("start for \(row) =  \(payroll[row].startTime)")
         //print("stop for \(row) =  \(payroll[row].stopTime)")
@@ -610,7 +610,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                 
                 // check if break time is greater then qty
                 let qtySeconds = payroll[row].stopTime.timeIntervalSince(start)
-                print("qtySeconds = \(qtySeconds)")
+                //print("qtySeconds = \(qtySeconds)")
                 var breakTime = 0.0
                 if payroll[row].lunch != "" && payroll[row].lunch != "0"{
                     breakTime = Double(payroll[row].lunch)! * 60
@@ -714,8 +714,8 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         
        
         
-        print("row = \(row)")
-        print("edit stop \(stop)")
+        //print("row = \(row)")
+        //print("edit stop \(stop)")
         //print("start for \(row - 1) =  \(payroll[row - 1].startTime)")
         //print("stop for \(row - 1 ) =  \(payroll[row - 1].stopTime)")
         //print("break for \(row - 1) =  \(payroll[row - 1].lunch)")
@@ -756,7 +756,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
             
             // check if break time is greater then qty
             let qtySeconds = stop.timeIntervalSince(payroll[row - 1].startTime)
-            print("qtySeconds = \(qtySeconds)")
+            //print("qtySeconds = \(qtySeconds)")
             var breakTime = 0.0
             if payroll[row - 1].lunch != "" && payroll[row - 1].lunch != "0"{
                 breakTime = Double(payroll[row - 1].lunch)! * 60
@@ -795,8 +795,8 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         
         
         
-        print("row = \(row)")
-        print("edit break \(lunch)")
+        //print("row = \(row)")
+        //print("edit break \(lunch)")
        // print("start for \(row - 2) =  \(String(describing: payroll[row - 2].startTime))")
        // print("stop for \(row - 2 ) =  \(payroll[row - 2].stopTime)")
        // print("break for \(row - 2) =  \(payroll[row - 2].lunch)")
@@ -829,7 +829,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
             
             // check if break time is greater then qty
             let qtySeconds = payroll[row - 2].stopTime.timeIntervalSince(payroll[row - 2].startTime)
-            print("qtySeconds = \(qtySeconds)")
+            //print("qtySeconds = \(qtySeconds)")
             var breakTime = 0.0
             
             if lunch != 0{
@@ -860,12 +860,12 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     }
     
     func resetShift(row: Int){
-        print("resetShift")
+        //print("resetShift")
 
-        print("row = \(row)")
-        print("start for \(row - 3) =  \(String(describing: payroll[row - 3].startTime))")
-        print("stop for \(row - 3 ) =  \(String(describing: payroll[row - 3].stopTime))")
-        print("break for \(row - 3) =  \(String(describing: payroll[row - 3].lunch))")
+        //print("row = \(row)")
+        //print("start for \(row - 3) =  \(String(describing: payroll[row - 3].startTime))")
+        //print("stop for \(row - 3 ) =  \(String(describing: payroll[row - 3].stopTime))")
+        //print("break for \(row - 3) =  \(String(describing: payroll[row - 3].lunch))")
         
         
         let startIndexPath = IndexPath(row: row - 3, section: 0)
@@ -894,7 +894,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     }
     
     func submitPayroll(){
-        print("submitPayroll")
+        //print("submitPayroll")
         
         
         
@@ -924,17 +924,17 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         let parameters:[String:String]
         parameters = ["ID": self.payroll[0].ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "empID": self.employee.ID, "startTime": start, "stopTime": stop, "lunch": lunch, "date": todaysDate, "del": del] as! [String : String]
         
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/payroll.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("payroll response = \(response)")
+                //print("payroll response = \(response)")
             }
             .responseJSON(){
                 response in
                 if let json = response.result.value {
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     let returnJson = JSON(json)
                     
                     if returnJson["errorArray"][0]["error"].stringValue.count > 0{
@@ -945,7 +945,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     
                     
                     
-                    print("del = \(del)")
+                    //print("del = \(del)")
                     if del == "1" {
                         let payroll:Payroll!
                         
@@ -961,13 +961,13 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                         let date = self.timeFormatterDB.date(from: "\(returnJson["shift"]["date"].string!) 00:00:00")!
                         
                         
-                        print("date = \(date)")
-                        print("ID = \(returnJson["shift"]["ID"].string!)")
-                        print("empID = \(returnJson["shift"]["empID"].string!)")
-                        print("lunch = \(returnJson["shift"]["lunch"].string!)")
-                        print("total = \(returnJson["shift"]["total"].string!)")
-                        print("verified = \(returnJson["shift"]["verified"].string!)")
-                        print("createdBy = \(returnJson["shift"]["createdBy"].string!)")
+                        //print("date = \(date)")
+                        //print("ID = \(returnJson["shift"]["ID"].string!)")
+                        //print("empID = \(returnJson["shift"]["empID"].string!)")
+                        //print("lunch = \(returnJson["shift"]["lunch"].string!)")
+                        //print("total = \(returnJson["shift"]["total"].string!)")
+                        //print("verified = \(returnJson["shift"]["verified"].string!)")
+                        //print("createdBy = \(returnJson["shift"]["createdBy"].string!)")
                         
                         
                         let payroll:Payroll!
@@ -979,13 +979,13 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                         
                         if returnJson["shift"]["startTime"].string! != "No Time"{
                             let startTime = self.timeFormatterDB.date(from: returnJson["shift"]["startTime"].string!)!
-                            print("startTime = \(startTime)")
+                            //print("startTime = \(startTime)")
                             
                             payroll.startTime = startTime
                         }
                         if returnJson["shift"]["stopTime"].string! != "No Time"{
                             let stopTime = self.timeFormatterDB.date(from: returnJson["shift"]["stopTime"].string!)!
-                            print("stopime = \(stopTime)")
+                            //print("stopime = \(stopTime)")
                             payroll.stopTime = stopTime
                         }
                         
@@ -1026,7 +1026,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     
     
     @objc func goBack(){
-        print("back")
+        //print("back")
         _ = navigationController?.popViewController(animated: false)
     }
     

@@ -32,7 +32,7 @@ class LicenseViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.employee = _employee
         
         
-        print("view will appear")
+       // print("view will appear")
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         view.backgroundColor = layoutVars.backgroundColor
@@ -67,7 +67,7 @@ class LicenseViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func layoutViews(){
         
-        print("layoutViews employee licenses = \(self.employee.licenseArray.count)")
+       // print("layoutViews employee licenses = \(self.employee.licenseArray.count)")
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         

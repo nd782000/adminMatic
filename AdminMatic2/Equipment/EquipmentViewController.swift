@@ -457,7 +457,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
             return
         }
         
-        self.equipmentDelegate.disableSearch()
+        //self.equipmentDelegate.disableSearch()
         let editEquipmentViewController = NewEditEquipmentViewController(_equipment: self.equipment)
         editEquipmentViewController.editDelegate = self
         navigationController?.pushViewController(editEquipmentViewController, animated: false )
@@ -482,7 +482,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         navigationController?.pushViewController(detailsViewController, animated: false )
     }
     
-
+/*
     @objc func keyboardWillShow(notification: NSNotification) {
         
         if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as AnyObject).cgRectValue {
@@ -507,10 +507,12 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         })
         
     }
+ */
+    
     func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
+        //NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        //NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
     }
     
     

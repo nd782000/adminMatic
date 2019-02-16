@@ -258,7 +258,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
                         }
                     }
                     
-                    self.noPic = json["noPic"] as! String
+                    self.noPic = json["noPic"] as? String
                     self.layoutViews()
                 }
             } catch {
@@ -312,22 +312,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
             //activityView.startAnimating()
             
             //let imgURL:URL = URL(string: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.equipment.pic!)!
-        /*
-            let imgURL = URL(string: equipment.image.thumbPath!)!
-        
-            print("imgURL = \(imgURL)")
-            
-            Nuke.loadImage(with: imgURL, into: self.equipmentImage!)
-        */
-        /*
-            Nuke.loadImage(with: imgURL, into: self.equipmentImage!){
-                print("nuke loadImage")
-                self.equipmentImage?.handle(response: $0, isFromMemoryCache: $1)
-                self.activityView.stopAnimating()
-                //self.image = Image(_path: self.equipment.pic!)
-                //self.image = equipment.image
-            }
-            */
+       
         
         Alamofire.request(equipment.image.thumbPath!).responseImage { response in
             debugPrint(response)
@@ -380,6 +365,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.nameTxtField.delegate = self
         self.nameTxtField.tag = 1
         self.nameTxtField.returnKeyType = .done
+        self.nameTxtField.autocorrectionType = .no
         safeContainer.addSubview(self.nameTxtField)
         
         
@@ -436,6 +422,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.makeTxtField.delegate = self
         self.makeTxtField.tag = 3
         self.makeTxtField.returnKeyType = .done
+        self.makeTxtField.autocorrectionType = .no
         safeContainer.addSubview(self.makeTxtField)
         
         
@@ -455,6 +442,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.modelTxtField.delegate = self
         self.modelTxtField.tag = 4
         self.modelTxtField.returnKeyType = .done
+        self.modelTxtField.autocorrectionType = .no
         safeContainer.addSubview(self.modelTxtField)
         
         //type
@@ -509,6 +497,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         self.serialTxtField.delegate = self
         self.serialTxtField.tag = 6
         self.serialTxtField.returnKeyType = .done
+        self.serialTxtField.autocorrectionType = .no
         safeContainer.addSubview(self.serialTxtField)
         
         //fuel
@@ -939,7 +928,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         
         equipment.purchaseDate = dateFormatterDB.string(from: purchasedPicker.date)
         self.purchasedTxtField.text = dateFormatter.string(from: purchasedPicker.date)
-        print("equipment.purchaseDate = \(equipment.purchaseDate)")
+       // print("equipment.purchaseDate = \(equipment.purchaseDate)")
         self.purchasedTxtField.resignFirstResponder()
         editsMade = true
         
@@ -988,6 +977,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
             self.vendorResultsTableView.reloadData()
         }
         
+        /*
         if textField.tag > 6{
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.frame.origin.y -= 200
@@ -1006,7 +996,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
             }, completion: { finished in
                 // //print("Napkins opened!")
             })
-        }
+        }*/
         
          }
     
@@ -1044,7 +1034,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
             
             self.vendorResultsTableView.reloadData()
         }
-        
+        /*
         if textField.tag > 6{
             if(self.view.frame.origin.y < 0){
                 UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
@@ -1065,6 +1055,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
                 })
             }
         }
+ */
+        
         editsMade = true
         
     }
@@ -1075,7 +1067,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         print("textFieldDidBeginEditing")
-        
+        /*
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
             self.view.frame.origin.y -= 250
             
@@ -1083,11 +1075,13 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         }, completion: { finished in
             // //print("Napkins opened!")
         })
+ */
         
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         print("textFieldDidEndEditing")
+        /*
         if(self.view.frame.origin.y < 0){
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.frame.origin.y += 250
@@ -1096,6 +1090,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
             }, completion: { finished in
             })
         }
+ */
+        
     }
     
     

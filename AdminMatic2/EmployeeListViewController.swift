@@ -45,19 +45,19 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     override func viewWillAppear(_ animated: Bool) {
         // Do any additional setup after loading the view.
         
-        print("view will appear")
+        //print("view will appear")
        
         if appDelegate.employeeArray.count == 0{
-            print("internet connection failed")
+            //print("internet connection failed")
             
             let alertController = UIAlertController(title: "Lost Internet Connection", message: "Try connecting again", preferredStyle: UIAlertController.Style.alert) //Replace UIAlertControllerStyle.Alert by UIAlertControllerStyle.alert
             //let DestructiveAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.destructive) {
                 //(result : UIAlertAction) -> Void in
-                //print("Cancel")
+                ////print("Cancel")
            // }
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                //print("OK")
+                ////print("OK")
                // _ = self.navigationController?.popViewController(animated: true)
                 
                 self.appDelegate.getEmployeeList()
@@ -211,7 +211,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("You selected cell #\(indexPath.row)!")
+        //print("You selected cell #\(indexPath.row)!")
         
         
         let indexPath = tableView.indexPathForSelectedRow;
@@ -274,7 +274,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     
     
     func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
-        print("didfinish")
+        //print("didfinish")
         //... handle sms screen actions
         self.dismiss(animated: true, completion: nil)
         //getBatch()
@@ -289,7 +289,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     
        
     @objc func dismissMessage(){
-        print("dismiss")
+        //print("dismiss")
        // controller.dismiss(animated: true, completion: nil)
         //self.navigationController?.popViewController(animated: true)
         controller.dismiss(animated: true, completion: nil)
@@ -315,7 +315,7 @@ class EmployeeListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     }
     
     @objc func groupMessage(){
-        print("group message")
+        //print("group message")
         
         let groupMessageViewController = GroupMessageViewController()
         

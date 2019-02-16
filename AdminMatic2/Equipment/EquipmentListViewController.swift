@@ -16,7 +16,7 @@ import Alamofire
 
 protocol EquipmentListDelegate{
     func reDrawEquipmentList()
-    func disableSearch()
+    //func disableSearch()
 }
 
  
@@ -858,7 +858,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
     @objc func addEquipment(){
         print("Add Equipment")
         
-        self.disableSearch()
+        //self.disableSearch()
         
         let newEquipmentViewController = NewEditEquipmentViewController()
         newEquipmentViewController.delegate = self
@@ -873,7 +873,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
     }
     
     
-    
+    /*
     func disableSearch(){
         if(self.searchController != nil){
             self.searchController.isActive = false
@@ -882,7 +882,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
             equipmentTableView.reloadData()
         }
     }
-    
+    */
     
     
     func reDrawEquipmentList(){

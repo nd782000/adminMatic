@@ -848,7 +848,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        
+        /*
        // CGPoint coordinates = sender.frame.origin;
         print("textField y = \(textField.frame.origin.y)")
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
@@ -858,10 +858,12 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         }, completion: { finished in
             print("Napkins opened!")
         })
+ */
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         editsMade = true
+        /*
         if(self.view.frame.origin.y < 0){
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.frame.origin.y = 0
@@ -870,6 +872,8 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
             }, completion: { finished in
             })
         }
+ */
+        
     }
     
      func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -883,7 +887,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
     
     
     func textViewDidBeginEditing(_ textView: UITextView) {        print("textFieldDidBeginEditing")
-        
+        /*
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
             self.view.frame.origin.y -= textView.frame.origin.y
             
@@ -891,12 +895,13 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         }, completion: { finished in
             print("Napkins opened!")
         })
-        
+        */
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         print("textFieldDidEndEditing")
         editsMade = true
+        /*
         if(self.view.frame.origin.y < 0){
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.frame.origin.y = 0
@@ -905,6 +910,8 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
             }, completion: { finished in
             })
         }
+ */
+        
     }
     
     
@@ -1221,7 +1228,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
             
             if(self.view.frame.origin.y < 0){
                 UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                    self.view.frame.origin.y == 0
+                    self.view.frame.origin.y = 0
                     
                     
                 }, completion: { finished in

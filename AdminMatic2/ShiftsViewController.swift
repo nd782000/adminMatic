@@ -94,7 +94,7 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
 
     func getShifts(){
-        print("get shifts")
+        //print("get shifts")
         
         
         
@@ -122,13 +122,13 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             
         }else{
             //next
-            print("next week")
+            //print("next week")
             
-            print("startOfWeek = \(Date().startOfWeek)")
-            print("endOfWeek = \(Date().endOfWeek)")
+            //print("startOfWeek = \(Date().startOfWeek)")
+            //print("endOfWeek = \(Date().endOfWeek)")
             
-            print("startOfNextWeek = \(Date().startOfNextWeek)")
-            print("endOfNextWeek = \(Date().endOfNextWeek)")
+            //print("startOfNextWeek = \(Date().startOfNextWeek)")
+            //print("endOfNextWeek = \(Date().endOfNextWeek)")
             
             
             startOfRange = Date().startOfNextWeek
@@ -149,19 +149,19 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         let parameters:[String:String]
             parameters = ["startDate":  startDateDB,"endDate": endDateDB,"empID":self.empID]
         
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/shifts.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("shifts response = \(response)")
+                //print("shifts response = \(response)")
             }
             
             .responseJSON(){
                 response in
                 
                 if let json = response.result.value {
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     self.shiftsJSON = JSON(json)
                     self.parseShiftsJSON()
                     
@@ -187,10 +187,10 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
             
             for day in 0 ..< 7 {
                 
-            print("day = \(day)")
+            //print("day = \(day)")
                 if self.shiftsJSON?["shifts"]["\(day)"]["startTime"].string != nil{
                 
-                    print("startTime = \(String(describing: self.shiftsJSON!["shifts"]["\(day)"]["startTime"].string!))")
+                    //print("startTime = \(String(describing: self.shiftsJSON!["shifts"]["\(day)"]["startTime"].string!))")
                 
 
                     let startTime = dateFormatter.date(from: (self.shiftsJSON!["shifts"]["\(day)"]["startTime"].string!))!
@@ -211,7 +211,7 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
                 
                 
             }else{
-                print("shift = nil")
+                //print("shift = nil")
                 let startTime = startOfRange.addNumberOfDaysToDate(_numberOfDays: day)
                 
                 let stopTime = startOfRange.addNumberOfDaysToDate(_numberOfDays: day)
@@ -225,7 +225,7 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         }
         
         
-        print("shift count \(self.shifts.count)")
+        //print("shift count \(self.shifts.count)")
         
         self.totalHours = self.shiftsJSON!["shiftTotalHrs"].stringValue
         
@@ -238,7 +238,7 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     
     func layoutViews(){
-        print("layoutViews")
+        //print("layoutViews")
         
         for view in self.view.subviews{
             view.removeFromSuperview()
@@ -368,7 +368,7 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     // The number of rows of data
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
     //return pickerData.count
-        print("picker count = \(self.weekArray.count)")
+        //print("picker count = \(self.weekArray.count)")
         
         return self.weekArray.count
     }
@@ -376,7 +376,7 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     // The data to return fopr the row and component (column) that's being passed in
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
     //return pickerData[row]
-        print("picker title = \(self.weekArray[row])")
+        //print("picker title = \(self.weekArray[row])")
         return self.weekArray[row]
     }
     
@@ -385,7 +385,7 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        print("shifts.count = \(shifts.count)")
+        //print("shifts.count = \(shifts.count)")
         return self.shifts.count
     }
     
@@ -422,7 +422,7 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
     
     
     @objc func goBack(){
-        print("back")
+        //print("back")
         _ = navigationController?.popViewController(animated: false)
     }
     

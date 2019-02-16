@@ -419,7 +419,7 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     
     func textViewDidBeginEditing(_ textView: UITextView) {        print("textFieldDidBeginEditing")
-        
+        /*
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
             self.view.frame.origin.y -= 250
             
@@ -427,11 +427,12 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }, completion: { finished in
             
         })
-        
+        */
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         print("textFieldDidEndEditing")
+        /*
         if(self.view.frame.origin.y < 0){
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.frame.origin.y += 250
@@ -440,6 +441,7 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }, completion: { finished in
             })
         }
+ */
     }
     
     
@@ -448,16 +450,18 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        
+        /*
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
             self.view.frame.origin.y -= 250
             
             
         }, completion: { finished in
         })
+ */
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
+        /*
         if(self.view.frame.origin.y < 0){
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.frame.origin.y += 250
@@ -466,6 +470,7 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }, completion: { finished in
             })
         }
+        */
         
         
     }
@@ -627,7 +632,8 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func presentAlert(_alert:UIAlertController){
-        self.present(_alert, animated: true, completion: nil)
+        print("presentAlert")
+        self.layoutVars.getTopController().present(_alert, animated: true, completion: nil)
     }
     
    

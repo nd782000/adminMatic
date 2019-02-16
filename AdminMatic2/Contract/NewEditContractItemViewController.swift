@@ -48,6 +48,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     var priceTxtField: PaddedTextField!
     
     
+    
     var hideUnitsLbl:Label!
     var hideUnitsSwitch:UISwitch = UISwitch()
     
@@ -88,7 +89,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     init(_contract:Contract,_itemCount:Int){
         super.init(nibName:nil,bundle:nil)
         
-        print("new Item init")
+        //print("new Item init")
         
         title = "Add Item"
         
@@ -101,7 +102,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
    
     init(_contract:Contract,_contractItem:ContractItem){
         super.init(nibName:nil,bundle:nil)
-        print("edit Item init")
+        //print("edit Item init")
         
         title = "Edit Item"
         self.contract = _contract
@@ -150,7 +151,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     
     
     func loadLinkList(_linkType:String, _loadScript:API.Router){
-        print("load link list")
+        //print("load link list")
         
         // Show Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -192,7 +193,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
                     }
                 }
             } catch {
-                print("Error deserializing JSON: \(error)")
+                //print("Error deserializing JSON: \(error)")
             }
             
             self.layoutViews()
@@ -203,7 +204,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     
     func layoutViews(){
         
-        print("layoutViews")
+        //print("layoutViews")
         if(indicator != nil){
             indicator.dismissIndicator()
         }
@@ -441,7 +442,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     
     
     func setConstraints(){
-        print("set constraints")
+        //print("set constraints")
         
         let sizeVals = ["width": layoutVars.fullWidth - 30,"height": 40, "navBarHeight":layoutVars.navAndStatusBarHeight + 5, "keyboardHeight":self.keyboardHeight] as [String : Any]
         
@@ -583,11 +584,11 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         }
         
         if (sender.isOn == true){
-            print("on")
+            //print("on")
             self.contractItem.hideUnits = "1"
         }
         else{
-            print("off")
+            //print("off")
             self.contractItem.hideUnits = "0"
         }
         
@@ -646,7 +647,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
    
     
     @objc func handleChargeTypeChange(){
-        print("handle chargeType change")
+        //print("handle chargeType change")
         if self.contractItem == nil{
             self.chargeTypeTxtField.resignFirstResponder()
             self.itemSearchBar.becomeFirstResponder()
@@ -693,13 +694,13 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("numberOfRowsInSection")
+        //print("numberOfRowsInSection")
         return self.itemSearchResults.count
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        print("cellForRowAt")
+        //print("cellForRowAt")
         let cell = itemResultsTableView.dequeueReusableCell(withIdentifier: "linkCell") as! NewWoItemTableViewCell
         itemResultsTableView.rowHeight = 50.0
         cell.nameLbl.text = self.itemSearchResults[indexPath.row]
@@ -760,7 +761,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         }else{
             self.priceTxtField.text = currentCell.price
         }
-        print("select item")
+        //print("select item")
         
         //print("select type = \(self.contractItem.type)")
         
@@ -781,9 +782,9 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         // Filter the data you have. For instance:
-        print("search edit")
-        //print("searchText.characters.count = \(searchText.characters.count)")
-        print("searchText.characters.count = \(searchText.count)")
+        //print("search edit")
+        ////print("searchText.characters.count = \(searchText.characters.count)")
+        //print("searchText.characters.count = \(searchText.count)")
         
         
         if (searchText.count == 0) {
@@ -821,7 +822,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         // Stop doing the search stuff
         // and clear the text in the search bar
-        print("search cancel")
+        //print("search cancel")
         searchBar.text = ""
         self.contractItem.ID = ""
         // Hide the cancel button
@@ -833,14 +834,14 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     
     
     @objc func submit(){
-        print("Submit")
+        //print("Submit")
         
        // print("self.estQtyLbl.text = \(self.estQtyLbl.text)")
         if(self.contractItem.name == ""){
             let alertController = UIAlertController(title: "Select an Item", message: "", preferredStyle: UIAlertController.Style.alert)
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+                //print("OK")
                 //self.popView()
             }
             alertController.addAction(okAction)
@@ -852,7 +853,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             let alertController = UIAlertController(title: "Estimate a Quantity", message: "", preferredStyle: UIAlertController.Style.alert)
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+                //print("OK")
                 //self.popView()
             }
             alertController.addAction(okAction)
@@ -901,56 +902,56 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         
         if editMode == false{
             
-            print("contractItemID = \(self.contractItem.ID)")
-            print("contractID = \(contract.ID!)")
-            //print("ID = \(selectedID)")
-           // print("sort = \(itemCount)")
-            print("type = \(self.contractItem.type)")
-            print("chargeType = \(self.contractItem.chargeType!)")
-            print("qty = \(self.contractItem.qty)")
-            print("price = \(self.contractItem.price)")
-            print("total = \(self.contractItem.total)")
-            print("name = \(self.contractItem.name)")
-            print("tax = \(self.contractItem.taxCode)")
-            print("subcontractor = \(self.contractItem.subcontractor)")
-            print("hideUnits = \(self.contractItem.hideUnits)")
+            //print("contractItemID = \(self.contractItem.ID)")
+            //print("contractID = \(contract.ID!)")
+            ////print("ID = \(selectedID)")
+           // //print("sort = \(itemCount)")
+            //print("type = \(self.contractItem.type)")
+            //print("chargeType = \(self.contractItem.chargeType!)")
+            //print("qty = \(self.contractItem.qty)")
+            //print("price = \(self.contractItem.price)")
+            //print("total = \(self.contractItem.total)")
+            //print("name = \(self.contractItem.name)")
+            //print("tax = \(self.contractItem.taxCode)")
+            //print("subcontractor = \(self.contractItem.subcontractor)")
+            //print("hideUnits = \(self.contractItem.hideUnits)")
             
             parameters = ["contractItemID": "0","contractID":self.contract.ID!,"itemID": self.contractItem.ID, "type":self.contractItem.type, "chargeType": self.contractItem.chargeType!, "qty": self.contractItem.qty, "price": self.contractItem.price, "total":self.contractItem.total, "name":self.contractItem.name,"taxCode":self.contractItem.taxCode,"subcontractor":self.contractItem.subcontractor,"hideUnits":self.contractItem.hideUnits]
         }else{
             
-            print("contractItemID = \(self.contractItem.ID)")
-            print("contractID = \(contract.ID!)")
-            print("itemID = \(self.contractItem.itemID)")
-            //print("sort = \(self.sort)")
-            print("type = \(self.contractItem.type)")
-            print("chargeType = \(self.contractItem.chargeType!)")
-            print("qty = \(self.contractItem.qty)")
-            print("price = \(self.contractItem.price)")
-            print("total = \(self.contractItem.total)")
-            print("name = \(self.contractItem.name)")
-            print("tax = \(self.contractItem.taxCode)")
-            print("subcontractor = \(self.contractItem.subcontractor)")
-            print("hideUnits = \(self.contractItem.hideUnits)")
+            //print("contractItemID = \(self.contractItem.ID)")
+            //print("contractID = \(contract.ID!)")
+            //print("itemID = \(self.contractItem.itemID)")
+            ////print("sort = \(self.sort)")
+            //print("type = \(self.contractItem.type)")
+            //print("chargeType = \(self.contractItem.chargeType!)")
+            //print("qty = \(self.contractItem.qty)")
+            //print("price = \(self.contractItem.price)")
+            //print("total = \(self.contractItem.total)")
+            //print("name = \(self.contractItem.name)")
+            //print("tax = \(self.contractItem.taxCode)")
+            //print("subcontractor = \(self.contractItem.subcontractor)")
+            //print("hideUnits = \(self.contractItem.hideUnits)")
             
             parameters = ["contractItemID": self.contractItem.ID,"contractID":self.contract.ID!,"itemID": self.contractItem.itemID, "type":self.contractItem.type, "chargeType": self.contractItem.chargeType!, "qty": self.contractItem.qty, "price": self.contractItem.price, "total":self.contractItem.total, "name":self.contractItem.name,"taxCode":self.contractItem.taxCode,"subcontractor":self.contractItem.subcontractor,"hideUnits":self.contractItem.hideUnits]
         }
         
         
-        print("parameters : \(parameters)")
+        //print("parameters : \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contractItem.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("new item response = \(response)")
+                //print("new item response = \(response)")
             }
             
             .responseJSON(){
                 response in
                 
-                print(response.request ?? "")  // original URL request
-                print(response.response ?? "") // URL response
-                print(response.data ?? "")     // server data
-                print(response.result)   // result of response serialization
+                //print(response.request ?? "")  // original URL request
+                //print(response.response ?? "") // URL response
+                //print(response.data ?? "")     // server data
+                //print(response.result)   // result of response serialization
                 
                 
                 
@@ -964,16 +965,16 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
                     
                     
                     let subTotal = addReturn["subTotal"]
-                    print("subTotal: \(subTotal)")
+                    //print("subTotal: \(subTotal)")
                     
                     let taxTotal = addReturn["taxTotal"]
-                    print("taxTotal: \(taxTotal)")
+                    //print("taxTotal: \(taxTotal)")
                     
                     let total = addReturn["total"]
-                    print("total: \(total)")
+                    //print("total: \(total)")
                     
                     let terms = addReturn["newTerms"]
-                    print("terms: \(terms)")
+                    //print("terms: \(terms)")
                     
                     
                     self.contract.subTotal = subTotal.stringValue
@@ -1020,7 +1021,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     */
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        print("textFieldShouldReturn")
+        //print("textFieldShouldReturn")
         self.view.endEditing(true)
         return false
         
@@ -1033,19 +1034,19 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     
     
     @objc func goBack(){
-        print("go back")
+        //print("go back")
         
         if(self.editsMade == true){
-            print("editsMade = true")
+            //print("editsMade = true")
             let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertController.Style.alert)
             let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
-                print("Cancel")
+                //print("Cancel")
             }
             
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+                //print("OK")
                 _ = self.navigationController?.popViewController(animated: false)
             }
             

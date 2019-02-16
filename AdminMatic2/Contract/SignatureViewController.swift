@@ -114,16 +114,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         
         layoutViews()
-        /*
-        if UIDevice.current.orientation.isLandscape {
-            print("Landscape")
-            layoutViews()
-        } else {
-            print("Portrait")
-            //layoutViewsLandscape()
-            layoutViews()
-        }
- */
+        
     }
 
     
@@ -220,99 +211,6 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     }
     
     
-    /*
-    
-    func layoutViewsPortrait(){
-        //print("customer view layoutViews")
-        //////////   containers for different sections
-        
-        self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
-        
-        //set container to safe bounds of view
-        let safeContainer:UIView = UIView()
-        safeContainer.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(safeContainer)
-        safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
-        safeContainer.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
-        safeContainer.rightAnchor.constraint(equalToConstant: view.safeLeftAnchor).isActive = true
-        safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
-        
-        
-        
-        self.termsBtn.addTarget(self, action: #selector(SignatureViewController.terms), for: UIControl.Event.touchUpInside)
-        safeContainer.addSubview(self.termsBtn)
-        
-        self.signatureView.backgroundColor = UIColor.clear
-        self.signatureView.layer.borderWidth = 1
-        self.signatureView.layer.borderColor = UIColor(hex:0x005100, op: 0.2).cgColor
-        self.signatureView.layer.cornerRadius = 4.0
-        
-        self.signatureView.translatesAutoresizingMaskIntoConstraints = false
-        
-        safeContainer.addSubview(self.signatureView)
-        
-        self.clearBtn.addTarget(self, action: #selector(SignatureViewController.clear), for: UIControl.Event.touchUpInside)
-        safeContainer.addSubview(self.clearBtn)
-        
-        self.acceptBtn.addTarget(self, action: #selector(SignatureViewController.accept), for: UIControl.Event.touchUpInside)
-        safeContainer.addSubview(self.acceptBtn)
-        
-        
-        self.progressLbl = Label(text: "", valueMode: false)
-        self.progressLbl.font = self.progressLbl.font.withSize(20)
-        self.progressLbl.textAlignment = .right
-        self.progressLbl.translatesAutoresizingMaskIntoConstraints = false
-        self.progressLbl.isHidden = true
-        safeContainer.addSubview(self.progressLbl)
-        
-        self.progressView = UIProgressView()
-        self.progressView.tintColor = layoutVars.buttonColor1
-        self.progressView.translatesAutoresizingMaskIntoConstraints = false
-        self.progressView.isHidden = true
-        safeContainer.addSubview(self.progressView)
-        
-        
-        let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 24,"halfWidth": layoutVars.halfWidth] as [String:Any]
-        
-        
-        //print("1")
-        //auto layout group
-        let viewsDictionary = [
-            "termsBtn":self.termsBtn,
-            "signView":self.signatureView,
-            "clearBtn":self.clearBtn,
-            "acceptBtn":self.acceptBtn,
-            "progressLbl":self.progressLbl,
-            "progressView":self.progressView
-            ] as [String:Any]
-        
-        
-        
-        //////////////   auto layout position constraints   /////////////////////////////
-        
-        if self.employee == nil{
-            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[termsBtn]-|", options: [], metrics: nil, views: viewsDictionary))
-        }
-        
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[signView]-|", options: [], metrics: nil, views: viewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[clearBtn(halfWidth)]-[acceptBtn]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[progressLbl][progressView(80)]-|", options: [], metrics: nil, views: viewsDictionary))
-        
-        if self.employee == nil{
-            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[termsBtn(40)]-[signView]-[clearBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
-            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[termsBtn(40)]-[signView]-[acceptBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
-        }else{
-            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[signView]-[clearBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
-            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[signView]-[acceptBtn(40)]-10-|", options: [], metrics: nil, views: viewsDictionary))
-        }
-        
-        
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-52-[progressLbl(20)]", options: [], metrics: nil, views: viewsDictionary))
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-52-[progressView(10)]", options: [], metrics: nil, views: viewsDictionary))
-        
-    }
-    
-    */
     
     
     
@@ -325,13 +223,13 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     // For example, this can be used if the view is embedded in a scroll view, temporary
     // stopping it from scrolling while signing.
     func didStart(_ view: YPDrawSignatureView) {
-        print("Started Drawing")
+        //print("Started Drawing")
     }
     
     // didFinish(_ view: YPDrawSignatureView) is called rigth after the last touch of a gesture is registered in the view.
     // Can be used to enabe scrolling in a scroll view if it has previous been disabled.
     func didFinish(_ view: YPDrawSignatureView) {
-        print("Finished Drawing")
+        //print("Finished Drawing")
     }
     
     
@@ -341,7 +239,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     
     
     @objc func terms(){
-        print("terms")
+        //print("terms")
         let termsViewController:TermsViewController = TermsViewController(_terms: self.contract.terms, _contractID: self.contract.ID, _editable: false)
         termsViewController.delegate = self
         navigationController?.pushViewController(termsViewController, animated: false )
@@ -351,13 +249,13 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     
     
     @objc func clear(){
-        print("clear")
+        //print("clear")
         self.signatureView.clear()
         
     }
     
     @objc func accept(){
-        print("accept")
+        //print("accept")
         
         if self.signatureView.getSignature() != nil {
             
@@ -378,7 +276,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     
     
     func uploadSignature(){
-        print("start customer upload")
+        //print("start customer upload")
        
         
         var parameters:[String:String]
@@ -400,12 +298,12 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
         }
         
         
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         let URL = try! URLRequest(url: self.saveURLString, method: .post, headers: nil)
         
         Alamofire.upload(multipartFormData: { (multipartFormData) in
-            print("alamofire upload")
+            //print("alamofire upload")
             for (key, value) in parameters {
                 multipartFormData.append(value.data(using: String.Encoding.utf8)!, withName: key)
             }
@@ -422,17 +320,17 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
             switch result {
             case .success(let upload, _, _):
                 
-                print("success")
+                //print("success")
                 self.progressLbl.isHidden = false
                 upload.uploadProgress(closure: { (Progress) in
-                    print("Upload Progress: \(Progress.fractionCompleted)")
+                    //print("Upload Progress: \(Progress.fractionCompleted)")
                     
                     DispatchQueue.main.async() {
                         
                         self.progressView.progress = Float(Progress.fractionCompleted)
                         self.progressLbl.text = "Uploading Signature \(Float(Progress.fractionCompleted))%"
                         if  (Progress.fractionCompleted == 1.0) {
-                            print("upload finished")
+                            //print("upload finished")
                             self.progressLbl.isHidden = true
                             
                             if self.employee == nil{
@@ -451,10 +349,10 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
                 })
                 
                 upload.responseJSON { response in
-                    // print(response.request ?? "")  // original URL request
-                    //print(response.response ?? "") // URL response
-                    // print(response.data ?? "")     // server data
-                    print("result = \(response.result)")   // result of response serialization
+                    // //print(response.request ?? "")  // original URL request
+                    ////print(response.response ?? "") // URL response
+                    // //print(response.data ?? "")     // server data
+                    //print("result = \(response.result)")   // result of response serialization
                     
                     if("\(response.result)" == "FAILURE") {
                         self.layoutVars.playErrorSound()
@@ -483,10 +381,10 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
                     }
                 }
                 upload.responseString { response in
-                    print("RESPONSE: \(response)")
+                    //print("RESPONSE: \(response)")
                 }
             case .failure(let encodingError):
-                print("fail \(encodingError)")
+                //print("fail \(encodingError)")
                 
                 self.layoutVars.playErrorSound()
                 
@@ -503,8 +401,8 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     
     @objc func updateContractStatus() {
         
-        print("update contract status")
-        //print("contract status = \(self.contract.status)")
+        //print("update contract status")
+        ////print("contract status = \(self.contract.status)")
         
         
         if self.contract.status == "2"{
@@ -541,7 +439,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     
     @objc func completeEmployeeUpload() {
         
-        print("completeEmployeeUpload")
+        //print("completeEmployeeUpload")
         
             let alertController = UIAlertController(title: "Your Signature is All Set", message: "", preferredStyle: UIAlertController.Style.alert)
         
@@ -555,7 +453,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
                 self.appDelegate.loggedInEmployee?.hasSignature = true
                 
                 for rep in self.appDelegate.salesRepArray {
-                    print("looping through sales rep array to update")
+                    //print("looping through sales rep array to update")
                     if self.contract != nil{
                         if self.contract.salesRep == rep.ID{
                             rep.hasSignature = true

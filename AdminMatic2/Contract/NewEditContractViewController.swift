@@ -101,7 +101,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         //for an empty lead to start things off
         self.contract = _contract
         
-        print("contract status = \(contract.status)")
+       // print("contract status = \(contract.status)")
     }
     
     //new from customer view
@@ -119,7 +119,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     init(_lead:Lead,_tasks: [Task]){
         super.init(nibName:nil,bundle:nil)
         
-        print("new contract from lead init")
+        //print("new contract from lead init")
         
         //self.lead = _lead
         self.taskArray = _tasks
@@ -140,7 +140,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("viewdidload")
+        //print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
@@ -161,7 +161,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     }
     
     func getPickerInfo(){
-        print("get picker info")
+        //print("get picker info")
         indicator = SDevIndicator.generate(self.view)!
         
         dateFormatter.dateFormat = "MM-dd-yyyy"
@@ -177,8 +177,8 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
             response in
             //print(response.request ?? "")  // original URL request
             //print(response.response ?? "") // URL response
-            print(response.data ?? "")     // server data
-            print(response.result)   // result of response serialization
+            //print(response.data ?? "")     // server data
+            //print(response.result)   // result of response serialization
             do {
                 if let data = response.data,
                     let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -195,7 +195,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
                 self.indicator.dismissIndicator()
                 self.layoutViews()
             } catch {
-                print("Error deserializing JSON: \(error)")
+                //print("Error deserializing JSON: \(error)")
             }
         }
         
@@ -542,39 +542,39 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     }
     
     @objc func cancelStatusInput(){
-        print("Cancel Cust Input")
+        //print("Cancel Cust Input")
         self.statusTxtField.resignFirstResponder()
     }
     
     
     @objc func cancelCustInput(){
-        print("Cancel Cust Input")
+        //print("Cancel Cust Input")
         self.customerSearchBar.resignFirstResponder()
         self.customerResultsTableView.alpha = 0.0
     }
     
     
     @objc func cancelChargeTypeInput(){
-        print("Cancel Charge Type Input")
+        //print("Cancel Charge Type Input")
         self.chargeTypeTxtField.resignFirstResponder()
     }
     
     
     @objc func cancelRepInput(){
-        print("Cancel Rep Input")
+        //print("Cancel Rep Input")
         self.repSearchBar.resignFirstResponder()
         self.repResultsTableView.alpha = 0.0
     }
     
     @objc func cancelNotesInput(){
-        print("Cancel Notes Input")
+        //print("Cancel Notes Input")
         self.notesView.resignFirstResponder()
     }
     
     
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        print("shouldChangeTextInRange")
+        //print("shouldChangeTextInRange")
         if (text == "\n") {
             textView.resignFirstResponder()
         }
@@ -583,21 +583,23 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     
     
     
-    func textViewDidBeginEditing(_ textView: UITextView) {        print("textFieldDidBeginEditing")
+    func textViewDidBeginEditing(_ textView: UITextView) {        //print("textFieldDidBeginEditing")
         
+        /*
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
             self.view.frame.origin.y -= 250
             
             
         }, completion: { finished in
-            print("Napkins opened!")
+            //print("Napkins opened!")
         })
-        
+        */
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        print("textFieldDidEndEditing")
+        //print("textFieldDidEndEditing")
         editsMade = true
+        /*
         if(self.view.frame.origin.y < 0){
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.frame.origin.y += 250
@@ -606,6 +608,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
             }, completion: { finished in
             })
         }
+ */
     }
     
     
@@ -619,16 +622,17 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         return 1
     }
     
+    /*
     // returns the number of 'columns' to display.
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
+    func numberOfComponentsInPickerView(_ pickerView: UIPickerView) -> Int{
         return 1
     }
-    
+    */
     
     // returns the # of rows in each component..
-    func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
         // shows first 3 status options, not cancel or waiting
-        print("pickerview tag: \(pickerView.tag)")
+        //print("pickerview tag: \(pickerView.tag)")
         var count:Int = 0
         if(pickerView.tag == 1){
             count = self.statusArray.count
@@ -644,7 +648,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     }
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-        print("pickerview tag: \(pickerView.tag)")
+        //print("pickerview tag: \(pickerView.tag)")
         let myView = UIView(frame: CGRect(x:0, y:0, width:pickerView.bounds.width - 30, height:60))
         
         var rowString = String()
@@ -701,7 +705,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
     {
         
-        print("pickerview tag: \(pickerView.tag)")
+        //print("pickerview tag: \(pickerView.tag)")
         if(pickerView.tag == 1){
             contract.status = "\(row + 1)"
             
@@ -728,7 +732,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     }
     //["New","Sent","Accepted","Scheduled","Declined","Waiting","Canceled"]
     func setStatus(status: String) {
-        print("set status \(status)")
+        //print("set status \(status)")
         switch (status) {
         case "0":
             let statusImg = UIImage(named:"unDoneStatus.png")
@@ -768,7 +772,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     
     
     @objc func handleChargeTypeChange(){
-        print("handle chargeType change")
+        //print("handle chargeType change")
         self.chargeTypeTxtField.resignFirstResponder()
         
         //warn users about items being set to $0 on change to NC
@@ -776,13 +780,13 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
             let alertController = UIAlertController(title: "Set All Items to NO CHARGE?", message: "Setting the contract to NO CHARGE will force all items to be no charge.  Do you wish to proceed?", preferredStyle: UIAlertController.Style.alert)
             let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
-                print("NO")
+                //print("NO")
                 return
             }
             
             let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("YES")
+                //print("YES")
                 
                 
                
@@ -818,8 +822,8 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         // Filter the data you have. For instance:
-        print("search edit")
-        print("searchText.count = \(searchText.count)")
+        //print("search edit")
+        //print("searchText.count = \(searchText.count)")
         if(searchBar.tag == 1){
             //Customer
             self.tableViewMode = "CUSTOMER"
@@ -835,7 +839,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
                 contract.customer = ""
                 contract.customerName = ""
             }else{
-                print("set cust table alpha to 1")
+                //print("set cust table alpha to 1")
                 self.customerResultsTableView.alpha = 1.0
             }
             break
@@ -860,16 +864,16 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         
         switch self.tableViewMode{
         case "CUSTOMER":
-            print("CUSTOMER filter")
+            //print("CUSTOMER filter")
             //count = self.tasksArray.count + 1
             customerSearchResults = []
-            print(" text = \(customerSearchBar.text!.lowercased())")
+            //print(" text = \(customerSearchBar.text!.lowercased())")
             self.customerSearchResults = self.customerNames.filter({( aCustomer: String ) -> Bool in
                 return (aCustomer.lowercased().range(of: customerSearchBar.text!.lowercased(), options:.regularExpression) != nil)})
             self.customerResultsTableView.reloadData()
             break
         default://Rep
-            print("Rep filter")
+            //print("Rep filter")
             repSearchResults = []
             self.repSearchResults = self.appDelegate.salesRepNameArray.filter({( aRep: String ) -> Bool in
                 return (aRep.lowercased().range(of: repSearchBar.text!.lowercased(), options:.regularExpression) != nil)})
@@ -890,7 +894,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
                 
                 
             }, completion: { finished in
-                print("Napkins opened!")
+                //print("Napkins opened!")
             })
             
            
@@ -901,7 +905,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        print("searchBarTextDidEndEditing")
+        //print("searchBarTextDidEndEditing")
         // self.tableViewMode = "TASK"
         
         if(searchBar.tag == 1){
@@ -926,7 +930,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        print("search btn clicked self.tableViewMode = \(self.tableViewMode)")
+        //print("search btn clicked self.tableViewMode = \(self.tableViewMode)")
         switch self.tableViewMode{
         case "CUSTOMER":
             self.customerResultsTableView.reloadData()
@@ -967,11 +971,11 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
-        print("cell for row tableViewMode = \(self.tableViewMode)")
+        //print("cell for row tableViewMode = \(self.tableViewMode)")
         switch self.tableViewMode{
         case "CUSTOMER":
             
-            //print("customer name: \(self.customerNames[indexPath.row])")
+            ////print("customer name: \(self.customerNames[indexPath.row])")
             let searchString = self.customerSearchBar.text!.lowercased()
             let cell:CustomerTableViewCell = customerResultsTableView.dequeueReusableCell(withIdentifier: "customerCell") as! CustomerTableViewCell
             
@@ -1114,27 +1118,27 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     }
     
     func validateFields()->Bool{
-        print("validate fields")
+        //print("validate fields")
         if titleTxtField.text != ""{
             contract.title = titleTxtField.text!
         }
         //customer check
         if(contract.customer == ""){
-            print("select a customer")
+            //print("select a customer")
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Contract", _message: "Select a Customer")
             return false
         }
         
         //title check
         if(contract.title == ""){
-            print("Add a Title")
+            //print("Add a Title")
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Contract", _message: "Provide a Title")
             return false
         }
         
         //charge type check
         if(contract.chargeType == ""){
-            print("select a charge type")
+            //print("select a charge type")
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Contract", _message: "Select a Charge Type")
             return false
         }
@@ -1145,7 +1149,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         
         //rep check
         if(contract.salesRep == ""){
-            print("select a sales rep")
+            //print("select a sales rep")
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Contract", _message: "Select a Sales Rep.")
             return false
         }
@@ -1162,14 +1166,14 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     
     
     @objc func submit(){
-        print("submit Contract")
+        //print("submit Contract")
        // var newContract:Bool = false
         //if self.contract.ID == "0"{
             //newContract = true
         //}
         
         if(!validateFields()){
-            print("didn't pass validation")
+            //print("didn't pass validation")
             return
         }
         //validate all fields
@@ -1208,17 +1212,17 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
             parameters = ["contractID": self.contract.ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "customer": self.contract.customer, "salesRep": self.contract.salesRep,  "chargeType": contract.chargeType , "status": self.contract.status, "total":self.contract.total, "notes":self.contract.notes, "repName":self.contract.repName, "customerName":self.contract.customerName, "title":self.contract.title, "companySigned":self.contract.repSignature,"customerSigned":self.contract.customerSignature] as! [String : String]
         }
         
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contract.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("contract response = \(response)")
+                //print("contract response = \(response)")
             }
             .responseJSON(){
                 response in
                 if let json = response.result.value {
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     self.json = JSON(json)
                     let newContractID = self.json["contractID"].stringValue
                     self.contract.ID = newContractID
@@ -1277,7 +1281,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
                     
                     
                 }
-                print(" dismissIndicator")
+                //print(" dismissIndicator")
                 self.indicator.dismissIndicator()
         }
     }
@@ -1287,16 +1291,16 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     
     @objc func goBack(){
         if(self.editsMade == true){
-            print("editsMade = true")
+            //print("editsMade = true")
             let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertController.Style.alert)
             let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
-                print("Cancel")
+                //print("Cancel")
             }
             
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+                //print("OK")
                 _ = self.navigationController?.popViewController(animated: false)
             }
             
@@ -1332,7 +1336,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     
     
     func checkForSalesRepSignature(){
-        print("check for employee signature")
+        //print("check for employee signature")
        // if self.contract.employeeSignature == true{
            // self.getContract()
        // }else{
@@ -1346,12 +1350,12 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         // take rep ID and loop through Sales Rep Array and get signature value
         //appDelegate.employeeArray
         for rep in appDelegate.salesRepArray {
-            print("looping through sales rep array")
+            //print("looping through sales rep array")
                 if self.contract.salesRep == rep.ID{
                     if rep.hasSignature == true {
                         hasSignature = true
                         self.contract.repSignature = "1"
-                        print("hasSignature = true")
+                        //print("hasSignature = true")
 
                     }
                 
@@ -1393,14 +1397,14 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
                 
                 
             }else{
-                print("this is not your contract")
+                //print("this is not your contract")
                 
                 let alertController = UIAlertController(title: "Not Your Contract", message: "You are not the sales rep assigned to this contract.  You may want to change it and provide your signature.", preferredStyle: UIAlertController.Style.alert)
                 
                 
                 let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                     (result : UIAlertAction) -> Void in
-                    print("OK")
+                    //print("OK")
                     //_ = self.navigationController?.popViewController(animated: true)
                 }
                 
@@ -1429,7 +1433,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     //edit delegates
     
     func updateContract(_contract: Contract){
-        print("update Contract")
+        //print("update Contract")
         editsMade = true
         self.contract = _contract
         
@@ -1454,16 +1458,16 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
             
         ]
         
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contract.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
             response in
-            print(response.request ?? "")  // original URL request
+            //print(response.request ?? "")  // original URL request
             //print(response.response ?? "") // URL response
             //print(response.data ?? "")     // server data
-            print(response.result)   // result of response serialization
+            //print(response.result)   // result of response serialization
             
             self.layoutVars.playSaveSound()
             
@@ -1478,7 +1482,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     
     
     func updateContract(_contract: Contract, _status:String){
-        print("update Contract")
+        //print("update Contract")
         editsMade = true
         self.contract = _contract
         
@@ -1503,16 +1507,16 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
             
         ]
         
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contract.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
             response in
-            print(response.request ?? "")  // original URL request
+            //print(response.request ?? "")  // original URL request
             //print(response.response ?? "") // URL response
             //print(response.data ?? "")     // server data
-            print(response.result)   // result of response serialization
+            //print(response.result)   // result of response serialization
             
             self.layoutVars.playSaveSound()
             
@@ -1530,12 +1534,12 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     
     
     func updateContract(_contractItem: ContractItem){
-        print("updateContract Item")
+        //print("updateContract Item")
        
     }
     
     func suggestStatusChange(_emailCount:Int) {
-        print("suggestStatusChange")
+        //print("suggestStatusChange")
         
     }
     
@@ -1545,7 +1549,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     
     
     func updateTable(_points:Int){
-        print("updateTable")
+        //print("updateTable")
         //getLead()
     }
 }

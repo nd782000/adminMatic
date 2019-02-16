@@ -48,6 +48,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     
     var optionsButton:UIBarButtonItem!
     var statusIcon:UIImageView = UIImageView()
+    var statusTagIcon:UIImageView = UIImageView()
    
     var statusArray = ["Syncing to QB","Pending","Final","Sent","Paid","Void"]
     var statusValue: String!
@@ -56,6 +57,9 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     
     var titleLbl:GreyLabel!
     var titleValue:GreyLabel!
+    
+    var dateLbl:GreyLabel!
+    var dateValue:GreyLabel!
     
     var chargeTypeLbl:GreyLabel!
     var chargeType:GreyLabel!
@@ -142,7 +146,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
             .responseJSON(){
                 response in
                 if let json = response.result.value {
-                    //print("JSON: \(json)")
+                    print("JSON: \(json)")
                     //self.json = JSON(json)
                     
                     self.json = JSON(json)["invoice"]
@@ -234,6 +238,12 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         safeContainer.addSubview(statusIcon)
         setStatus(status: invoice.status)
         
+        statusTagIcon.translatesAutoresizingMaskIntoConstraints = false
+        statusTagIcon.backgroundColor = UIColor.clear
+        statusTagIcon.contentMode = .scaleAspectFill
+        safeContainer.addSubview(statusTagIcon)
+        //setStatus(status: invoice.status)
+        
        
         self.customerBtn = Button(titleText: "\(self.invoice.customerName!)")
         self.customerBtn.contentHorizontalAlignment = .left
@@ -257,7 +267,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         self.infoView.layer.cornerRadius = 4.0
         safeContainer.addSubview(infoView)
         
-        //date
+        //title
         self.titleLbl = GreyLabel()
         self.titleLbl.text = "Title:"
         self.titleLbl.textAlignment = .left
@@ -270,9 +280,27 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         }
         self.titleValue.font = layoutVars.labelBoldFont
         self.titleValue.textAlignment = .left
-        self.titleValue.text = self.invoice.title!
+        //self.titleValue.text = self.invoice.title!
         self.titleValue.translatesAutoresizingMaskIntoConstraints = false
         self.infoView.addSubview(titleValue)
+        
+        
+        //date
+        self.dateLbl = GreyLabel()
+        self.dateLbl.text = "Date:"
+        self.dateLbl.textAlignment = .left
+        self.dateLbl.translatesAutoresizingMaskIntoConstraints = false
+        self.infoView.addSubview(dateLbl)
+        
+        self.dateValue = GreyLabel()
+        if self.invoice.date != nil{
+            self.dateValue.text = self.invoice.date!
+        }
+        self.dateValue.font = layoutVars.labelBoldFont
+        self.dateValue.textAlignment = .left
+        //self.titleValue.text = self.invoice.title!
+        self.dateValue.translatesAutoresizingMaskIntoConstraints = false
+        self.infoView.addSubview(dateValue)
         
         //charge type
         self.chargeTypeLbl = GreyLabel()
@@ -375,12 +403,13 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
        
         /////////  Auto Layout   //////////////////////////////////////
         
-        let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30, "nameWidth": layoutVars.fullWidth - 150, "halfWidth": layoutVars.halfWidth] as [String:Any]
+        let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30, "halfWidth": layoutVars.halfWidth] as [String:Any]
         
         //main views
         let viewsDictionary = [
             "stackController":self.stackController,
             "statusIcon":self.statusIcon,
+            "statusTagIcon":self.statusTagIcon,
             "customerBtn":self.customerBtn,
             "info":self.infoView,
             "itemsLbl":self.itemsLbl,
@@ -404,10 +433,15 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
             
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[totalLbl(200)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-40-[statusTagIcon(150)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        
+       
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(85)]-[itemsLbl(22)][table]-[subLbl(15)]-4-[taxLbl(15)]-4-[totalLbl(35)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(85)]-[itemsLbl(22)][table]-[subValueLbl(15)]-4-[taxValueLbl(15)]-4-[totalLbl(35)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(107)]-[itemsLbl(22)][table]-[subLbl(15)]-4-[taxLbl(15)]-4-[totalLbl(35)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(107)]-[itemsLbl(22)][table]-[subValueLbl(15)]-4-[taxValueLbl(15)]-4-[totalLbl(35)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[statusTagIcon(75)]-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
        
        
@@ -417,6 +451,8 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         let infoDictionary = [
             "titleLbl":self.titleLbl,
             "title":self.titleValue,
+            "dateLbl":self.dateLbl,
+            "date":self.dateValue,
             "chargeTypeLbl":self.chargeTypeLbl,
             "chargeType":self.chargeType,
             "salesRepLbl":self.salesRepLbl,
@@ -424,6 +460,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
             ] as [String:AnyObject]
         
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[titleLbl]-[title]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[dateLbl]-[date]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeLbl]-[chargeType]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         
@@ -431,8 +468,8 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         
         
        
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)][chargeTypeLbl(22)][salesRepLbl(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[title(22)][chargeType(22)][salesRep(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)][dateLbl(22)][chargeTypeLbl(22)][salesRepLbl(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[title(22)][date(22)][chargeType(22)][salesRep(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
         
         
     }
@@ -735,12 +772,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
             print("default")
         }
         
-        //let emailViewController:EmailViewController = EmailViewController(_customerID: self.invoice.customer!, _customerName: self.invoice.customerName, _type: "1", _docID: self.invoice.ID)
-        
-        
-        //emailViewController.invoiceDelegate = self
-        
-       // navigationController?.pushViewController(emailViewController, animated: false )
+       
         
         self.displayEmailView()
         
@@ -857,31 +889,53 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         case "0":
             let statusImg = UIImage(named:"syncIcon.png")
             statusIcon.image = statusImg
+            
+            let statusTagImg = UIImage(named:"tagSyncIcon.png")
+            statusTagIcon.image = statusTagImg
+            
             break;
         case "1":
             let statusImg = UIImage(named:"pendingIcon.png")
             statusIcon.image = statusImg
+            
+            let statusTagImg = UIImage(named:"tagPendingIcon.png")
+            statusTagIcon.image = statusTagImg
             break;
         case "2":
             let statusImg = UIImage(named:"inProgressStatus.png")
             statusIcon.image = statusImg
+            
+            let statusTagImg = UIImage(named:"tagFinalIcon.png")
+            statusTagIcon.image = statusTagImg
             break;
         case "3":
             let statusImg = UIImage(named:"acceptedStatus.png")
             statusIcon.image = statusImg
+            
+            let statusTagImg = UIImage(named:"tagSentIcon.png")
+            statusTagIcon.image = statusTagImg
             break;
         case "4":
             let statusImg = UIImage(named:"doneStatus.png")
             statusIcon.image = statusImg
+            
+            let statusTagImg = UIImage(named:"tagPaidIcon.png")
+            statusTagIcon.image = statusTagImg
             break;
         case "5":
             let statusImg = UIImage(named:"cancelStatus.png")
             statusIcon.image = statusImg
+            
+            let statusTagImg = UIImage(named:"tagVoidIcon.png")
+            statusTagIcon.image = statusTagImg
             break;
         
         default:
             let statusImg = UIImage(named:"unDoneStatus.png")
             statusIcon.image = statusImg
+            
+            let statusTagImg = UIImage(named:"tagSyncIcon.png")
+            statusTagIcon.image = statusTagImg
             break;
         }
     }

@@ -1266,16 +1266,16 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         return 1
     }
     
-    
+    /*
     // returns the number of 'columns' to display.
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
+    func numberOfComponentsInPickerView(_ pickerView: UIPickerView) -> Int{
         return 1
     }
-    
+    */
     
     
     // returns the # of rows in each component..
-    func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
        // shows first 3 status options, not cancel or waiting
         return self.statusArray.count - 2
     }

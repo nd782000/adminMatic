@@ -87,7 +87,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     //init for edit
     init(_equipmentService:EquipmentService){
         super.init(nibName:nil,bundle:nil)
-        print("service edit \(_equipmentService.ID)")
+        //print("service edit \(_equipmentService.ID)")
         self.equipmentService = _equipmentService
         print("init self.currentValue = \(self.currentValue)")
     }
@@ -734,6 +734,7 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
     func textViewDidBeginEditing(_ textView: UITextView) {
         print("textFieldDidBeginEditing")
         
+        /*
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
             self.view.frame.origin.y -= 250
             
@@ -741,11 +742,12 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         }, completion: { finished in
             // //print("Napkins opened!")
         })
-        
+        */
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         print("textFieldDidEndEditing")
+        /*
         if(self.view.frame.origin.y < 0){
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 self.view.frame.origin.y += 250
@@ -754,6 +756,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
             }, completion: { finished in
             })
         }
+ */
+        
         editsMade = true
     }
     

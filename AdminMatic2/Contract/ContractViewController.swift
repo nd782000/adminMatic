@@ -21,7 +21,6 @@ protocol EditContractDelegate{
     func updateContract(_contract:Contract)
     func updateContract(_contractItem:ContractItem)
     func updateContract(_contract:Contract, _status:String)
-    //func updateContractLead(_lead:Lead)
     func suggestStatusChange(_emailCount:Int)
 }
 
@@ -71,7 +70,6 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     var items: JSON!
     var itemsArray:[ContractItem] = []
     var itemIDArray:[String] = []
-    //var signatureArray:[Signature] = []
     var itemRowToEdit:Int?
     
     var customerSignature:Signature!
@@ -90,12 +88,10 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     var leadTasksWaiting:String?
     
-    //var employeeSignature:Bool = false
     
     
     var contractItemViewController:ContractItemViewController?
 
-    //var lead:Lead?
     
     init(_contract:Contract){
         super.init(nibName:nil,bundle:nil)
@@ -112,7 +108,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("viewdidload")
+        //print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
@@ -143,21 +139,21 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         self.itemsArray = []
         let parameters:[String:String]
         parameters = ["contractID": self.contract.ID,"customerID": self.contract.customer,"repID": self.contract.salesRep]
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/contract.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("contract response = \(response)")
+                //print("contract response = \(response)")
             }
             .responseJSON(){
                 response in
                 if let json = response.result.value {
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     self.json = JSON(json)
                     self.parseJSON()
                 }
-                print(" dismissIndicator")
+                //print(" dismissIndicator")
                 self.indicator.dismissIndicator()
         }
     }
@@ -192,7 +188,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                 var taskImages:[Image] = []
                 
                 let imageCount = Int((self.json["items"][i]["tasks"][n]["images"].count))
-                print("imageCount: \(imageCount)")
+                //print("imageCount: \(imageCount)")
                 
                 for p in 0 ..< imageCount {
                     
@@ -203,17 +199,17 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                     let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
                     
                     //create a item object
-                    print("create an image object \(i)")
+                    //print("create an image object \(i)")
                     
-                    print("thumbPath = \(thumbPath)")
-                    print("rawPath = \(rawPath)")
+                    //print("thumbPath = \(thumbPath)")
+                    //print("rawPath = \(rawPath)")
                     
                     let image = Image(_id: self.json["items"][i]["tasks"][n]["images"][p]["ID"].stringValue,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: self.json["items"][i]["tasks"][n]["images"][p]["name"].stringValue,_width: self.json["items"][i]["tasks"][n]["images"][p]["width"].stringValue,_height: self.json["items"][i]["tasks"][n]["images"][p]["height"].stringValue,_description: self.json["items"][i]["tasks"][n]["images"][p]["description"].stringValue,_dateAdded: self.json["items"][i]["tasks"][n]["images"][p]["dateAdded"].stringValue,_createdBy: self.json["items"][i]["tasks"][n]["images"][p]["createdByName"].stringValue,_type: self.json["items"][i]["tasks"][n]["images"][p]["type"].stringValue)
                     
                     image.customer = (self.json["items"][i]["tasks"][n]["images"][p]["customer"].stringValue)
                     image.tags = (self.json["items"][i]["tasks"][n]["images"][p]["tags"].stringValue)
                     
-                    print("appending image")
+                    //print("appending image")
                     taskImages.append(image)
                     
                 }
@@ -255,8 +251,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
         if self.contract.customerSignature == "1"{
             customerSignature = Signature(_contractID: self.contract.ID, _type: "1", _path: self.json["contract"]["customerSignaturePath"].stringValue)
-            print("customer signature = \(self.json["contract"]["customerSignaturePath"].stringValue)")
-            //self.signatureArray.append(signature)
+            //print("customer signature = \(self.json["contract"]["customerSignaturePath"].stringValue)")
         }
         
         
@@ -265,7 +260,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     func layoutViews(){
-        print("layout views")
+        //print("layout views")
         title =  "Contract #" + self.contract.ID
         
         optionsButton = UIBarButtonItem(title: "Options", style: .plain, target: self, action: #selector(ContractViewController.displayContractOptions))
@@ -288,9 +283,6 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         safeContainer.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
         safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
-        
-        
-        
         stackController = StackController()
         stackController.delegate = self
         stackController.getStack(_type:1,_ID:self.contract.ID)
@@ -306,7 +298,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         //picker
         self.statusPicker = Picker()
         //print("statusValue : \(contract.status)")
-        print("set picker position : \(Int(contract.status)!)")
+        //print("set picker position : \(Int(contract.status)!)")
         
         self.statusPicker.delegate = self
         self.statusPicker.dataSource = self
@@ -498,7 +490,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
         if self.contract.customerSignature == "1"{
         //if(self.signatureArray.count > 0){
-            print("trying to load path \(self.customerSignature.path!)")
+            //print("trying to load path \(self.customerSignature.path!)")
             let imgURL:URL = URL(string: self.customerSignature.path!)!
             
             
@@ -609,13 +601,13 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         let alertController = UIAlertController(title: "Add Items?", message: "This contract has no items.  Add items now?", preferredStyle: UIAlertController.Style.alert)
         let cancelAction = UIAlertAction(title: "Not Now", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
-            print("No")
+            //print("No")
             return
         }
         
         let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
-            print("Yes")
+            //print("Yes")
         
             self.addItem()
         }
@@ -646,15 +638,17 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         return 1
     }
     
+    /*
     // returns the number of 'columns' to display.
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
+    func numberOfComponentsInPickerView(_ pickerView: UIPickerView) -> Int{
         return 1
     }
+    */
     
     
     
     // returns the # of rows in each component..
-    func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
         // shows first 3 status options, not cancel or waiting
         return self.statusArray.count
     }
@@ -804,7 +798,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
         
         let edit = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
-            print("edit tapped")
+            //print("edit tapped")
             self.editItem(_row:indexPath.row)
             
         }
@@ -812,7 +806,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
         
         let delete = UITableViewRowAction(style: .normal, title: "Delete") { action, index in
-            print("delete tapped")
+            //print("delete tapped")
             self.deleteItem(_row: indexPath.row)
         }
         delete.backgroundColor = UIColor.red
@@ -848,7 +842,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     func deleteItem(_row:Int){
-        print("delete item")
+        //print("delete item")
         
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
@@ -856,13 +850,13 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             let alertController = UIAlertController(title: "Delete Item?", message: "Are you sure you want to delete this contract item?", preferredStyle: UIAlertController.Style.alert)
             let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
-                print("No")
+                //print("No")
                 return
             }
             
             let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("Yes")
+                //print("Yes")
                 
                 
                 var shouldRefreshTerms:Bool = false
@@ -873,7 +867,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                     "contractItemID":self.itemsArray[_row].ID,
                     "contractID":self.contract.ID
                 ]
-                print("parameters = \(parameters)")
+                //print("parameters = \(parameters)")
                 
                 
                 
@@ -886,24 +880,24 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                 self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/delete/contractItem.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
                     .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
                     .responseString { response in
-                        print("delete response = \(response)")
+                        //print("delete response = \(response)")
                     }
                     .responseJSON(){
                         response in
                         if let json = response.result.value {
-                            print("JSON: \(json)")
+                            //print("JSON: \(json)")
                             self.json = JSON(json)
                             //self.parseJSON()
                             
                             
                             let subTotal = self.json["subTotal"]
-                            print("subTotal: \(subTotal)")
+                            //print("subTotal: \(subTotal)")
                             
                             let taxTotal = self.json["taxTotal"]
-                            print("taxTotal: \(taxTotal)")
+                            //print("taxTotal: \(taxTotal)")
                             
                             let total = self.json["total"]
-                            print("total: \(total)")
+                            //print("total: \(total)")
                             
                             
                             
@@ -918,11 +912,11 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                             
                             
                             if shouldRefreshTerms == true{
-                                print("refresh terms")
+                                //print("refresh terms")
                                 let alertController2 = UIAlertController(title: "Regenerate Contract Terms", message: "This item had contract terms, would you like to regenerate the contract terms now based on current items?  All custom edits to terms will be overwritten.", preferredStyle: UIAlertController.Style.alert)
                                 let cancelAction2 = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                                     (result : UIAlertAction) -> Void in
-                                    print("No")
+                                    //print("No")
                                     
                                     self.itemsArray.remove(at: _row)
                                     
@@ -935,9 +929,9 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                                 
                                 let okAction2 = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                                     (result : UIAlertAction) -> Void in
-                                    print("Yes")
+                                    //print("Yes")
                                     
-                                    print("re generate contract terms")
+                                    //print("re generate contract terms")
                                     
                                     
                                     
@@ -949,16 +943,16 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                                         
                                     ]
                                     
-                                    print("parameters = \(parameters)")
+                                    //print("parameters = \(parameters)")
                                     
                                     
                                     
                                     self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contractTerms.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                                         response in
-                                        print(response.request ?? "")  // original URL request
+                                        //print(response.request ?? "")  // original URL request
                                         //print(response.response ?? "") // URL response
                                         //print(response.data ?? "")     // server data
-                                        print(response.result)   // result of response serialization
+                                        //print(response.result)   // result of response serialization
                                         
                                         
                                         
@@ -966,7 +960,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                                         }.responseJSON(){
                                             response in
                                             if let json = response.result.value {
-                                                print("JSON: \(json)")
+                                                //print("JSON: \(json)")
                                                 self.json = JSON(json)
                                                 let newTerms = self.json["newTerms"].stringValue
                                                 self.contract.terms = newTerms
@@ -981,7 +975,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                                                 
                                                 
                                             }
-                                            print(" dismissIndicator")
+                                            //print(" dismissIndicator")
                                     }
                                     
                                     
@@ -1044,7 +1038,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     func editItem(_row:Int){
-        print("edit item")
+        //print("edit item")
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
         }else{
@@ -1054,12 +1048,12 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                 let alertController = UIAlertController(title: "Edit Item?", message: "The customer may have already seen this contract. Are you sure you want to edit this item?", preferredStyle: UIAlertController.Style.alert)
                 let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                     (result : UIAlertAction) -> Void in
-                    print("Cancel")
+                    //print("Cancel")
                 }
                 
                 let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                     (result : UIAlertAction) -> Void in
-                    print("OK")
+                    //print("OK")
                     self.displayEditItemView(_row:_row)
                 }
                 
@@ -1092,7 +1086,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     func addItem(){
-        print("add item")
+        //print("add item")
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
         }else{
@@ -1102,12 +1096,12 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                 let alertController = UIAlertController(title: "Add Item?", message: "The customer may have already seen this contract. Are you sure you want to add an item?", preferredStyle: UIAlertController.Style.alert)
                 let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                     (result : UIAlertAction) -> Void in
-                    print("Cancel")
+                    //print("Cancel")
                 }
                 
                 let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                     (result : UIAlertAction) -> Void in
-                    print("OK")
+                    //print("OK")
                     self.displayAddItemView()
                 }
                 
@@ -1155,7 +1149,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     @objc func displayContractOptions(){
-        print("display Options")
+        //print("display Options")
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
         }else{
@@ -1165,23 +1159,23 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             actionSheet.view.layer.cornerRadius = 5;
             
             actionSheet.addAction(UIAlertAction(title: "Edit Contract", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-                print("display Edit View")
+                //print("display Edit View")
                 self.displayEditView()
             }))
             
             actionSheet.addAction(UIAlertAction(title: "Edit Terms", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-                print("display Edit View")
+                //print("display Edit View")
                 self.displayTermsView()
             }))
             
             actionSheet.addAction(UIAlertAction(title: "Sort Items", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-                print("Sort Items")
+                //print("Sort Items")
                 self.sortItems()
             }))
             
             
             actionSheet.addAction(UIAlertAction(title: "Send Contract", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-                print("Send Contract")
+                //print("Send Contract")
                 
                 self.sendContract()
 
@@ -1193,7 +1187,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             
             
             actionSheet.addAction(UIAlertAction(title: "Schedule Contract", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-                print("schedule contract")
+                //print("schedule contract")
                 
                 //turn contract into workorder
                     //link contract to work order
@@ -1254,14 +1248,14 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     @objc func displayTermsView(){
-        print("terms")
+        //print("terms")
         let termsViewController:TermsViewController = TermsViewController(_terms: self.contract.terms, _contractID: self.contract.ID)
         termsViewController.delegate = self
         navigationController?.pushViewController(termsViewController, animated: false )
     }
     
     func sortItems(){
-        print("sort items")
+        //print("sort items")
         
         itemsTableView.isEditing = !itemsTableView.isEditing
         
@@ -1272,7 +1266,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     @objc func saveSort(_leave:Bool = false){
-        print("save sort")
+        //print("save sort")
         
         
         itemsTableView.isEditing = !itemsTableView.isEditing
@@ -1297,12 +1291,12 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             
             
             
-            print("parameters = \(parameters)")
+            //print("parameters = \(parameters)")
             
             layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/itemSort.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
                 .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
                 .responseString { response in
-                    print("response = \(response)")
+                    //print("response = \(response)")
                 }
                 .responseJSON(){
                     response in
@@ -1326,7 +1320,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     func updateTerms(_terms:String){
-        print("update terms with: \(_terms)")
+        //print("update terms with: \(_terms)")
         self.contract.terms = _terms
         //self.updateContract(_contract: self.contract)
         
@@ -1349,7 +1343,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     //sends request for lead tasks
     func scheduleContract() {
-        print(" scheduleContract \(self.contract.ID!)")
+        //print(" scheduleContract \(self.contract.ID!)")
         
         
         if self.contract.status == "3"{
@@ -1378,17 +1372,17 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         //self.itemsArray = []
         let parameters:[String:String]
         parameters = ["contractID": self.contract.ID,"createdBy":self.appDelegate.loggedInEmployee?.ID, "notes":self.contract.notes] as! [String : String]
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/new/workOrder.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("contract response = \(response)")
+                //print("contract response = \(response)")
             }
             .responseJSON(){
                 response in
                 if let json = response.result.value {
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     
                     let newWoID = JSON(json)["newWoID"].stringValue
                     
@@ -1418,12 +1412,12 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                             
                             self.contract.status = "3"
                             self.setStatus(status: "3")
-                            print("parameters = \(parameters)")
+                            //print("parameters = \(parameters)")
                             
                             self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/changeContractStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                                 response in
-                                print(response.request ?? "")  // original URL request
-                                print(response.result)   // result of response serialization
+                                //print(response.request ?? "")  // original URL request
+                                //print(response.result)   // result of response serialization
                                 
                                 
                                 
@@ -1446,7 +1440,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                     
                 
                 }
-                print(" dismissIndicator")
+                //print(" dismissIndicator")
                 self.indicator.dismissIndicator()
         }
     }
@@ -1456,7 +1450,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     func goToNewWorkOrder(_newWoID:String){
-        print("goToNewWorkOrder ID = \(_newWoID)")
+        //print("goToNewWorkOrder ID = \(_newWoID)")
         
         
         
@@ -1465,7 +1459,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         let alertController = UIAlertController(title: "Finish Setting Up New Work Order?", message: "Do you want to go to the new work order to add and edit its fields?", preferredStyle: UIAlertController.Style.alert)
         let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
-            print("No")
+            //print("No")
             self.getContract()
             
             return
@@ -1473,7 +1467,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
         let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
-            print("Yes")
+            //print("Yes")
             
             
             
@@ -1527,7 +1521,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     func setStatus(status: String) {
-        print("set status \(status)")
+        //print("set status \(status)")
         switch (status) {
         case "0":
             let statusImg = UIImage(named:"unDoneStatus.png")
@@ -1573,7 +1567,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     @objc func showSignatureOptions(){
         
-        print("showSignatureOptions")
+        //print("showSignatureOptions")
         
         let actionSheet = UIAlertController(title: "Signature Options", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         actionSheet.view.backgroundColor = UIColor.white
@@ -1625,7 +1619,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     @objc func deleteSignature(){
         
-        print("delete signature")
+        //print("delete signature")
        // print("contract status = \(self.contract.status)")
         
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
@@ -1635,13 +1629,13 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             let alertController = UIAlertController(title: "Delete Signature?", message: "Are you sure you want to delete this signature?", preferredStyle: UIAlertController.Style.alert)
             let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
-                print("No")
+                //print("No")
                 return
             }
             
             let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("Yes")
+                //print("Yes")
                 
                 
                
@@ -1652,9 +1646,9 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                     "contractID":self.contract.ID,
                     "customerID":self.contract.customer
                 ]
-                print("parameters = \(parameters)")
+                //print("parameters = \(parameters)")
                 
-                print("remove signature from array")
+                //print("remove signature from array")
             
                 
                 self.contract.customerSignature = "0"
@@ -1663,8 +1657,8 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                 
                 self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/delete/signature.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                     response in
-                    print(response.request ?? "")  // original URL request
-                    print(response.result)   // result of response serialization
+                    //print(response.request ?? "")  // original URL request
+                    //print(response.result)   // result of response serialization
                     
                     
                     if self.contract.status == "0"  || self.contract.status == "1" || self.contract.status == "2"{
@@ -1690,12 +1684,12 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                             
                             self.contract.status = "0"
                             self.setStatus(status: "0")
-                            print("parameters = \(parameters)")
+                            //print("parameters = \(parameters)")
                             
                             self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/changeContractStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                                 response in
-                                print(response.request ?? "")  // original URL request
-                                print(response.result)   // result of response serialization
+                                //print(response.request ?? "")  // original URL request
+                                //print(response.result)   // result of response serialization
                                 
                                 
                             
@@ -1715,7 +1709,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                     
                     }.responseString() {
                         response in
-                        print(response)  // original URL request
+                        //print(response)  // original URL request
                 }
             }
             
@@ -1731,7 +1725,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     @objc func sign(){
         
-        print("sign")
+        //print("sign")
         
         if self.contract.salesRep == "" || self.contract.salesRep == "0"{
             handleNoSalesRep()
@@ -1748,7 +1742,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     func handleNoSalesRep(){
-        print("check for sales rep")
+        //print("check for sales rep")
         //if self.contract.salesRep == "" || self.contract.salesRep == "0"{
             
             
@@ -1777,7 +1771,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     func suggestStatusChange(_emailCount:Int) {
-        print("suggestStatusChange")
+        //print("suggestStatusChange")
         
         var messageString:String = "Email Sent"
         if _emailCount > 1{
@@ -1808,12 +1802,12 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                 
                 self.contract.status = "1"
                 self.setStatus(status: "1")
-                print("parameters = \(parameters)")
+                //print("parameters = \(parameters)")
                 
                 self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/changeContractStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                     response in
-                    print(response.request ?? "")  // original URL request
-                    print(response.result)   // result of response serialization
+                    //print(response.request ?? "")  // original URL request
+                    //print(response.result)   // result of response serialization
                     
                     
                     
@@ -1840,7 +1834,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     func updateContract(_contract: Contract){
-        print("update Contract")
+        //print("update Contract")
         editsMade = true
         self.contract = _contract
         
@@ -1865,16 +1859,16 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             
         ]
         
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contract.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
             response in
-            print(response.request ?? "")  // original URL request
+            //print(response.request ?? "")  // original URL request
             //print(response.response ?? "") // URL response
             //print(response.data ?? "")     // server data
-            print(response.result)   // result of response serialization
+            //print(response.result)   // result of response serialization
             
             
             
@@ -1887,7 +1881,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     func updateContract(_contractItem: ContractItem){
-        print("updateContract Item")
+        //print("updateContract Item")
         //self.itemsArray[itemRowToEdit!] = _contractItem
         self.getContract()
     }
@@ -1896,7 +1890,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     func updateContract(_contract: Contract, _status:String){
-        print("update Contract")
+        //print("update Contract")
         editsMade = true
         self.contract = _contract
         
@@ -1922,16 +1916,16 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             
         ]
         
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contract.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
             response in
-            print(response.request ?? "")  // original URL request
+            //print(response.request ?? "")  // original URL request
             //print(response.response ?? "") // URL response
             //print(response.data ?? "")     // server data
-            print(response.result)   // result of response serialization
+            //print(response.result)   // result of response serialization
             
             
             //self.checkForEmployeeSignature()
@@ -2010,7 +2004,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     func suggestNewWorkOrderFromContract(){
-        print("suggestNewWorkOrderFromContract")
+        //print("suggestNewWorkOrderFromContract")
         
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
@@ -2019,13 +2013,13 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             let alertController = UIAlertController(title: "No Work Order Exists", message: "Would you like to link a new WorkOrder now?", preferredStyle: UIAlertController.Style.alert)
             let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
-                print("No")
+                //print("No")
                 //_ = self.navigationController?.popViewController(animated: true)
             }
             
             let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("Yes")
+                //print("Yes")
                 
                 self.scheduleContract()
                 
@@ -2045,11 +2039,11 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     //following 2 mwethods not used in this vc
     func suggestNewContractFromLead(){
-        print("suggestNewContractFromLead")
+        //print("suggestNewContractFromLead")
     }
     
     func suggestNewWorkOrderFromLead(){
-        print("suggestNewWorkOrderFromLead")
+        //print("suggestNewWorkOrderFromLead")
     }
     
     
@@ -2059,18 +2053,18 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     @objc func goBack(){
         
         if sortEditsMade == true{
-            print("sortEditsMade = true")
+            //print("sortEditsMade = true")
             let alertController = UIAlertController(title: "Sort Change", message: "Leave without saving?", preferredStyle: UIAlertController.Style.alert)
             let cancelAction = UIAlertAction(title: "Don't Save", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
-                print("Cancel")
+                //print("Cancel")
                 //_ = self.navigationController?.popViewController(animated: true)
                 //return
             }
             
             let okAction = UIAlertAction(title: "Save", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+                //print("OK")
                 self.saveSort(_leave:true)
                 // _ = self.navigationController?.popViewController(animated: true)
             }

@@ -111,7 +111,7 @@ class UsageListViewController: UIViewController, UITableViewDelegate, UITableVie
                         let dateFormatter = DateFormatter()
                         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
                         
-                        self.total = json["total"] as! String
+                        self.total = json["total"] as? String
                         
                         for n in 0 ..< usageCount {
                             let startDate = dateFormatter.date(from: usages[n]["start"] as! String)!

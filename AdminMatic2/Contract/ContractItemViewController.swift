@@ -57,7 +57,6 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     //details view
 
-    //var itemDetailsTableView:TableView = TableView()
     var itemDetailsTableView:TableView!
     
     var tasksJson:JSON?
@@ -79,7 +78,6 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
         self.contractItem = _contractItem
         
         
-        //self.tasks = _tasks
     }
     
     
@@ -89,7 +87,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     
     override func viewWillAppear(_ animated: Bool) {
-        print("view will appear")
+        //print("view will appear")
         
        // print("contractItem = \(self.contract.ID)")
         // Do any additional setup after loading the view.
@@ -115,7 +113,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     
     func layoutViews(){
-        print("item view layoutViews 1")
+        //print("item view layoutViews 1")
         
         optionsButton = UIBarButtonItem(title: "Options", style: .plain, target: self, action: #selector(ContractItemViewController.displayContractItemOptions))
         navigationItem.rightBarButtonItem = optionsButton
@@ -295,7 +293,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     
     @objc func displayContractItemOptions(){
-        print("display Item Options")
+        //print("display Item Options")
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
         }else{
@@ -305,12 +303,12 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             actionSheet.view.layer.cornerRadius = 5;
             
             actionSheet.addAction(UIAlertAction(title: "Edit Item", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-                print("display Edit View")
+                //print("display Edit View")
                 self.editItem()
             }))
             
             actionSheet.addAction(UIAlertAction(title: "Sort Tasks", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-                print("sort tasks")
+                //print("sort tasks")
                 self.sortTasks()
             }))
             
@@ -366,12 +364,12 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
                 let alertController = UIAlertController(title: "Edit Item?", message: "The customer may have already seen this contract. Are you sure you want to edit this item?", preferredStyle: UIAlertController.Style.alert)
                 let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                     (result : UIAlertAction) -> Void in
-                    print("Cancel")
+                    //print("Cancel")
                 }
                 
                 let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                     (result : UIAlertAction) -> Void in
-                    print("OK")
+                    //print("OK")
                     self.displayEditView()
                 }
                 
@@ -416,12 +414,12 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
                 let alertController = UIAlertController(title: "Srt Tasks?", message: "The customer may have already seen this contract. Are you sure you want to sort these tasks?", preferredStyle: UIAlertController.Style.alert)
                 let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                     (result : UIAlertAction) -> Void in
-                    print("Cancel")
+                    //print("Cancel")
                 }
                 
                 let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
                     (result : UIAlertAction) -> Void in
-                    print("OK")
+                    //print("OK")
                     self.setSortMode()
                     
                     
@@ -460,7 +458,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
    
     
     @objc func saveSort(_leave:Bool = false){
-        print("save sort")
+        //print("save sort")
         
         
         itemDetailsTableView.isEditing = !itemDetailsTableView.isEditing
@@ -485,12 +483,12 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             
             
             
-            print("parameters = \(parameters)")
+            //print("parameters = \(parameters)")
             
             layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/itemSort.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
                 .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
                 .responseString { response in
-                    print("task sort response = \(response)")
+                    //print("task sort response = \(response)")
                 }
                 .responseJSON(){
                     response in
@@ -521,7 +519,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     
     func showLeadTaskBtn(){
-        print("showLeadTaskBtn")
+        //print("showLeadTaskBtn")
         self.detailsView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         self.detailsView.addSubview(self.leadTasksWaitingBtn)
@@ -543,7 +541,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     }
     
     func hideLeadTaskBtn(){
-        print("hideLeadTaskBtn")
+        //print("hideLeadTaskBtn")
         self.detailsView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         self.detailsView.addSubview(itemDetailsTableView)
         
@@ -622,14 +620,14 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             
             
             
-            print("image count = \(self.contractItem.tasks[indexPath.row].images.count)")
+            //print("image count = \(self.contractItem.tasks[indexPath.row].images.count)")
             
             if(self.contractItem.tasks[indexPath.row].images.count > 0){
-                print("image path = \(self.contractItem.tasks[indexPath.row].images[0].thumbPath!)")
+                //print("image path = \(self.contractItem.tasks[indexPath.row].images[0].thumbPath!)")
                 cell.activityView.startAnimating()
                 cell.setImageUrl(_url: "\(self.contractItem.tasks[indexPath.row].images[0].thumbPath!)")
             }else{
-                print("set blank image")
+                //print("set blank image")
                 cell.setBlankImage()
             }
             
@@ -677,7 +675,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
         
         
         let delete = UITableViewRowAction(style: .normal, title: "Delete") { action, index in
-            print("delete task")
+            //print("delete task")
             self.deleteTask(_indexPath: indexPath)
 
         }
@@ -713,7 +711,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     
     @objc func assignLeadTasks(){
-        print("assign lead tasks")
+        //print("assign lead tasks")
         let leadTaskAssignViewController:LeadTaskAssignViewController = LeadTaskAssignViewController(_leadFromContractItem: self.lead!, _contractItem: self.contractItem)
         leadTaskAssignViewController.editDelegate = self
         self.navigationController?.pushViewController(leadTaskAssignViewController, animated: false)
@@ -722,20 +720,20 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     @objc func deleteTask(_indexPath: IndexPath){
         
-        print("delete task")
+        //print("delete task")
         
         
         
         let alertController = UIAlertController(title: "Delete Task?", message: "Are you sure you want to delete this task?", preferredStyle: UIAlertController.Style.alert)
         let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
-            print("No")
+            //print("No")
             return
         }
         
         let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
-            print("Yes")
+            //print("Yes")
             
             
             self.editsMade = true
@@ -747,15 +745,15 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             ]
             self.contractItem.tasks.remove(at: _indexPath.row)
             
-            print("parameters = \(parameters)")
+            //print("parameters = \(parameters)")
             self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/delete/contractTask.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                 response in
-                print(response.request ?? "")  // original URL request
+                //print(response.request ?? "")  // original URL request
                 //print(response.response ?? "") // URL response
                 //print(response.data ?? "")     // server data
-                print(response.result)   // result of response serialization
+                //print(response.result)   // result of response serialization
                 if let json = response.result.value {
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     
                     self.taskIDArray = []
                     for task in self.contractItem.tasks{
@@ -783,7 +781,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     
     func addTask(){
-        print("add task")
+        //print("add task")
         
        
         
@@ -806,7 +804,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     
     func updateTable(_points:Int){
-        print("updateTable")
+        //print("updateTable")
         editsMade = true
         getTasks()
     }
@@ -815,41 +813,41 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     
     func getTasks(){
-        print("get tasks")
+        //print("get tasks")
         
        
         
         let parameters:[String:String]
         parameters = ["contractItemID": self.contractItem.ID]
         
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/contractTasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("get tasks response = \(response)")
+                //print("get tasks response = \(response)")
             }
             
             .responseJSON(){
                 response in
                 
-                print(response.request ?? "")  // original URL request
-                print(response.response ?? "") // URL response
-                print(response.data ?? "")     // server data
-                print(response.result)   // result of response serialization
+                //print(response.request ?? "")  // original URL request
+                //print(response.response ?? "") // URL response
+                //print(response.data ?? "")     // server data
+                //print(response.result)   // result of response serialization
                 
                 if let json = response.result.value {
-                    print("Tasks Json = \(json)")
+                    //print("Tasks Json = \(json)")
                     self.tasksJson = JSON(json)
                     
                     let ts = self.tasksJson?["tasks"]
                     
                     self.contractItem.tasks = []
-                    print("Task Count = \(String(describing: ts?.count))")
+                    //print("Task Count = \(String(describing: ts?.count))")
                     
                     for n in 0 ..< Int((ts?.count)!) {
                         var taskImages:[Image]  = []
                         let imageCount = Int((ts?[n]["images"].count)!)
-                        print("imageCount: \(imageCount)")
+                        //print("imageCount: \(imageCount)")
                         
                         
                         for i in 0 ..< imageCount {
@@ -861,9 +859,9 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
                             let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
                             
                             //create a item object
-                            print("create an image object \(i)")
+                            //print("create an image object \(i)")
                             
-                            print("rawPath = \(rawPath)")
+                            //print("rawPath = \(rawPath)")
                             
                             let image = Image(_id: ts?[n]["images"][i]["ID"].stringValue,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: ts?[n]["images"][i]["name"].stringValue,_width: ts?[n]["images"][i]["width"].stringValue,_height: ts?[n]["images"][i]["height"].stringValue,_description: ts?[n]["images"][i]["description"].stringValue,_dateAdded: ts?[n]["images"][i]["dateAdded"].stringValue,_createdBy: ts?[n]["images"][i]["createdByName"].stringValue,_type: ts?[n]["images"][i]["type"].stringValue)
                             
@@ -898,7 +896,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     
     func updateLead(_lead: Lead, _newStatusValue:String){
-        print("update Lead")
+        //print("update Lead")
         editsMade = true
         self.lead = _lead
         
@@ -926,21 +924,21 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
         self.contract.lead!.tasksArray = []
         let parameters:[String:String]
         parameters = ["leadID": self.contract.lead!.ID]
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leadTasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("lead response = \(response)")
+                //print("lead response = \(response)")
             }
             .responseJSON(){
                 response in
                 if let json = response.result.value {
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     self.json = JSON(json)
                     self.parseJSON()
                 }
-                print(" dismissIndicator")
+                //print(" dismissIndicator")
                 //self.indicator.dismissIndicator()
         }
     }
@@ -953,18 +951,18 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             var taskImages:[Image] = []
             
             let imageCount = Int((self.json["leadTasks"][n]["images"].count))
-            print("imageCount: \(imageCount)")
+            //print("imageCount: \(imageCount)")
             for p in 0 ..< imageCount {
                 let fileName:String = (self.json["leadTasks"][n]["images"][p]["fileName"].stringValue)
                 let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
                 let mediumPath:String = "\(self.layoutVars.mediumBase)\(fileName)"
                 let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
-                print("rawPath = \(rawPath)")
+                //print("rawPath = \(rawPath)")
                 
                 let image = Image(_id: self.json["leadTasks"][n]["images"][p]["ID"].stringValue,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: self.json["leadTasks"][n]["images"][p]["name"].stringValue,_width: self.json["leadTasks"][n]["images"][p]["width"].stringValue,_height: self.json["leadTasks"][n]["images"][p]["height"].stringValue,_description: self.json["leadTasks"][n]["images"][p]["description"].stringValue,_dateAdded: self.json["leadTasks"][n]["images"][p]["dateAdded"].stringValue,_createdBy: self.json["leadTasks"][n]["images"][p]["createdByName"].stringValue,_type: self.json["leadTasks"][n]["images"][p]["type"].stringValue)
                 image.customer = (self.json["leadTasks"][n]["images"][p]["customer"].stringValue)
                 image.tags = (self.json["leadTasks"][n]["images"][p]["tags"].stringValue)
-                print("appending image")
+                //print("appending image")
                 taskImages.append(image)
             }
             let task = Task(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue, _images:taskImages)
@@ -976,7 +974,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     
     func updateContractItem(_contractItem: ContractItem){
-        print("update Contract Item")
+        //print("update Contract Item")
         editsMade = true
         self.contractItem = _contractItem
         
@@ -998,18 +996,18 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     @objc func goBack(){
         
         if sortEditsMade == true{
-            print("sortEditsMade = true")
+            //print("sortEditsMade = true")
             let alertController = UIAlertController(title: "Sort Change", message: "Leave without saving?", preferredStyle: UIAlertController.Style.alert)
             let cancelAction = UIAlertAction(title: "Don't Save", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
-                print("Cancel")
+                //print("Cancel")
                 //_ = self.navigationController?.popViewController(animated: true)
                 //return
             }
             
             let okAction = UIAlertAction(title: "Save", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+                //print("OK")
                 self.saveSort(_leave:true)
                 // _ = self.navigationController?.popViewController(animated: true)
             }

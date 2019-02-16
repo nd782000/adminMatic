@@ -11,12 +11,10 @@
 import Foundation
 import UIKit
 import Alamofire
-//import SwiftyJSON
 
 // updates status icons without getting new db data
 protocol LeadListDelegate{
     func getLeads(_openNewLead:Bool)
-    //func cancelSearch()
     
 }
 
@@ -34,7 +32,6 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     var searchTerm:String = ""
     var leadsSearchResults:[Lead] = []
     var shouldShowSearchResults:Bool = false
-   // var searchTerm:String = "" // used to retain search when leaving this view and having to deactivate
     
     var refreshControl: UIRefreshControl!
     var leadTableView: TableView!
@@ -42,7 +39,6 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     var countLbl:Label = Label()
     var addLeadBtn:Button = Button(titleText: "Add New Lead")
     var leadViewController:LeadViewController!
-    //var leads:JSON!
     var leadsArray:[Lead] = []
     
     
@@ -63,8 +59,6 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     var zoneName:String = ""
     
     
-    var methodStart:Date!
-    var methodFinish:Date!
   
     
     override func viewDidLoad() {
@@ -78,7 +72,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     }
     
     func showLoadingScreen(){
-        print("showLoadingScreen")
+        //print("showLoadingScreen")
         title = "Loading..."
         indicator = SDevIndicator.generate(self.view)!
         getLeads(_openNewLead:false)
@@ -86,10 +80,9 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     
     
     func getLeads(_openNewLead:Bool){
-        print("getLeads")
+        //print("getLeads")
         
         
-         methodStart = Date()
         
         self.leadsArray = []
         
@@ -102,12 +95,12 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         var parameters:[String:String]
         //parameters = ["cb":"\(timeStamp)"]
          parameters = ["status":self.status,"salesRep":self.salesRep,"zone":self.zoneID,"cb":"\(timeStamp)"]
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leads.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("lead response = \(response)")
+                //print("lead response = \(response)")
             }
             .responseJSON() {
                 response in
@@ -120,14 +113,14 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                         let leads = json["leads"] as? [[String: Any]] {
                         
                         let leadCount = leads.count
-                        print("lead count = \(leadCount)")
+                        //print("lead count = \(leadCount)")
                         
                         
                         for i in 0 ..< leadCount {
                             
                            
                             //create an object
-                            print("create a lead object \(i)")
+                            //print("create a lead object \(i)")
                             
                             
                              //as! String
@@ -137,15 +130,11 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                             
                             lead.custNameAndID = "\(lead.customerName!) #\(lead.ID!)"
                             
-                            print("json zone = \(leads[i]["zone"] as! String)")
+                            //print("json zone = \(leads[i]["zone"] as! String)")
                             for var n in 0 ..< self.appDelegate.zones.count{
-                                //print(" zone names = \(self.appDelegate.zones[n].name)")
-                                // print(" zone names = \(self.appDelegate.zones[n].ID)")
-                                print(" zone names = \(self.appDelegate.zones[n].name!)")
-                                print(" zone names = \(self.appDelegate.zones[n].ID!)")
+                                
                                 if leads[i]["zone"] as! String == self.appDelegate.zones[n].ID!{
                                     lead.zone = self.appDelegate.zones[n]
-                                    // print(" matching zone names = \(lead.zone.name)")
                                     n = self.appDelegate.zones.count
                                 }
                             }
@@ -163,21 +152,9 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                             
                             self.leadsArray.append(lead)
                             
-                            
-                            
-                            
-                            
                         }
                     }
                     
-                    
-                    
-                    
-                    
-                    
-                    self.methodFinish = Date()
-                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    print("Execution time: \(executionTime)")
                     
                     
                     self.indicator.dismissIndicator()
@@ -187,7 +164,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                     
                     
                     if _openNewLead {
-                        print("open new lead")
+                        //print("open new lead")
                         
                         
                         self.leadViewController = LeadViewController(_lead: self.leadsArray[0])
@@ -200,76 +177,10 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                     
                     
                 } catch {
-                    print("Error deserializing JSON: \(error)")
+                    //print("Error deserializing JSON: \(error)")
                 }
  
                 
-                
-                /*
-                //swifty way
-                
-                if let json = response.result.value {
-                    self.leads = JSON(json)
-                    
-                    let jsonCount = self.leads["leads"].count
-                    print("JSONcount: \(jsonCount)")
-                    for i in 0 ..< jsonCount {
-                        let lead =  Lead(_ID: self.leads["leads"][i]["ID"].stringValue, _statusID: self.leads["leads"][i]["status"].stringValue, _scheduleType: self.leads["leads"][i]["timeType"].stringValue, _date: self.leads["leads"][i]["date"].stringValue, _time: self.leads["leads"][i]["time"].stringValue, _statusName: self.leads["leads"][i]["statusName"].stringValue, _customer: self.leads["leads"][i]["customer"].stringValue, _customerName: self.leads["leads"][i]["custName"].stringValue, _urgent: self.leads["leads"][i]["urgent"].stringValue, _description: self.leads["leads"][i]["description"].stringValue, _rep: self.leads["leads"][i]["salesRep"].stringValue, _repName: self.leads["leads"][i]["repName"].stringValue, _deadline: self.leads["leads"][i]["deadline"].stringValue, _requestedByCust: self.leads["leads"][i]["requestedByCust"].stringValue, _createdBy: self.leads["leads"][i]["createdBy"].stringValue, _daysAged: self.leads["leads"][i]["daysAged"].stringValue)
-                        
-                        lead.dateNice = self.leads["leads"][i]["dateNice"].stringValue
-                        
-                        lead.custNameAndID = "\(lead.customerName!) #\(lead.ID!)"
-                        
-                        print("json zone = \(self.leads["leads"][i]["zone"].stringValue)")
-                        for var n in 0 ..< self.appDelegate.zones.count{
-                            //print(" zone names = \(self.appDelegate.zones[n].name)")
-                           // print(" zone names = \(self.appDelegate.zones[n].ID)")
-                            print(" zone names = \(self.appDelegate.zones[n].name!)")
-                            print(" zone names = \(self.appDelegate.zones[n].ID!)")
-                            if self.leads["leads"][i]["zone"].stringValue == self.appDelegate.zones[n].ID!{
-                                lead.zone = self.appDelegate.zones[n]
-                               // print(" matching zone names = \(lead.zone.name)")
-                                n = self.appDelegate.zones.count
-                            }
-                        }
-                        
-                        if lead.zone == nil{
-                            let zone:Zone = Zone(_ID: "0", _name: "None")
-                            lead.zone = zone
-                        }
-                        
-                        
-                        lead.custNameAndZone = "\(lead.customerName!) \(lead.zone.name!)"
-                        
-                        lead.description = "Zone: \(lead.zone.name!) - \(lead.description!)"
-                        
-                        
-                        self.leadsArray.append(lead)
-                    }
- 
-                 self.methodFinish = Date()
-                 let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                 print("Execution time: \(executionTime)")
-                 
-                 
-                    self.indicator.dismissIndicator()
-                    
-                    
-                        self.layoutViews()
-                    
-                    
-                    if _openNewLead {
-                        print("open new lead")
-                        
-                        
-                        self.leadViewController = LeadViewController(_lead: self.leadsArray[0])
-                        self.leadViewController.delegate = self
-                        self.navigationController?.pushViewController(self.leadViewController, animated: false )
-                        
-                        
-                    }
-                }
-                */
                 
                 
         }
@@ -278,7 +189,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     
     
     func layoutViews(){
-        print("Layout Views")
+        //print("Layout Views")
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
@@ -350,8 +261,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         
         self.leadSettingsBtn.addTarget(self, action: #selector(LeadListViewController.leadSettings), for: UIControl.Event.touchUpInside)
         
-        // self.contractSettingsBtn.frame = CGRect(x:self.view.frame.width - 50, y: self.view.frame.height - 50, width: 50, height: 50)
-        //self.contractSettingsBtn.translatesAutoresizingMaskIntoConstraints = true
+        
         self.leadSettingsBtn.layer.borderColor = UIColor.white.cgColor
         self.leadSettingsBtn.layer.borderWidth = 1.0
         self.view.addSubview(self.leadSettingsBtn)
@@ -367,7 +277,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         
         
         if(self.status != "" || self.salesRep != "" || self.zoneID != "" ){
-            print("changes made")
+            //print("changes made")
             settingsIcon.image = settingsEditedImg
         }else{
             settingsIcon.image = settingsImg
@@ -393,7 +303,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     //////////////   auto layout position constraints   /////////////////////////////
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[leadTable(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[countView(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
-        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[addLeadBtn(width)]|", options: [], metrics: sizeVals, views: viewsDictionary))
+        
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[addLeadBtn][leadSettingsBtn(50)]|", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[leadTable][countView(30)][addLeadBtn(50)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[leadTable][countView(30)][leadSettingsBtn(50)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
@@ -414,7 +324,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     
     func filterSearchResults(){
         
-        print("filterSearchResults")
+        //print("filterSearchResults")
         self.leadsSearchResults = []
         
        
@@ -466,14 +376,14 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        print("self.leadsArray.count = \(self.leadsArray.count)")
+        //print("self.leadsArray.count = \(self.leadsArray.count)")
         
         
         if shouldShowSearchResults{
             self.countLbl.text = "\(self.leadsSearchResults.count) Lead(s) Found"
             return self.leadsSearchResults.count
         } else {
-            print("self.leadsArray.count = \(self.leadsArray.count)")
+            //print("self.leadsArray.count = \(self.leadsArray.count)")
             self.countLbl.text = "\(self.leadsArray.count) Active Lead(s) "
             return self.leadsArray.count
         }
@@ -484,15 +394,9 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     
     
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
-        print("cellForRowAt")
-        print("leadsArray.count = \(self.leadsArray.count)")
-        /*
-        let cell:LeadTableViewCell = leadTableView.dequeueReusableCell(withIdentifier: "cell") as! LeadTableViewCell
-        cell.lead = self.leadsArray[indexPath.row]
-        cell.layoutViews(_scheduleMode: "SCHEDULE")
-        return cell;
-        */
-        
+        //print("cellForRowAt")
+        //print("leadsArray.count = \(self.leadsArray.count)")
+       
         
         
         let cell:LeadTableViewCell = leadTableView.dequeueReusableCell(withIdentifier: "cell") as! LeadTableViewCell
@@ -520,7 +424,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                 regex = nil
             }
             if let regexError = error {
-                print("Oh no! \(regexError)")
+                //print("Oh no! \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
                     highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
@@ -540,31 +444,20 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                 regex2 = nil
             }
             if let regexError2 = error2 {
-                print("Oh no! \(regexError2)")
+                //print("Oh no! \(regexError2)")
             } else {
                 for match in (regex2?.matches(in: baseString2 as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString2.length)))! as [NSTextCheckingResult] {
                     highlightedText2.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
                 }
                 
             }
-            //cell.nameLbl.attributedText = highlightedText
-            
-            
-            
-            
-            
+           
             
             cell.layoutViews()
             
             cell.titleLbl.attributedText = highlightedText
             
             cell.descriptionLbl.attributedText = highlightedText2
-            
-            
-           
-            
-            
-            
             
             
         } else {
@@ -575,19 +468,11 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         
         return cell;
         
-        
-        
-        
-        
-        
-        
-        
-        
     }
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("You selected cell #\(indexPath.row)!")
+        //print("You selected cell #\(indexPath.row)!")
         let indexPath = tableView.indexPathForSelectedRow;
         let currentCell = tableView.cellForRow(at: indexPath!) as! LeadTableViewCell;
         self.leadViewController = LeadViewController(_lead: currentCell.lead)
@@ -610,14 +495,11 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     
     
     @objc func refresh(_ sender: AnyObject){
-        print("refresh")
-        //refreshFromTable = true
-        //self.refreshControl.endRefreshing()
-        //tableRefresh = true
+        //print("refresh")
+        
         self.searchController.delegate = nil
         shouldShowSearchResults = false
         showLoadingScreen()
-        //getLeads(_openNewLead: false)
         
     }
     
@@ -625,13 +507,12 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     
     
     @objc func addLead(){
-        print("Add Lead")
+        //print("Add Lead")
         
         if(self.searchController.isActive == true){
-            print("search controller is active")
+            //print("search controller is active")
             self.searchTerm = self.searchController.searchBar.text!
-            //self.searchController.isActive = false
-            //self.searchController.active = false
+           
             // or swift 4+
             self.searchController.isActive = false
             
@@ -644,18 +525,11 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     }
     
     
-    /*
-    func cancelSearch() {
-        print("cancel search")
-        if(self.searchController.isActive == true){
-            self.searchController.isActive = false
-            self.leadTableView.reloadData()
-        }
-    }*/
+    
     
     
     @objc func leadSettings(){
-        print("lead settings")
+        //print("lead settings")
         
         let leadSettingsViewController = LeadSettingsViewController(_status: self.status,_salesRep: self.salesRep,_salesRepName: self.salesRepName,_zoneID: self.zoneID,_zoneName: self.zoneName)
         leadSettingsViewController.leadSettingsDelegate = self
@@ -668,14 +542,13 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     
     
     func updateSettings(_status: String, _salesRep: String, _salesRepName: String, _zoneID: String, _zoneName: String){
-        print("update settings status = \(_status) salesRep = \(_salesRep) salesRepName = \(_salesRepName)")
+        //print("update settings status = \(_status) salesRep = \(_salesRep) salesRepName = \(_salesRepName)")
         self.status = _status
         self.salesRep = _salesRep
         self.salesRepName = _salesRepName
         self.zoneID = _zoneID
         self.zoneName = _zoneName
         
-        //self.getLeads(_openNewLead: false)
         showLoadingScreen()
         
     }
@@ -689,7 +562,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        print("view will appear")
+        //print("view will appear")
         if self.searchTerm != ""{
             self.searchController.isActive = true
             self.searchController.searchBar.text = searchTerm

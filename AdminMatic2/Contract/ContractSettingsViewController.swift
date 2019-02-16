@@ -45,7 +45,6 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     
     var clearFiltersBtn:Button = Button(titleText: "Clear All Filters")
     
-    // var imageDelegate:ImageViewDelegate!
     var contractSettingsDelegate:ContractSettingsDelegate!
     
     var editsMade:Bool = false
@@ -55,7 +54,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     
     init(_status:String, _salesRep:String, _salesRepName:String){
         super.init(nibName:nil,bundle:nil)
-        print("init _status = \(_status)  _salesRep = \(_salesRep)")
+        //print("init _status = \(_status)  _salesRep = \(_salesRep)")
         
         self.status = _status
         self.salesRep = _salesRep
@@ -103,8 +102,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     
     func layoutViews(){
         
-        print("layoutViews")
-        // indicator.dismissIndicator()
+        //print("layoutViews")
         
         
         //set container to safe bounds of view
@@ -145,7 +143,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         safeContainer.addSubview(self.filterTxtField)
         
         
-        print("layoutViews 1")
+        //print("layoutViews 1")
         let filterToolBar = UIToolbar()
         filterToolBar.barStyle = UIBarStyle.default
         filterToolBar.barTintColor = UIColor(hex:0x005100, op:1)
@@ -280,7 +278,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         var count:Int = 1
         
         //if pickerView == filterPicker {
-            print("numberOfComponents = \(filterArray.count )")
+            //print("numberOfComponents = \(filterArray.count )")
             count = filterArray.count
         //}
         
@@ -291,7 +289,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         var title = ""
         
        // if pickerView == filterPicker {
-            print("titleForRow = \(filterArray[row])")
+            //print("titleForRow = \(filterArray[row])")
             title = filterArray[row]
         //}
         
@@ -333,8 +331,8 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         // Filter the data you have. For instance:
-        print("search edit")
-        print("searchText.count = \(searchText.count)")
+        //print("search edit")
+        //print("searchText.count = \(searchText.count)")
         
         
             if (searchText.count == 0) {
@@ -356,7 +354,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     func filterSearchResults(){
         
         
-            print("Rep filter")
+            //print("Rep filter")
             repSearchResults = []
             self.repSearchResults = self.appDelegate.salesRepNameArray.filter({( aRep: String ) -> Bool in
                 return (aRep.lowercased().range(of: repSearchBar.text!.lowercased(), options:.regularExpression) != nil)})
@@ -374,7 +372,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
                 
                 
             }, completion: { finished in
-                print("Napkins opened!")
+                //print("Napkins opened!")
             })
            
         
@@ -382,7 +380,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        print("searchBarTextDidEndEditing")
+        //print("searchBarTextDidEndEditing")
         // self.tableViewMode = "TASK"
         
        
@@ -485,7 +483,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     
     
     @objc func cancelRepInput(){
-        print("Cancel Rep Input")
+        //print("Cancel Rep Input")
         self.repSearchBar.resignFirstResponder()
         self.repResultsTableView.alpha = 0.0
     }
@@ -505,7 +503,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     @objc func filter() {
         filterTxtField.resignFirstResponder()
         
-        print("set filter")
+        //print("set filter")
         
         let row = self.filterPicker.selectedRow(inComponent: 0)
         
@@ -539,7 +537,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     }
     
     func resetVals(){
-        print("resetVals")
+        //print("resetVals")
         self.status = ""
         self.salesRep = ""
         self.salesRepName = ""

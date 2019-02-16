@@ -21,7 +21,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     var searchController:UISearchController!
     
-    var currentSearchMode = SearchMode.name
+    //var currentSearchMode = SearchMode.name
     
     var itemTableView:TableView = TableView()
     

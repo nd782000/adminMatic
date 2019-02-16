@@ -121,7 +121,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     override func viewWillAppear(_ animated: Bool) {
         // Do any additional setup after loading the view.
         
-        print("view will appear")
+        //print("view will appear")
         
 
         
@@ -139,10 +139,10 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         navigationItem.leftBarButtonItem  = backButtonItem
         
     
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)),
-                                               name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)),
-                                               name: UIResponder.keyboardWillHideNotification, object: nil)
+       // NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)),
+                                              // name: UIResponder.keyboardWillShowNotification, object: nil)
+       // NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)),
+                                               //name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     func getEmployeeData(_id:String){
@@ -162,7 +162,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
             //print(response.result)   // result of response serialization
             
             if let json = response.result.value {
-                print("JSON: \(json)")
+                //print("JSON: \(json)")
                 //self.employeeJSON = JSON(json)
                 
                 //self.parseEmployeeJSON()
@@ -187,7 +187,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                             
                             self.email = empJSON[i]["email"] as! String
                             
-                            print("email = \(self.email)")
+                            //print("email = \(self.email)")
                             
                             
                             let licenseJSON = empJSON[i]["licenses"] as! [[String: Any]]
@@ -195,7 +195,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                             
                             //let licenseCount = empJSON[i]["licenses"].count
                             //self.totalItems = jsonCount
-                            print("licenseCount: \(licenseCount)")
+                            //print("licenseCount: \(licenseCount)")
                             for n in 0 ..< licenseCount {
                                 let license = License(_ID: licenseJSON[n]["ID"] as? String, _name: licenseJSON[n]["name"] as? String, _expiration: licenseJSON[n]["expirationDate"] as? String, _number: licenseJSON[n]["licenceNumber"] as? String, _status: licenseJSON[n]["status"] as? String, _issuer: licenseJSON[n]["issuer"] as? String)
                                 
@@ -212,11 +212,11 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                     
                     self.methodFinish = Date()
                     let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    print("Execution time: \(executionTime)")
+                    //print("Execution time: \(executionTime)")
                     
                     
                 } catch {
-                    print("Error deserializing JSON: \(error)")
+                    //print("Error deserializing JSON: \(error)")
                 }
  
             }
@@ -228,10 +228,10 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     
     func getImages(){
-        print("get images")
+        //print("get images")
         
         let parameters:[String:String]
-        parameters = ["loginID": "\(self.appDelegate.loggedInEmployee?.ID)","limit": "\(self.limit)","offset": "\(self.offset)", "order":self.order,"uploadedBy": self.employee.ID] as! [String : String]
+        parameters = ["loginID": "\(String(describing: self.appDelegate.loggedInEmployee?.ID))","limit": "\(self.limit)","offset": "\(self.offset)", "order":self.order,"uploadedBy": self.employee.ID] as! [String : String]
         
        // print("parameters = \(parameters)")
         
@@ -254,7 +254,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                         let images = json["images"] as? [[String: Any]] {
                         
                         let imageCount = images.count
-                        print("image count = \(imageCount)")
+                        //print("image count = \(imageCount)")
                         
                         let thumbBase:String = json["thumbBase"] as! String
                         let mediumBase:String = json["mediumBase"] as! String
@@ -269,7 +269,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                             let rawPath:String = "\(rawBase)\(images[i]["fileName"] as! String)"
                             
                             //create a item object
-                            print("create an image object \(i)")
+                            //print("create an image object \(i)")
                             
                             
                             
@@ -307,10 +307,10 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                     
                     self.methodFinish = Date()
                     let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    print("Execution time: \(executionTime)")
+                    //print("Execution time: \(executionTime)")
                     
                 } catch {
-                    print("Error deserializing JSON: \(error)")
+                    //print("Error deserializing JSON: \(error)")
                 }
                 
                 
@@ -346,7 +346,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         }
         
         
-        print("layoutViews")
+        //print("layoutViews")
        
         self.employeeImage = UIImageView()
         
@@ -363,14 +363,14 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         
         
         Alamofire.request("https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.employee.pic!).responseImage { response in
-            debugPrint(response)
+           // debugPrint(response)
             
             //print(response.request)
             //print(response.response)
-            debugPrint(response.result)
+           // debugPrint(response.result)
             
             if let image = response.result.value {
-                print("image downloaded: \(image)")
+               // print("image downloaded: \(image)")
                 
                 
                 self.employeeImage.image = image
@@ -543,7 +543,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         safeContainer.addSubview(self.logInOutBtn)
         
         
-        print("1")
+        //print("1")
         let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30, "halfWidth": layoutVars.halfWidth, "nameWidth": layoutVars.fullWidth - 150, "navBottom":layoutVars.navAndStatusBarHeight + 8] as [String:Any]
         
         //auto layout group
@@ -568,44 +568,44 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
             
             ] as [String:Any]
         
-        print("2")
+        //print("2")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[name]-10-|", options: [], metrics: nil, views: viewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[tapBtn(100)]", options: [], metrics: nil, views: viewsDictionary))
          safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[activity(100)]", options: [], metrics: nil, views: viewsDictionary))
-        print("3")
+        //print("3")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[phone]-10-|", options: [], metrics: nil, views: viewsDictionary))
-        print("3.1")
+        //print("3.1")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[image(100)]-10-[email]-10-|", options: [], metrics: nil, views: viewsDictionary))
-        print("3.2")
+        //print("3.2")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[deptsCrewsBtn(halfWidth)]-5-[usageBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        print("3.3")
+        //print("3.3")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[shiftsBtn(halfWidth)]-5-[payrollBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        print("3.4")
+        //print("3.4")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[licensesBtn(halfWidth)]-5-[trainingBtn]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        print("3.5")
+        //print("3.5")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[imageCollection]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        print("3.6")
+        //print("3.6")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[noImagesLbl]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        print("3.7")
+        //print("3.7")
          safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[userTxt(halfWidth)]-5-[passTxt]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        print("3.8")
+        //print("3.8")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[logInBtn]-10-|", options: [], metrics: nil, views: viewsDictionary))
-        print("4")
+        //print("4")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[image(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tapBtn(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[activity(100)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        print("5")
+        //print("5")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)][phone(30)]-10-[email(30)]-[deptsCrewsBtn(30)]-[shiftsBtn(30)]-[licensesBtn(30)]-[imageCollection]-[userTxt(30)]-[logInBtn(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)][phone(30)]-10-[email(30)]-[usageBtn(30)]-[payrollBtn(30)]-[trainingBtn(30)]-[imageCollection]-[passTxt(30)]-[logInBtn(40)]-16-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        print("6")
+        //print("6")
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(30)][phone(30)]-10-[email(30)]-[usageBtn(30)]-[payrollBtn(30)]-[trainingBtn(30)]-20-[noImagesLbl(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
     }
     
     
     @objc func displayEmployeeOptions(){
-        print("display Options")
+        //print("display Options")
         
         
         let actionSheet = UIAlertController(title: "Employee Options", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
@@ -613,13 +613,13 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         actionSheet.view.layer.cornerRadius = 5;
         
         actionSheet.addAction(UIAlertAction(title: "Change Password", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-            print("display Change Password View")
+            //print("display Change Password View")
             
         }))
         
         
         actionSheet.addAction(UIAlertAction(title: "Upload Signature", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-            print("Show Signature View")
+            //print("Show Signature View")
             
             let signatureViewController:SignatureViewController = SignatureViewController(_employee: self.employee)
             self.navigationController?.pushViewController(signatureViewController, animated: false )
@@ -629,7 +629,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         }))
         
         actionSheet.addAction(UIAlertAction(title: "Send Recruit Text", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-            print("Send Recruit Text")
+            //print("Send Recruit Text")
             
             self.sendRecruitmentText()
             
@@ -675,7 +675,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     
     func sendRecruitmentText(){
-        print("send recruitment text")
+        //print("send recruitment text")
         var controller:MFMessageComposeViewController?
         
         if (MFMessageComposeViewController.canSendText()) {
@@ -693,7 +693,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
         //... handle sms screen actions
-        print("message delegate")
+        //print("message delegate")
         self.layoutVars.simpleAlert(_vc: self, _title: "Message Sent. Thanks!", _message: "")
         
         self.dismiss(animated: true, completion: nil)
@@ -702,7 +702,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     
     @objc func showDepartments(){
-        print("show departments")
+        //print("show departments")
         
         if(appDelegate.loggedInEmployee != nil){
             self.departmentListViewController = DepartmentListViewController(_empID: self.employee.ID, _empFirstName: self.employee.fname)
@@ -719,7 +719,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     }
     
     @objc func showUsage(){
-        print("show usage")
+        //print("show usage")
         if(appDelegate.loggedInEmployee != nil){
             
             self.usageViewController = PerformanceViewController(_empID: (self.employee.ID)!)
@@ -738,7 +738,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     }
     
     @objc func showShifts(){
-        print("show shifts")
+        //print("show shifts")
         if(appDelegate.loggedInEmployee != nil){
             self.shiftsViewController = ShiftsViewController(_empID: self.employee.ID, _empFirstName: self.employee.fname)
             navigationController?.pushViewController(self.shiftsViewController, animated: false )
@@ -748,7 +748,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     }
     
     @objc func showPayroll(){
-        print("show payroll")
+        //print("show payroll")
         if(appDelegate.loggedInEmployee != nil){
             self.payrollEntryViewController = PayrollEntryViewController(_employee: self.employee)
             navigationController?.pushViewController(self.payrollEntryViewController, animated: false )
@@ -758,7 +758,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     }
     
     @objc func showLicenses(){
-        print("showLicenses")
+        //print("showLicenses")
         if(appDelegate.loggedInEmployee != nil){
             
             self.licenseViewController = LicenseViewController(_employee: self.employee)
@@ -769,7 +769,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     }
     
     @objc func showTraining(){
-        print("showTraining")
+        //print("showTraining")
         layoutVars.simpleAlert(_vc: self, _title: "Training System Coming Soon", _message: "")
         /*
         if(appDelegate.loggedInEmployee != nil){
@@ -831,14 +831,14 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         
         //print("thumb = \(self.imageArray[indexPath.row].thumbPath!)")
         Alamofire.request(self.imageArray[indexPath.row].thumbPath!).responseImage { response in
-            debugPrint(response)
+            //debugPrint(response)
             
             //print(response.request)
             //print(response.response)
-            debugPrint(response.result)
+            //debugPrint(response.result)
             
             if let image = response.result.value {
-                print("image downloaded: \(image)")
+                //print("image downloaded: \(image)")
                 
                 //let image = Image(_path: self.imageArray[indexPath.row].thumbPath!)
                 
@@ -957,7 +957,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
 
     
     func refreshImages(_images:[Image], _scoreAdjust:Int){
-        print("refreshImages")
+        //print("refreshImages")
         
         for insertImage in _images{
             
@@ -975,7 +975,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     
     func updateLikes(_index:Int, _liked:String, _likes:String){
-        print("update likes _liked: \(_liked)  _likes\(_likes)")
+        //print("update likes _liked: \(_liked)  _likes\(_likes)")
         imageArray[_index].liked = _liked
         imageArray[_index].likes = _likes
         
@@ -984,7 +984,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if (scrollView.bounds.maxY == scrollView.contentSize.height) {
-            print("scrolled to bottom")
+            //print("scrolled to bottom")
             lazyLoad = 1
             batch += 1
             offset = batch * limit
@@ -998,11 +998,13 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        print("textFieldDidBeginEditing")
+        //print("textFieldDidBeginEditing")
         
         self.passTxt.reset()
     }
     
+    
+    /*
     @objc func keyboardWillShow(notification: NSNotification) {
         
        // print("keyboard will show")
@@ -1038,12 +1040,12 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         }
         keyBoardShown = false
     }
-    
+    */
     
     func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
+        //NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        //NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
     }
 
     
@@ -1077,7 +1079,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                 //print(response.result)   // result of response serialization
                 
                 if let json = response.result.value {
-                    print("Log In Json = \(json)")
+                    //print("Log In Json = \(json)")
                     
                     
                     
@@ -1099,7 +1101,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                            
                             if(loggedIn == "true"){
                                 self.logInOutBtn.setTitle("Log Out (\(self.employee.name!))", for: UIControl.State.normal)
-                                print("Login Success")
+                                //print("Login Success")
                                 self.appDelegate.loggedInEmployee = self.employee
                                 self.appDelegate.scheduleViewController.personalScheduleArray.removeAll()
                                 self.appDelegate.scheduleViewController.personalHistoryArray.removeAll()
@@ -1113,7 +1115,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                                 self.passTxt.resignFirstResponder()
                                 self.passTxt.text = ""
                                 
-                                print("set values for appDelegate id = \(self.employee.ID)")
+                                //print("set values for appDelegate id = \(self.employee.ID)")
                                 
                                 
                                 self.appDelegate.defaults = UserDefaults.standard
@@ -1145,7 +1147,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                         
                         
                     } catch {
-                        print("Error deserializing JSON: \(error)")
+                        //print("Error deserializing JSON: \(error)")
                     }
                     
                     //let LogInJson = JSON(json)
@@ -1216,7 +1218,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     @objc func showFullScreenImage(_ sender: UITapGestureRecognizer){
         
-        print("show full screen")
+        //print("show full screen")
         
         navigationController?.pushViewController(imageFullViewController, animated: false )
     }
@@ -1245,7 +1247,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     }
     
     func showCustomerImages(_customer:String){
-        print("show customer images cust: \(_customer)")
+        //print("show customer images cust: \(_customer)")
         
         
         

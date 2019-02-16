@@ -78,6 +78,8 @@
 		017F08422200C80F00CC751D /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F08412200C80F00CC751D /* License.swift */; };
 		017F08442200DA4900CC751D /* LicenseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F08432200DA4900CC751D /* LicenseViewController.swift */; };
 		017F08462200DEA100CC751D /* LicenseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F08452200DEA100CC751D /* LicenseTableViewCell.swift */; };
+		017F084822033CD600CC751D /* NewCustomerLookUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F084722033CD500CC751D /* NewCustomerLookUpViewController.swift */; };
+		017F084A2203A96D00CC751D /* NewEditCustomerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F08492203A96D00CC751D /* NewEditCustomerViewController.swift */; };
 		019B24591EB6D1BB008D4475 /* NewWoItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019B24581EB6D1BB008D4475 /* NewWoItemViewController.swift */; };
 		019B24621EB82EC5008D4475 /* NewWoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019B24611EB82EC5008D4475 /* NewWoItemTableViewCell.swift */; };
 		019B24641EB8BEC0008D4475 /* ScheduleSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019B24631EB8BEC0008D4475 /* ScheduleSettingsViewController.swift */; };
@@ -149,7 +151,6 @@
 		01EC4E731E1DDBBD009CE261 /* ScheduleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EC4E721E1DDBBD009CE261 /* ScheduleViewController.swift */; };
 		01EC4E751E1EF8BC009CE261 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EC4E741E1EF8BC009CE261 /* HomeViewController.swift */; };
 		01EE1B2E1E20105A00E5E061 /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EE1B2D1E20105A00E5E061 /* HomeCollectionViewCell.swift */; };
-		01EE1B301E201E0C00E5E061 /* TimeEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EE1B2F1E201E0C00E5E061 /* TimeEntryView.swift */; };
 		01F33DCF203F3E1E00C43EFD /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A1F31F1E07084C00DCCB39 /* Alamofire.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		01F33DE1203F44E500C43EFD /* AKImageCropperView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01F33DE0203F44E500C43EFD /* AKImageCropperView.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		01F33DE2203F44E800C43EFD /* DKImagePickerController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01E01C371E7E05F600385B86 /* DKImagePickerController.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -401,6 +402,8 @@
 		017F08412200C80F00CC751D /* License.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = License.swift; sourceTree = "<group>"; };
 		017F08432200DA4900CC751D /* LicenseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseViewController.swift; sourceTree = "<group>"; };
 		017F08452200DEA100CC751D /* LicenseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseTableViewCell.swift; sourceTree = "<group>"; };
+		017F084722033CD500CC751D /* NewCustomerLookUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCustomerLookUpViewController.swift; sourceTree = "<group>"; };
+		017F08492203A96D00CC751D /* NewEditCustomerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditCustomerViewController.swift; sourceTree = "<group>"; };
 		019B24581EB6D1BB008D4475 /* NewWoItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewWoItemViewController.swift; sourceTree = "<group>"; };
 		019B24611EB82EC5008D4475 /* NewWoItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewWoItemTableViewCell.swift; sourceTree = "<group>"; };
 		019B24631EB8BEC0008D4475 /* ScheduleSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleSettingsViewController.swift; sourceTree = "<group>"; };
@@ -479,7 +482,6 @@
 		01EC4E721E1DDBBD009CE261 /* ScheduleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleViewController.swift; sourceTree = "<group>"; };
 		01EC4E741E1EF8BC009CE261 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		01EE1B2D1E20105A00E5E061 /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
-		01EE1B2F1E201E0C00E5E061 /* TimeEntryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeEntryView.swift; sourceTree = "<group>"; };
 		01F33DDC203F429900C43EFD /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		37CA98F8ACDF15CD0E5F79DC /* Pods-AdminMatic2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AdminMatic2.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AdminMatic2/Pods-AdminMatic2.debug.xcconfig"; sourceTree = "<group>"; };
 		F4075364696C1C40435E111F /* Pods_AdminMatic2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AdminMatic2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -611,7 +613,6 @@
 				01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */,
 				0109382A1E835394007865FB /* CustomImageCropperOverlayView.swift */,
 				010937BF1E81EE24007865FB /* ImageCroppingViewController.swift */,
-				01EE1B2F1E201E0C00E5E061 /* TimeEntryView.swift */,
 				015231BA1E1D69FF009949BD /* LogInView.swift */,
 				0160A1B91E8A08B800C2AB4A /* BugViewController.swift */,
 				0160A1B31E89BD2C00C2AB4A /* BugsListViewController.swift */,
@@ -625,6 +626,8 @@
 				014B02941E21577D002A41DE /* CustomerListViewController.swift */,
 				014B029F1E2160BF002A41DE /* CustomerViewController.swift */,
 				01DC79481E292CF30022566C /* CustomerContactViewController.swift */,
+				017F084722033CD500CC751D /* NewCustomerLookUpViewController.swift */,
+				017F08492203A96D00CC751D /* NewEditCustomerViewController.swift */,
 			);
 			path = Customer;
 			sourceTree = "<group>";
@@ -1167,7 +1170,6 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-AdminMatic2/Pods-AdminMatic2-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/AKImageCropperView/AKImageCropperView.framework",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/AlamofireImage/AlamofireImage.framework",
 				"${BUILT_PRODUCTS_DIR}/CLImageEditor/CLImageEditor.framework",
@@ -1175,6 +1177,7 @@
 				"${BUILT_PRODUCTS_DIR}/DKImagePickerController/DKImagePickerController.framework",
 				"${BUILT_PRODUCTS_DIR}/DKPhotoGallery/DKPhotoGallery.framework",
 				"${BUILT_PRODUCTS_DIR}/FLAnimatedImage/FLAnimatedImage.framework",
+				"${BUILT_PRODUCTS_DIR}/IQKeyboardManagerSwift/IQKeyboardManagerSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/ObjectMapper/ObjectMapper.framework",
 				"${BUILT_PRODUCTS_DIR}/QuickLayout/QuickLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
@@ -1183,7 +1186,6 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AKImageCropperView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AlamofireImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CLImageEditor.framework",
@@ -1191,6 +1193,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DKImagePickerController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DKPhotoGallery.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FLAnimatedImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IQKeyboardManagerSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ObjectMapper.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/QuickLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
@@ -1298,12 +1301,12 @@
 				01DDE0651E071689002C0F8B /* API.swift in Sources */,
 				01DDE0671E0719F7002C0F8B /* LayoutVars.swift in Sources */,
 				01C43C7B203DE4FA0068A5E0 /* PayrollEntryTableViewCell.swift in Sources */,
-				01EE1B301E201E0C00E5E061 /* TimeEntryView.swift in Sources */,
 				014B02AA1E216939002A41DE /* Task.swift in Sources */,
 				01D86712212AFD2A005379E1 /* ContractItemViewController.swift in Sources */,
 				01D867102124959B005379E1 /* NewEditContractItemViewController.swift in Sources */,
 				01DC79491E292CF30022566C /* CustomerContactViewController.swift in Sources */,
 				01C43C62203725DD0068A5E0 /* Department.swift in Sources */,
+				017F084A2203A96D00CC751D /* NewEditCustomerViewController.swift in Sources */,
 				01C43C71203CA5330068A5E0 /* ContractListViewController.swift in Sources */,
 				014B029C1E21585A002A41DE /* Customer.swift in Sources */,
 				01D86718212C5FDF005379E1 /* ImageEmployeeLikesListViewController.swift in Sources */,
@@ -1317,6 +1320,7 @@
 				0160A1BA1E8A08B900C2AB4A /* BugViewController.swift in Sources */,
 				014B02A01E2160BF002A41DE /* CustomerViewController.swift in Sources */,
 				016634201E340F5A002F7763 /* ItemViewController.swift in Sources */,
+				017F084822033CD600CC751D /* NewCustomerLookUpViewController.swift in Sources */,
 				01DC79401E2805590022566C /* UsageEntryTableViewCell.swift in Sources */,
 				01C340D420718FEC0093545C /* LeadTaskAssignViewController.swift in Sources */,
 				015231AC1E1A982F009949BD /* EmployeeListViewController.swift in Sources */,

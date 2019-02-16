@@ -75,7 +75,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     
     
     func getContracts(_openNewContract:Bool){
-        print("getContracts")
+        //print("getContracts")
         
         methodStart = Date()
         
@@ -90,12 +90,12 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         //Get lead list
         var parameters:[String:String]
         parameters = ["status":self.status,"salesRep":self.salesRep,"cb":"\(timeStamp)"]
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/contracts.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("contract response = \(response)")
+                //print("contract response = \(response)")
             }
             .responseJSON() {
                 response in
@@ -109,14 +109,14 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
                         let contracts = json["contracts"] as? [[String: Any]] {
                         
                         let contractCount = contracts.count
-                        print("contract count = \(contractCount)")
+                        //print("contract count = \(contractCount)")
                         
                         
                         for i in 0 ..< contractCount {
                             
                             
                             //create an object
-                            print("create a contract object \(i)")
+                            //print("create a contract object \(i)")
                             
                             
                             //as! String
@@ -127,7 +127,6 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
                             
                             contract.custNameAndID = "\(contract.customerName!) #\(contract.ID!)"
                             
-                            //contract.repSignature  = contracts[i]["companySigned"] as! String
                             contract.customerSignature  = contracts[i]["customerSigned"]as! String
                             
                             
@@ -148,88 +147,20 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
                     
                     self.methodFinish = Date()
                     let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    print("Execution time: \(executionTime)")
+                    //print("Execution time: \(executionTime)")
                     
                     
                     self.indicator.dismissIndicator()
                     
                     
                     self.layoutViews()
-                    
-                    /*
-                    
-                    if _openNewLead {
-                        print("open new lead")
-                        
-                        
-                        self.leadViewController = LeadViewController(_lead: self.leadsArray[0])
-                        self.leadViewController.delegate = self
-                        self.navigationController?.pushViewController(self.leadViewController, animated: false )
-                        
-                        
-                    }
-                    */
-                    
-                    
-                } catch {
-                    print("Error deserializing JSON: \(error)")
-                }
-                
-                
-                /*
-                
-                //swifty way
-                
-                if let json = response.result.value {
-                    self.contracts = JSON(json)
-                    
-                    
                     
                    
                     
-                    let jsonCount = self.contracts["contracts"].count
-                    print("JSONcount: \(jsonCount)")
-                    for i in 0 ..< jsonCount {
-                        let contract = Contract(_ID: self.contracts["contracts"][i]["ID"].stringValue, _title: self.contracts["contracts"][i]["title"].stringValue, _status: self.contracts["contracts"][i]["status"].stringValue, _statusName: self.contracts["contracts"][i]["statusName"].stringValue, _chargeType: self.contracts["contracts"][i]["chargeType"].stringValue, _customer: self.contracts["contracts"][i]["customer"].stringValue, _customerName: self.contracts["contracts"][i]["custName"].stringValue, _notes: self.contracts["contracts"][i]["notes"].stringValue, _salesRep: self.contracts["contracts"][i]["salesRep"].stringValue, _repName: self.contracts["contracts"][i]["repName"].stringValue, _createdBy: self.contracts["contracts"][i]["createdBy"].stringValue, _createDate: self.contracts["contracts"][i]["createDate"].stringValue, _subTotal: self.contracts["contracts"][i]["subTotal"].stringValue, _taxTotal: self.contracts["contracts"][i]["taxTotal"].stringValue, _total: self.contracts["contracts"][i]["total"].stringValue, _terms: self.contracts["contracts"][i]["termsDescription"].stringValue, _daysAged: self.contracts["contracts"][i]["daysAged"].stringValue)
-                        
-                        
-                        
-                       
-                        contract.custNameAndID = "\(contract.customerName!) #\(contract.ID!)"
-                        
-                        contract.repSignature  = self.contracts["contracts"][i]["companySigned"].stringValue
-                        contract.customerSignature  = self.contracts["contracts"][i]["customerSigned"].stringValue
-
-                        
-                        
-                        self.contractsArray.append(contract)
-                        self.names.append("\(contract.customerName!) #\(contract.ID!)")
-                        
-                    }
                     
-                    self.methodFinish = Date()
-                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    print("Execution time: \(executionTime)")
-                    
-                    
-                    
-                    self.indicator.dismissIndicator()
-                    self.layoutViews()
-                    
-                    if _openNewContract {
-                        print("open new contract")
-                        
-                        
-                        self.contractViewController = ContractViewController(_contract: self.contractsArray[0])
-                        self.contractViewController.delegate = self
-                        self.navigationController?.pushViewController(self.contractViewController, animated: false )
-                        
-                        
-                    }
-                    
+                } catch {
+                    //print("Error deserializing JSON: \(error)")
                 }
-                */
-                
                 
                 
         }
@@ -238,15 +169,11 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     
     
     func layoutViews(){
-        print("Layout Views")
+        //print("Layout Views")
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         title = "Contract List"
-        
-        
-       
-        
         
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchBar.placeholder = "Search Contracts"
@@ -308,8 +235,6 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         
         self.contractSettingsBtn.addTarget(self, action: #selector(ContractListViewController.contractSettings), for: UIControl.Event.touchUpInside)
         
-       // self.contractSettingsBtn.frame = CGRect(x:self.view.frame.width - 50, y: self.view.frame.height - 50, width: 50, height: 50)
-        //self.contractSettingsBtn.translatesAutoresizingMaskIntoConstraints = true
         self.contractSettingsBtn.layer.borderColor = UIColor.white.cgColor
         self.contractSettingsBtn.layer.borderWidth = 1.0
         safeContainer.addSubview(self.contractSettingsBtn)
@@ -325,7 +250,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         
         
         if(self.status != "" || self.salesRep != ""){
-            print("changes made")
+            //print("changes made")
             settingsIcon.image = settingsEditedImg
         }else{
             settingsIcon.image = settingsImg
@@ -334,9 +259,6 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
         
         
         self.contractSettingsBtn.addSubview(settingsIcon)
-        
-        
-        
         
         
         
@@ -371,7 +293,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     
     func filterSearchResults(){
         
-        print("filterSearchResults")
+        //print("filterSearchResults")
         self.contractsSearchResults = []
        
         
@@ -407,11 +329,6 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     }
     
     
-    
-    
-    
-    
-    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 0
     }
@@ -422,7 +339,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
             self.countLbl.text = "\(self.contractsSearchResults.count) Contract(s) Found"
             return self.contractsSearchResults.count
         } else {
-            print("self.contractsArray.count = \(self.contractsArray.count)")
+            //print("self.contractsArray.count = \(self.contractsArray.count)")
             self.countLbl.text = "\(self.contractsArray.count) Active Contract(s) "
             return self.contractsArray.count
         }
@@ -430,7 +347,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     
     
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
-        print("cellForRowAt")
+        //print("cellForRowAt")
         
         let cell:ContractTableViewCell = contractTableView.dequeueReusableCell(withIdentifier: "cell") as! ContractTableViewCell
         
@@ -438,8 +355,6 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
             let searchString = self.searchController.searchBar.text!.lowercased()
             
             //text highlighting
-            //let baseString:NSString = cell.name as NSString
-            //let highlightedText = NSMutableAttributedString(string: cell.name)
             
             let baseString:NSString = self.contractsSearchResults[indexPath.row].custNameAndID! as NSString
             let highlightedText = NSMutableAttributedString(string: self.contractsSearchResults[indexPath.row].custNameAndID!)
@@ -461,10 +376,6 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
                 }
             }
             
-            
-            //let baseString2:NSString = cell.contract.title as NSString
-            //let highlightedText2 = NSMutableAttributedString(string: cell.contract.title!)
-            
             let baseString2:NSString = self.contractsSearchResults[indexPath.row].title!  as NSString
             let highlightedText2 = NSMutableAttributedString(string: self.contractsSearchResults[indexPath.row].title!)
             
@@ -485,10 +396,6 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
                 }
                 
             }
-            //cell.nameLbl.attributedText = highlightedText
-            
-            
-            
             
             
             cell.contract = self.contractsSearchResults[indexPath.row]
@@ -497,16 +404,9 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
             cell.titleLbl.attributedText = highlightedText
             
             cell.descriptionLbl.attributedText = highlightedText2
-                
-            
-            
-            
-            
-            
             
         } else {
             cell.contract = self.contractsArray[indexPath.row]
-           // cell.name = "\(cell.contract.customerName!) #\(cell.contract.ID!)"
             cell.layoutViews()
         }
         
@@ -515,7 +415,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("You selected cell #\(indexPath.row)!")
+        //print("You selected cell #\(indexPath.row)!")
         let indexPath = tableView.indexPathForSelectedRow;
         let currentCell = tableView.cellForRow(at: indexPath!) as! ContractTableViewCell;
         self.contractViewController = ContractViewController(_contract: currentCell.contract)
@@ -539,14 +439,14 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     
     
     @objc func addContract(){
-        print("Add Contract")
+        //print("Add Contract")
         let editContractViewController = NewEditContractViewController()
         editContractViewController.delegate = self
         navigationController?.pushViewController(editContractViewController, animated: false )
     }
     
     @objc func contractSettings(){
-        print("contract settings")
+        //print("contract settings")
         
         let contractSettingsViewController = ContractSettingsViewController(_status: self.status,_salesRep: self.salesRep,_salesRepName: self.salesRepName)
         contractSettingsViewController.contractSettingsDelegate = self
@@ -558,7 +458,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     
     
     func updateSettings(_status:String, _salesRep:String, _salesRepName:String){
-        print("update settings status = \(_status) salesRep = \(_salesRep) salesRepName = \(_salesRepName)")
+        //print("update settings status = \(_status) salesRep = \(_salesRep) salesRepName = \(_salesRepName)")
         self.status = _status
         self.salesRep = _salesRep
         self.salesRepName = _salesRepName

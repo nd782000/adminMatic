@@ -14,11 +14,20 @@ import Alamofire
 import SwiftyJSON
 import DKImagePickerController
 
+protocol EditCustomerDelegate{
+    func updateCustomer(_customerID:String)
+}
 
 
-
-class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ScheduleDelegate, ImageViewDelegate, ImageLikeDelegate, LeadListDelegate, ContractListDelegate, InvoiceListDelegate{
+class CustomerViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, ScheduleDelegate, ImageViewDelegate, ImageLikeDelegate, LeadListDelegate, ContractListDelegate, InvoiceListDelegate, EditCustomerDelegate{
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    var customerListDelegate:CustomerListDelegate!
+    
+    
+    
+    //var delegate:CustomerListDelegate?
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
     
@@ -35,6 +44,8 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var jobSiteAddress: String = "No Job Site Found"
     var lat: NSString?
     var lng: NSString?
+    
+    var editButton:UIBarButtonItem!
     
     //customer info
     var customerView:UIView!
@@ -99,8 +110,6 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var portraitMode:Bool = true
     var displayImages:Bool = false
     var viewsLoaded:Bool = false
-    var customerListDelegate:CustomerListDelegate!
-    
     
     
     
@@ -161,6 +170,11 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
         
+        
+        editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(self.displayEditView))
+        navigationItem.rightBarButtonItem = editButton
+        
+        
         getCustomerData(_id: self.customerID)
     }
     
@@ -191,7 +205,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
            
            
             if let json = response.result.value {
-                print("JSON: \(json)")
+               // print("JSON: \(json)")
                 self.customerJSON = JSON(json)
                 self.parseCustomerJSON()
                 
@@ -211,7 +225,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
        // print("parse customerJSON: \(self.customerJSON)")
-        
+        self.customerName = self.customerJSON["customer"]["name"].string!
         //loop through contacts and put them in appropriate places
         let contactCount:Int = self.customerJSON["customer"]["contacts"].count
         //print("contactCount: \(contactCount)")
@@ -264,7 +278,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func getLeads(_openNewLead:Bool){
-        print("getLeads")
+       // print("getLeads")
         
         self.customerLeadArray = []
         
@@ -276,12 +290,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //Get lead list
         var parameters:[String:String]
         parameters = ["cb":"\(timeStamp)", "custID":self.customerID]
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leads.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("lead response = \(response)")
+               // print("lead response = \(response)")
             }
             .responseJSON() {
                 response in
@@ -296,14 +310,14 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                         let leads = json["leads"] as? [[String: Any]] {
                         
                         let leadCount = leads.count
-                        print("lead count = \(leadCount)")
+                       // print("lead count = \(leadCount)")
                         
                         
                         for i in 0 ..< leadCount {
                             
                             
                             //create an object
-                            print("create a lead object \(i)")
+                           // print("create a lead object \(i)")
                             
                             
                             //as! String
@@ -313,7 +327,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                             
                             lead.custNameAndID = "\(lead.customerName!) #\(lead.ID!)"
                             
-                            print("json zone = \(leads[i]["zone"] as! String)")
+                           // print("json zone = \(leads[i]["zone"] as! String)")
                             
                            
                             
@@ -331,7 +345,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                    
                   
                     if _openNewLead {
-                        print("open new lead")
+                       // print("open new lead")
                         
                         
                         
@@ -353,7 +367,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     
                     
                 } catch {
-                    print("Error deserializing JSON: \(error)")
+                   // print("Error deserializing JSON: \(error)")
                 }
                 
                 
@@ -369,7 +383,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func getContracts(_openNewContract :Bool){
-        print("getContracts")
+        //print("getContracts")
         
         self.customerContractArray = []
         
@@ -381,12 +395,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //Get lead list
         var parameters:[String:String]
         parameters = ["cb":"\(timeStamp)", "custID":self.customerID]
-        print("parameters = \(parameters)")
+       // print("parameters = \(parameters)")
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/contracts.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("contract response = \(response)")
+               // print("contract response = \(response)")
             }
             .responseJSON() {
                 response in
@@ -401,14 +415,14 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                         let contracts = json["contracts"] as? [[String: Any]] {
                         
                         let contractCount = contracts.count
-                        print("contract count = \(contractCount)")
+                       // print("contract count = \(contractCount)")
                         
                         
                         for i in 0 ..< contractCount {
                             
                             
                             //create an object
-                            print("create a contract object \(i)")
+                           // print("create a contract object \(i)")
                             
                             
                             
@@ -443,7 +457,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                   
                     
                 } catch {
-                    print("Error deserializing JSON: \(error)")
+                    //print("Error deserializing JSON: \(error)")
                 }
                 
                 
@@ -481,14 +495,14 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     let workOrders = json["workOrder"] as? [[String: Any]] {
                     
                     let workOrderCount = workOrders.count
-                    print("work order count = \(workOrderCount)")
+                  //  print("work order count = \(workOrderCount)")
                     
                     
                     for i in 0 ..< workOrderCount {
                         
                         
                         //create an object
-                        print("create a work order object \(i)")
+                        //print("create a work order object \(i)")
                         
                         
                         
@@ -506,7 +520,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     self.getInvoices()
                 
             } catch {
-                print("Error deserializing JSON: \(error)")
+                //print("Error deserializing JSON: \(error)")
             }
            
         }
@@ -515,7 +529,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func getInvoices(){
-        print("getInvoices")
+      //  print("getInvoices")
         
         self.customerInvoiceArray = []
         
@@ -527,12 +541,12 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //Get lead list
         var parameters:[String:String]
         parameters = ["cb":"\(timeStamp)", "custID":self.customerID]
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/invoices.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("invoice response = \(response)")
+               // print("invoice response = \(response)")
             }
             .responseJSON() {
                 response in
@@ -547,14 +561,14 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                         let invoices = json["invoices"] as? [[String: Any]] {
                         
                         let invoiceCount = invoices.count
-                        print("invoice count = \(invoiceCount)")
+                       // print("invoice count = \(invoiceCount)")
                         
                         
                         for i in 0 ..< invoiceCount {
                             
                             
                             //create an object
-                            print("create a invoice object \(i)")
+                           // print("create a invoice object \(i)")
                             
                             let invoice = Invoice(_ID: (invoices[i]["ID"] as? String)!, _date: (invoices[i]["invoiceDate"] as? String)!,_customer: (invoices[i]["customer"] as? String)!, _customerName: (invoices[i]["custName"] as? String)!, _totalPrice: self.layoutVars.numberAsCurrency(_number:(invoices[i]["total"] as? String)!), _status: (invoices[i]["invoiceStatus"] as? String)!)
                             
@@ -582,7 +596,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     
                     
                 } catch {
-                    print("Error deserializing JSON: \(error)")
+                  //  print("Error deserializing JSON: \(error)")
                 }
                 
         }
@@ -593,7 +607,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     func getImages() {
         //remove any added views (needed for table refresh
         
-        print("get images")
+        //print("get images")
        
         if imagesLoadedInitial{
             switchTableView(_displayMode: "IMAGES")
@@ -610,7 +624,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/images.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("images response = \(response)")
+                //print("images response = \(response)")
             }
             
             .responseJSON(){
@@ -624,7 +638,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                         let images = json["images"] as? [[String: Any]] {
                         
                         let imageCount = images.count
-                        print("image count = \(imageCount)")
+                        //print("image count = \(imageCount)")
                         
                         let thumbBase:String = json["thumbBase"] as! String
                         let mediumBase:String = json["mediumBase"] as! String
@@ -643,7 +657,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                             let rawPath:String = "\(rawBase)\(images[i]["fileName"] as! String)"
                             
                             //create a item object
-                            print("create an image object \(i)")
+                            //print("create an image object \(i)")
                            
                             let image = Image(_id: images[i]["ID"] as? String,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: images[i]["name"] as? String,_width: images[i]["width"] as? String,_height: images[i]["height"] as? String,_description: images[i]["description"] as? String,_dateAdded: images[i]["dateAdded"] as? String,_createdBy: images[i]["createdByName"] as? String,_type: images[i]["type"] as? String)
                             
@@ -679,7 +693,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     
                    
                 } catch {
-                    print("Error deserializing JSON: \(error)")
+                    //print("Error deserializing JSON: \(error)")
                 }
                 
                 self.indicator.dismissIndicator()
@@ -687,10 +701,13 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     func layoutViews(){
-        //print("customer view layoutViews")
+        ////print("customer view layoutViews")
         //////////   containers for different sections
         
         self.viewsLoaded = true
+        
+        
+        self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         self.customerView = UIView()
         self.customerView.layer.borderColor = layoutVars.borderColor
@@ -723,7 +740,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         ///////////   customer contact section   /////////////
         
-        //print("customer view layoutViews 2")
+        ////print("customer view layoutViews 2")
         //name
         self.customerLbl = GreyLabel()
         self.customerLbl.text = self.customerName
@@ -738,9 +755,9 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         self.customerPhoneBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
         self.customerPhoneBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 40.0, bottom: 0.0, right: 0.0)
         
-        //print("phone = \(self.phone)")
-        //print("phoneName = \(self.phoneName)")
-        //print("phone clean = \(self.phoneNumberClean)")
+        ////print("phone = \(self.phone)")
+        ////print("phoneName = \(self.phoneName)")
+        ////print("phone clean = \(self.phoneNumberClean)")
         self.customerPhoneBtn.setTitle(self.phone + self.phoneName, for: UIControl.State.normal)
         if self.phone != "No Phone Found" {
             self.customerPhoneBtn.addTarget(self, action: #selector(CustomerViewController.phoneHandler), for: UIControl.Event.touchUpInside)
@@ -756,7 +773,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         self.customerView.addSubview(self.customerPhoneBtn)
-        //print("customer view layoutViews 3")
+        ////print("customer view layoutViews 3")
         
         self.customerEmailBtn = Button()
         self.customerEmailBtn.translatesAutoresizingMaskIntoConstraints = false
@@ -791,7 +808,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             self.customerAddressBtn.addTarget(self, action: #selector(CustomerViewController.mapHandler), for: UIControl.Event.touchUpInside)
         }
         
-        //print("customer view layoutViews 4")
+        ////print("customer view layoutViews 4")
         
         let addressIcon:UIImageView = UIImageView()
         addressIcon.backgroundColor = UIColor.clear
@@ -1001,8 +1018,27 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     
+    @objc func displayEditView(){
+        print("display Edit View")
+        
+        //need userLevel greater then 1 to access this
+        if self.layoutVars.grantAccess(_level: 2,_view: self) {
+            return
+        }
+        
+        //self.equipmentDelegate.disableSearch()
+        let editCustomerViewController = NewEditCustomerViewController(_customerID: customerID)
+        editCustomerViewController.editDelegate = self
+        navigationController?.pushViewController(editCustomerViewController, animated: false )
+    }
+    
+    
+    
+    
+    
+    
     @objc func phoneHandler(){
-        //print("phone handler")
+        ////print("phone handler")
         callPhoneNumber(self.phoneNumberClean)
     }
     
@@ -1012,7 +1048,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     @objc func mapHandler() {
-        //print("map handler")
+        ////print("map handler")
         openMapForPlace(self.customerName, _lat: self.lat!, _lng: self.lng!)
     }
     
@@ -1076,7 +1112,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func updateLikes(_index:Int, _liked:String, _likes:String){
-        print("update likes _liked: \(_liked)  _likes\(_likes)")
+        //print("update likes _liked: \(_liked)  _likes\(_likes)")
         imageArray[_index].liked = _liked
         imageArray[_index].likes = _likes
         
@@ -1088,7 +1124,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             return
         }
         if (scrollView.bounds.maxY == scrollView.contentSize.height) {
-            print("scrolled to bottom")
+            //print("scrolled to bottom")
             lazyLoad = 1
             batch += 1
             offset = batch * limit
@@ -1100,7 +1136,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     @objc func addImage(){
-        print("Add Image")
+        //print("Add Image")
         
         
         let multiPicker = DKImagePickerController()
@@ -1119,19 +1155,19 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         multiPicker.didSelectAssets = { (assets: [DKAsset]) in
-            print("didSelectAssets")
-            print(assets)
+            //print("didSelectAssets")
+            //print(assets)
             
             for i in 0..<assets.count
             {
-                print("looping images")
+                //print("looping images")
                 selectedAssets.append(assets[i])
-                //print(self.selectedAssets)
+                ////print(self.selectedAssets)
                 
                 assets[i].fetchOriginalImage(completeBlock: { image, info in
                     
                     
-                    print("making image 1")
+                    //print("making image 1")
                     
                     let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
                     
@@ -1139,15 +1175,15 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     
                     
                     selectedImages.append(imageToAdd)
-                    print("selectedimages count = \(selectedImages.count)")
+                    //print("selectedimages count = \(selectedImages.count)")
                     
                     if selectedImages.count == assets.count{
                       //  self.createPrepView()
                         
-                        print("making prep view")
-                        print("selectedimages count = \(selectedImages.count)")
+                        //print("making prep view")
                         //print("selectedimages count = \(selectedImages.count)")
-                        print("customerID = \(self.customerID)")
+                        ////print("selectedimages count = \(selectedImages.count)")
+                        //print("customerID = \(self.customerID)")
                         
                         
                         
@@ -1155,7 +1191,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                         
                         
                         
-                        print("self.selectedImages.count = \(selectedImages.count)")
+                        //print("self.selectedImages.count = \(selectedImages.count)")
                         
                         
                         
@@ -1216,33 +1252,33 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        //print("making cells")
+        ////print("making cells")
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath as IndexPath) as! ImageCollectionViewCell
         cell.backgroundColor = UIColor.darkGray
         cell.activityView.startAnimating()
         cell.imageView.image = nil
         
-        //print("name = \(self.imageArray)")
+        ////print("name = \(self.imageArray)")
         
-            print("name = \(self.imageArray[indexPath.row].name!)")
+            //print("name = \(self.imageArray[indexPath.row].name!)")
             cell.textLabel.text = " \(self.imageArray[indexPath.row].name!)"
             cell.image = self.imageArray[indexPath.row]
             cell.activityView.startAnimating()
             
-            print("thumb = \(self.imageArray[indexPath.row].thumbPath!)")
+            //print("thumb = \(self.imageArray[indexPath.row].thumbPath!)")
             
         
         
         
         Alamofire.request(self.imageArray[indexPath.row].thumbPath!).responseImage { response in
-            debugPrint(response)
+            //debug//print(response)
             
-            print(response.request!)
-            print(response.response!)
-            debugPrint(response.result)
+            //print(response.request!)
+            //print(response.response!)
+            //debug//print(response.result)
             
             if let image = response.result.value {
-                print("image downloaded: \(image)")
+                //print("image downloaded: \(image)")
                 
                 cell.imageView.image = image
                 
@@ -1345,7 +1381,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         case "LEADS":
             
             
-            print("Leads customer")
+            //print("Leads customer")
             cell.lead = self.customerLeadArray[indexPath.row]
             cell.layoutViews(_scheduleMode: "LEAD")
             
@@ -1375,7 +1411,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
         case "CONTRACTS":
             
-            print("Contracts customer")
+            //print("Contracts customer")
             
             cell.contract = self.customerContractArray[indexPath.row]
             cell.layoutViews(_scheduleMode: "CONTRACT")
@@ -1405,7 +1441,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
         case "WORKORDERS":
             
-            print("Schedule customer")
+            //print("Schedule customer")
             cell.workOrder = self.customerScheduleArray[indexPath.row]
             cell.layoutViews(_scheduleMode: "CUSTOMER")
             cell.dateLbl.text = cell.workOrder.date
@@ -1432,7 +1468,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         case "INVOICES":
             
-            print("invoice customer")
+            //print("invoice customer")
             cell.invoice = self.customerInvoiceArray[indexPath.row]
             
             cell.layoutViews(_scheduleMode: "INVOICE")
@@ -1442,7 +1478,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             cell.priceLbl.text = cell.invoice!.totalPrice!
 
             
-            print("set invoice cell status = \(cell.invoice!.status!)")
+            //print("set invoice cell status = \(cell.invoice!.status!)")
             cell.setStatus(status: cell.invoice!.status!, type: "INVOICE")
             
             
@@ -1601,7 +1637,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func refreshImages(_images:[Image], _scoreAdjust:Int){
-        print("refreshImages")
+        //print("refreshImages")
         
         self.noImagesLbl.isHidden = true
         for insertImage in _images{
@@ -1622,18 +1658,18 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
    
     
     func updateSchedule() {
-        print("update schedule")
+        //print("update schedule")
     }
     
     // not used, just to have this class conform to schedule delegate protocol
     func updateSettings(_allDates:String, _startDate:String, _endDate:String,_startDateDB:String, _endDateDB:String, _mowSort:String, _plowSort:String, _plowDepth:String){
-        print("update settings")
+        //print("update settings")
     }
     
     
     
     func switchTableView(_displayMode:String){
-        print("switch table view")
+        //print("switch table view")
         
         
         switch _displayMode {
@@ -1774,7 +1810,8 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
             break
         default:
-            print("default")
+            break
+            //print("default")
         }
         
         
@@ -1788,6 +1825,17 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     
+    func updateCustomer(_customerID:String){
+        //print("updateCustomer")
+        getCustomerData(_id: _customerID)
+        
+        
+        if customerListDelegate != nil{
+           customerListDelegate.updateList(_customerID: _customerID, _newCustomer: false)
+        }
+    }
+    
+    
     
     @objc func goBack(){
         _ = navigationController?.popViewController(animated: false)
@@ -1797,7 +1845,7 @@ class CustomerViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func showCustomerImages(_customer:String){
-        print("show customer images cust: \(_customer)")
+        //print("show customer images cust: \(_customer)")
         
         
         

@@ -49,13 +49,13 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     init(){
         super.init(nibName:nil,bundle:nil)
-        print("init")
+        //print("init")
     }
     
     
     init(_empID:String,_empFirstName:String){
         super.init(nibName:nil,bundle:nil)
-        print("init _empID = \(_empID)")
+        //print("init _empID = \(_empID)")
         self.empID = _empID
         self.empFirstName = _empFirstName
     }
@@ -97,22 +97,22 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
         
         let parameters:[String:String]
         parameters = ["empID":self.empID, "crewView":"0"]
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/departments.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("department response = \(response)")
+                //print("department response = \(response)")
             }
             .responseJSON(){
                 response in
                 if let json = response.result.value {
                     
-                    print(" dismissIndicator")
+                    //print(" dismissIndicator")
                     self.indicator.dismissIndicator()
                     
                     
-                    //print("JSON: \(json)")
+                    ////print("JSON: \(json)")
                     self.departments = JSON(json)
                     self.parseJSON()
                 }
@@ -136,11 +136,11 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
             
             let department = Department(_ID: self.departments["departments"][i]["id"].stringValue, _name: self.departments["departments"][i]["name"].stringValue, _status: self.departments["departments"][i]["status"].stringValue, _color: self.departments["departments"][i]["color"].stringValue, _depHead: self.departments["departments"][i]["depHead"].stringValue)
             
-           // print("department name = \(department.name)")
+           // //print("department name = \(department.name)")
             
             let empCount = self.departments["departments"][i]["employees"].count
             //self.totalItems = jsonCount
-            print("emp count: \(empCount)")
+            //print("emp count: \(empCount)")
             for n in 0 ..< empCount {
                 
                 
@@ -149,7 +149,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
                 employee.deptName = department.name!
                 employee.deptColor = department.color!
                 
-               // print("employee.deptColor = \(employee.deptColor)")
+               // //print("employee.deptColor = \(employee.deptColor)")
                 
                 self.employeeArray.append(employee)
                 department.employeeArray.append(employee)
@@ -172,9 +172,9 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
         
         
         // build sections based on first letter(json is already sorted alphabetically)
-        print("build sections")
+        //print("build sections")
         
-        print("self.employeeArray.count = \(self.employeeArray.count)")
+        //print("self.employeeArray.count = \(self.employeeArray.count)")
         
         var index = 0;
         var titleArray:[String] = [" "]
@@ -191,7 +191,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
                 
             }
             if !titleArray.contains(stringToTest) {
-                print("new")
+                //print("new")
                 let title = titleArray[titleArray.count - 1]
                 let color = colorArray[colorArray.count - 1]
                 titleArray.append(stringToTest)
@@ -209,7 +209,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
             }
         }
         
-        print("sections \(sections)")
+        //print("sections \(sections)")
     }
     
     
@@ -293,7 +293,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     
     @objc func addDepartment(){
-        print("add department")
+        //print("add department")
        
     }
     
@@ -326,7 +326,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("numberOfRowsInSection")
+        //print("numberOfRowsInSection")
         
         
         return sections[section].length
@@ -336,7 +336,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
     {
-        print("viewForHeaderInSection")
+        //print("viewForHeaderInSection")
         
         let headerView = UIView(frame: CGRect(x: 0, y: 0, width: layoutVars.fullWidth, height: 60.0))
         headerView.backgroundColor = UIColor.clear
@@ -355,7 +355,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
         
         headerView.addSubview(titleLbl)
         
-        print("color = \(sections[section].color)")
+        //print("color = \(sections[section].color)")
         
         let colorSwatch = UIView(frame: CGRect(x: 10.0, y: 5.0, width: 50.0, height: 50.0))
         colorSwatch.backgroundColor = layoutVars.hexStringToUIColor(hex: sections[section].color)
@@ -364,7 +364,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
         colorSwatch.layer.borderColor = layoutVars.borderColor
         headerView.addSubview(colorSwatch)
         
-        print("colorSwatch.width = \(colorSwatch.frame.width)")
+        //print("colorSwatch.width = \(colorSwatch.frame.width)")
         
         return headerView
         
@@ -372,7 +372,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        print("cell for row \(indexPath.row)")
+        //print("cell for row \(indexPath.row)")
         
         let cell:EmployeeTableViewCell = departmentTableView.dequeueReusableCell(withIdentifier: "cell") as! EmployeeTableViewCell
         
@@ -440,7 +440,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     
     func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
-        print("didfinish")
+        //print("didfinish")
         //... handle sms screen actions
         self.dismiss(animated: true, completion: nil)
         //getBatch()
@@ -451,7 +451,7 @@ class DepartmentListViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     
     @objc func dismissMessage(){
-        print("dismiss")
+        //print("dismiss")
         controller.dismiss(animated: true, completion: nil)
         
     }

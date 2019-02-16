@@ -94,7 +94,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         super.init(nibName:nil,bundle:nil)
         self.employeeID = _employeeID
         title = "Schedule"
-        print("empID = \(String(describing: self.employeeID))")
+        //print("empID = \(String(describing: self.employeeID))")
         self.view.backgroundColor = layoutVars.backgroundColor
         self.personalScheduleBtn = Button()
        
@@ -107,7 +107,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     override func viewWillAppear(_ animated: Bool) {
-        print("viewWillAppear")
+        //print("viewWillAppear")
         
         //print("self.tableViewMode = \(self.tableViewMode)")
          //print("personalMode = \(self.personalMode)")
@@ -118,7 +118,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             scheduleTableView.reloadData()
         }else{
             if(self.personalMode == false){
-                print("------FULL-------")
+              //  print("------FULL-------")
                 
                 if(self.tableViewMode == "SCHEDULE"){
                     if(fullScheduleLoaded != true){
@@ -135,7 +135,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 }
                 
             }else{
-                print("------PERSONAL-------")
+               // print("------PERSONAL-------")
                 
                 if(self.tableViewMode == "SCHEDULE"){
                     

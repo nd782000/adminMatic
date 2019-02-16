@@ -21,8 +21,6 @@ protocol EditLeadDelegate{
 
  
 protocol LeadTaskDelegate{
-    //func updateItems()
-    //func updateTable()
     func handleNewContract(_contract:Contract)
     func handleNewWorkOrder(_workOrder:WorkOrder)
     
@@ -36,11 +34,8 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
-    //var scrollView: UIScrollView!
     var json:JSON!
-    
-   // var stackJson:JSON!
-    
+   
     var lead:Lead!
     var delegate:LeadListDelegate!
     
@@ -71,7 +66,6 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     var descriptionView:UITextView!
     var tasksLbl:GreyLabel!
     var tasks: JSON!
-    //var tasksArray:[Task] = []
     var tasksTableView: TableView!
     var imageUploadPrepViewController:ImageUploadPrepViewController!
     
@@ -94,7 +88,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("viewdidload")
+        //print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
@@ -129,95 +123,28 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.lead.tasksArray = []
         let parameters:[String:String]
         parameters = ["leadID": self.lead.ID]
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leadTasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("lead response = \(response)")
+                //print("lead response = \(response)")
             }
             .responseJSON(){
                 response in
                 
                 
-                //native way
                 
-                /*
-                do {
-                    if let data = response.data,
-                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                        
-                       
-                        let tasks = json["leadTasks"] as? [[String: Any]] {
-                        
-                        let taskCount = tasks.count
-                        print("task count = \(taskCount)")
-                        
-                        
-                        for i in 0 ..< taskCount {
-                            
-                            
-                            //create an object
-                            print("create a task object \(i)")
-                            
-                            var taskImages:[Image] = []
-                            
-                            let imageCount = Int((tasks[i]["images"].count))
-                            print("imageCount: \(imageCount)")
-                            for p in 0 ..< imageCount {
-                                let fileName:String = (self.json["leadTasks"][n]["images"][p]["fileName"].stringValue)
-                                let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
-                                let mediumPath:String = "\(self.layoutVars.mediumBase)\(fileName)"
-                                let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
-                                print("rawPath = \(rawPath)")
-                                
-                                let image = Image(_id: self.json["leadTasks"][n]["images"][p]["ID"].stringValue,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: self.json["leadTasks"][n]["images"][p]["name"].stringValue,_width: self.json["leadTasks"][n]["images"][p]["width"].stringValue,_height: self.json["leadTasks"][n]["images"][p]["height"].stringValue,_description: self.json["leadTasks"][n]["images"][p]["description"].stringValue,_dateAdded: self.json["leadTasks"][n]["images"][p]["dateAdded"].stringValue,_createdBy: self.json["leadTasks"][n]["images"][p]["createdByName"].stringValue,_type: self.json["leadTasks"][n]["images"][p]["type"].stringValue)
-                                image.customer = (self.json["leadTasks"][n]["images"][p]["customer"].stringValue)
-                                image.tags = (self.json["leadTasks"][n]["images"][p]["tags"].stringValue)
-                                print("appending image")
-                                taskImages.append(image)
-                            }
-                            let task = Task(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue, _images:taskImages)
-                            self.lead.tasksArray.append(task)
-                            
-                            
-                        }
-                    }
-                    
-                    
-                    
-                    
-                    
-                    
-                    self.methodFinish = Date()
-                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    print("Execution time: \(executionTime)")
-                    
-                    
-                    self.indicator.dismissIndicator()
-                    
-                    
-                    self.layoutViews()
-                    
-                    
-                   
-                    
-                    
-                } catch {
-                    print("Error deserializing JSON: \(error)")
-                }
-                */
                 
                 //swifty way
                 
                 if let json = response.result.value {
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     self.json = JSON(json)
                     self.parseJSON()
                 }
  
-                 print(" dismissIndicator")
-                //self.indicator.dismissIndicator()
+                 //print(" dismissIndicator")
                 
                 
                 
@@ -232,30 +159,31 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
                 var taskImages:[Image] = []
                 
                 let imageCount = Int((self.json["leadTasks"][n]["images"].count))
-                print("imageCount: \(imageCount)")
+                //print("imageCount: \(imageCount)")
                 for p in 0 ..< imageCount {
                     let fileName:String = (self.json["leadTasks"][n]["images"][p]["fileName"].stringValue)
                     let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
                     let mediumPath:String = "\(self.layoutVars.mediumBase)\(fileName)"
                     let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
-                    print("rawPath = \(rawPath)")
+                    //print("rawPath = \(rawPath)")
                     
                     let image = Image(_id: self.json["leadTasks"][n]["images"][p]["ID"].stringValue,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: self.json["leadTasks"][n]["images"][p]["name"].stringValue,_width: self.json["leadTasks"][n]["images"][p]["width"].stringValue,_height: self.json["leadTasks"][n]["images"][p]["height"].stringValue,_description: self.json["leadTasks"][n]["images"][p]["description"].stringValue,_dateAdded: self.json["leadTasks"][n]["images"][p]["dateAdded"].stringValue,_createdBy: self.json["leadTasks"][n]["images"][p]["createdByName"].stringValue,_type: self.json["leadTasks"][n]["images"][p]["type"].stringValue)
                     image.customer = (self.json["leadTasks"][n]["images"][p]["customer"].stringValue)
                     image.tags = (self.json["leadTasks"][n]["images"][p]["tags"].stringValue)
-                    print("appending image")
+                    //print("appending image")
                     taskImages.append(image)
                 }
                 let task = Task(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue, _images:taskImages)
                 self.lead.tasksArray.append(task)
             }
+        self.indicator.dismissIndicator()
         self.layoutViews()
     }
     
     
    
     func layoutViews(){
-        print("layout views")
+        //print("layout views")
         title =  "Lead #" + self.lead.ID
         
         editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(LeadViewController.displayEditView))
@@ -294,12 +222,11 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         //picker
         self.statusPicker = Picker()
         //print("statusValue : \(lead.statusId)")
-        print("set picker position : \(Int(lead.statusId)!)")
+        //print("set picker position : \(Int(lead.statusId)!)")
         
         self.statusPicker.delegate = self
         self.statusPicker.dataSource = self
         
-        //self.statusPicker.selectRow(Int(lead.statusId)! - 1, inComponent: 0, animated: false)
         
         self.statusPicker.selectRow(Int(lead.statusId)! - 1, inComponent: 0, animated: false)
       
@@ -534,13 +461,12 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         let alertController = UIAlertController(title: "Add Tasks/Images Now?", message: "This lead has no tasks or images added.", preferredStyle: UIAlertController.Style.alert)
         let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
-            print("No")
-            //_ = self.navigationController?.popViewController(animated: true)
+            //print("No")
         }
         
         let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
-            print("Yes")
+            //print("Yes")
             
             self.addTask()
             
@@ -576,15 +502,15 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         return 1
     }
     
-    
+    /*
     // returns the number of 'columns' to display.
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
+    func numberOfComponents(in pickerView: UIPickerView) -> Int{
         return 1
     }
-    
+    */
 
     // returns the # of rows in each component..
-    func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
         // shows first 3 status options, not cancel or waiting
         return self.statusArray.count
     }
@@ -652,18 +578,18 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
              "leadID":self.lead.ID,
              "status":"\(self.statusPicker.selectedRow(inComponent: 0) + 1)"
              ]
-            print("parameters = \(parameters)")
+            //print("parameters = \(parameters)")
             layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/leadStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                 response in
-                print(response.request ?? "")  // original URL request
-                print(response.result)   // result of response serialization
+                //print(response.request ?? "")  // original URL request
+                //print(response.result)   // result of response serialization
                 self.editsMade = true
                 self.statusValue = self.statusValueToUpdate
                 self.setStatus(status: self.statusValue)
                 self.lead.statusId = self.statusValue
                 }.responseString() {
                     response in
-                    print(response)  // original URL request
+                    //print(response)  // original URL request
             }
         }
     }
@@ -722,21 +648,21 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
                 if(lead.tasksArray[indexPath.row].ID != "0"){
                     
                 
-                    print("delete lead task")
+                    //print("delete lead task")
                     
                     var parameters:[String:String]
                     parameters = [
                         "leadTaskID":lead.tasksArray[indexPath.row].ID
                     ]
-                    print("parameters = \(parameters)")
+                    //print("parameters = \(parameters)")
                     layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/delete/leadTask.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                         response in
-                        print(response.request ?? "")  // original URL request
-                        print(response.result)   // result of response serialization
+                        //print(response.request ?? "")  // original URL request
+                        //print(response.result)   // result of response serialization
                         
                         }.responseString() {
                             response in
-                            print(response)  // original URL request
+                            //print(response)  // original URL request
                     }
                     
                     lead.tasksArray.remove(at: indexPath.row)
@@ -758,7 +684,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     
     @objc func addTask(){
-        print("add task")
+        //print("add task")
         
         //if(delegate != nil){
            // delegate.cancelSearch()
@@ -774,7 +700,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     
     @objc func assignTasks(){
-        print("Assign Tasks")
+        //print("Assign Tasks")
         
         
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
@@ -813,7 +739,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     }
     
     @objc func displayEditView(){
-        print("display Edit View")
+        //print("display Edit View")
         
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
@@ -851,7 +777,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     
     func setStatus(status: String) {
-        print("set status \(status)")
+        //print("set status \(status)")
         switch (status) {
         case "1":
             let statusImg = UIImage(named:"unDoneStatus.png")
@@ -883,7 +809,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     
     func updateLead(_lead: Lead, _newStatusValue:String){
-        print("update Lead")
+        //print("update Lead")
         editsMade = true
         self.lead = _lead
         
@@ -892,7 +818,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         
         
         if(self.lead.statusId != _newStatusValue && _newStatusValue != "na"){
-            print("should update status _newStatusValue = \(_newStatusValue)")
+            //print("should update status _newStatusValue = \(_newStatusValue)")
         
             var statusName = ""
             switch (_newStatusValue) {
@@ -935,17 +861,17 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
                     "leadID":self.lead.ID,
                     "status":"\(_newStatusValue)"
                 ]
-                print("parameters = \(parameters)")
+                //print("parameters = \(parameters)")
                 self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/leadStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
                     response in
-                    print(response.request ?? "")  // original URL request
-                    print(response.result)   // result of response serialization
+                    //print(response.request ?? "")  // original URL request
+                    //print(response.result)   // result of response serialization
                     self.editsMade = true
                     self.setStatus(status: _newStatusValue)
                     self.lead.statusId = _newStatusValue
                     }.responseString() {
                         response in
-                        print(response)  // original URL request
+                        //print(response)  // original URL request
                 }
                 
                 
@@ -967,8 +893,8 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     //Stack Delegates
     func displayAlert(_title: String) {
-        print("_title = \(_title)")
-        print("top vc = \(self.layoutVars.getTopController())")
+        //print("_title = \(_title)")
+        //print("top vc = \(self.layoutVars.getTopController())")
         layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: _title, _message: "")
     }
     
@@ -1023,19 +949,19 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     
     func suggestNewContractFromLead(){
-        print("suggestNewContractFromLead")
+        //print("suggestNewContractFromLead")
         
         
         let alertController = UIAlertController(title: "No Contract Exists", message: "Would you like to link a new Contract now?", preferredStyle: UIAlertController.Style.alert)
         let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
-            print("No")
+            //print("No")
             //_ = self.navigationController?.popViewController(animated: true)
         }
         
         let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
-            print("Yes")
+            //print("Yes")
             
             if self.layoutVars.grantAccess(_level: 1,_view: self) {
                 return
@@ -1058,19 +984,19 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     }
     
     func suggestNewWorkOrderFromLead(){
-        print("suggestNewWorkOrderFromLead")
+        //print("suggestNewWorkOrderFromLead")
         
         
         let alertController = UIAlertController(title: "No WorkOrder Exists", message: "Would you like to link a new WorkOrder now?", preferredStyle: UIAlertController.Style.alert)
         let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
-            print("No")
+            //print("No")
             //_ = self.navigationController?.popViewController(animated: true)
         }
         
         let okAction = UIAlertAction(title: "Yes", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
-            print("Yes")
+            //print("Yes")
             if self.layoutVars.grantAccess(_level: 1,_view: self) {
                 return
             }else{
@@ -1095,7 +1021,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     //following not needed for this vc
     func suggestNewWorkOrderFromContract(){
-        print("suggestNewWorkOrderFromContract")
+        //print("suggestNewWorkOrderFromContract")
     }
     
     
@@ -1104,12 +1030,12 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     
     func updateTable(_points:Int){
-        print("updateTable")
+        //print("updateTable")
         getLead()
     }
     
     func updateLeadTable(){
-        print("updateLeadTable")
+        //print("updateLeadTable")
         delegate.getLeads(_openNewLead: false)
         goBack()
         

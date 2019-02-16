@@ -21,7 +21,7 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
     var loadingString:String = "Connecting..."
     var searchController:UISearchController!
     
-    var currentSearchMode = SearchMode.name
+    //var currentSearchMode = SearchMode.name
     
     var customerNotesLbl:GreyLabel!
     var customerNotesTxtView:UITextView = UITextView()
@@ -350,7 +350,7 @@ class CustomerContactViewController: ViewControllerWithMenu, UITableViewDelegate
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("You selected cell #\(indexPath.row)!")
+       // print("You selected cell #\(indexPath.row)!")
         
         let indexPath = tableView.indexPathForSelectedRow;
         

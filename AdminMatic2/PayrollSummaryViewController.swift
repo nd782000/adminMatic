@@ -99,7 +99,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     
     func getPayroll(){
-        print("get payroll")
+        //print("get payroll")
         
         
         
@@ -126,13 +126,13 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
             
         }else{
             //last week
-            print("last week")
+            //print("last week")
             
-            print("startOfWeek = \(Date().startOfWeek)")
-            print("endOfWeek = \(Date().endOfWeek)")
+            //print("startOfWeek = \(Date().startOfWeek)")
+            //print("endOfWeek = \(Date().endOfWeek)")
             
-            print("startOfLastWeek = \(Date().startOfLastWeek)")
-            print("endOfLastWeek = \(Date().endOfLastWeek)")
+            //print("startOfLastWeek = \(Date().startOfLastWeek)")
+            //print("endOfLastWeek = \(Date().endOfLastWeek)")
             
             
             startOfRange = Date().startOfLastWeek
@@ -152,19 +152,19 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         
         let parameters = ["endDate": endDateDB,"empID":self.empID] as [String : String]
         
-        print("parameters = \(parameters)")
+        //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/payroll.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("payroll response = \(response)")
+                //print("payroll response = \(response)")
             }
             
             .responseJSON(){
                 response in
                 
                 if let json = response.result.value {
-                    print("JSON: \(json)")
+                    //print("JSON: \(json)")
                     self.payrollJSON = JSON(json)
                     self.parsePayrollJSON()
                     
@@ -193,7 +193,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         
         for day in 0 ..< 7 {
             
-            print("day = \(day)")
+            //print("day = \(day)")
             if self.payrollJSON["payroll"]["\(day)"] != nil{
                 
                 let payrollShiftCount = self.payrollJSON["payroll"]["\(day)"].count
@@ -203,7 +203,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
                 for i in 0 ..< payrollShiftCount {
                     
                     if self.payrollJSON["payroll"]["\(day)"][i]["dayType"].string! == "0"{
-                        print("startTime = \(self.payrollJSON["payroll"]["\(day)"][i]["startTime"].string!)")
+                        //print("startTime = \(self.payrollJSON["payroll"]["\(day)"][i]["startTime"].string!)")
                     
                     
                     
@@ -218,12 +218,12 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
                         var noStop:Bool = false
                         if self.payrollJSON["payroll"]["\(day)"][i]["stopTime"].string == "No Time"{
                             stopTime = startTime
-                            print("stopTime = nil")
+                            //print("stopTime = nil")
                             noStop = true
                             
                         }else{
                             stopTime = dateFormatter.date(from: self.payrollJSON["payroll"]["\(day)"][i]["stopTime"].string!)!
-                            print("stopTime = \(stopTime)")
+                            //print("stopTime = \(stopTime)")
                         }
                     
                     
@@ -255,7 +255,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
                 
                 
             }else{
-                print("payroll = nil")
+                //print("payroll = nil")
                 let startTime = startOfRange.addNumberOfDaysToDate(_numberOfDays: day)
                 
                 
@@ -268,7 +268,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         }
         
         
-        print("payroll count \(self.payroll.count)")
+        //print("payroll count \(self.payroll.count)")
         
         
         
@@ -277,7 +277,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         
         
         if (UIDevice.current.orientation.isLandscape == true) {
-            print("Landscape")
+            //print("Landscape")
             //self.layoutViewsLandscape()
             
             if viewsLayedOut == false{
@@ -292,7 +292,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
             }
             
         } else {
-            print("Portrait")
+            //print("Portrait")
             //self.layoutViewsPortrait()
             
             if viewsLayedOut == false{
@@ -319,7 +319,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     
     func layoutViewsPortrait(){
-        print("layoutViewsPortrait")
+        //print("layoutViewsPortrait")
         
         viewsLayedOut = true
         
@@ -437,7 +437,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     
     func layoutViewsLandscape(){
-        print("layoutViewsLandscape")
+        //print("layoutViewsLandscape")
         
         viewsLayedOut = true
         
@@ -599,7 +599,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        print("payroll.count = \(payroll.count)")
+        //print("payroll.count = \(payroll.count)")
         return self.payroll.count
     }
     
@@ -611,10 +611,10 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         cell.payroll = payroll[indexPath.row]
         
         if (UIDevice.current.orientation.isLandscape == true) {
-            print("Landscape")
+            //print("Landscape")
             cell.layoutViewsLandscape()
         } else {
-            print("Portrait")
+            //print("Portrait")
             cell.layoutViewsPortrait()
         }
         
@@ -631,7 +631,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         
         
         if (UIDevice.current.orientation.isLandscape == true) {
-            print("Landscape table")
+            //print("Landscape table")
             
             if payroll[indexPath.row].noStop == true{
                 cell.startLbl.text = self.timeFormatter.string(from: payroll[indexPath.row].startTime!)
@@ -677,7 +677,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
  */
             
         } else {
-            print("Portrait table")
+            //print("Portrait table")
             //if payroll[indexPath.row].total == "0.00"{
                // cell.startLbl.text = "-----"
                 //cell.stopLbl.text = "-----"
@@ -712,7 +712,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     
     @objc func goBack(){
-        print("back")
+        //print("back")
         _ = navigationController?.popViewController(animated: false)
     }
     
@@ -721,10 +721,10 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         if (UIDevice.current.orientation.isLandscape == true) {
-            print("Landscape")
+            //print("Landscape")
             self.layoutViewsLandscape()
         } else {
-            print("Portrait")
+            //print("Portrait")
             self.layoutViewsPortrait()
         }
     }
