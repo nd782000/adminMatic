@@ -192,7 +192,7 @@ class NewEditEquipmentFieldViewController: UIViewController, UITextFieldDelegate
         
        
        
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameLbl(30)][nameTxt(30)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[nameLbl(40)][nameTxt(40)]", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[submitBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: equipmentViewsDictionary))
         
         if self.field == "TYPE"{

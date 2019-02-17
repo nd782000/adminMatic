@@ -28,6 +28,7 @@ class ContractItemTableViewCell: UITableViewCell {
     var addItemLbl:Label = Label()
     
     
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }

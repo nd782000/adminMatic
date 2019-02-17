@@ -37,6 +37,7 @@
 		014CC8E61E53A00F00D48A26 /* ImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014CC8E51E53A00F00D48A26 /* ImageCollectionViewCell.swift */; };
 		014CC8E81E53E8E900D48A26 /* ImageDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014CC8E71E53E8E900D48A26 /* ImageDetailViewController.swift */; };
 		014CC8EA1E53F4E000D48A26 /* ImageFullViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014CC8E91E53F4E000D48A26 /* ImageFullViewController.swift */; };
+		014F1C502218ACDB00185B86 /* NewEditContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014F1C4F2218ACDB00185B86 /* NewEditContactViewController.swift */; };
 		015231A61E1A95A7009949BD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 015231A51E1A95A7009949BD /* Images.xcassets */; };
 		015231AC1E1A982F009949BD /* EmployeeListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015231AB1E1A982F009949BD /* EmployeeListViewController.swift */; };
 		015231AE1E1A9EFF009949BD /* EmployeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015231AD1E1A9EFF009949BD /* EmployeeViewController.swift */; };
@@ -152,7 +153,6 @@
 		01EC4E751E1EF8BC009CE261 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EC4E741E1EF8BC009CE261 /* HomeViewController.swift */; };
 		01EE1B2E1E20105A00E5E061 /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EE1B2D1E20105A00E5E061 /* HomeCollectionViewCell.swift */; };
 		01F33DCF203F3E1E00C43EFD /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A1F31F1E07084C00DCCB39 /* Alamofire.framework */; settings = {ATTRIBUTES = (Required, ); }; };
-		01F33DE1203F44E500C43EFD /* AKImageCropperView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01F33DE0203F44E500C43EFD /* AKImageCropperView.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		01F33DE2203F44E800C43EFD /* DKImagePickerController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01E01C371E7E05F600385B86 /* DKImagePickerController.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		01F33DE4203F44EF00C43EFD /* ObjectMapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CC8E21E539C9B00D48A26 /* ObjectMapper.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		01F33DE5203F44F200C43EFD /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A1F3231E07084C00DCCB39 /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -237,6 +237,13 @@
 			remoteGlobalIDString = 874CEF99657F86A68C8040968224A59E;
 			remoteInfo = ObjectMapper;
 		};
+		014F1C5C2218ACDD00185B86 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DBA05FE9A04B24AF7A427E63D433B87E;
+			remoteInfo = IQKeyboardManagerSwift;
+		};
 		01A1F2F01E0704FF00DCCB39 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F2D31E0704FF00DCCB39 /* Project object */;
@@ -304,29 +311,15 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 93BDFCB897A4904B2427AFF68A0F3788;
+			remoteGlobalIDString = CF89131EF64766AEBC4CD1971EDA884A;
 			remoteInfo = "Pods-AdminMatic2";
 		};
 		01F33DD8203F3FEE00C43EFD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 73DE99130DBA974A9BF650E9D64EF24A;
+			remoteGlobalIDString = A41A2C1B60FDD4A756625F7419D46A76;
 			remoteInfo = SwiftyJSON;
-		};
-		01F33DDF203F44E500C43EFD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 89BE067CC1619910965A41302F50C625;
-			remoteInfo = AKImageCropperView;
-		};
-		01F33DE9203F4AF600C43EFD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9B2449DADA9EC05320E634FD3B8BA054;
-			remoteInfo = AKImageCropperView;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -361,6 +354,7 @@
 		014CC8E51E53A00F00D48A26 /* ImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCollectionViewCell.swift; sourceTree = "<group>"; };
 		014CC8E71E53E8E900D48A26 /* ImageDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageDetailViewController.swift; sourceTree = "<group>"; };
 		014CC8E91E53F4E000D48A26 /* ImageFullViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageFullViewController.swift; sourceTree = "<group>"; };
+		014F1C4F2218ACDB00185B86 /* NewEditContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditContactViewController.swift; sourceTree = "<group>"; };
 		015231A51E1A95A7009949BD /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		015231AB1E1A982F009949BD /* EmployeeListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmployeeListViewController.swift; sourceTree = "<group>"; };
 		015231AD1E1A9EFF009949BD /* EmployeeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmployeeViewController.swift; sourceTree = "<group>"; };
@@ -496,7 +490,6 @@
 				01F33DE5203F44F200C43EFD /* SwiftyJSON.framework in Frameworks */,
 				01F33DE4203F44EF00C43EFD /* ObjectMapper.framework in Frameworks */,
 				01F33DE2203F44E800C43EFD /* DKImagePickerController.framework in Frameworks */,
-				01F33DE1203F44E500C43EFD /* AKImageCropperView.framework in Frameworks */,
 				01F33DCF203F3E1E00C43EFD /* Alamofire.framework in Frameworks */,
 				F927ADDEFEB19ED7A80575A6 /* Pods_AdminMatic2.framework in Frameworks */,
 			);
@@ -578,7 +571,6 @@
 		01A1F3191E07084C00DCCB39 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				01F33DE0203F44E500C43EFD /* AKImageCropperView.framework */,
 				01A1F31F1E07084C00DCCB39 /* Alamofire.framework */,
 				012EBEB72176464800819791 /* AlamofireImage.framework */,
 				012EBE992175157500819791 /* CLImageEditor.framework */,
@@ -588,6 +580,7 @@
 				012EBE9F2175157500819791 /* DKPhotoGallery.framework */,
 				012EBEA12175157500819791 /* DKPhotoGallery.bundle */,
 				012EBEA32175157500819791 /* FLAnimatedImage.framework */,
+				014F1C5D2218ACDD00185B86 /* IQKeyboardManagerSwift.framework */,
 				014CC8E21E539C9B00D48A26 /* ObjectMapper.framework */,
 				01A1F3211E07084C00DCCB39 /* Pods_AdminMatic2.framework */,
 				012EBEA52175157500819791 /* QuickLayout.framework */,
@@ -628,6 +621,7 @@
 				01DC79481E292CF30022566C /* CustomerContactViewController.swift */,
 				017F084722033CD500CC751D /* NewCustomerLookUpViewController.swift */,
 				017F08492203A96D00CC751D /* NewEditCustomerViewController.swift */,
+				014F1C4F2218ACDB00185B86 /* NewEditContactViewController.swift */,
 			);
 			path = Customer;
 			sourceTree = "<group>";
@@ -896,7 +890,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				01F33DEA203F4AF600C43EFD /* PBXTargetDependency */,
 				01F33DD9203F3FEE00C43EFD /* PBXTargetDependency */,
 				01F33DD7203F3FE900C43EFD /* PBXTargetDependency */,
 				01F33DD5203F3FE300C43EFD /* PBXTargetDependency */,
@@ -1080,6 +1073,13 @@
 			remoteRef = 014CC8E11E539C9B00D48A26 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		014F1C5D2218ACDD00185B86 /* IQKeyboardManagerSwift.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = IQKeyboardManagerSwift.framework;
+			remoteRef = 014F1C5C2218ACDD00185B86 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		01A1F31F1E07084C00DCCB39 /* Alamofire.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -1106,13 +1106,6 @@
 			fileType = wrapper.framework;
 			path = DKImagePickerController.framework;
 			remoteRef = 01E01C361E7E05F600385B86 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		01F33DE0203F44E500C43EFD /* AKImageCropperView.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = AKImageCropperView.framework;
-			remoteRef = 01F33DDF203F44E500C43EFD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1304,6 +1297,7 @@
 				014B02AA1E216939002A41DE /* Task.swift in Sources */,
 				01D86712212AFD2A005379E1 /* ContractItemViewController.swift in Sources */,
 				01D867102124959B005379E1 /* NewEditContractItemViewController.swift in Sources */,
+				014F1C502218ACDB00185B86 /* NewEditContactViewController.swift in Sources */,
 				01DC79491E292CF30022566C /* CustomerContactViewController.swift in Sources */,
 				01C43C62203725DD0068A5E0 /* Department.swift in Sources */,
 				017F084A2203A96D00CC751D /* NewEditCustomerViewController.swift in Sources */,
@@ -1407,11 +1401,6 @@
 			isa = PBXTargetDependency;
 			name = SwiftyJSON;
 			targetProxy = 01F33DD8203F3FEE00C43EFD /* PBXContainerItemProxy */;
-		};
-		01F33DEA203F4AF600C43EFD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AKImageCropperView;
-			targetProxy = 01F33DE9203F4AF600C43EFD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

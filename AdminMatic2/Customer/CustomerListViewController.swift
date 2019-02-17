@@ -12,14 +12,7 @@
 import Foundation
 import UIKit
 import Alamofire
-//import SwiftyJSON
 
- /*
-enum SearchMode{
-    case name
-    case address
-}
-*/
 protocol CustomerListDelegate{
     func cancelSearch()//to resolve problem with imageSelection bug when search mode is active
     func updateList(_customerID:String,_newCustomer:Bool)
@@ -31,17 +24,13 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     
     var indicator: SDevIndicator!
     var totalCustomers:Int!
-    //data arrays
-    //var ids = [String]()
-    //var names = [String]()
-   // var addresses = [String]()
     
     var customerArray = [Customer]()
     var customersSearchResults = [Customer]()
     
     var searchController:UISearchController!
-   // var currentSearchMode = SearchMode.name
-    var customerTableView:TableView = TableView()
+    var refreshControl: UIRefreshControl!
+    var customerTableView:TableView!
     
     var countView:UIView = UIView()
     var countLbl:Label = Label()
@@ -49,7 +38,6 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     
     var layoutVars:LayoutVars = LayoutVars()
     var sections : [(index: Int, length :Int, title: String)] = Array()
-   // var customersSearchResults:[String] = []
     var shouldShowSearchResults:Bool = false
     let viewsConstraint_V:NSArray = []
     let viewsConstraint_V2:NSArray = []
@@ -92,7 +80,6 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
-        //, "cb":timeStamp as AnyObject
 
         
         Alamofire.request(API.Router.customerList(["cb":timeStamp as AnyObject])).responseJSON() {
@@ -109,18 +96,7 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
                         let customer = Customer(_name: customer["name"] as? String, _id: customer["ID"] as? String, _address: customer["mainAddr"] as? String, _contactID: customer["contactID"] as? String)
                         self.customerArray.append(customer)
                     }
-                    /*for customer in customers {
-                        if let id = customer["ID"] as? String {
-                            self.ids.append(id)
-                        }
-                        if let name = customer["name"] as? String {
-                            self.names.append(name)
-                        }
-                        
-                        if let address = customer["mainAddr"] as? String {
-                            self.addresses.append(address)
-                        }
-                    }*/
+                    
                 }
             } catch {
                 //print("Error deserializing JSON: \(error)")
@@ -172,21 +148,18 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         
         
-       
-        /*
-        let items = ["Name","Address"]
-        let customSC = SegmentedControl(items: items)
-        customSC.selectedSegmentIndex = 0
         
-        customSC.addTarget(self, action: #selector(self.changeSearchOptions(sender:)), for: .valueChanged)
-        self.view.addSubview(customSC)
-        */
-        
-        
+        self.customerTableView = TableView()
         self.customerTableView.delegate  =  self
         self.customerTableView.dataSource = self
         self.customerTableView.register(CustomerTableViewCell.self, forCellReuseIdentifier: "cell")
         self.view.addSubview(self.customerTableView)
+        
+        
+        refreshControl = UIRefreshControl()
+        refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        customerTableView.addSubview(refreshControl)
+        refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: UIControl.Event.valueChanged)
         
         
         self.countView = UIView()
@@ -198,18 +171,11 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         
         self.countView.addSubview(self.countLbl)
         
-        //self.addCustomerBtn.addTarget(self, action: #selector(CustomerListViewController.addCustomer), for: UIControl.Event.touchUpInside)
+        
         addCustomerBtn.addTarget(self, action: #selector(CustomerListViewController.addCustomer), for: UIControl.Event.touchUpInside)
         self.view.addSubview(self.addCustomerBtn)
       
-        /*
-        customSC.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true
-        customSC.topAnchor.constraint(equalTo: view.safeTopAnchor).isActive = true
-        customSC.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
-        customSC.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        
-        */
-        
+       
         
         
        // print("customSC height = \(customSC.frame.size.height)")
@@ -243,26 +209,13 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     }
     
    
-    /*
-/////////////// Search Methods   ///////////////////////
-    
-    @objc func changeSearchOptions(sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
-        case 0:
-            currentSearchMode = .name
-            break
-        case 1:
-            currentSearchMode = .address
-            break
-        default:
-            currentSearchMode = .name
-            break
-        }
-        filterSearchResults()
+    @objc func refresh(_ sender: AnyObject){
+        //print("refresh")
+       
+        getCustomerList()
+        // getSchedule()
     }
-    
-    */
-    
+   
     
     func updateSearchResults(for searchController: UISearchController) {
         filterSearchResults()
@@ -270,37 +223,10 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     
     func filterSearchResults(){
         customersSearchResults = []
-        /*
-        switch  currentSearchMode {
-        case .name:
-            self.customersSearchResults = self.names.filter({( aCustomer: String ) -> Bool in
-                return (aCustomer.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)            })
-            break
-        case .address:
-            self.customersSearchResults = self.addresses.filter({( aCustomer: String) -> Bool in
-                return (aCustomer.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
-            })
-            break
-        }
- */
-        //switch  currentSearchMode {
-       // case .name:
+       
+        
             self.customersSearchResults = self.customerArray.filter({( aCustomer: Customer ) -> Bool in
                 return (aCustomer.name.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil  || aCustomer.address.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)            })
-            //self.customersSearchResults = self.names.filter({( aCustomer: String ) -> Bool in
-                //return (aCustomer.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)            })
-            //break
-        //case .address:
-            
-            //self.customersSearchResults = self.customerArray.filter({( aCustomer: Customer) -> Bool in
-               // return (aCustomer.address.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
-            //})
-            
-           // self.customersSearchResults = self.addresses.filter({( aCustomer: String) -> Bool in
-               // return (aCustomer.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
-            //})
-            //break
-        //}
         
         
         self.customerTableView.reloadData()
@@ -398,27 +324,14 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
         customerTableView.rowHeight = 50.0
         if shouldShowSearchResults{
             let searchString = self.searchController.searchBar.text!.lowercased()
-           // if(currentSearchMode == .name){
-                //cell.nameLbl.text = self.customersSearchResults[indexPath.row]
-                //cell.name = self.customersSearchResults[indexPath.row]
-                //if let i = self.names.index(of: cell.nameLbl.text!) {
+           
                 
                 cell.name = self.customersSearchResults[indexPath.row].name
                 cell.nameLbl.text = cell.name
                 cell.id = self.customersSearchResults[indexPath.row].ID
                 cell.address = self.customersSearchResults[indexPath.row].address
                 cell.addressLbl.text = cell.address
-                /*if let i = self.names.index(of: cell.nameLbl.text!) {
-                    //print("\(cell.nameLbl.text!) is at index \(i)")
-                    cell.addressLbl.text = self.addresses[i]
-                    cell.address = self.addresses[i]
-                    cell.id = self.ids[i]
-                } else {
-                    cell.addressLbl.text = ""
-                    cell.address = ""
-                    cell.id = ""
-                }*/
-                
+            
                 //text highlighting
                 let baseString:NSString = cell.name as NSString
                 let highlightedText = NSMutableAttributedString(string: cell.name)
@@ -458,52 +371,10 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
                 }
                 
             }
-            //cell.nameLbl.attributedText = highlightedText
             cell.addressLbl.attributedText = highlightedText2
             
             
             
-//            }else{//address search mode
-//                cell.addressLbl.text = self.customersSearchResults[indexPath.row].address
-//                cell.address = self.customersSearchResults[indexPath.row].address
-//
-//                cell.name = self.customersSearchResults[indexPath.row].name
-//                cell.nameLbl.text = cell.name
-//                cell.id = self.customersSearchResults[indexPath.row].ID
-//
-//                /*
-//                if let i = self.addresses.index(of: cell.addressLbl.text!) {
-//                    cell.nameLbl.text = self.names[i]
-//                    cell.name = self.names[i]
-//                    cell.id = self.ids[i]
-//                } else {
-//                    cell.nameLbl.text = ""
-//                    cell.name = ""
-//                    cell.id = ""
-//                }
-// */
-//
-//                //text highlighting
-//                let baseString:NSString = cell.address as NSString
-//                let highlightedText = NSMutableAttributedString(string: cell.address)
-//                var error: NSError?
-//                let regex: NSRegularExpression?
-//                do {
-//                    regex = try NSRegularExpression(pattern: searchString, options: .caseInsensitive)
-//                } catch let error1 as NSError {
-//                    error = error1
-//                    regex = nil
-//                }
-//                if let regexError = error {
-//                  //  print("Oh no! \(regexError)")
-//                } else {
-//                    for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-//                        highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
-//                    }
-//
-//                }
-//                cell.addressLbl.attributedText = highlightedText
-//            }
         } else {
             //print("make cell")
             cell.id = self.customerArray[sections[indexPath.section].index + indexPath.row].ID
@@ -562,7 +433,6 @@ class CustomerListViewController: ViewControllerWithMenu, UITableViewDelegate, U
     @objc func addCustomer(){
        // print("Add Customer")
         
-        //self.disableSearch()
         
         self.newCustomerLookUpViewController = NewCustomerLookUpViewController(_customerArray: self.customerArray)
         self.newCustomerLookUpViewController!.delegate = self

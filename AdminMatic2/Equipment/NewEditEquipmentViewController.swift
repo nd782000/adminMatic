@@ -977,26 +977,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
             self.vendorResultsTableView.reloadData()
         }
         
-        /*
-        if textField.tag > 6{
-            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                self.view.frame.origin.y -= 200
-                
-                
-            }, completion: { finished in
-                // //print("Napkins opened!")
-            })
-        }
         
-        if textField.tag > 8{
-            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                self.view.frame.origin.y -= 50
-                
-                
-            }, completion: { finished in
-                // //print("Napkins opened!")
-            })
-        }*/
         
          }
     
@@ -1034,28 +1015,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
             
             self.vendorResultsTableView.reloadData()
         }
-        /*
-        if textField.tag > 6{
-            if(self.view.frame.origin.y < 0){
-                UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                    self.view.frame.origin.y += 200
-                    
-                    
-                }, completion: { finished in
-                })
-            }
-        }
-        if textField.tag > 8{
-            if(self.view.frame.origin.y < 0){
-                UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                    self.view.frame.origin.y += 50
-                    
-                    
-                }, completion: { finished in
-                })
-            }
-        }
- */
+        
         
         editsMade = true
         
@@ -1067,30 +1027,13 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         print("textFieldDidBeginEditing")
-        /*
-        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-            self.view.frame.origin.y -= 250
-            
-            
-        }, completion: { finished in
-            // //print("Napkins opened!")
-        })
- */
+       
         
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         print("textFieldDidEndEditing")
-        /*
-        if(self.view.frame.origin.y < 0){
-            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                self.view.frame.origin.y += 250
-                
-                
-            }, completion: { finished in
-            })
-        }
- */
+       
         
     }
     

@@ -16,6 +16,7 @@ import DKImagePickerController
 
 protocol EditCustomerDelegate{
     func updateCustomer(_customerID:String)
+    
 }
 
 
@@ -56,6 +57,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
     var customerAddressBtn:Button!
     var allContactsBtn:Button!
     
+    var customerContactViewController:CustomerContactViewController?
     
     
     
@@ -205,7 +207,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
            
            
             if let json = response.result.value {
-               // print("JSON: \(json)")
+                print("JSON: \(json)")
                 self.customerJSON = JSON(json)
                 self.parseCustomerJSON()
                 
@@ -222,6 +224,13 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
     
     
     func parseCustomerJSON(){
+        
+        phone = "No Phone Found"
+        phoneName = ""
+        email = "No Email Found"
+        emailName = ""
+        jobSiteAddress = "No Job Site Found"
+        
         
         
        // print("parse customerJSON: \(self.customerJSON)")
@@ -272,6 +281,10 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
             
         }
         
+        
+        if self.customerContactViewController != nil{
+            self.customerContactViewController?.updateContactList(_customerJSON: self.customerJSON)
+        }
         
         self.getLeads(_openNewLead:false)
     }
@@ -827,7 +840,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
         self.allContactsBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.center
         self.allContactsBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         
-        self.allContactsBtn.setTitle("More Info", for: UIControl.State.normal)
+        self.allContactsBtn.setTitle("All Contacts & Notes", for: UIControl.State.normal)
         self.allContactsBtn.addTarget(self, action: #selector(CustomerViewController.showAllContacts), for: UIControl.Event.touchUpInside)
         
         
@@ -1055,8 +1068,9 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
     
     
     @objc func showAllContacts(){
-         let customerContactViewController = CustomerContactViewController(_customerJSON: self.customerJSON)
-        navigationController?.pushViewController(customerContactViewController, animated: false )
+         self.customerContactViewController = CustomerContactViewController(_customerID:self.customerID ,_customerJSON: self.customerJSON)
+        self.customerContactViewController?.editCustomerDelegate = self
+        navigationController?.pushViewController(self.customerContactViewController!, animated: false )
         
     }
     

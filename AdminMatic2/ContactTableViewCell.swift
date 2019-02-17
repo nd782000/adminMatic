@@ -21,6 +21,8 @@ class ContactTableViewCell: UITableViewCell {
     
     var layoutVars:LayoutVars = LayoutVars()
     
+    var addContactLbl:Label = Label()
+    
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -68,6 +70,32 @@ class ContactTableViewCell: UITableViewCell {
         contentView.addConstraints(viewsConstraint_V2)
         
     }
+    
+    func layoutAddBtn(){
+        
+        print("layoutAddBtn")
+        
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        self.addContactLbl.text = "+ Add Contact"
+        self.addContactLbl.textColor = UIColor(hex: 0x005100, op: 1.0)
+        self.addContactLbl.backgroundColor = UIColor.clear
+        
+        self.addContactLbl.layer.cornerRadius = 4.0
+        self.addContactLbl.clipsToBounds = true
+        self.addContactLbl.textAlignment = .center
+        self.addContactLbl.font = layoutVars.labelBoldFont
+        contentView.addSubview(self.addContactLbl)
+        
+        
+        let viewsDictionary = ["addBtn":self.addContactLbl] as [String : Any]
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[addBtn]-10-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[addBtn(40)]", options: [], metrics: nil, views: viewsDictionary))
+        
+    }
+    
+    
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

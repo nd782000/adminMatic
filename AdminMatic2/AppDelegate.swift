@@ -55,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.4.6"
+    var appVersion:String = "1.4.7"
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
     var employeeListViewController:EmployeeListViewController!
@@ -96,6 +96,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     
     var customerHearIDs:[String] = []
     var customerHearTypes:[String] = []
+    
+    var contactTypeIDs:[String] = []
+    var contactTypeNames:[String] = []
     
     var loggedInEmployee:Employee?
     var loggedInEmployeeJSON: JSON!
@@ -212,6 +215,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                     //print("zone.name = \(zone.name)")
                     self.customerHearIDs.append(id)
                     self.customerHearTypes.append(type)
+                    
+                }
+                
+                let contactTypeCount:Int = self.fieldsJson["contactTypes"].count
+                print("contact count = \(contactTypeCount)")
+                for p in 0 ..< hearCount {
+                    
+                    let id = self.fieldsJson["contactTypes"][p]["ID"].stringValue
+                    let type = self.fieldsJson["contactTypes"][p]["name"].stringValue
+                    
+                    // dont include jobSite, billing Addr or invoice Addr
+                    if id != "3" && id != "4" && id != "14"{
+                        self.contactTypeIDs.append(id)
+                        self.contactTypeNames.append(type)
+                    }
+                    
                     
                 }
                 

@@ -33,6 +33,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     var searchController:UISearchController!
     
+    
     var refreshControl: UIRefreshControl!
     var refreshFromTable:Bool = false
     var scheduleTableView: TableView!
@@ -236,8 +237,6 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         refreshControl = UIRefreshControl()
         refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-        
-        
         scheduleTableView.addSubview(refreshControl)
         
         self.countView = UIView()
