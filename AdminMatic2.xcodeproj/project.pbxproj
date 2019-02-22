@@ -105,7 +105,7 @@
 		01C0F1A7216928E50018300E /* Invoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C0F1A6216928E50018300E /* Invoice.swift */; };
 		01C340D420718FEC0093545C /* LeadTaskAssignViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C340D320718FEC0093545C /* LeadTaskAssignViewController.swift */; };
 		01C43C572027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */; };
-		01C43C602037251B0068A5E0 /* DepartmentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C5F203725150068A5E0 /* DepartmentListViewController.swift */; };
+		01C43C602037251B0068A5E0 /* DeptCrewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C5F203725150068A5E0 /* DeptCrewListViewController.swift */; };
 		01C43C62203725DD0068A5E0 /* Department.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C61203725DD0068A5E0 /* Department.swift */; };
 		01C43C662037AE8C0068A5E0 /* CrewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C652037AE8C0068A5E0 /* CrewListViewController.swift */; };
 		01C43C682037AFB20068A5E0 /* Crew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C43C672037AFB20068A5E0 /* Crew.swift */; };
@@ -429,7 +429,7 @@
 		01C0F1A6216928E50018300E /* Invoice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Invoice.swift; sourceTree = "<group>"; };
 		01C340D320718FEC0093545C /* LeadTaskAssignViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadTaskAssignViewController.swift; sourceTree = "<group>"; };
 		01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditEquipmentServiceViewController.swift; sourceTree = "<group>"; };
-		01C43C5F203725150068A5E0 /* DepartmentListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepartmentListViewController.swift; sourceTree = "<group>"; };
+		01C43C5F203725150068A5E0 /* DeptCrewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeptCrewListViewController.swift; sourceTree = "<group>"; };
 		01C43C61203725DD0068A5E0 /* Department.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Department.swift; sourceTree = "<group>"; };
 		01C43C652037AE8C0068A5E0 /* CrewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrewListViewController.swift; sourceTree = "<group>"; };
 		01C43C672037AFB20068A5E0 /* Crew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crew.swift; sourceTree = "<group>"; };
@@ -603,6 +603,7 @@
 		01C43C6F203CA4390068A5E0 /* Old Views */ = {
 			isa = PBXGroup;
 			children = (
+				01C43C652037AE8C0068A5E0 /* CrewListViewController.swift */,
 				01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */,
 				0109382A1E835394007865FB /* CustomImageCropperOverlayView.swift */,
 				010937BF1E81EE24007865FB /* ImageCroppingViewController.swift */,
@@ -631,9 +632,8 @@
 			children = (
 				015231AB1E1A982F009949BD /* EmployeeListViewController.swift */,
 				015231AD1E1A9EFF009949BD /* EmployeeViewController.swift */,
-				01C43C5F203725150068A5E0 /* DepartmentListViewController.swift */,
+				01C43C5F203725150068A5E0 /* DeptCrewListViewController.swift */,
 				017F08432200DA4900CC751D /* LicenseViewController.swift */,
-				01C43C652037AE8C0068A5E0 /* CrewListViewController.swift */,
 				01C43C692039F04F0068A5E0 /* ShiftsViewController.swift */,
 				01C43C78203DB9D20068A5E0 /* PayrollEntryViewController.swift */,
 				01C43C72203CC88D0068A5E0 /* PayrollSummaryViewController.swift */,
@@ -1327,7 +1327,7 @@
 				01D86764212DF27B005379E1 /* NewEditWoViewController.swift in Sources */,
 				016634241E340F91002F7763 /* ItemTableViewCell.swift in Sources */,
 				0160A1B81E89F98200C2AB4A /* BugTableViewCell.swift in Sources */,
-				01C43C602037251B0068A5E0 /* DepartmentListViewController.swift in Sources */,
+				01C43C602037251B0068A5E0 /* DeptCrewListViewController.swift in Sources */,
 				016634171E33F496002F7763 /* ContactTableViewCell.swift in Sources */,
 				01634B542084F09B00D22832 /* ContractTableViewCell.swift in Sources */,
 				01C43C79203DB9D20068A5E0 /* PayrollEntryViewController.swift in Sources */,

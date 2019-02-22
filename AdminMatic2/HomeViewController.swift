@@ -33,7 +33,29 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     init(){
         super.init(nibName:nil,bundle:nil)
         
-        title = "Home v \(self.appDelegate.appVersion)"
+       // self.appDelegate.navigationController.navigationBar.backgroundColor = layoutVars.backgroundColor
+       // title = "Home v \(self.appDelegate.appVersion)"
+        UINavigationBar.appearance().backgroundColor = layoutVars.backgroundColor
+        //navigationController?.navigationBar.barTintColor = layoutVars.backgroundColor
+        
+        //self.navigationController?.navigationBar.layer.backgroundColor = (layoutVars.backgroundColor as! CGColor)
+        
+        let imageView = UIImageView(frame: CGRect(x: (layoutVars.fullWidth - 400)/2, y: 0, width: 400, height: 60))
+        imageView.contentMode = .scaleAspectFit
+        
+        let logo = UIImage(named: "homeViewIcon.png")
+        imageView.image = logo
+        
+        self.navigationItem.titleView = imageView
+        self.navigationItem.titleView?.isUserInteractionEnabled = true
+        
+        let logoBtn:Button = Button(frame: CGRect(x: (layoutVars.fullWidth - 400)/2, y: 0, width: 400, height: 50))
+        logoBtn.translatesAutoresizingMaskIntoConstraints = true
+        logoBtn.backgroundColor = UIColor.clear
+        logoBtn.addTarget(self, action: #selector(HomeViewController.goToAdminMatic), for: UIControl.Event.touchUpInside)
+        self.navigationItem.titleView?.addSubview(logoBtn)
+        
+        
         homeBtnData = [("employeesIcon","Employees"),("customersIcon","Customers"),("vendorsIcon","Vendors"),("itemsIcon","Items"),("leadsIcon","Leads"),("contractsIcon","Contracts"),("scheduleIcon","Work Orders"),("invoiceIcon","Invoices"),("imagesIcon","Images"),("equipmentIcon","Equipment")]
         self.view.backgroundColor = layoutVars.backgroundColor
     }
@@ -51,6 +73,16 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     override func viewWillAppear(_ animated: Bool) {
         print("view will appear")
         self.setLoggedInUserBtn()
+        
+        
+        let navigationBarAppearace = UINavigationBar.appearance()
+        navigationBarAppearace.barTintColor = layoutVars.backgroundColor
+        
+        
+        //let navigationBarAppearace = UINavigationBar.appearance()
+        //navigationBarAppearace.barTintColor = layoutVars.buttonColor1
+        
+        
     }
     
     
@@ -166,6 +198,12 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             
         }
     }
+    
+    @objc func goToAdminMatic(){
+        print("goToAdminMatic")
+        openWebLink("www.adminmatic.com")
+    }
+    
     
     @objc func showLoggedInUser(){
         //print("showLoggedInUser")

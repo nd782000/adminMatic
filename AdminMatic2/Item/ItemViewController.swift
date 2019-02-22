@@ -81,6 +81,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         view.backgroundColor = layoutVars.backgroundColor
         title = "Item"
         
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(ItemViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -89,6 +90,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
         
         
         getItemData(_id: self.item.ID!)

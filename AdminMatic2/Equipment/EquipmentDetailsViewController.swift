@@ -37,6 +37,7 @@ class EquipmentDetailsViewController: UIViewController, UITextFieldDelegate, UIT
         view.backgroundColor = layoutVars.backgroundColor
         title = "Equipment Details"
         
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(EquipmentDetailsViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -45,6 +46,11 @@ class EquipmentDetailsViewController: UIViewController, UITextFieldDelegate, UIT
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
         
         
         layoutViews()

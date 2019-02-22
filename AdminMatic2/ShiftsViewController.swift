@@ -70,6 +70,7 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         view.backgroundColor = layoutVars.backgroundColor
         title = "\(self.empFirstName!)'s Shifts"
         
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(ShiftsViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -78,6 +79,11 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
         
         
         self.weekPicker = UIPickerView()
@@ -154,14 +160,14 @@ class ShiftsViewController: ViewControllerWithMenu, UITableViewDelegate, UITable
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/shifts.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                //print("shifts response = \(response)")
+                print("shifts response = \(response)")
             }
             
             .responseJSON(){
                 response in
                 
                 if let json = response.result.value {
-                    //print("JSON: \(json)")
+                    print("JSON: \(json)")
                     self.shiftsJSON = JSON(json)
                     self.parseShiftsJSON()
                     

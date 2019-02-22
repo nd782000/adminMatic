@@ -75,6 +75,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         view.backgroundColor = layoutVars.backgroundColor
         title = "\(self.empFirstName!)'s Payroll"
         
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(PayrollSummaryViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -83,6 +84,11 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
         
         
         self.weekPicker = Picker()
@@ -164,7 +170,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
                 response in
                 
                 if let json = response.result.value {
-                    //print("JSON: \(json)")
+                    print("JSON: \(json)")
                     self.payrollJSON = JSON(json)
                     self.parsePayrollJSON()
                     
@@ -193,22 +199,28 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         
         for day in 0 ..< 7 {
             
-            //print("day = \(day)")
+            print("day = \(day)")
             if self.payrollJSON["payroll"]["\(day)"] != nil{
                 
                 let payrollShiftCount = self.payrollJSON["payroll"]["\(day)"].count
                 
-              //  print("payrollShiftCount = \(payrollShiftCount)")
+                print("payrollShiftCount = \(payrollShiftCount)")
                 
                 for i in 0 ..< payrollShiftCount {
                     
-                    if self.payrollJSON["payroll"]["\(day)"][i]["dayType"].string! == "0"{
-                        //print("startTime = \(self.payrollJSON["payroll"]["\(day)"][i]["startTime"].string!)")
+                    if self.payrollJSON["payroll"]["\(day)"][i]["dayType"].string! == "0" && self.payrollJSON["payroll"]["\(day)"][i]["startTime"].string != "No Time"{
+                        
+                        
+                        print("startTime = \(self.payrollJSON["payroll"]["\(day)"][i]["startTime"].string!)")
                     
                     
                     
+                    
+                        
                     
                         let startTime = dateFormatter.date(from: self.payrollJSON["payroll"]["\(day)"][i]["startTime"].string!)!
+                        
+                        
                     
                     
                     
@@ -223,7 +235,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
                             
                         }else{
                             stopTime = dateFormatter.date(from: self.payrollJSON["payroll"]["\(day)"][i]["stopTime"].string!)!
-                            //print("stopTime = \(stopTime)")
+                            print("stopTime = \(stopTime)")
                         }
                     
                     
@@ -234,7 +246,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
                     
                         let payroll:Payroll!
                     
-                        payroll = Payroll(_ID: self.payrollJSON["payroll"]["\(day)"][i]["ID"].string!, _empID: self.payrollJSON["payroll"]["\(day)"][i]["empID"].string!, _startTime: startTime, _stopTime: stopTime, _lunch: self.payrollJSON["payroll"]["\(day)"][i]["lunch"].string!, _date: date, _total: self.payrollJSON["payroll"]["\(day)"][i]["total"].string!, _verified: self.payrollJSON["payroll"]["\(day)"][i]["verified"].string!, _createdBy: self.payrollJSON["payroll"]["\(day)"][i]["createdBy"].string!)
+                        payroll = Payroll(_ID: self.payrollJSON["payroll"]["\(day)"][i]["ID"].string!, _empID: self.payrollJSON["payroll"]["\(day)"][i]["empID"].string!, _startTime: startTime, _stopTime: stopTime, _lunch: self.payrollJSON["payroll"]["\(day)"][i]["lunch"].string!, _date: date, _total: self.payrollJSON["payroll"]["\(day)"][i]["total"].string!, _verified: self.payrollJSON["payroll"]["\(day)"][i]["verified"].string!, _appCreatedBy: self.payrollJSON["payroll"]["\(day)"][i]["appCreatedBy"].string!)
                         payroll.noStop = noStop
                     
                     
@@ -255,13 +267,13 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
                 
                 
             }else{
-                //print("payroll = nil")
+                print("payroll = nil")
                 let startTime = startOfRange.addNumberOfDaysToDate(_numberOfDays: day)
                 
                 
                 let payroll:Payroll!
                 
-                payroll = Payroll(_ID: "0", _empID: "0", _startTime: startTime, _stopTime: startTime, _lunch: "0", _date: startTime, _total: "0.00", _verified: "0", _createdBy: appDelegate.loggedInEmployee?.ID)
+                payroll = Payroll(_ID: "0", _empID: "0", _startTime: startTime, _stopTime: startTime, _lunch: "0", _date: startTime, _total: "0.00", _verified: "0", _appCreatedBy: appDelegate.loggedInEmployee?.ID)
                 self.payroll.append(payroll)
                 
             }

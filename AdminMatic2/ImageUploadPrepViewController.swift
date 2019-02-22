@@ -38,7 +38,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     var equipmentImageDelegate:UpdateEquipmentImageDelegate!
     var receiptImageDelegate:UpdateReceiptImageDelegate!
     var indicator: SDevIndicator!
-    var backButton:UIButton!
+    var backButton:UIBarButtonItem!
     
     let safeContainer:UIView = UIView()
     //header view
@@ -295,6 +295,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.loadingView = UIView(frame: CGRect(x: 0, y: 0, width: layoutVars.fullWidth, height: layoutVars.fullHeight))
         
         
+        /*
         //custom back button
         backButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(ImageUploadPrepViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -303,6 +304,12 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        self.backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = self.backButton
+        
+        
         
     }
     
@@ -2448,7 +2455,8 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         print("showProgressScreen")
         self.view.isUserInteractionEnabled = false
         self.submitBtn.isUserInteractionEnabled = false
-        self.backButton.isUserInteractionEnabled = false
+        //self.backButton.isUserInteractionEnabled = false
+        self.backButton.isEnabled = false
         self.progressView.alpha = 1.0
         UIView.animate(withDuration: 0.75, animations: {() -> Void in
             self.loadingView.alpha = 1

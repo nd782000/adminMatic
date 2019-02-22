@@ -113,6 +113,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     
     var defaults:UserDefaults!
     
+    //var layoutVars:LayoutVars = LayoutVars()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
@@ -340,7 +341,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
        
         navigationController = UINavigationController(rootViewController: homeViewController)
-        
+       
         
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
@@ -354,7 +355,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         let navigationBarAppearace = UINavigationBar.appearance()
         
-        navigationBarAppearace.barTintColor = layoutVars.buttonColor1
+        navigationBarAppearace.barTintColor = layoutVars.navBarColor
+        //999999
         //title
         UINavigationBar.appearance().titleTextAttributes = [ NSAttributedString.Key.font: layoutVars.buttonFont, NSAttributedString.Key.foregroundColor: layoutVars.buttonTextColor ]
         //left right buttons
@@ -438,6 +440,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     
     func menuChange(_ menuItem:Int){
         self.navigationController.popToRootViewController(animated: false)
+        
+        
+        //let navigationBarAppearace = UINavigationBar.appearance()
+        //navigationBarAppearace.barTintColor = layoutVars.buttonColor1
         
         switch (menuItem) {
         case 0:
@@ -565,6 +571,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
             navigationController = UINavigationController(rootViewController: self.homeViewController)
             window?.rootViewController = navigationController
             window?.makeKeyAndVisible()
+            
+            //let navigationBarAppearace = UINavigationBar.appearance()
+            //navigationBarAppearace.barTintColor = layoutVars.backgroundColor
+            
             break
         }
         

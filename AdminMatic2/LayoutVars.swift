@@ -219,13 +219,13 @@ class LayoutVars: UIViewController {
     
     
     var backgroundColor:UIColor = UIColor(hex:0xFFF8E6, op: 1)
-    
+    var navBarColor:UIColor = UIColor(hex:0x999999, op: 1)
     var backgroundLight:UIColor = UIColor(hex:0xFFFaF8, op: 1)
     var buttonBackground:UIColor = UIColor(hex:0xFFFFFF, op: 1)
     var buttonTint:UIColor = UIColor(hex:0x005100, op: 1)
     var buttonActive:UIColor = UIColor(hex:0x227322, op: 1)
     var buttonColor1:UIColor = UIColor(hex:0x005100, op: 1)
-    var buttonTextColor:UIColor = UIColor(hex:0xffffff, op: 1)
+    var buttonTextColor:UIColor = UIColor(hex:0x005100, op: 1)
     var borderColor:CGColor = UIColor(hex:0x005100, op: 1).cgColor
     var largeFont:UIFont = UIFont(name: "Helvetica Neue", size: 28)!
     var labelFont:UIFont = UIFont(name: "Helvetica Neue", size: 24)!
@@ -832,9 +832,9 @@ class TableView: UITableView {
     
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
-        self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
-        self.layer.cornerRadius = 4.0
+        //self.layer.borderWidth = 1
+        //self.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
+        //self.layer.cornerRadius = 4.0
         self.backgroundColor = UIColor(hex:0xFFFFFF, op: 0.8)
         self.separatorColor = UIColor(hex:0x005100, op: 0.6)
         self.separatorStyle = UITableViewCell.SeparatorStyle.singleLine
@@ -1122,6 +1122,36 @@ class Button:UIButton{
         self.setTitle(titleText, for: UIControl.State())
     }
 }
+
+class BarButtonItem:UIBarButtonItem{
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override init() {
+        super.init()
+        self.tintColor = UIColor.white
+    }
+    /*
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.backgroundColor = UIColor(hex:0x005100, op: 1.0)
+        self.titleLabel!.font = UIFont(name: "Helvetica Neue", size: 16)!
+        self.setTitleColor(UIColor.white, for: UIControl.State())
+        self.layer.cornerRadius = 5.0
+        self.translatesAutoresizingMaskIntoConstraints = false
+        
+    }
+    
+    convenience init(titleText:String!) {
+        self.init()
+        self.setTitle(titleText, for: UIControl.State())
+    }
+ */
+    
+}
+
 
 
 
@@ -1459,8 +1489,9 @@ class SDevIndicator : UIView {
         super.init(frame: frame)
         self.backgroundColor = UIColor.clear
         spinner = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.whiteLarge)
+        spinner.color = layoutVars.buttonColor1
         spinnerParentView = UIView(frame: CGRect(x: 0, y: 0, width: layoutVars.fullWidth, height: layoutVars.fullHeight))
-        spinnerParentView.backgroundColor = layoutVars.buttonTint
+        spinnerParentView.backgroundColor = layoutVars.backgroundColor
         spinnerParentView.alpha = 0.8
         spinnerParentView.center = self.center
         spinner.center = CGPoint(x: layoutVars.fullWidth/2, y: layoutVars.fullWidth/2)

@@ -87,6 +87,8 @@ class NewEditContactViewController: UIViewController, UITextFieldDelegate, UIPic
         print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
+        
+        /*
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(NewEditEquipmentFieldViewController.goBack), for: UIControl.Event.touchUpInside)
         backButton.setTitle("Back", for: UIControl.State.normal)
@@ -94,6 +96,11 @@ class NewEditContactViewController: UIViewController, UITextFieldDelegate, UIPic
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
         
         self.layoutViews()
     }
@@ -155,7 +162,7 @@ class NewEditContactViewController: UIViewController, UITextFieldDelegate, UIPic
         typeToolBar.barStyle = UIBarStyle.default
         typeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         typeToolBar.sizeToFit()
-        let closeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContactViewController.cancelTypeInput))
+        let closeTypeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContactViewController.cancelTypeInput))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         let setTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContactViewController.handleTypeChange))
         typeToolBar.setItems([closeTypeButton, spaceButton, setTypeButton], animated: false)
@@ -461,7 +468,7 @@ class NewEditContactViewController: UIViewController, UITextFieldDelegate, UIPic
         
         
         let parameters:[String:String]
-        parameters = ["type": self.type, "name": self.name, "value": self.val, "contactID": self.contactID, "del": "0", "custID": self.custId, "preferred": self.preferredValue] as! [String : String]
+        parameters = ["type": self.type, "name": self.name, "value": self.val, "contactID": self.contactID, "custID": self.custId, "preferred": self.preferredValue] as! [String : String]
         
         
         

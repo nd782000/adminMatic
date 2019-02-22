@@ -12,6 +12,8 @@ import UIKit
 
 class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerViewDelegate {
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     var delegate:PayrollDelegate!
 
     var parentVC:UIViewController!
@@ -122,7 +124,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         
         //let metricsDictionary = ["halfWidth": layoutVars.halfWidth] as [String:Any]
         
-        if self.payroll.verified == "1"{
+        if self.payroll.verified == "1" || (self.payroll.appCreatedBy != self.appDelegate.loggedInEmployee?.ID && self.payroll.appCreatedBy != "0") {
                         
             self.startTxtField.isEnabled = false
             contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[startBtn(halfWidth)]-[startTxt]-[lockIcon(20)]-5-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
@@ -193,7 +195,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         
         //let metricsDictionary = ["halfWidth": layoutVars.halfWidth] as [String:Any]
         
-        if self.payroll.verified == "1"{
+        if self.payroll.verified == "1" || (self.payroll.appCreatedBy != self.appDelegate.loggedInEmployee?.ID && self.payroll.appCreatedBy != "0") {
              self.stopTxtField.isEnabled = false
             contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[stopBtn(halfWidth)]-[stopTxt]-[lockIcon(20)]-5-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
             contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-20-[lockIcon(20)]", options: [], metrics: nil, views: viewsDictionary))
@@ -254,7 +256,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         /////////  Auto Layout   //////////////////////////////////////
         //auto layout group
         let viewsDictionary = ["breakLbl": self.breakLbl,"breakTxt": self.breakTxtField,"lockIcon":lockIcon] as [String:AnyObject]
-        if self.payroll.verified == "1"{
+        if self.payroll.verified == "1" || (self.payroll.appCreatedBy != self.appDelegate.loggedInEmployee?.ID && self.payroll.appCreatedBy != "0") {
             self.breakTxtField.isEnabled = false
             contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[breakLbl(halfWidth)]-[breakTxt]-[lockIcon(20)]-5-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
             contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-20-[lockIcon(20)]", options: [], metrics: nil, views: viewsDictionary))
@@ -268,28 +270,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[breakTxt(40)]", options: [], metrics: nil, views: viewsDictionary))
     }
     
-    
-    /*
-    func layoutAddViews(){
-        print("cell layout add")
-        for view in self.contentView.subviews{
-            view.removeFromSuperview()
-        }
-        
-        //add
-        self.addShiftBtn = Button(titleText: "Add Shift")
-        self.addShiftBtn.backgroundColor = UIColor.darkGray
-        self.contentView.addSubview(addShiftBtn)
-        self.addShiftBtn.addTarget(self, action: #selector(PayrollEntryTableViewCell.addShift), for: UIControlEvents.touchUpInside)
-        
-        
-        /////////  Auto Layout   //////////////////////////////////////
-        //auto layout group
-        let viewsDictionary = ["addBtn": self.addShiftBtn] as [String:AnyObject]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-50-[addBtn]-50-|", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[addBtn(40)]", options: [], metrics: nil, views: viewsDictionary))
-    }
- */
+   
     
     func layoutResetViews(){
         print("cell layout reset")
@@ -315,6 +296,12 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
     @objc func startTime() {
         print("startTime")
         
+        if self.payroll.appCreatedBy != self.appDelegate.loggedInEmployee?.ID  && self.payroll.appCreatedBy != "0" {
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Payroll Locked", _message: "This payroll entry was created by another user.")
+            return
+        }
+            
+            
         if self.payroll.verified == "1"{
             //need userLevel greater then 1 to access this
         self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
@@ -332,6 +319,12 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
     @objc func stopTime() {
         print("stopTime")
         
+        if self.payroll.appCreatedBy != self.appDelegate.loggedInEmployee?.ID  && self.payroll.appCreatedBy != "0"{
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Payroll Locked", _message: "This payroll entry was created by another user.")
+            return
+        }
+        
+        
         if self.payroll.verified == "1"{
             //need userLevel greater then 1 to access this
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
@@ -346,15 +339,15 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
     }
     
     
-    /*
-    @objc func addShift() {
-        print("addShift")
-        
-    }
- */
+   
     
     @objc func resetShift() {
         print("resetShift")
+        
+        if self.payroll.appCreatedBy != self.appDelegate.loggedInEmployee?.ID  && self.payroll.appCreatedBy != "0" {
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Payroll Locked", _message: "This payroll entry was created by another user.")
+            return
+        }
         
         if self.payroll.verified == "1"{
             //need userLevel greater then 1 to access this
@@ -392,13 +385,6 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
     
     @objc func handleStartPicker(){
         self.startTxtField.resignFirstResponder()
-        /*
-        if self.payroll.verified == "1"{
-            //need userLevel greater then 1 to access this
-            simpleAlert(_vc: self.layoutVars.getTopController().parentVC, _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
-            return
-        }*/
-        
         
         
         self.startTxtField.text =  startStopFormatter.string(from: startPicker.date)
@@ -409,12 +395,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
     
     @objc func handleStopPicker(){
         self.stopTxtField.resignFirstResponder()
-        /*
-        if self.payroll.verified == "1"{
-            //need userLevel greater then 1 to access this
-            simpleAlert(_vc: self.layoutVars.getTopController().parentVC, _title: "Payroll Locked", _message: "This payroll entry has already been verified by the office and can not be edited.")
-            return
-        }*/
+       
         
         self.stopTxtField.text =  startStopFormatter.string(from: stopPicker.date)
         

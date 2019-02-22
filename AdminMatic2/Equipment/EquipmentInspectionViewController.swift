@@ -153,6 +153,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
         title = "\(String(describing: self.equipment.name!)) Inspection"
         view.backgroundColor = layoutVars.backgroundColor
         
+        /*
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(self.goBack), for: UIControl.Event.touchUpInside)
         backButton.setTitle("Back", for: UIControl.State.normal)
@@ -160,6 +161,12 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
+        
         
         
         editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(self.displayEditView))

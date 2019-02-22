@@ -41,6 +41,7 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
         // Do any additional setup after loading the view.
         view.backgroundColor = layoutVars.backgroundColor
        
+        /*
         
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(ImageFullViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -49,6 +50,14 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+ */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
+        
+        
+        
         self.layoutViews()
     }
     

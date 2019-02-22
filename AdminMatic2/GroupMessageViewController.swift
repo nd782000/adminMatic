@@ -42,7 +42,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     var mode:String?  //used for title to display "dept" or "crew"
     
     
-    
+    //var textController:MFMessageComposeViewController!
     
     
     init(){
@@ -78,7 +78,7 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
             title = "Group Text"
         }
         
-        
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(GroupMessageViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -87,7 +87,13 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
-
+*/
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
+        
+        
         for index in 0 ..< self.appDelegate.employeeArray.count {
             //print("emp phone = \(String(describing: appDelegate.employeeArray[index].phone))")
         //for _ in self.appDelegate.employeeArray{
@@ -158,6 +164,15 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
         
         self.sendMessageBtn.addTarget(self, action: #selector(GroupMessageViewController.buildRecipientList), for: UIControl.Event.touchUpInside)
         safeContainer.addSubview(self.sendMessageBtn)
+        
+        /*
+        
+        //let controller = MFMessageComposeViewController()
+        self.textController = MFMessageComposeViewController()
+        textController.body = "\(self.messageTxt.text!) ~ Atlantic Group Message by \((self.appDelegate.loggedInEmployee?.name!)!)"
+        textController.recipients = self.batchOfTexts
+        textController.messageComposeDelegate = self
+        */
         
         
         //print("layout views 1")
@@ -288,18 +303,18 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     func handleSelectVarious(){
         
-        //print("select various")
+        print("select various")
         for index in 0 ..< selectedStates.count {
             selectedStates[index] = false
         }
         
-        for i in 0 ..<  self.employees.count{
+        for q in 0 ..<  self.employees.count{
             for n in 0 ..<  self.appDelegate.employeeArray.count{
-                if appDelegate.employeeArray[n].ID == self.employees[i].ID {
+                if appDelegate.employeeArray[n].ID == self.employees[q].ID {
                     selectedStates[n] = true
                 }
                 
-                //print("emp phone = \(String(describing: appDelegate.employeeArray[n].phone))")
+                print("emp phone = \(String(describing: appDelegate.employeeArray[n].phone))")
                 if appDelegate.employeeArray[n].phone == "" || appDelegate.employeeArray[n].phone == "No Phone Number"{
                     selectedStates[n] = false
                 }
@@ -334,12 +349,12 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     }
     
     @objc func buildRecipientList(){
-        //print("buildRecipientList")
+        print("buildRecipientList")
         
         for index in 0 ..< appDelegate.employeeArray.count {
             if(selectedStates[index] == true){
                 textRecipients.append(appDelegate.employeeArray[index].phone)
-               // //print("phone = \(appDelegate.employeeArray[index].phone)")
+                print("phone = \(String(describing: appDelegate.employeeArray[index].phone))")
             }
         }
         
@@ -361,11 +376,12 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     
     
     func getBatch(){
-        //print("get batch")
+        print("get batch")
         batchOfTexts = []
-    //get next 5 numbers in list
+    //get next 7 numbers in list
         for index in 1...self.textBatchQty{
-            //print("adding index \(index) to batch")
+            print("adding index \(index) to batch")
+            print("i = \(i)")
             if((textRecipients.count) > i){
                 batchOfTexts.append(textRecipients[i])
             }
@@ -376,9 +392,9 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
     }
 
     func sendTexts(){
-        //print("Send texts")
+        print("Send texts")
         if(batchOfTexts.count == 0){
-            //print("no texts to send")
+            print("no texts to send")
             doneSendingBatches()
             return
         }
@@ -391,6 +407,8 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
             alertController.addAction(okAction)
             layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
+            
+            print("should show next batch")
             let title:String!
             var message:String = ""
             if(batchOfTexts.count == 1){
@@ -409,29 +427,53 @@ class GroupMessageViewController: ViewControllerWithMenu, UITextViewDelegate, UI
             }
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
+                
+                print("ok")
                 if (MFMessageComposeViewController.canSendText()) {
-                    let controller = MFMessageComposeViewController()
-                    controller.body = "\(self.messageTxt.text!) ~ Atlantic Group Message by \((self.appDelegate.loggedInEmployee?.name!)!)"
-                    controller.recipients = self.batchOfTexts
-                    controller.messageComposeDelegate = self
-                    self.present(controller, animated: true, completion: nil)
+                    //self.tecontroller = MFMessageComposeViewController()
+                    
+                    let textController = MFMessageComposeViewController()
+                    textController.body = "\(self.messageTxt.text!) ~ Atlantic Group Message by \((self.appDelegate.loggedInEmployee?.name!)!)"
+                    textController.recipients = self.batchOfTexts
+                    textController.messageComposeDelegate = self
+                    //self.layoutVars.getTopController().dis
+                    self.layoutVars.getTopController().present(textController, animated: false, completion: nil)
                 }
             }
             alertController.addAction(cancelAction)
             alertController.addAction(okAction)
             //layoutVars.getTopController().present(alertController, animated: true, completion: nil)
-            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+            print("display alert")
+            
+            //self.layoutVars.getTopController().dismiss(animated: false, completion: nil)
+            self.present(alertController, animated: false, completion: nil)
         }
     }
     
+    
+    
     func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
         //... handle sms screen actions
+        
+        print("messanger didFinishWith result" )
         self.dismiss(animated: true, completion: nil)
         getBatch()
     }
+    /*
+    func messageComposeViewController(controller: MFMessageComposeViewController!, didFinishWithResult result: MessageComposeResult) {
+        //... handle sms screen actions
+        
+        print("messanger didFinishWith result  2" )
+        self.dismiss(animated: true, completion: nil)
+        getBatch()
+        //self.dismissViewControllerAnimated(true, completion: nil)
+    }
+ */
+    
+    //func messageComposeViewController(
     
     func doneSendingBatches(){
-        //print ("done with batches")
+        print ("done with batches")
         self.messageTxt.text = self.messagePlaceHolder
         self.messageTxt.textColor = UIColor.lightGray
         textBatchNumber = 0

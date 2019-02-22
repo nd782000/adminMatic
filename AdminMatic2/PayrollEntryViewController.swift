@@ -14,6 +14,8 @@ import Alamofire
 import SwiftyJSON
 
 
+
+
 protocol PayrollDelegate{
     func editStart(row:Int,start:Date)
     func editStop(row:Int,stop:Date)
@@ -49,8 +51,6 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     var payrollJSON: JSON?
     var payroll: [Payroll] = []
     
-    //var payrollToLog:Payroll!
-    //var payrollToLogJSON: [JSON] = []//data array
     
     
     var payrollTotalLbl: Label = Label()
@@ -92,6 +92,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         view.backgroundColor = layoutVars.backgroundColor
         title = "Payroll Entry"
         
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(PayrollEntryViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -100,6 +101,13 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
+        
+        
         
         
         
@@ -148,7 +156,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                 response in
                 
                 if let json = response.result.value {
-                    //print("JSON: \(json)")
+                    print("JSON: \(json)")
                     
                     
                     
@@ -197,43 +205,23 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
             //print("day = \(day)")
             if dayOfWeek == day{
                 
-                 //print("payroll day = \(String(describing: self.payrollJSON!["payroll"]["\(day)"]))")
                 
                 let i = 0
                 
-                //print("payroll day = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["date"].string))")
                 
                 if self.payrollJSON?["payroll"]["\(day)"][i]["date"].string != nil{
                     
                     // following code for multiple shifts
                     
-                    //let payrollShiftCount = self.payrollJSON["payroll"]["\(day)"].count
-                    
-                    
-                    
-                    
-                    //print("payrollDate = \(self.payrollJSON!["payroll"]["\(day)"][i]["date"].string!)")
-                    
-                    //for i in 0 ..< payrollShiftCount {
-                    
-                    
-                    
+                  
                     
                     let date = dateFormatter.date(from: "\( self.payrollJSON!["payroll"]["\(day)"][i]["date"].string!) 00:00:00")!
                     
                     
-                    //print("date = \(date)")
-                    //print("ID = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["ID"].string!))")
-                    //print("empID = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["empID"].string!))")
-                    //print("lunch = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["lunch"].string!))")
-                    //print("total = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["total"].string!))")
-                    //print("verified = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["verified"].string!))")
-                    //print("createdBy = \(String(describing: self.payrollJSON!["payroll"]["\(day)"][i]["createdBy"].string!))")
-                    
-                    
+                   
                     let payroll:Payroll!
                     
-                    payroll = Payroll(_ID: self.payrollJSON!["payroll"]["\(day)"][i]["ID"].string!, _empID: self.payrollJSON!["payroll"]["\(day)"][i]["empID"].string!, _lunch: self.payrollJSON!["payroll"]["\(day)"][i]["lunch"].string!, _date: date, _total: self.payrollJSON!["payroll"]["\(day)"][i]["total"].string!, _verified: self.payrollJSON!["payroll"]["\(day)"][i]["verified"].string!, _createdBy: self.payrollJSON!["payroll"]["\(day)"][i]["createdBy"].string!)
+                    payroll = Payroll(_ID: self.payrollJSON!["payroll"]["\(day)"][i]["ID"].string!, _empID: self.payrollJSON!["payroll"]["\(day)"][i]["empID"].string!, _lunch: self.payrollJSON!["payroll"]["\(day)"][i]["lunch"].string!, _date: date, _total: self.payrollJSON!["payroll"]["\(day)"][i]["total"].string!, _verified: self.payrollJSON!["payroll"]["\(day)"][i]["verified"].string!, _appCreatedBy: self.payrollJSON!["payroll"]["\(day)"][i]["appCreatedBy"].string!)
                     
                     
                     
@@ -276,7 +264,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     
                     let payroll:Payroll!
                     
-                    payroll = Payroll(_ID: "0", _empID: "0", _startTime: nil, _stopTime: nil, _lunch: "0", _date: nil, _total: "0.00", _verified: "0", _createdBy: self.appDelegate.loggedInEmployee?.ID)
+                    payroll = Payroll(_ID: "0", _empID: "0", _startTime: nil, _stopTime: nil, _lunch: "0", _date: nil, _total: "0.00", _verified: "0", _appCreatedBy: self.appDelegate.loggedInEmployee?.ID)
                     self.payroll.append(payroll)
                     
                 }
@@ -433,7 +421,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         //return pickerData.count
         //print("picker count = \(self.weekArray.count)")
         
-        return appDelegate.employeeArray.count + 1
+        return appDelegate.employeeArray.count
     }
     
     // The data to return fopr the row and component (column) that's being passed in
@@ -922,7 +910,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         }
         
         let parameters:[String:String]
-        parameters = ["ID": self.payroll[0].ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "empID": self.employee.ID, "startTime": start, "stopTime": stop, "lunch": lunch, "date": todaysDate, "del": del] as! [String : String]
+        parameters = ["ID": self.payroll[0].ID, "appCreatedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "empID": self.employee.ID, "startTime": start, "stopTime": stop, "lunch": lunch, "date": todaysDate, "del": del] as! [String : String]
         
         //print("parameters = \(parameters)")
         
@@ -949,7 +937,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     if del == "1" {
                         let payroll:Payroll!
                         
-                        payroll = Payroll(_ID: "0", _empID: "0", _startTime: nil, _stopTime: nil, _lunch: "0", _date: nil, _total: "0.00", _verified: "0", _createdBy: self.appDelegate.loggedInEmployee?.ID)
+                        payroll = Payroll(_ID: "0", _empID: "0", _startTime: nil, _stopTime: nil, _lunch: "0", _date: nil, _total: "0.00", _verified: "0", _appCreatedBy: self.appDelegate.loggedInEmployee?.ID)
                         self.payroll.append(payroll)
                     }else{
                         
@@ -967,14 +955,14 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                         //print("lunch = \(returnJson["shift"]["lunch"].string!)")
                         //print("total = \(returnJson["shift"]["total"].string!)")
                         //print("verified = \(returnJson["shift"]["verified"].string!)")
-                        //print("createdBy = \(returnJson["shift"]["createdBy"].string!)")
+                        //print("appCreatedBy = \(returnJson["shift"]["appCreatedBy"].string!)")
                         
                         
                         let payroll:Payroll!
                         
                         
                         
-                         payroll = Payroll(_ID: returnJson["shift"]["ID"].string!, _empID: returnJson["shift"]["empID"].string!, _lunch: returnJson["shift"]["lunch"].string!, _date: date, _total: returnJson["shift"]["total"].string!, _verified: returnJson["shift"]["verified"].string!, _createdBy: returnJson["shift"]["createdBy"].string!)
+                         payroll = Payroll(_ID: returnJson["shift"]["ID"].string!, _empID: returnJson["shift"]["empID"].string!, _lunch: returnJson["shift"]["lunch"].string!, _date: date, _total: returnJson["shift"]["total"].string!, _verified: returnJson["shift"]["verified"].string!, _appCreatedBy: returnJson["shift"]["appCreatedBy"].string!)
                         
                         
                         if returnJson["shift"]["startTime"].string! != "No Time"{

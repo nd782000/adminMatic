@@ -29,6 +29,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
     var customSC:SegmentedControl!
     var currentSortMode = "CREW"
     
+    
     var equipmentTableView:TableView!
     
     var countView:UIView = UIView()

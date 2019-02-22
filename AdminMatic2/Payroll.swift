@@ -30,14 +30,14 @@ class Payroll {
     var date: Date!
     var total: String!
     var verified: String!
-    var createdBy: String!
+    var appCreatedBy: String!
     
     var del: String! // used for deleting unvarified payroll rows
     var noStop: Bool = false
     
     
     
-    required init(_ID:String?, _empID: String?, _startTime:Date?, _stopTime:Date?, _lunch:String?, _date:Date?, _total:String?, _verified:String?, _createdBy:String?) {
+    required init(_ID:String?, _empID: String?, _startTime:Date?, _stopTime:Date?, _lunch:String?, _date:Date?, _total:String?, _verified:String?, _appCreatedBy:String?) {
         //print(json)
         if _ID != nil {
             self.ID = _ID
@@ -79,16 +79,16 @@ class Payroll {
         }else{
             self.verified = "0"
         }
-        if(_createdBy != nil){
-            self.createdBy = _createdBy!
+        if(_appCreatedBy != nil){
+            self.appCreatedBy = _appCreatedBy!
         }else{
-            self.createdBy = ""
+            self.appCreatedBy = ""
         }
         
     }
     
     //init without start and stop
-    required init(_ID:String?, _empID: String?, _lunch:String?, _date:Date?, _total:String?, _verified:String?, _createdBy:String?) {
+    required init(_ID:String?, _empID: String?, _lunch:String?, _date:Date?, _total:String?, _verified:String?, _appCreatedBy:String?) {
         //print(json)
         if _ID != nil {
             self.ID = _ID
@@ -120,10 +120,10 @@ class Payroll {
         }else{
             self.verified = "0"
         }
-        if(_createdBy != nil){
-            self.createdBy = _createdBy!
+        if(_appCreatedBy != nil){
+            self.appCreatedBy = _appCreatedBy!
         }else{
-            self.createdBy = ""
+            self.appCreatedBy = ""
         }
         
     }
@@ -141,7 +141,7 @@ class Payroll {
         lunch      <- map["lunch"]
         total      <- map["total"]
         verified      <- map["verified"]
-        createdBy      <- map["createdBy"]
+        appCreatedBy      <- map["appCreatedBy"]
         
         
         

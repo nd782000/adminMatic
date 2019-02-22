@@ -81,7 +81,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     var keyBoardShown:Bool = false
 
     var imageFullViewController:ImageFullViewController!
-    var departmentListViewController:DepartmentListViewController!
+    var deptCrewListViewController:DeptCrewListViewController!
     //var crewListViewController:CrewListViewController!
     var shiftsViewController:ShiftsViewController!
     var payrollEntryViewController:PayrollEntryViewController!
@@ -129,6 +129,8 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         view.backgroundColor = layoutVars.backgroundColor
         title = "Employee"
         
+        
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -137,6 +139,12 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
         
     
        // NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)),
@@ -705,10 +713,10 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         //print("show departments")
         
         if(appDelegate.loggedInEmployee != nil){
-            self.departmentListViewController = DepartmentListViewController(_empID: self.employee.ID, _empFirstName: self.employee.fname)
-            navigationController?.pushViewController(self.departmentListViewController, animated: false )
+            self.deptCrewListViewController = DeptCrewListViewController(_empID: self.employee.ID, _empFirstName: self.employee.fname)
+            navigationController?.pushViewController(self.deptCrewListViewController, animated: false )
         }else{
-            appDelegate.requireLogIn(_destination: "departments", _vc:self)
+            appDelegate.requireLogIn(_destination: "departments and crews", _vc:self)
         }
         
         

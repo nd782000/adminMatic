@@ -119,7 +119,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         view.backgroundColor = layoutVars.backgroundColor
         
         
-        
+        /*
         //custom back button
         backButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(NewWoItemViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -128,6 +128,12 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
+        
         
     }
     

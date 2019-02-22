@@ -214,6 +214,8 @@ class NewEditCustomerViewController: UIViewController, UIPickerViewDelegate, UIP
         //print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
+        
+        /*
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(NewEditCustomerViewController.goBack), for: UIControl.Event.touchUpInside)
         backButton.setTitle("Back", for: UIControl.State.normal)
@@ -221,6 +223,11 @@ class NewEditCustomerViewController: UIViewController, UIPickerViewDelegate, UIP
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
         
         if customerID == "0"{
             layoutViews()

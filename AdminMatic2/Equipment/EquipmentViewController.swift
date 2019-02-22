@@ -101,6 +101,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         view.backgroundColor = layoutVars.backgroundColor
         title = "Equipment"
         
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -109,6 +110,12 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
+        
         
         
         dateFormatter.dateFormat = "MM/dd/yy"
@@ -388,6 +395,11 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.serviceTableView.delegate  =  self
         self.serviceTableView.dataSource = self
         self.serviceTableView.rowHeight = 60.0
+        self.serviceTableView.layer.cornerRadius = 4
+        self.serviceTableView.layer.borderWidth = 1
+        self.serviceTableView.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
+        
+        
         self.serviceTableView.register(EquipmentServiceTableViewCell.self, forCellReuseIdentifier: "cell")
         safeContainer.addSubview(serviceTableView)
         

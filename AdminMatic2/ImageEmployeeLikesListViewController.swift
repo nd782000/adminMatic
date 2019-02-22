@@ -79,14 +79,20 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         title = "Image Likes"
         view.backgroundColor = layoutVars.backgroundColor
         
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
-        backButton.addTarget(self, action: #selector(DepartmentListViewController.goBack), for: UIControl.Event.touchUpInside)
+        backButton.addTarget(self, action: #selector(self.goBack), for: UIControl.Event.touchUpInside)
         backButton.setTitle("Back", for: UIControl.State.normal)
         backButton.titleLabel!.font =  layoutVars.buttonFont
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
         
         
         getEmployeeLikes()

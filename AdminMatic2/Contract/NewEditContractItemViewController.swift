@@ -135,7 +135,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         view.backgroundColor = layoutVars.backgroundColor
         
         
-        
+        /*
         //custom back button
         backButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(self.goBack), for: UIControl.Event.touchUpInside)
@@ -144,6 +144,12 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+ */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
+        
         
     }
     

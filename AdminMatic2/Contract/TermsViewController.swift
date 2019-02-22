@@ -70,6 +70,7 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         view.backgroundColor = layoutVars.backgroundColor
         title = "Terms"
         
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(CustomerViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -78,6 +79,13 @@ class TermsViewController: UIViewController, UITextViewDelegate{
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
+        
+        
         
         if self.editable{
             submitButton = UIBarButtonItem(title: "Update", style: .plain, target: self, action: #selector(NewEditContractViewController.submit))

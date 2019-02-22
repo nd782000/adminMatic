@@ -98,6 +98,12 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         view.backgroundColor = layoutVars.backgroundColor
         title = "Schedule Settings"
         
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
+        
+        
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(ScheduleSettingsViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -106,6 +112,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
         
         
         self.layoutViews()

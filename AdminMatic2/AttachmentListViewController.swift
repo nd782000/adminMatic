@@ -69,6 +69,7 @@ class AttachmentListViewController: ViewControllerWithMenu, UITextFieldDelegate,
         super.viewDidLoad()
         title = "Attachments"
         
+        /*
         
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(AttachmentListViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -77,6 +78,12 @@ class AttachmentListViewController: ViewControllerWithMenu, UITextFieldDelegate,
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
+        
         
         //set container to safe bounds of view
         let safeContainer:UIView = UIView()

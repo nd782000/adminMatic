@@ -96,6 +96,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         super.viewDidLoad()
         title = "Today's Usage"
         
+        /*
         
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(UsageEntryViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -104,6 +105,12 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
+        
         
         //set container to safe bounds of view
         

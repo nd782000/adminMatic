@@ -15,7 +15,7 @@ class ImageDrawingViewController: UIViewController {
     var layoutVars:LayoutVars = LayoutVars()
     var delegate:ImageDrawingDelegate!
     
-    var backButton: UIButton!
+   // var backButton: UIButton!
     
     var imageView:UIImageView!
     var image:UIImage!
@@ -147,6 +147,7 @@ class ImageDrawingViewController: UIViewController {
         safeContainer.addSubview(self.imageView)
         
         
+        /*
         //custom back button
         backButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(ImageDrawingViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -155,6 +156,12 @@ class ImageDrawingViewController: UIViewController {
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
+        
         
        
         

@@ -104,6 +104,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         startDateDB = dateFormatterDB.string(from: now)
         endDateDB = dateFormatterDB.string(from: now)
         
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(PerformanceViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -112,6 +113,11 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
         
         
         

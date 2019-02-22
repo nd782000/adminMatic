@@ -88,6 +88,7 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         title = "Image Settings"
         
         //custom back button
+        /*
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(ImageSettingsViewController.goBack), for: UIControl.Event.touchUpInside)
         backButton.setTitle("Back", for: UIControl.State.normal)
@@ -95,6 +96,10 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
         
         
         self.layoutViews()

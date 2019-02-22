@@ -95,9 +95,7 @@ class EmployeeTableViewCell: UITableViewCell {
                 
                 self.activityView.stopAnimating()
                 
-                //let image2 = Image(_path: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.employee.pic!)
-                //self.imageFullViewController = ImageFullViewController(_image: image2)
-                //self.imageFullViewController = ImageFullViewController(_image: image)
+                
             }
         }
         
@@ -125,6 +123,18 @@ class EmployeeTableViewCell: UITableViewCell {
             badgeView.image = UIImage(named: "badgeStarGrayIcon")
         }
         self.badgeCount += 1
+    }
+    
+    func addNoLicenseText(){
+       // let badgeXPos:CGFloat = CGFloat(70 + (self.badgeCount * 25))
+        
+        let noLicenseLbl:Label = Label(frame: CGRect(x: 70, y: 36.0, width: 200.0, height: 20.0))
+        noLicenseLbl.translatesAutoresizingMaskIntoConstraints = true
+        //let badgeView:UIImageView = UIImageView(frame: CGRect(x: badgeXPos, y: 36.0, width: 20.0, height: 20.0))
+        noLicenseLbl.font = layoutVars.extraSmallFont
+        noLicenseLbl.text = "No Licenses Recorded"
+        self.contentView.addSubview(noLicenseLbl)
+        
     }
     
     func setPhone(){

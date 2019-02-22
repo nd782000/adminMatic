@@ -91,6 +91,8 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         //print("viewdidload")
         view.backgroundColor = layoutVars.backgroundColor
         //custom back button
+        
+        /*
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(LeadViewController.goBack), for: UIControl.Event.touchUpInside)
         backButton.setTitle("Back", for: UIControl.State.normal)
@@ -98,6 +100,12 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
         
         
         showLoadingScreen()

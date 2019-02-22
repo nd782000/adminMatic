@@ -85,6 +85,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         view.backgroundColor = layoutVars.backgroundColor
         title = "Contract Settings"
         
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(ImageSettingsViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -93,6 +94,11 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
         
         
         self.layoutViews()

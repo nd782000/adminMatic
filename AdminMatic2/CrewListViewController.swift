@@ -8,6 +8,8 @@
 
  //  Edited for safeView
 
+
+/*
 import Foundation
 import UIKit
 import Alamofire
@@ -421,6 +423,7 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         cell.employee = self.employeeArray[sections[indexPath.section].index + indexPath.row]
+        cell.layoutViews()
         cell.activityView.startAnimating()
         cell.nameLbl.text = cell.employee.name
         cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+cell.employee.pic!)
@@ -527,3 +530,5 @@ class CrewListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
 fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
 	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
 }
+*/
+

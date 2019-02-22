@@ -293,6 +293,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         view.backgroundColor = layoutVars.backgroundColor
         // Do any additional setup after loading the view.
         //custom back button
+        /*
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(WorkOrderViewController.goBack), for: UIControl.Event.touchUpInside)
         backButton.setTitle("Back", for: UIControl.State.normal)
@@ -300,6 +301,11 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
         
         
         
@@ -945,6 +951,10 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.itemsTableView.delegate  =  self
         self.itemsTableView.dataSource  =  self
         self.itemsTableView.layer.cornerRadius = 0
+        
+        self.itemsTableView.layer.borderWidth = 1
+        self.itemsTableView.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
+        
         self.itemsTableView.register(WoItemTableViewCell.self, forCellReuseIdentifier: "cell")
         self.workOrderView.addSubview(self.itemsTableView)
         
