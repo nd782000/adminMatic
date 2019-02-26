@@ -972,7 +972,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     func viewImage(_indexPath:IndexPath,_image:Image){
         
         self.imageDetailViewController = ImageDetailViewController(_image: _image)
-        self.imageDetailViewController.imageFullViewController.delegate = self
+        //self.imageDetailViewController.imageFullViewController.delegate = self
         self.imageCollectionView?.deselectItem(at: _indexPath, animated: true)
         self.navigationController?.pushViewController(self.imageDetailViewController, animated: false )
         self.imageDetailViewController.delegate = self
@@ -1335,16 +1335,16 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     currentImageIndex = 0
                     imageDetailViewController.image = self.images[currentImageIndex]
                     imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.images[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
+                    //imageDetailViewController.imageFullViewController.image = self.images[currentImageIndex]
+                    //imageDetailViewController.imageFullViewController.layoutViews()
                     
                     
                 }else{
                     currentImageIndex = currentImageIndex + 1
                     imageDetailViewController.image = self.images[currentImageIndex]
                     imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.images[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
+                    //imageDetailViewController.imageFullViewController.image = self.images[currentImageIndex]
+                    //imageDetailViewController.imageFullViewController.layoutViews()
                 }
                 
             }else{
@@ -1352,14 +1352,14 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     currentImageIndex = self.images.count - 1
                     imageDetailViewController.image = self.images[currentImageIndex]
                     imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.images[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
+                    //imageDetailViewController.imageFullViewController.image = self.images[currentImageIndex]
+                    //imageDetailViewController.imageFullViewController.layoutViews()
                 }else{
                     currentImageIndex = currentImageIndex - 1
                     imageDetailViewController.image = self.images[currentImageIndex]
                     imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.images[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
+                    //imageDetailViewController.imageFullViewController.image = self.images[currentImageIndex]
+                    //imageDetailViewController.imageFullViewController.layoutViews()
                 }
             }
         

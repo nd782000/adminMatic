@@ -162,9 +162,9 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryViewController.cancelPicker))
+        let closeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryViewController.cancelPicker))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let addButton = UIBarButtonItem(title: "Add", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryViewController.addEmployee))
+        let addButton = BarButtonItem(title: "Add", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryViewController.addEmployee))
         
         toolBar.setItems([closeButton, spaceButton, addButton], animated: false)
         toolBar.isUserInteractionEnabled = true
@@ -1386,8 +1386,8 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
             }))
             
             actionSheet.addAction(UIAlertAction(title: "View Receipt", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-                let imageFullViewController = ImageFullViewController(_image: _usage.receipt!)
-                self.navigationController?.pushViewController(imageFullViewController, animated: false )
+                let imageDetailViewController = ImageDetailViewController(_image: _usage.receipt!)
+                self.navigationController?.pushViewController(imageDetailViewController, animated: false )
                 
             }))
             

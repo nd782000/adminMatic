@@ -385,9 +385,9 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadTaskAssignViewController.cancelPicker))
+        let closeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadTaskAssignViewController.cancelPicker))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let setButton = UIBarButtonItem(title: "Assign", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadTaskAssignViewController.handleItemSelect))
+        let setButton = BarButtonItem(title: "Assign", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadTaskAssignViewController.handleItemSelect))
         
         toolBar.setItems([closeButton, spaceButton, setButton], animated: false)
         toolBar.isUserInteractionEnabled = true
@@ -419,8 +419,8 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         contractToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         contractToolBar.sizeToFit()
         
-        let closeContractButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadTaskAssignViewController.cancelPicker))
-        let setContractButton = UIBarButtonItem(title: "Assign", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadTaskAssignViewController.handleItemSelect))
+        let closeContractButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadTaskAssignViewController.cancelPicker))
+        let setContractButton = BarButtonItem(title: "Assign", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadTaskAssignViewController.handleItemSelect))
         
         contractToolBar.setItems([closeContractButton, spaceButton, setContractButton], animated: false)
         contractToolBar.isUserInteractionEnabled = true

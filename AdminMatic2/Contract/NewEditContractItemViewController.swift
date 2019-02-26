@@ -277,9 +277,9 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         chargeTypeToolBar.barStyle = UIBarStyle.default
         chargeTypeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         chargeTypeToolBar.sizeToFit()
-        let closeChargeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelChargeTypeInput))
+        let closeChargeTypeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelChargeTypeInput))
         
-        let setChargeTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleChargeTypeChange))
+        let setChargeTypeButton = BarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleChargeTypeChange))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         chargeTypeToolBar.setItems([closeChargeTypeButton, spaceButton, setChargeTypeButton], animated: false)
         chargeTypeToolBar.isUserInteractionEnabled = true
@@ -332,7 +332,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         estQtyToolBar.barStyle = UIBarStyle.default
         estQtyToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         estQtyToolBar.sizeToFit()
-        let setEstQtyButton = UIBarButtonItem(title: "Set Qty", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleEstQty))
+        let setEstQtyButton = BarButtonItem(title: "Set Qty", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleEstQty))
         estQtyToolBar.setItems([spaceButton, setEstQtyButton], animated: false)
         estQtyToolBar.isUserInteractionEnabled = true
         estQtyTxtField.inputAccessoryView = estQtyToolBar
@@ -359,7 +359,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         priceToolBar.barStyle = UIBarStyle.default
         priceToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         priceToolBar.sizeToFit()
-        let setPriceButton = UIBarButtonItem(title: "Set Price", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handlePrice))
+        let setPriceButton = BarButtonItem(title: "Set Price", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handlePrice))
         priceToolBar.setItems([spaceButton2, setPriceButton], animated: false)
         priceToolBar.isUserInteractionEnabled = true
         priceTxtField.inputAccessoryView = priceToolBar

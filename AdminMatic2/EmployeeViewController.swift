@@ -80,12 +80,13 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
 
     var keyBoardShown:Bool = false
 
-    var imageFullViewController:ImageFullViewController!
+   // var imageFullViewController:ImageFullViewController!
+    //var imageDetailViewController:ImageDetailViewController!
     var deptCrewListViewController:DeptCrewListViewController!
     //var crewListViewController:CrewListViewController!
     var shiftsViewController:ShiftsViewController!
     var payrollEntryViewController:PayrollEntryViewController!
-    var usageViewController:PerformanceViewController!
+    var usageViewController:UsageViewController!
     var licenseViewController:LicenseViewController!
     
     var methodStart:Date!
@@ -246,7 +247,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/images.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                //print("images response = \(response)")
+                print("images response = \(response)")
             }
             
             .responseJSON(){
@@ -384,8 +385,9 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                 self.employeeImage.image = image
                 
                 let image2 = Image(_path: self.employee.pic)
-                //let image2 = Image(_path: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+self.employee.pic!)
-                self.imageFullViewController = ImageFullViewController(_image: image2)
+                //let image2 = Image(_path: "https://atlanticlawnandgarden.com/uploads/general/medium/"+self.employee.pic!)
+                //self.imageFullViewController = ImageFullViewController(_image: image2)
+                self.imageDetailViewController = ImageDetailViewController(_image: image2)
                 self.activityView.stopAnimating()
             }
         }
@@ -395,7 +397,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         
         self.tapBtn = Button()
         self.tapBtn.translatesAutoresizingMaskIntoConstraints = false
-        self.tapBtn.addTarget(self, action: #selector(EmployeeViewController.showFullScreenImage), for: UIControl.Event.touchUpInside)
+        self.tapBtn.addTarget(self, action: #selector(EmployeeViewController.showImage), for: UIControl.Event.touchUpInside)
         self.tapBtn.backgroundColor = UIColor.clear
         self.tapBtn.setTitle("", for: UIControl.State.normal)
         safeContainer.addSubview(self.tapBtn)
@@ -730,7 +732,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         //print("show usage")
         if(appDelegate.loggedInEmployee != nil){
             
-            self.usageViewController = PerformanceViewController(_empID: (self.employee.ID)!)
+            self.usageViewController = UsageViewController(_empID: (self.employee.ID)!,_empFName: (self.employee.fname)!)
             navigationController?.pushViewController(self.usageViewController, animated: false )
            // navigationController = UINavigationController(rootViewController: self.usageViewController)
             
@@ -909,7 +911,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         //print("name = \(currentCell.image.name)")
         
         imageDetailViewController = ImageDetailViewController(_image: currentCell.image, _ID: currentCell.image.ID)
-        imageDetailViewController.imageFullViewController.delegate = self
+        //imageDetailViewController.imageFullViewController.delegate = self
         imageCollectionView?.deselectItem(at: indexPath, animated: true)
         navigationController?.pushViewController(imageDetailViewController, animated: false )
         imageDetailViewController.delegate = self
@@ -927,16 +929,16 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                 currentImageIndex = 0
                 imageDetailViewController.image = self.imageArray[currentImageIndex]
                 imageDetailViewController.layoutViews()
-                imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
-                imageDetailViewController.imageFullViewController.layoutViews()
+                //imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                //imageDetailViewController.imageFullViewController.layoutViews()
                 
                 
             }else{
                 currentImageIndex = currentImageIndex + 1
                 imageDetailViewController.image = self.imageArray[currentImageIndex]
                 imageDetailViewController.layoutViews()
-                imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
-                imageDetailViewController.imageFullViewController.layoutViews()
+                //imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                //imageDetailViewController.imageFullViewController.layoutViews()
             }
             
         }else{
@@ -944,14 +946,14 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                 currentImageIndex = self.imageArray.count - 1
                 imageDetailViewController.image = self.imageArray[currentImageIndex]
                 imageDetailViewController.layoutViews()
-                imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
-                imageDetailViewController.imageFullViewController.layoutViews()
+               // imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                //imageDetailViewController.imageFullViewController.layoutViews()
             }else{
                 currentImageIndex = currentImageIndex - 1
                 imageDetailViewController.image = self.imageArray[currentImageIndex]
                 imageDetailViewController.layoutViews()
-                imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
-                imageDetailViewController.imageFullViewController.layoutViews()
+                //imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                //imageDetailViewController.imageFullViewController.layoutViews()
             }
         }
         
@@ -1224,11 +1226,11 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     
     
     
-    @objc func showFullScreenImage(_ sender: UITapGestureRecognizer){
+    @objc func showImage(_ sender: UITapGestureRecognizer){
         
         //print("show full screen")
         
-        navigationController?.pushViewController(imageFullViewController, animated: false )
+        navigationController?.pushViewController(imageDetailViewController, animated: false )
     }
     
     

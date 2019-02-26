@@ -164,7 +164,7 @@ class NewEditContactViewController: UIViewController, UITextFieldDelegate, UIPic
         typeToolBar.sizeToFit()
         let closeTypeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContactViewController.cancelTypeInput))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let setTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContactViewController.handleTypeChange))
+        let setTypeButton = BarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContactViewController.handleTypeChange))
         typeToolBar.setItems([closeTypeButton, spaceButton, setTypeButton], animated: false)
         typeToolBar.isUserInteractionEnabled = true
         typeTxtField.inputAccessoryView = typeToolBar
@@ -191,7 +191,7 @@ class NewEditContactViewController: UIViewController, UITextFieldDelegate, UIPic
         textInputToolBar.barStyle = UIBarStyle.default
         textInputToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         textInputToolBar.sizeToFit()
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelInput))
+        let closeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelInput))
         
         textInputToolBar.setItems([closeButton], animated: false)
         textInputToolBar.isUserInteractionEnabled = true

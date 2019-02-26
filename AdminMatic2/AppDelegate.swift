@@ -55,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.4.7"
+    var appVersion:String = "1.4.8"
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
     var employeeListViewController:EmployeeListViewController!
@@ -259,7 +259,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/employees.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-               // print("employee response = \(response)")
+                print("employee response = \(response)")
             }
             .responseJSON() {
                 response in
@@ -349,7 +349,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
         
         //style the nav bar
         let layoutVars:LayoutVars = LayoutVars()
-        UIBarButtonItem.appearance().tintColor = layoutVars.buttonTextColor
+        UIBarButtonItem.appearance().tintColor = layoutVars.backgroundColor
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         
         
@@ -686,7 +686,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         
         if let rootViewController = self.topViewControllerWithRootViewController(rootViewController: window?.rootViewController) {
-            if (rootViewController.responds(to: #selector(ImageFullViewController.canRotate)) || rootViewController.responds(to: #selector(PerformanceViewController.canRotate)) || rootViewController.responds(to: #selector(SignatureViewController.canRotate))) {
+            if (rootViewController.responds(to: #selector(ImageDetailViewController.canRotate)) || rootViewController.responds(to: #selector(UsageViewController.canRotate)) || rootViewController.responds(to: #selector(SignatureViewController.canRotate))) {
                 // Unlock landscape view orientations for this view controller
                 return .allButUpsideDown;
             }

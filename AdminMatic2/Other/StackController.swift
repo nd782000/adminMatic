@@ -146,9 +146,9 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let contractCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.cancelPicker))
+        let contractCloseButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.cancelPicker))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let setButton = UIBarButtonItem(title: "Go To Contract", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.handleContractChange))
+        let setButton = BarButtonItem(title: "Go To Contract", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.handleContractChange))
         
         toolBar.setItems([contractCloseButton, spaceButton, setButton], animated: false)
         toolBar.isUserInteractionEnabled = true
@@ -197,8 +197,8 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
         workOrderToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         workOrderToolBar.sizeToFit()
         
-        let workOrderCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.cancelPicker))
-        let workOrderSetButton = UIBarButtonItem(title: "Go To WorkOrder", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.handleWorkOrderChange))
+        let workOrderCloseButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.cancelPicker))
+        let workOrderSetButton = BarButtonItem(title: "Go To WorkOrder", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.handleWorkOrderChange))
         
         workOrderToolBar.setItems([workOrderCloseButton, spaceButton, workOrderSetButton], animated: false)
         workOrderToolBar.isUserInteractionEnabled = true
@@ -246,9 +246,9 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
         invoiceToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         invoiceToolBar.sizeToFit()
         
-        let invoiceCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.cancelPicker))
+        let invoiceCloseButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.cancelPicker))
         //let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let invoiceSetButton = UIBarButtonItem(title: "Go To Invoice", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.handleInvoiceChange))
+        let invoiceSetButton = BarButtonItem(title: "Go To Invoice", style: UIBarButtonItem.Style.plain, target: self, action: #selector(StackController.handleInvoiceChange))
         
         invoiceToolBar.setItems([invoiceCloseButton, spaceButton, invoiceSetButton], animated: false)
         invoiceToolBar.isUserInteractionEnabled = true

@@ -1,5 +1,5 @@
 //
-//  PerformanceViewController.swift
+//  UsageViewController.swift
 //  AdminMatic2
 //
 //  Created by Nick on 4/9/17.
@@ -14,14 +14,13 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-protocol PerformanceDelegate{
+protocol UsageListDelegate{
     func reDrawList(_index:Int, _status:String)
-    
 }
 
  
 
-class PerformanceViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIPickerViewDelegate, PerformanceDelegate{
+class UsageViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIPickerViewDelegate, UsageListDelegate{
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -30,6 +29,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     var indicator: SDevIndicator!
 
     var empID:String!
+    var empFName:String!
    
     var screenHeaderLbl: Label!
     var toLbl: Label!
@@ -42,7 +42,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     var startStopFormatter = DateFormatter()
     
     
-    var performanceTableView: TableView!
+    var usageTableView: TableView!
     var usageJSON: JSON!
     var usages: [Usage] = []
     var usageTotalLbl: Label!
@@ -59,7 +59,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     let qtyTH: THead = THead(text: "Qty")
     let priceTH: THead = THead(text: "Rev")
     
-    var total:String!
+    var total:String = "0"
     var totalPrice:String!
     
     var startDate:String!
@@ -67,15 +67,16 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     var startDateDB:String!
     var endDateDB:String!
 
-    
+    /*
     var methodStart:Date!
     var methodFinish:Date!
+    */
     
     
-    
-    init(_empID:String){
+    init(_empID:String,_empFName:String){
         super.init(nibName:nil,bundle:nil)
         self.empID = _empID
+        self.empFName = _empFName
         
     }
     
@@ -86,8 +87,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = layoutVars.backgroundColor
-        title = "Performance"
-        
+        title = "\(String(describing: self.empFName!))'s Usage"
         self.shortDateFormatter.dateFormat = "M/dd"
         self.timeFormatter.dateFormat = "h:mm a"
         
@@ -133,7 +133,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         //print("viewWillLayoutSubviews")
         
         if usageLoaded == false{
-            self.getPerformance()
+            self.getUsage()
         }else{
             if (UIDevice.current.orientation.isLandscape == true) {
                 //print("Landscape")
@@ -151,38 +151,28 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     
     
     
-    func getPerformance(){
+    func getUsage(){
         //print("get all usage")
         
-        methodStart = Date()
+        //methodStart = Date()
         indicator = SDevIndicator.generate(self.view)!
         
         
         let parameters:[String:String]
-        parameters = ["startDate":  startDateDB,"endDate": endDateDB,"empID":appDelegate.loggedInEmployee?.ID] as! [String : String]
+        parameters = ["startDate":  startDateDB,"endDate": endDateDB,"empID":empID] as! [String : String]
         
         //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/usageByEmp.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                //print("usageByEmp response = \(response)")
+                print("usageByEmp response = \(response)")
             }
             
             .responseJSON(){
                 response in
                 
-                
-                
-                /*
-                if let json = response.result.value {
-                    //print("JSON: \(json)")
-                    //self.images = JSON(json)
-                    self.usageJSON = JSON(json)
-                    self.parseUsageJSON()
-                    
-                }
- */
+               
                 
                 self.usages = []
                 
@@ -199,8 +189,8 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
                         let usages = json["usage"] as? [[String: Any]] {
                         
                         
-                        self.total = json["usageTotalHrs"] as? String
-                        self.totalPrice = json["usageTotalPrice"] as! String
+                        self.total = (json["usageTotalHrs"] as? String)!
+                        self.totalPrice = json["usageTotalPrice"] as? String
                         
                         let usageCount = usages.count
                         //print("usage count = \(usageCount)")
@@ -280,19 +270,13 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
                     
                     
                     
-                    
+                   /*
                     self.methodFinish = Date()
                     let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    //print("Execution time: \(executionTime)")
                     
+                    */
                     
                     self.indicator.dismissIndicator()
-                    
-                    
-                    //self.layoutViews()
-                    
-                    //print("usage count \(self.usages.count)")
-                    
                     
                     
                     
@@ -309,7 +293,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
                     
                     
                     
-                    self.performanceTableView.reloadData()
+                    self.usageTableView.reloadData()
                     
                    
                     
@@ -360,13 +344,13 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         
         
         self.screenHeaderLbl = Label()
-        self.screenHeaderLbl.text = "Your usage from:"
+        self.screenHeaderLbl.text = "From:"
         self.screenHeaderLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.screenHeaderLbl.textAlignment = NSTextAlignment.left
         safeContainer.addSubview(self.screenHeaderLbl)
         
         self.toLbl = Label()
-        self.toLbl.text = "to:"
+        self.toLbl.text = "To:"
         self.toLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.toLbl.textAlignment = NSTextAlignment.left
         safeContainer.addSubview(self.toLbl)
@@ -392,7 +376,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         startToolBar.barStyle = UIBarStyle.default
         startToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         startToolBar.sizeToFit()
-        let setStartButton = UIBarButtonItem(title: "Set Start Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PerformanceViewController.handleStartPicker))
+        let setStartButton = BarButtonItem(title: "Set Start Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageViewController.handleStartPicker))
         startToolBar.setItems([spaceButton, setStartButton], animated: false)
         startToolBar.isUserInteractionEnabled = true
         startTxtField.inputAccessoryView = startToolBar
@@ -416,7 +400,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         stopToolBar.barStyle = UIBarStyle.default
         stopToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         stopToolBar.sizeToFit()
-        let setStopButton = UIBarButtonItem(title: "Set Stop Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PerformanceViewController.handleStopPicker))
+        let setStopButton = BarButtonItem(title: "Set Stop Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageViewController.handleStopPicker))
         stopToolBar.setItems([spaceButton, setStopButton], animated: false)
         stopToolBar.isUserInteractionEnabled = true
         stopTxtField.inputAccessoryView = stopToolBar
@@ -439,14 +423,14 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         
         safeContainer.addSubview(tableHead)
         
-        self.performanceTableView =  TableView()
-        self.performanceTableView.delegate  =  self
-        self.performanceTableView.dataSource  =  self
-        self.performanceTableView.register(UsageTableViewCell.self, forCellReuseIdentifier: "cell")
-        safeContainer.addSubview(self.performanceTableView)
+        self.usageTableView =  TableView()
+        self.usageTableView.delegate  =  self
+        self.usageTableView.dataSource  =  self
+        self.usageTableView.register(UsageTableViewCell.self, forCellReuseIdentifier: "cell")
+        safeContainer.addSubview(self.usageTableView)
         
         self.usageTotalLbl = Label()
-        self.usageTotalLbl.text = "Totals -  Jobs:\(self.usages.count), Hours: \(self.total!)"
+        self.usageTotalLbl.text = "Totals -  Jobs:\(self.usages.count), Hours: \(self.total)"
         self.usageTotalLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.usageTotalLbl.textAlignment = NSTextAlignment.right
         safeContainer.addSubview(self.usageTotalLbl)
@@ -475,10 +459,10 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[qty(20)]", options: [], metrics: metricsDictionary, views: thDictionary))
         
         
-        let usageViewsDictionary = ["headerLbl": self.screenHeaderLbl,"start": self.startTxtField,"toLbl":self.toLbl,"stop": self.stopTxtField, "th":self.tableHead,"view1": self.performanceTableView,"view2": self.usageTotalLbl] as [String:Any]
+        let usageViewsDictionary = ["headerLbl": self.screenHeaderLbl,"start": self.startTxtField,"toLbl":self.toLbl,"stop": self.stopTxtField, "th":self.tableHead,"view1": self.usageTableView,"view2": self.usageTotalLbl] as [String:Any]
         
         
-        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[headerLbl]-[start(80)]-[toLbl(25)]-[stop(80)]", options: [], metrics: metricsDictionary, views:usageViewsDictionary))
+        safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-24-[headerLbl]-[start(80)]-[toLbl(25)]-[stop(80)]", options: [], metrics: metricsDictionary, views:usageViewsDictionary))
         
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[th]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
@@ -550,7 +534,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         startToolBar.barStyle = UIBarStyle.default
         startToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         startToolBar.sizeToFit()
-        let setStartButton = UIBarButtonItem(title: "Set Start Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PerformanceViewController.handleStartPicker))
+        let setStartButton = BarButtonItem(title: "Set Start Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageViewController.handleStartPicker))
         startToolBar.setItems([spaceButton, setStartButton], animated: false)
         startToolBar.isUserInteractionEnabled = true
         startTxtField.inputAccessoryView = startToolBar
@@ -572,7 +556,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         stopToolBar.barStyle = UIBarStyle.default
         stopToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         stopToolBar.sizeToFit()
-        let setStopButton = UIBarButtonItem(title: "Set Stop Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
+        let setStopButton = BarButtonItem(title: "Set Stop Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
         stopToolBar.setItems([spaceButton, setStopButton], animated: false)
         stopToolBar.isUserInteractionEnabled = true
         stopTxtField.inputAccessoryView = stopToolBar
@@ -587,14 +571,14 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         
         safeContainer.addSubview(tableHead)
         
-        self.performanceTableView =  TableView()
-        self.performanceTableView.delegate  =  self
-        self.performanceTableView.dataSource  =  self
-        self.performanceTableView.register(UsageTableViewCell.self, forCellReuseIdentifier: "cell")
-        safeContainer.addSubview(self.performanceTableView)
+        self.usageTableView =  TableView()
+        self.usageTableView.delegate  =  self
+        self.usageTableView.dataSource  =  self
+        self.usageTableView.register(UsageTableViewCell.self, forCellReuseIdentifier: "cell")
+        safeContainer.addSubview(self.usageTableView)
         
         self.usageTotalLbl = Label()
-        self.usageTotalLbl.text = "Totals - Jobs:\(self.usages.count), Hours: \(self.total!) , Revenue: \(self.totalPrice!)"
+        self.usageTotalLbl.text = "Totals - Jobs:\(self.usages.count), Hours: \(self.total) , Revenue: \(self.totalPrice!)"
         self.usageTotalLbl.font =  UIFont.boldSystemFont(ofSize: 16.0)
         self.usageTotalLbl.textAlignment = NSTextAlignment.right
         safeContainer.addSubview(self.usageTotalLbl)
@@ -633,11 +617,11 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         tableHead.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[price(20)]", options: [], metrics: metricsDictionary, views: thDictionary))
         
         
-        let usageViewsDictionary = ["headerLbl": self.screenHeaderLbl,"start": self.startTxtField,"toLbl":self.toLbl,"stop": self.stopTxtField, "th":self.tableHead,"view1": self.performanceTableView,"view2": self.usageTotalLbl] as [String:Any]
+        let usageViewsDictionary = ["headerLbl": self.screenHeaderLbl,"start": self.startTxtField,"toLbl":self.toLbl,"stop": self.stopTxtField, "th":self.tableHead,"view1": self.usageTableView,"view2": self.usageTotalLbl] as [String:Any]
         
         
        // safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[headerLbl]-|", options: [], metrics: metricsDictionary, views:usageViewsDictionary))
-         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[headerLbl]-[start(80)]-[toLbl(25)]-[stop(80)]", options: [], metrics: metricsDictionary, views:usageViewsDictionary))
+         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-24-[headerLbl]-[start(80)]-[toLbl(25)]-[stop(80)]", options: [], metrics: metricsDictionary, views:usageViewsDictionary))
         
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[th]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: metricsDictionary, views: usageViewsDictionary))
@@ -663,7 +647,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
-        let cell:UsageTableViewCell = performanceTableView.dequeueReusableCell(withIdentifier: "cell") as! UsageTableViewCell
+        let cell:UsageTableViewCell = usageTableView.dequeueReusableCell(withIdentifier: "cell") as! UsageTableViewCell
        
         
         
@@ -722,7 +706,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         let workOrderViewController = WorkOrderViewController(_workOrderID: currentCell.usage.woID!)
         
         workOrderViewController.tableCellID = indexPath?.row
-        workOrderViewController.performanceDelegate = self
+        workOrderViewController.usageDelegate = self
         
         navigationController?.pushViewController(workOrderViewController, animated: false )
         
@@ -767,7 +751,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         self.startTxtField.text = dateFormatter.string(from: startPickerView.date)
         startDate = dateFormatter.string(from: startPickerView.date)
          startDateDB = dateFormatterDB.string(from: startPickerView.date)
-        getPerformance()
+        getUsage()
     }
     
     
@@ -785,7 +769,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
         self.stopTxtField.text = dateFormatter.string(from: stopPickerView.date)
         endDate = dateFormatter.string(from: stopPickerView.date)
         endDateDB = dateFormatterDB.string(from: stopPickerView.date)
-        getPerformance()
+        getUsage()
     }
     
 
@@ -795,7 +779,7 @@ class PerformanceViewController: UIViewController, UITableViewDelegate, UITableV
     func reDrawList(_index:Int, _status:String){
         //print("reDraw List")
         self.usages[_index].woStatus = _status
-        self.performanceTableView.reloadData()
+        self.usageTableView.reloadData()
     }
 
     

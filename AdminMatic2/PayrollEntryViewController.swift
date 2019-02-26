@@ -343,9 +343,9 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryViewController.cancelPicker))
+        let closeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryViewController.cancelPicker))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let selectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryViewController.selectEmployee))
+        let selectButton = BarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryViewController.selectEmployee))
         
         toolBar.setItems([closeButton, spaceButton, selectButton], animated: false)
         toolBar.isUserInteractionEnabled = true

@@ -13,7 +13,7 @@ import Alamofire
 
 
  
-class ImageDetailViewController: UIViewController, UIDocumentInteractionControllerDelegate{
+class ImageDetailViewController: UIViewController, UIDocumentInteractionControllerDelegate, UIScrollViewDelegate{
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var delegate:ImageViewDelegate!
     var imageLikeDelegate:ImageLikeDelegate!
@@ -21,7 +21,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
     var indicator: SDevIndicator!
     var image:Image!
     var backgroundImageView:UIImageView!
-    
+    var scrollView:UIScrollView=UIScrollView()
     var blurEffect:UIBlurEffect!
     var blurredEffectView:UIVisualEffectView!
     
@@ -55,11 +55,13 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
     
     
     
-    var imageFullViewController:ImageFullViewController!
+    //var imageFullViewController:ImageFullViewController!
     
    
     
     var documentController: UIDocumentInteractionController!
+    
+    var UIHidden:Bool = false
     
     
     init(_image:Image, _ID:String = "0"){
@@ -68,7 +70,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         //self.mode = _mode
         self.ID = _ID
         
-        self.imageFullViewController = ImageFullViewController(_image: _image)
+        //self.imageFullViewController = ImageFullViewController(_image: _image)
         
         super.init(nibName:nil,bundle:nil)
     }
@@ -104,6 +106,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
     func layoutViews(){
     
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        self.scrollView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         if(self.textView != nil){
             self.textView.subviews.forEach({ $0.removeFromSuperview() })
         }
@@ -115,7 +118,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         }
         
        
-        
+        //navigationController?.hidesBarsOnTap = true
         
         title = self.image.name
         
@@ -132,16 +135,51 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         self.blurredEffectView = UIVisualEffectView(effect: blurEffect)
         
         
+        
+        scrollView.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:self.view.frame.height)
+        
+        
+        scrollView.minimumZoomScale=1
+        scrollView.maximumZoomScale=3
+        scrollView.bounces=false
+        scrollView.delegate=self
+        scrollView.backgroundColor = UIColor.darkGray
+        self.view.addSubview(scrollView)
+        
+        
+        
         self.imageView = UIImageView()
         
         
+        /*
         self.imageView.clipsToBounds = true
         self.imageView.contentMode = UIView.ContentMode.scaleAspectFit
         self.imageView.translatesAutoresizingMaskIntoConstraints = false
         self.imageView.isUserInteractionEnabled = true
         self.imageView.image = nil
+ */
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(ImageDetailViewController.showFullScreenImage))
+        
+        imageView.frame = CGRect(x:0, y:0, width:scrollView.frame.width, height:scrollView.frame.height)
+        
+        
+        
+        imageView.backgroundColor = .black
+        imageView.contentMode = .scaleAspectFill
+        scrollView.addSubview(imageView)
+        imageView.isUserInteractionEnabled = true
+        
+        
+        
+        activityView = UIActivityIndicatorView(style: .whiteLarge)
+        activityView.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
+        self.view.addSubview(activityView)
+        activityView.startAnimating()
+        
+        
+        
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(ImageDetailViewController.hideUI))
         self.imageView.addGestureRecognizer(tap)
         
         
@@ -160,17 +198,37 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         
         self.textView = UIView()
-        self.textView.translatesAutoresizingMaskIntoConstraints = false
-        self.textView.backgroundColor = UIColor(hex: 0x005100, op: 0.6)
+        self.textView.frame = CGRect(x:0, y:(layoutVars.fullHeight - 150), width:scrollView.frame.width, height:150)
+        //self.textView.translatesAutoresizingMaskIntoConstraints = false
+        //self.textView.backgroundColor = UIColor(hex: 0x005100, op: 0.6)
+        
+        self.textView.backgroundColor = layoutVars.backgroundColor
+        
+        
+        
+        imageView.backgroundColor = .black
+        imageView.contentMode = .scaleAspectFill
+        scrollView.addSubview(imageView)
+        imageView.isUserInteractionEnabled = true
+        
+        
+        
+        activityView = UIActivityIndicatorView(style: .whiteLarge)
+        activityView.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
+        self.view.addSubview(activityView)
+        activityView.startAnimating()
+        
         
         self.likeBtn = Button(titleText: "")
         self.likeBtn.backgroundColor = UIColor.clear
+        //if self.image.liked != nil{
+            if(self.image.liked == "0"){
+                self.likesImageView.image = UIImage(named:"unLiked.png")
+            }else{
+                self.likesImageView.image = UIImage(named:"liked.png")
+            }
+       // }
         
-        if(self.image.liked == "0"){
-            self.likesImageView.image = UIImage(named:"unLiked.png")
-        }else{
-            self.likesImageView.image = UIImage(named:"liked.png")
-        }
         
         likesImageView.contentMode = .scaleAspectFill
         likesImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -188,7 +246,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         self.likesBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
         self.likesBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         self.likesBtn.backgroundColor = UIColor.clear
-        self.likesBtn.titleLabel?.textColor = UIColor.white
+       
         
         //self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControlState.normal)
         
@@ -197,6 +255,8 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         }else{
             self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControl.State.normal)
         }
+        // self.likesBtn.titleLabel?.textColor = layoutVars.buttonColor1
+        self.likesBtn.setTitleColor(layoutVars.buttonColor1, for: UIControl.State())
         
         self.likesBtn.addTarget(self, action: #selector(ImageDetailViewController.showLikesList), for: UIControl.Event.touchUpInside)
         
@@ -211,9 +271,12 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         self.customerBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.right
         self.customerBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         self.customerBtn.backgroundColor = UIColor.clear
-        self.customerBtn.titleLabel?.textColor = UIColor.white
+        
         
         self.customerBtn.setTitle(image.customerName, for: UIControl.State.normal)
+        //self.customerBtn.titleLabel?.textColor = layoutVars.buttonColor1
+        self.customerBtn.setTitleColor(layoutVars.buttonColor1, for: UIControl.State())
+
         self.customerBtn.addTarget(self, action: #selector(ImageDetailViewController.showCustomerView), for: UIControl.Event.touchUpInside)
         
         
@@ -225,26 +288,25 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        self.descriptionLbl = UITextView()
+        if self.image.dateAdded != nil{
+            let date = dateFormatter.date(from: self.image.dateAdded)!
         
-        
-        let date = dateFormatter.date(from: self.image.dateAdded)!
-        
-        let shortDateFormatter = DateFormatter()
-        shortDateFormatter.dateFormat = "MM/dd/yyyy"
+            let shortDateFormatter = DateFormatter()
+            shortDateFormatter.dateFormat = "MM/dd/yyyy"
 
             
-        let addedByDate = shortDateFormatter.string(from: date)
+            let addedByDate = shortDateFormatter.string(from: date)
         
-        
-        
-        
-        self.descriptionLbl = UITextView()
-        self.descriptionLbl.text = "Uploaded by \(self.image.createdBy!) on \(addedByDate) - \(self.image.description!)"
+            self.descriptionLbl.text = "Uploaded by \(self.image.createdBy!) on \(addedByDate) - \(self.image.description!)"
+        }else{
+            textView.isHidden = true
+        }
 
         //self.descriptionLbl.text = "\(self.image.customerName)     \(self.image.description!)"
         self.descriptionLbl.backgroundColor = UIColor(hex: 0xffffff, op: 0.1)
         self.descriptionLbl.layer.cornerRadius = 4.0
-        self.descriptionLbl.textColor = UIColor.white
+        self.descriptionLbl.textColor = layoutVars.buttonColor1
         self.descriptionLbl.font = layoutVars.textFieldFont
         self.descriptionLbl.isEditable = false
         
@@ -289,14 +351,15 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
        
         
-        
+        setZoomScale()
+        setupGestureRecognizer()
         
         
         
         
         
         viewsDictionary = [
-            "backgroundImageView":self.backgroundImageView, "imageView":self.imageView, "textView":self.textView
+            "backgroundImageView":self.backgroundImageView
             ] as [String:Any]
         
         viewsDictionary2 = ["likeBtn":self.likeBtn, "likesBtn":self.likesBtn, "customerLbl":self.customerBtn, "descriptionLbl":self.descriptionLbl, "tagsLbl":self.tagsLbl
@@ -307,6 +370,73 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         
     }
+    
+    
+    //Scroll Methods
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        print("viewForZooming")
+        // self.navigationController?.isNavigationBarHidden = true
+        return self.imageView
+        
+    }
+    
+    /*
+    override func viewWillLayoutSubviews() {
+        print("viewWillLayoutSubviews")
+        
+        print("view width = \(self.view.frame.width)")
+        scrollView.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:self.view.frame.height)
+        imageView.frame = CGRect(x:0, y:0, width:scrollView.frame.width, height:scrollView.frame.height)
+        
+        //setUpViews()
+        
+        
+        setZoomScale()
+    }
+    
+    */
+    
+    func setZoomScale() {
+        print("setZoomScale")
+        let imageViewSize = imageView.bounds.size
+        let scrollViewSize = scrollView.bounds.size
+        let widthScale = scrollViewSize.width / imageViewSize.width
+        let heightScale = scrollViewSize.height / imageViewSize.height
+        
+        scrollView.minimumZoomScale = min(widthScale, heightScale)
+        scrollView.zoomScale = 1.0
+    }
+    
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        print("scrollViewDidZoom")
+        let imageViewSize = imageView.frame.size
+        let scrollViewSize = scrollView.bounds.size
+        let verticalPadding = imageViewSize.height < scrollViewSize.height ? (scrollViewSize.height - imageViewSize.height) / 2 : 0
+        let horizontalPadding = imageViewSize.width < scrollViewSize.width ? (scrollViewSize.width - imageViewSize.width) / 2 : 0
+        
+        scrollView.contentInset = UIEdgeInsets(top: verticalPadding, left: horizontalPadding, bottom: verticalPadding, right: horizontalPadding)
+    }
+    
+    func setupGestureRecognizer() {
+        print("setupGestureRecognizer")
+        
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap))
+        doubleTap.numberOfTapsRequired = 2
+        scrollView.addGestureRecognizer(doubleTap)
+    }
+    
+    @objc func handleDoubleTap() {
+        print("handleDoubleTap")
+        if (scrollView.zoomScale > scrollView.minimumZoomScale) {
+            scrollView.setZoomScale(scrollView.minimumZoomScale, animated: true)
+        } else {
+            scrollView.setZoomScale(scrollView.maximumZoomScale, animated: true)
+        }
+    }
+    
+    
+    
+    
     
     @objc func showCustomerView(){
         print("customer = \(image.customer)")
@@ -392,8 +522,60 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
     }
     
     
-    
-    
+    @objc func hideUI(_ sender: UITapGestureRecognizer){
+        
+        
+        
+        if !UIHidden{
+            print("slide UI Out")
+            
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut, animations: {
+                // var fabricTopFrame = self.fabricTop.frame
+               // self.view.frame.origin.y -= keyboardFrame.height
+                if UIApplication.shared.statusBarOrientation.isLandscape {
+                    //here you can do the logic for the cell size if phone is in landscape
+                    print("landscape")
+                    
+                    self.textView.frame.origin.y = self.layoutVars.fullWidth
+                }else{
+                    print("portrait")
+                    
+                    self.textView.frame.origin.y = self.layoutVars.fullHeight
+                }
+                
+                self.navigationController?.navigationBar.frame.origin.y = 0 - (self.navigationController?.navigationBar.frame.height)!
+                
+            }, completion: { finished in
+                ////print("Napkins opened!")
+                self.UIHidden = !self.UIHidden
+            })
+            
+        }else{
+            print("slide UI in")
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut, animations: {
+                // var fabricTopFrame = self.fabricTop.frame
+                // self.view.frame.origin.y -= keyboardFrame.height
+                if UIApplication.shared.statusBarOrientation.isLandscape {
+                    //here you can do the logic for the cell size if phone is in landscape
+                    print("landscape")
+                    
+                    self.textView.frame.origin.y = self.layoutVars.fullWidth - 40
+                    self.navigationController?.navigationBar.frame.origin.y = 0
+                }else{
+                    print("portrait")
+                    
+                    self.textView.frame.origin.y = self.layoutVars.fullHeight - 150
+                    self.navigationController?.navigationBar.frame.origin.y = 20//status bar height
+                }
+                
+                
+            }, completion: { finished in
+                ////print("Napkins opened!")
+                self.UIHidden = !self.UIHidden
+            })
+        }
+    }
+    /*
     
     @objc func showFullScreenImage(_ sender: UITapGestureRecognizer){
         
@@ -401,6 +583,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         navigationController?.pushViewController(imageFullViewController, animated: false )
     }
+    */
     
     
     @objc func swiped(_ gesture: UIGestureRecognizer){
@@ -409,10 +592,15 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
             switch swipeGesture.direction {
             case UISwipeGestureRecognizer.Direction.right:
                 //print("right swipe")
-                _ = delegate.getPrevNextImage(_next: false)
+                if delegate != nil{
+                    _ = delegate.getPrevNextImage(_next: false)
+                }
+                
             case UISwipeGestureRecognizer.Direction.left:
                 //print("left swipe")
-                _ = delegate.getPrevNextImage(_next: true)
+                if delegate != nil{
+                    _ = delegate.getPrevNextImage(_next: true)
+                }
             default:
                 print("other swipe")
             }
@@ -436,7 +624,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
     
     
     
-    func canRotate() -> Void {}
+   
     
     
     
@@ -452,7 +640,31 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         super.viewWillLayoutSubviews()
         print("rotate view")
         
-       setUpViews()
+        print("viewWillLayoutSubviews")
+        
+        print("view width = \(self.view.frame.width)")
+        scrollView.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:self.view.frame.height)
+        imageView.frame = CGRect(x:0, y:0, width:scrollView.frame.width, height:scrollView.frame.height)
+        
+        //setUpViews()
+        
+        
+        setZoomScale()
+        
+        
+        setUpViews()
+        
+        /*
+       
+        
+        scrollView.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:self.view.frame.height)
+        imageView.frame = CGRect(x:0, y:0, width:scrollView.frame.width, height:scrollView.frame.height)
+        
+        //setUpViews()
+        
+        
+        setZoomScale()
+        */
     
     }
     
@@ -460,6 +672,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
     
     func setUpViews(){
         
+        UIHidden = false
         
         print("set up views")
         
@@ -477,8 +690,11 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
        // }
         
     
+        self.scrollView.addSubview(self.imageView)
+
+        
         self.view.addSubview(self.backgroundImageView)
-        self.view.addSubview(self.imageView)
+        self.view.addSubview(self.scrollView)
         self.view.addSubview(activityView)
         self.view.addSubview(self.textView)
         
@@ -500,11 +716,11 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[backgroundImageView]|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[imageView]|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[textView]|", options: [], metrics: nil, views: viewsDictionary))
+        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[imageView]|", options: [], metrics: nil, views: viewsDictionary))
+        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[textView]|", options: [], metrics: nil, views: viewsDictionary))
        // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[likesView]|", options: [], metrics: nil, views: viewsDictionary))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[backgroundImageView]|", options: [], metrics: nil, views: viewsDictionary))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[imageView]|", options: [], metrics: nil, views: viewsDictionary))
+       // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[imageView]|", options: [], metrics: nil, views: viewsDictionary))
         
         
         
@@ -520,8 +736,10 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
             print("landscape")
             
           
-            
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(40)]|", options: [], metrics: nil, views: viewsDictionary))
+            self.textView.frame = CGRect(x:0, y:(layoutVars.fullWidth - 40), width:scrollView.frame.width, height:40)
+            //self.textView.translatesAutoresizingMaskIntoConstraints = false
+            //self.textView.backgroundColor = UIColor(hex: 0x005100, op: 0.6)
+           // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(40)]|", options: [], metrics: nil, views: viewsDictionary))
             
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likeBtn(30)][likesBtn(80)]-[customerLbl]-|", options: [NSLayoutConstraint.FormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
             
@@ -539,7 +757,8 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
             self.textView.addSubview(self.descriptionLbl)
             
             self.textView.addSubview(self.tagsLbl)
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(150)]|", options: [], metrics: nil, views: viewsDictionary))
+            self.textView.frame = CGRect(x:0, y:(layoutVars.fullHeight - 150), width:scrollView.frame.width, height:150)
+            //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(150)]|", options: [], metrics: nil, views: viewsDictionary))
             
             
           
@@ -746,6 +965,9 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    @objc func canRotate() -> Void {}
+    
     
 }
 

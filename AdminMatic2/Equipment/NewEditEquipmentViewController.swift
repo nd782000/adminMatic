@@ -401,9 +401,9 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         crewToolBar.barStyle = UIBarStyle.default
         crewToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         crewToolBar.sizeToFit()
-        let closeCrewButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelCrewInput))
+        let closeCrewButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelCrewInput))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let setCrewButton = UIBarButtonItem(title: "Set Crew", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handleCrewChange))
+        let setCrewButton = BarButtonItem(title: "Set Crew", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handleCrewChange))
         crewToolBar.setItems([closeCrewButton, spaceButton, setCrewButton], animated: false)
         crewToolBar.isUserInteractionEnabled = true
         crewTxtField.inputAccessoryView = crewToolBar
@@ -476,8 +476,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         typeToolBar.barStyle = UIBarStyle.default
         typeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         typeToolBar.sizeToFit()
-        let closeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelTypeInput))
-        let setTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handleTypeChange))
+        let closeTypeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelTypeInput))
+        let setTypeButton = BarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handleTypeChange))
         typeToolBar.setItems([closeTypeButton, spaceButton, setTypeButton], animated: false)
         typeToolBar.isUserInteractionEnabled = true
         typeTxtField.inputAccessoryView = typeToolBar
@@ -534,8 +534,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         fuelToolBar.barStyle = UIBarStyle.default
         fuelToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         fuelToolBar.sizeToFit()
-        let closeFuelButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelFuelInput))
-        let setFuelButton = UIBarButtonItem(title: "Set Fuel", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handleFuelChange))
+        let closeFuelButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelFuelInput))
+        let setFuelButton = BarButtonItem(title: "Set Fuel", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handleFuelChange))
         fuelToolBar.setItems([closeFuelButton, spaceButton, setFuelButton], animated: false)
         fuelToolBar.isUserInteractionEnabled = true
         fuelTxtField.inputAccessoryView = fuelToolBar
@@ -574,8 +574,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         engineToolBar.barStyle = UIBarStyle.default
         engineToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         engineToolBar.sizeToFit()
-        let closeEngineButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelEngineInput))
-        let setEngineButton = UIBarButtonItem(title: "Set Engine", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handleEngineChange))
+        let closeEngineButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelEngineInput))
+        let setEngineButton = BarButtonItem(title: "Set Engine", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handleEngineChange))
         engineToolBar.setItems([closeEngineButton, spaceButton, setEngineButton], animated: false)
         engineToolBar.isUserInteractionEnabled = true
         engineTxtField.inputAccessoryView = engineToolBar
@@ -609,7 +609,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         vendorToolBar.barStyle = UIBarStyle.default
         vendorToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         vendorToolBar.sizeToFit()
-        let closeVendorButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelVendorInput))
+        let closeVendorButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelVendorInput))
         
         vendorToolBar.setItems([closeVendorButton], animated: false)
         vendorToolBar.isUserInteractionEnabled = true
@@ -649,8 +649,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         purchasedToolBar.barStyle = UIBarStyle.default
         purchasedToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         purchasedToolBar.sizeToFit()
-        let closePurchasedButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelPurchasedInput))
-        let setPurchasedButton = UIBarButtonItem(title: "Set Purchased", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handlePurchasedPicker))
+        let closePurchasedButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelPurchasedInput))
+        let setPurchasedButton = BarButtonItem(title: "Set Purchased", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.handlePurchasedPicker))
         purchasedToolBar.setItems([closePurchasedButton, spaceButton, setPurchasedButton], animated: false)
         purchasedToolBar.isUserInteractionEnabled = true
         purchasedTxtField.inputAccessoryView = purchasedToolBar
@@ -683,8 +683,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
         descriptionToolBar.barStyle = UIBarStyle.default
         descriptionToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         descriptionToolBar.sizeToFit()
-        let closeDescriptionButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelDescriptionInput))
-        let setDescriptionButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelDescriptionInput))
+        let closeDescriptionButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelDescriptionInput))
+        let setDescriptionButton = BarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentViewController.cancelDescriptionInput))
         
         descriptionToolBar.setItems([closeDescriptionButton,spaceButton,setDescriptionButton], animated: false)
         descriptionToolBar.isUserInteractionEnabled = true

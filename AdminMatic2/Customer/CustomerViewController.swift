@@ -1323,7 +1323,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
         //print("name = \(currentCell.image.name)")
         
         imageDetailViewController = ImageDetailViewController(_image: currentCell.image, _ID: currentCell.image.ID)
-        imageDetailViewController.imageFullViewController.delegate = self
+        //imageDetailViewController.imageFullViewController.delegate = self
         imageCollectionView?.deselectItem(at: indexPath, animated: false)
         navigationController?.pushViewController(imageDetailViewController, animated: false )
         imageDetailViewController.delegate = self
@@ -1617,16 +1617,16 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                     currentImageIndex = 0
                     imageDetailViewController.image = self.imageArray[currentImageIndex]
                     imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
+                    //imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                    //imageDetailViewController.imageFullViewController.layoutViews()
                     
                     
                 }else{
                     currentImageIndex = currentImageIndex + 1
                     imageDetailViewController.image = self.imageArray[currentImageIndex]
                     imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
+                    //imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                    //imageDetailViewController.imageFullViewController.layoutViews()
                 }
                 
             }else{
@@ -1634,14 +1634,14 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                     currentImageIndex = self.imageArray.count - 1
                     imageDetailViewController.image = self.imageArray[currentImageIndex]
                     imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
+                    //imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                    //imageDetailViewController.imageFullViewController.layoutViews()
                 }else{
                     currentImageIndex = currentImageIndex - 1
                     imageDetailViewController.image = self.imageArray[currentImageIndex]
                     imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
+                    //imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                   // imageDetailViewController.imageFullViewController.layoutViews()
                 }
             }
         

@@ -375,10 +375,10 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         weekToolBar.barStyle = UIBarStyle.default
         weekToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         weekToolBar.sizeToFit()
-        let closeWeekButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollSummaryViewController.cancelWeekInput))
+        let closeWeekButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollSummaryViewController.cancelWeekInput))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
-        let setWeekButton = UIBarButtonItem(title: "Set Week", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollSummaryViewController.handleWeekChange))
+        let setWeekButton = BarButtonItem(title: "Set Week", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollSummaryViewController.handleWeekChange))
         weekToolBar.setItems([closeWeekButton, spaceButton, setWeekButton], animated: false)
         weekToolBar.isUserInteractionEnabled = true
         weekTxtField.inputAccessoryView = weekToolBar
@@ -493,10 +493,10 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         weekToolBar.barStyle = UIBarStyle.default
         weekToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         weekToolBar.sizeToFit()
-        let closeWeekButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollSummaryViewController.cancelWeekInput))
+        let closeWeekButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollSummaryViewController.cancelWeekInput))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
-        let setWeekButton = UIBarButtonItem(title: "Set Week", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollSummaryViewController.handleWeekChange))
+        let setWeekButton = BarButtonItem(title: "Set Week", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollSummaryViewController.handleWeekChange))
         weekToolBar.setItems([closeWeekButton, spaceButton, setWeekButton], animated: false)
         weekToolBar.isUserInteractionEnabled = true
         weekTxtField.inputAccessoryView = weekToolBar

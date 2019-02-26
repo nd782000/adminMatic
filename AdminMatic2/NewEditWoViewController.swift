@@ -321,7 +321,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         custToolBar.barStyle = UIBarStyle.default
         custToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         custToolBar.sizeToFit()
-        let closeCustButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelCustInput))
+        let closeCustButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelCustInput))
         
         custToolBar.setItems([closeCustButton], animated: false)
         custToolBar.isUserInteractionEnabled = true
@@ -371,7 +371,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         titleToolBar.barStyle = UIBarStyle.default
         titleToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         titleToolBar.sizeToFit()
-        let closeTitleButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelTitleInput))
+        let closeTitleButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelTitleInput))
         
         titleToolBar.setItems([closeTitleButton], animated: false)
         titleToolBar.isUserInteractionEnabled = true
@@ -400,9 +400,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         chargeTypeToolBar.barStyle = UIBarStyle.default
         chargeTypeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         chargeTypeToolBar.sizeToFit()
-        let closeChargeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelChargeTypeInput))
+        let closeChargeTypeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelChargeTypeInput))
         
-        let setChargeTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleChargeTypeChange))
+        let setChargeTypeButton = BarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleChargeTypeChange))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         chargeTypeToolBar.setItems([closeChargeTypeButton, spaceButton, setChargeTypeButton], animated: false)
         chargeTypeToolBar.isUserInteractionEnabled = true
@@ -440,9 +440,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         invoiceTypeToolBar.barStyle = UIBarStyle.default
         invoiceTypeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         invoiceTypeToolBar.sizeToFit()
-        let closeInvoiceTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelInvoiceTypeInput))
+        let closeInvoiceTypeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelInvoiceTypeInput))
         
-        let setInvoiceTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleInvoiceTypeChange))
+        let setInvoiceTypeButton = BarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleInvoiceTypeChange))
         invoiceTypeToolBar.setItems([closeInvoiceTypeButton, spaceButton, setInvoiceTypeButton], animated: false)
         invoiceTypeToolBar.isUserInteractionEnabled = true
         invoiceTypeTxtField.inputAccessoryView = invoiceTypeToolBar
@@ -477,9 +477,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         scheduleTypeToolBar.barStyle = UIBarStyle.default
         scheduleTypeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         scheduleTypeToolBar.sizeToFit()
-        let closeScheduleTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelScheduleTypeInput))
+        let closeScheduleTypeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelScheduleTypeInput))
         
-        let setScheduleTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleScheduleTypeChange))
+        let setScheduleTypeButton = BarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleScheduleTypeChange))
         scheduleTypeToolBar.setItems([closeScheduleTypeButton, spaceButton, setScheduleTypeButton], animated: false)
         scheduleTypeToolBar.isUserInteractionEnabled = true
         scheduleTypeTxtField.inputAccessoryView = scheduleTypeToolBar
@@ -533,9 +533,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         departmentToolBar.barStyle = UIBarStyle.default
         departmentToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         departmentToolBar.sizeToFit()
-        let closeDepartmentButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelDepartmentInput))
+        let closeDepartmentButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelDepartmentInput))
         
-        let setDepartmentButton = UIBarButtonItem(title: "Set Dept.", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleDepartmentChange))
+        let setDepartmentButton = BarButtonItem(title: "Set Dept.", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleDepartmentChange))
         departmentToolBar.setItems([closeDepartmentButton, spaceButton, setDepartmentButton], animated: false)
         departmentToolBar.isUserInteractionEnabled = true
         departmentTxtField.inputAccessoryView = departmentToolBar
@@ -585,9 +585,9 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         crewToolBar.barStyle = UIBarStyle.default
         crewToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         crewToolBar.sizeToFit()
-        let closeCrewButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelCrewInput))
+        let closeCrewButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelCrewInput))
         
-        let setCrewButton = UIBarButtonItem(title: "Set Crew", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleCrewChange))
+        let setCrewButton = BarButtonItem(title: "Set Crew", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.handleCrewChange))
         crewToolBar.setItems([closeCrewButton, spaceButton, setCrewButton], animated: false)
         crewToolBar.isUserInteractionEnabled = true
         crewTxtField.inputAccessoryView = crewToolBar
@@ -645,7 +645,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         repToolBar.barStyle = UIBarStyle.default
         repToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         repToolBar.sizeToFit()
-        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelRepInput))
+        let closeRepButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelRepInput))
         
         repToolBar.setItems([closeRepButton], animated: false)
         repToolBar.isUserInteractionEnabled = true
@@ -695,7 +695,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         notesToolBar.barStyle = UIBarStyle.default
         notesToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         notesToolBar.sizeToFit()
-        let closeNotesButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelNotesInput))
+        let closeNotesButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditWoViewController.cancelNotesInput))
         
         notesToolBar.setItems([closeNotesButton], animated: false)
         notesToolBar.isUserInteractionEnabled = true

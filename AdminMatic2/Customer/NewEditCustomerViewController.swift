@@ -372,7 +372,7 @@ class NewEditCustomerViewController: UIViewController, UIPickerViewDelegate, UIP
         textInputToolBar.barStyle = UIBarStyle.default
         textInputToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         textInputToolBar.sizeToFit()
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelInput))
+        let closeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelInput))
         
         textInputToolBar.setItems([closeButton], animated: false)
         textInputToolBar.isUserInteractionEnabled = true
@@ -446,9 +446,18 @@ class NewEditCustomerViewController: UIViewController, UIPickerViewDelegate, UIP
         salutationToolBar.barStyle = UIBarStyle.default
         salutationToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         salutationToolBar.sizeToFit()
-        let closeSalutationButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelPicker))
+        
+        let closeSalutationButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelPicker))
+        //closeSalutationButton.tintColor = self.layoutVars.backgroundColor
+       // closeSalutationButton
+        
+        //closeSalutationButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor : self.layoutVars.backgroundColor], for: .normal)
+        //UIBarButtonItem.appearance().setTitleTextAttributes([NSForegroundColorAttributeName : Color.primaryActionColor], for: .normal)
+
+        
+        
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let setSalutationButton = UIBarButtonItem(title: "Set Prefix", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleSalutationChange))
+        let setSalutationButton = BarButtonItem(title: "Set Prefix", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleSalutationChange))
         salutationToolBar.setItems([closeSalutationButton, spaceButton, setSalutationButton], animated: false)
         salutationToolBar.isUserInteractionEnabled = true
         
@@ -618,8 +627,8 @@ class NewEditCustomerViewController: UIViewController, UIPickerViewDelegate, UIP
         jobStateToolBar.barStyle = UIBarStyle.default
         jobStateToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         jobStateToolBar.sizeToFit()
-        let closeJobStateButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelPicker))
-        let setJobStateButton = UIBarButtonItem(title: "Set State", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleJobStateChange))
+        let closeJobStateButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelPicker))
+        let setJobStateButton = BarButtonItem(title: "Set State", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleJobStateChange))
         jobStateToolBar.setItems([closeJobStateButton, spaceButton, setJobStateButton], animated: false)
         jobStateToolBar.isUserInteractionEnabled = true
         jobStateTxtField.inputAccessoryView = jobStateToolBar
@@ -767,8 +776,8 @@ class NewEditCustomerViewController: UIViewController, UIPickerViewDelegate, UIP
         billStateToolBar.barStyle = UIBarStyle.default
         billStateToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         billStateToolBar.sizeToFit()
-        let closeBillStateButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelPicker))
-        let setBillStateButton = UIBarButtonItem(title: "Set State", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleBillStateChange))
+        let closeBillStateButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelPicker))
+        let setBillStateButton = BarButtonItem(title: "Set State", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleBillStateChange))
         billStateToolBar.setItems([closeBillStateButton, spaceButton, setBillStateButton], animated: false)
         billStateToolBar.isUserInteractionEnabled = true
         billStateTxtField.inputAccessoryView = billStateToolBar
@@ -818,8 +827,8 @@ class NewEditCustomerViewController: UIViewController, UIPickerViewDelegate, UIP
         referredByToolBar.barStyle = UIBarStyle.default
         referredByToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         referredByToolBar.sizeToFit()
-        let closeReferredByButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelPicker))
-        let setReferredByButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleReferredByChange))
+        let closeReferredByButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelPicker))
+        let setReferredByButton = BarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleReferredByChange))
         referredByToolBar.setItems([closeReferredByButton, spaceButton, setReferredByButton], animated: false)
         referredByToolBar.isUserInteractionEnabled = true
         referredByTxtField.inputAccessoryView = referredByToolBar

@@ -223,9 +223,9 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
         notesToolBar.barStyle = UIBarStyle.default
         notesToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         notesToolBar.sizeToFit()
-        let closeNotesButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelNotesInput))
+        let closeNotesButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelNotesInput))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let setNotesButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleNotesChange))
+        let setNotesButton = BarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleNotesChange))
         notesToolBar.setItems([closeNotesButton,spaceButton,setNotesButton], animated: false)
         notesToolBar.isUserInteractionEnabled = true
         self.notesTxtView.inputAccessoryView = notesToolBar
@@ -557,7 +557,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
             
            
             
-            self.serviceListDelegate.updateServiceList()
+            //self.serviceListDelegate.updateServiceList()
             
             self.editsMade = false
             

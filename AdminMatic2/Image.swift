@@ -134,7 +134,7 @@ class Image {
         //print(json)
         if _path != nil {
             self.rawPath = "https://atlanticlawnandgarden.com/uploads/general/" + _path!
-            self.mediumPath = "https://atlanticlawnandgarden.com/uploads/medium/" + _path!
+            self.mediumPath = "https://atlanticlawnandgarden.com/uploads/general/medium/" + _path!
             self.thumbPath = "https://atlanticlawnandgarden.com/uploads/thumbs/" + _path!
         }else{
             self.rawPath = ""

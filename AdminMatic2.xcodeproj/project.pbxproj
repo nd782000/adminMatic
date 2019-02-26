@@ -70,7 +70,7 @@
 		016634261E3415DF002F7763 /* VendorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016634251E3415DF002F7763 /* VendorTableViewCell.swift */; };
 		016634281E3415FE002F7763 /* VendorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016634271E3415FE002F7763 /* VendorListViewController.swift */; };
 		0166342A1E341616002F7763 /* VendorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016634291E341616002F7763 /* VendorViewController.swift */; };
-		016DD5901E9AF8EC00359405 /* PerformanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */; };
+		016DD5901E9AF8EC00359405 /* UsageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016DD58F1E9AF8EB00359405 /* UsageViewController.swift */; };
 		017F083621FE65D800CC751D /* InvoiceListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083521FE65D800CC751D /* InvoiceListViewController.swift */; };
 		017F083821FE65EF00CC751D /* InvoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083721FE65EF00CC751D /* InvoiceViewController.swift */; };
 		017F083A21FE6FDE00CC751D /* InvoiceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083921FE6FDE00CC751D /* InvoiceTableViewCell.swift */; };
@@ -387,7 +387,7 @@
 		016634251E3415DF002F7763 /* VendorTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VendorTableViewCell.swift; sourceTree = "<group>"; };
 		016634271E3415FE002F7763 /* VendorListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VendorListViewController.swift; sourceTree = "<group>"; };
 		016634291E341616002F7763 /* VendorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VendorViewController.swift; sourceTree = "<group>"; };
-		016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceViewController.swift; sourceTree = "<group>"; };
+		016DD58F1E9AF8EB00359405 /* UsageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsageViewController.swift; sourceTree = "<group>"; };
 		017F083521FE65D800CC751D /* InvoiceListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceListViewController.swift; sourceTree = "<group>"; };
 		017F083721FE65EF00CC751D /* InvoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceViewController.swift; sourceTree = "<group>"; };
 		017F083921FE6FDE00CC751D /* InvoiceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceTableViewCell.swift; sourceTree = "<group>"; };
@@ -603,6 +603,7 @@
 		01C43C6F203CA4390068A5E0 /* Old Views */ = {
 			isa = PBXGroup;
 			children = (
+				014CC8E91E53F4E000D48A26 /* ImageFullViewController.swift */,
 				01C43C652037AE8C0068A5E0 /* CrewListViewController.swift */,
 				01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */,
 				0109382A1E835394007865FB /* CustomImageCropperOverlayView.swift */,
@@ -637,7 +638,7 @@
 				01C43C692039F04F0068A5E0 /* ShiftsViewController.swift */,
 				01C43C78203DB9D20068A5E0 /* PayrollEntryViewController.swift */,
 				01C43C72203CC88D0068A5E0 /* PayrollSummaryViewController.swift */,
-				016DD58F1E9AF8EB00359405 /* PerformanceViewController.swift */,
+				016DD58F1E9AF8EB00359405 /* UsageViewController.swift */,
 				01A81E591E92FC090089B55F /* GroupMessageViewController.swift */,
 			);
 			name = Employee;
@@ -736,7 +737,6 @@
 				014CC8E31E539EB100D48A26 /* ImageCollectionViewController.swift */,
 				0160A1B11E873F3D00C2AB4A /* ImageSettingsViewController.swift */,
 				014CC8E71E53E8E900D48A26 /* ImageDetailViewController.swift */,
-				014CC8E91E53F4E000D48A26 /* ImageFullViewController.swift */,
 				01E01C191E7DB54C00385B86 /* ImageUploadPrepViewController.swift */,
 				0125B6D81E26B10E00BAC949 /* ImageDrawingViewController.swift */,
 				010937B51E801B91007865FB /* ImageUploadProgressViewController.swift */,
@@ -1304,7 +1304,7 @@
 				01C43C71203CA5330068A5E0 /* ContractListViewController.swift in Sources */,
 				014B029C1E21585A002A41DE /* Customer.swift in Sources */,
 				01D86718212C5FDF005379E1 /* ImageEmployeeLikesListViewController.swift in Sources */,
-				016DD5901E9AF8EC00359405 /* PerformanceViewController.swift in Sources */,
+				016DD5901E9AF8EC00359405 /* UsageViewController.swift in Sources */,
 				01C43C75203CD14C0068A5E0 /* Payroll.swift in Sources */,
 				01D86716212B68B9005379E1 /* ContractSettingsViewController.swift in Sources */,
 				0121DEF51FBA71BF00AD6039 /* LeadTaskTableViewCell.swift in Sources */,

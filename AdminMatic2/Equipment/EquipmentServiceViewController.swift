@@ -198,9 +198,9 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.cancelPicker))
+        let closeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.cancelPicker))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let setButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.handleStatusChange))
+        let setButton = BarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.handleStatusChange))
         toolBar.setItems([closeButton, spaceButton, setButton], animated: false)
         toolBar.isUserInteractionEnabled = true
         
@@ -264,8 +264,8 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         currentToolBar.barStyle = UIBarStyle.default
         currentToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         currentToolBar.sizeToFit()
-        let closeCurrentButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.cancelCurrentInput))
-        let setCurrentButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.handleCurrentChange))
+        let closeCurrentButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.cancelCurrentInput))
+        let setCurrentButton = BarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.handleCurrentChange))
         
         currentToolBar.setItems([closeCurrentButton,spaceButton,setCurrentButton], animated: false)
         currentToolBar.isUserInteractionEnabled = true
@@ -290,8 +290,8 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         nextToolBar.barStyle = UIBarStyle.default
         nextToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         nextToolBar.sizeToFit()
-        let closeNextButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.cancelNextInput))
-        let setNextButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.handleNextChange))
+        let closeNextButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.cancelNextInput))
+        let setNextButton = BarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.handleNextChange))
         nextToolBar.setItems([closeNextButton,spaceButton,setNextButton], animated: false)
         nextToolBar.isUserInteractionEnabled = true
         
@@ -321,8 +321,8 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
         completionNotesToolBar.barStyle = UIBarStyle.default
         completionNotesToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         completionNotesToolBar.sizeToFit()
-        let closeCompletionNotesButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.cancelCompletionNotesInput))
-        let setCompletionNotesButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.handleCompletionNotesChange))
+        let closeCompletionNotesButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.cancelCompletionNotesInput))
+        let setCompletionNotesButton = BarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(EquipmentServiceViewController.handleCompletionNotesChange))
         completionNotesToolBar.setItems([closeCompletionNotesButton,spaceButton,setCompletionNotesButton], animated: false)
         completionNotesToolBar.isUserInteractionEnabled = true
         self.completionNotesView.inputAccessoryView = completionNotesToolBar

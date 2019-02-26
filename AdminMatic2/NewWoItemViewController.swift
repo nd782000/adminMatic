@@ -249,7 +249,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         estQtyToolBar.barStyle = UIBarStyle.default
         estQtyToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         estQtyToolBar.sizeToFit()
-        let setEstQtyButton = UIBarButtonItem(title: "Set Qty", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewWoItemViewController.handleEstQty))
+        let setEstQtyButton = BarButtonItem(title: "Set Qty", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewWoItemViewController.handleEstQty))
         estQtyToolBar.setItems([spaceButton, setEstQtyButton], animated: false)
         estQtyToolBar.isUserInteractionEnabled = true
         estQtyTxtField.inputAccessoryView = estQtyToolBar
@@ -277,7 +277,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
         priceToolBar.barStyle = UIBarStyle.default
         priceToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         priceToolBar.sizeToFit()
-        let setPriceButton = UIBarButtonItem(title: "Set Price", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewWoItemViewController.handlePrice))
+        let setPriceButton = BarButtonItem(title: "Set Price", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewWoItemViewController.handlePrice))
         priceToolBar.setItems([spaceButton2, setPriceButton], animated: false)
         priceToolBar.isUserInteractionEnabled = true
         priceTxtField.inputAccessoryView = priceToolBar

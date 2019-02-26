@@ -7,7 +7,7 @@
 //
 
 
-
+/*
 import Foundation
 import UIKit
 import Alamofire
@@ -318,4 +318,5 @@ class ImageFullViewController: UIViewController, UIScrollViewDelegate{
 
 
 
+*/
 

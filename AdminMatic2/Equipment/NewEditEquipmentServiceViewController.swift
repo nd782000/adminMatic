@@ -214,9 +214,9 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         typeToolBar.barStyle = UIBarStyle.default
         typeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         typeToolBar.sizeToFit()
-        let closeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelTypeInput))
+        let closeTypeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelTypeInput))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let setTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleTypeChange))
+        let setTypeButton = BarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleTypeChange))
         typeToolBar.setItems([closeTypeButton, spaceButton, setTypeButton], animated: false)
         typeToolBar.isUserInteractionEnabled = true
         typeTxtField.inputAccessoryView = typeToolBar
@@ -247,8 +247,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         frequencyToolBar.barStyle = UIBarStyle.default
         frequencyToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         frequencyToolBar.sizeToFit()
-        let closeFrequencyButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelFrequencyInput))
-        let setFrequencyButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleFrequencyChange))
+        let closeFrequencyButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelFrequencyInput))
+        let setFrequencyButton = BarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleFrequencyChange))
         
         frequencyToolBar.setItems([closeFrequencyButton,spaceButton,setFrequencyButton], animated: false)
         frequencyToolBar.isUserInteractionEnabled = true
@@ -298,8 +298,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         currentToolBar.barStyle = UIBarStyle.default
         currentToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         currentToolBar.sizeToFit()
-        let closeCurrentButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelCurrentInput))
-        let setCurrentButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleCurrentChange))
+        let closeCurrentButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelCurrentInput))
+        let setCurrentButton = BarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleCurrentChange))
         
         currentToolBar.setItems([closeCurrentButton,spaceButton,setCurrentButton], animated: false)
         
@@ -347,8 +347,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         nextToolBar.barStyle = UIBarStyle.default
         nextToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         nextToolBar.sizeToFit()
-        let closeNextButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelNextInput))
-        let setNextButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleNextChange))
+        let closeNextButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelNextInput))
+        let setNextButton = BarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleNextChange))
         nextToolBar.setItems([closeNextButton,spaceButton,setNextButton], animated: false)
         
         nextToolBar.isUserInteractionEnabled = true
@@ -387,8 +387,8 @@ class NewEditEquipmentServiceViewController: UIViewController, UITextFieldDelega
         self.instructionsToolBar.barStyle = UIBarStyle.default
         self.instructionsToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         self.instructionsToolBar.sizeToFit()
-        let closeInstructionsButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelInstructionsInput))
-        let setInstructionsButton = UIBarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleInstructionsChange))
+        let closeInstructionsButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.cancelInstructionsInput))
+        let setInstructionsButton = BarButtonItem(title: "Set", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditEquipmentServiceViewController.handleInstructionsChange))
         
         self.instructionsToolBar.setItems([closeInstructionsButton,spaceButton,setInstructionsButton], animated: false)
         self.instructionsToolBar.isUserInteractionEnabled = true

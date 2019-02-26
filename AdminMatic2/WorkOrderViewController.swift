@@ -141,7 +141,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var leadTasksWaiting:String?
     
-    var performanceDelegate:PerformanceDelegate?
+    var usageDelegate:UsageListDelegate?
     
    
     
@@ -779,9 +779,9 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(WorkOrderViewController.cancelPicker))
+        let closeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(WorkOrderViewController.cancelPicker))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let setButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(WorkOrderViewController.handleStatusChange))
+        let setButton = BarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(WorkOrderViewController.handleStatusChange))
         
         toolBar.setItems([closeButton, spaceButton, setButton], animated: false)
         toolBar.isUserInteractionEnabled = true
@@ -1737,9 +1737,9 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
  */
     
     @objc func goBack(){
-        if((self.performanceDelegate) != nil){
+        if((self.usageDelegate) != nil){
             if(self.tableCellID! >= 0){
-                self.performanceDelegate?.reDrawList(_index: self.tableCellID!, _status: self.statusValue)
+                self.usageDelegate?.reDrawList(_index: self.tableCellID!, _status: self.statusValue)
             }
         }
         

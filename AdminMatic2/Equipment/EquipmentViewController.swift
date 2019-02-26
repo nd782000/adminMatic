@@ -81,8 +81,8 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     var addServiceButton:Button = Button(titleText: "Add Service")
     
 
-    var imageFullViewController:ImageFullViewController!
-    
+   // var imageFullViewController:ImageFullViewController!
+    var imageDetailViewController:ImageDetailViewController!
     
     init(_equipment:Equipment){
         super.init(nibName:nil,bundle:nil)
@@ -101,16 +101,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         view.backgroundColor = layoutVars.backgroundColor
         title = "Equipment"
         
-        /*
-        //custom back button
-        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
-        backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControl.Event.touchUpInside)
-        backButton.setTitle("Back", for: UIControl.State.normal)
-        backButton.titleLabel!.font =  layoutVars.buttonFont
-        backButton.sizeToFit()
-        let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
-        navigationItem.leftBarButtonItem  = backButtonItem
-        */
+       
         
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
         navigationItem.leftBarButtonItem = backButton
@@ -119,35 +110,9 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         
         
         dateFormatter.dateFormat = "MM/dd/yy"
-        //getEquipmentServiceInfo()
     }
     
-    /*
-    override func viewWillAppear(_ animated: Bool) {
-        // Do any additional setup after loading the view.
-        
-        print("view will appear")
-        self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
-        
-        view.backgroundColor = layoutVars.backgroundColor
-        title = "Equipment"
-        
-        //custom back button
-        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
-        backButton.addTarget(self, action: #selector(EmployeeViewController.goBack), for: UIControl.Event.touchUpInside)
-        backButton.setTitle("Back", for: UIControl.State.normal)
-        backButton.titleLabel!.font =  layoutVars.buttonFont
-        backButton.sizeToFit()
-        let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
-        navigationItem.leftBarButtonItem  = backButtonItem
-        
-        
-        dateFormatter.dateFormat = "MM/dd/yy"
-        
-      //  self.getEquipmentServiceInfo()
-        
-    }
-    */
+   
     
 
     func getEquipmentServiceInfo(){
@@ -267,7 +232,8 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
             
             if let image = response.result.value {
                 print("image downloaded: \(image)")
-                self.imageFullViewController = ImageFullViewController(_image: self.equipment.image)
+               // self.imageFullViewController = ImageFullViewController(_image: self.equipment.image)
+                self.imageDetailViewController = ImageDetailViewController(_image: self.equipment.image)
                 self.equipmentImage.image = image
                 self.activityView.stopAnimating()
             }
@@ -319,9 +285,9 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         toolBar.barTintColor = UIColor(hex:0x005100, op:1)
         toolBar.sizeToFit()
         
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(WorkOrderViewController.cancelPicker))
+        let closeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(WorkOrderViewController.cancelPicker))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let setButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(WorkOrderViewController.handleStatusChange))
+        let setButton = BarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(WorkOrderViewController.handleStatusChange))
         toolBar.setItems([closeButton, spaceButton, setButton], animated: false)
         toolBar.isUserInteractionEnabled = true
         
@@ -372,7 +338,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         mileageToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         mileageToolBar.sizeToFit()
         
-        let setMileageButton = UIBarButtonItem(title: "Set Mileage", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleSetMileage))
+        let setMileageButton = BarButtonItem(title: "Set Mileage", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.handleSetMileage))
         mileageToolBar.setItems([spaceButton, setMileageButton], animated: false)
         mileageToolBar.isUserInteractionEnabled = true
         mileageTxtField.inputAccessoryView = mileageToolBar
@@ -482,7 +448,7 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         
         print("show full screen")
         
-        navigationController?.pushViewController(imageFullViewController, animated: false )
+        navigationController?.pushViewController(imageDetailViewController, animated: false )
     }
     
     

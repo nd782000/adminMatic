@@ -180,7 +180,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         startToolBar.barStyle = UIBarStyle.default
         startToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         startToolBar.sizeToFit()
-        let setStartButton = UIBarButtonItem(title: "Set Start Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStartPicker))
+        let setStartButton = BarButtonItem(title: "Set Start Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStartPicker))
         startToolBar.setItems([spaceButton, setStartButton], animated: false)
         startToolBar.isUserInteractionEnabled = true
         startTxtField.inputAccessoryView = startToolBar
@@ -207,7 +207,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         stopToolBar.barStyle = UIBarStyle.default
         stopToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         stopToolBar.sizeToFit()
-        let setStopButton = UIBarButtonItem(title: "Set Stop Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
+        let setStopButton = BarButtonItem(title: "Set Stop Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
         stopToolBar.setItems([spaceButton, setStopButton], animated: false)
         stopToolBar.isUserInteractionEnabled = true
         stopTxtField.inputAccessoryView = stopToolBar
@@ -261,8 +261,8 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         plowDepthToolBar.barStyle = UIBarStyle.default
         plowDepthToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         plowDepthToolBar.sizeToFit()
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ScheduleSettingsViewController.cancelPlowDepthInput))
-        let setPlowDepthButton = UIBarButtonItem(title: "Set Plow Depth", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ScheduleSettingsViewController.handlePlowDepthChange))
+        let closeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ScheduleSettingsViewController.cancelPlowDepthInput))
+        let setPlowDepthButton = BarButtonItem(title: "Set Plow Depth", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ScheduleSettingsViewController.handlePlowDepthChange))
         plowDepthToolBar.setItems([closeButton, spaceButton, setPlowDepthButton], animated: false)
         plowDepthToolBar.isUserInteractionEnabled = true
         plowDepthTxtField.inputAccessoryView = plowDepthToolBar

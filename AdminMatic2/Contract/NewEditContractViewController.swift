@@ -270,9 +270,9 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         statusToolBar.barStyle = UIBarStyle.default
         statusToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         statusToolBar.sizeToFit()
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelStatusInput))
+        let closeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelStatusInput))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let setStatusButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.handleStatusChange))
+        let setStatusButton = BarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.handleStatusChange))
         statusToolBar.setItems([closeButton, spaceButton, setStatusButton], animated: false)
         statusToolBar.isUserInteractionEnabled = true
         statusTxtField.inputAccessoryView = statusToolBar
@@ -300,7 +300,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         custToolBar.barStyle = UIBarStyle.default
         custToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         custToolBar.sizeToFit()
-        let closeCustButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelCustInput))
+        let closeCustButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelCustInput))
         
         custToolBar.setItems([closeCustButton], animated: false)
         custToolBar.isUserInteractionEnabled = true
@@ -367,9 +367,9 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         chargeTypeToolBar.barStyle = UIBarStyle.default
         chargeTypeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         chargeTypeToolBar.sizeToFit()
-        let closeChargeTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelChargeTypeInput))
+        let closeChargeTypeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelChargeTypeInput))
         
-        let setChargeTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.handleChargeTypeChange))
+        let setChargeTypeButton = BarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.handleChargeTypeChange))
         chargeTypeToolBar.setItems([closeChargeTypeButton, spaceButton, setChargeTypeButton], animated: false)
         chargeTypeToolBar.isUserInteractionEnabled = true
         chargeTypeTxtField.inputAccessoryView = chargeTypeToolBar
@@ -421,7 +421,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         repToolBar.barStyle = UIBarStyle.default
         repToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         repToolBar.sizeToFit()
-        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelRepInput))
+        let closeRepButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelRepInput))
         
         repToolBar.setItems([closeRepButton], animated: false)
         repToolBar.isUserInteractionEnabled = true
@@ -475,7 +475,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         notesToolBar.barStyle = UIBarStyle.default
         notesToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         notesToolBar.sizeToFit()
-        let closeNotesButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelNotesInput))
+        let closeNotesButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditContractViewController.cancelNotesInput))
         
         notesToolBar.setItems([closeNotesButton], animated: false)
         notesToolBar.isUserInteractionEnabled = true

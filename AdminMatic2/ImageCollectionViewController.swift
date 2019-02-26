@@ -668,7 +668,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
        // print("mode = \(self.mode)")
         
         imageDetailViewController = ImageDetailViewController(_image: currentCell.image)
-        imageDetailViewController.imageFullViewController.delegate = self
+        //imageDetailViewController.imageFullViewController.delegate = self
         imageCollectionView?.deselectItem(at: indexPath, animated: true)
         navigationController?.pushViewController(imageDetailViewController, animated: false )
         imageDetailViewController.delegate = self
@@ -975,16 +975,16 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                     currentImageIndex = 0
                     imageDetailViewController.image = self.imageArray[currentImageIndex]
                     imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
+                    //imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                    //imageDetailViewController.imageFullViewController.layoutViews()
                     
                     
                 }else{
                     currentImageIndex = currentImageIndex + 1
                     imageDetailViewController.image = self.imageArray[currentImageIndex]
                     imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
+                    //imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                    //imageDetailViewController.imageFullViewController.layoutViews()
                 }
                 
             }else{
@@ -992,14 +992,14 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                     currentImageIndex = self.imageArray.count - 1
                     imageDetailViewController.image = self.imageArray[currentImageIndex]
                     imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
+                    //imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                    //imageDetailViewController.imageFullViewController.layoutViews()
                 }else{
                     currentImageIndex = currentImageIndex - 1
                     imageDetailViewController.image = self.imageArray[currentImageIndex]
                     imageDetailViewController.layoutViews()
-                    imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
-                    imageDetailViewController.imageFullViewController.layoutViews()
+                   // imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
+                    //imageDetailViewController.imageFullViewController.layoutViews()
                 }
             }
             

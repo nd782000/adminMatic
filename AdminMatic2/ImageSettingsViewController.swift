@@ -147,9 +147,9 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         filterToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         filterToolBar.sizeToFit()
         
-        let filterCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ImageSettingsViewController.cancelFilter))
+        let filterCloseButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ImageSettingsViewController.cancelFilter))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let filterSelectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ImageSettingsViewController.filter))
+        let filterSelectButton = BarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ImageSettingsViewController.filter))
         
         filterToolBar.setItems([filterCloseButton, spaceButton, filterSelectButton], animated: false)
         filterToolBar.isUserInteractionEnabled = true
@@ -184,8 +184,8 @@ class ImageSettingsViewController: UIViewController, UITextFieldDelegate, UIPick
         orderToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         orderToolBar.sizeToFit()
         
-        let orderCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ImageSettingsViewController.cancelOrder))
-        let orderSelectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ImageSettingsViewController.setOrder))
+        let orderCloseButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ImageSettingsViewController.cancelOrder))
+        let orderSelectButton = BarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ImageSettingsViewController.setOrder))
         
         orderToolBar.setItems([orderCloseButton, spaceButton, orderSelectButton], animated: false)
         orderToolBar.isUserInteractionEnabled = true

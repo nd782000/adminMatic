@@ -155,9 +155,9 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         filterToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         filterToolBar.sizeToFit()
         
-        let filterCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ContractSettingsViewController.cancelFilter))
+        let filterCloseButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ContractSettingsViewController.cancelFilter))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let filterSelectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ContractSettingsViewController.filter))
+        let filterSelectButton = BarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ContractSettingsViewController.filter))
         
         filterToolBar.setItems([filterCloseButton, spaceButton, filterSelectButton], animated: false)
         filterToolBar.isUserInteractionEnabled = true
@@ -198,7 +198,7 @@ class ContractSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         repToolBar.barStyle = UIBarStyle.default
         repToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         repToolBar.sizeToFit()
-        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ContractSettingsViewController.cancelRepInput))
+        let closeRepButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ContractSettingsViewController.cancelRepInput))
         
         repToolBar.setItems([closeRepButton], animated: false)
         repToolBar.isUserInteractionEnabled = true

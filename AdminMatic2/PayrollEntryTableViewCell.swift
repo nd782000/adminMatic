@@ -103,7 +103,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         startToolBar.sizeToFit()
         //let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
        
-        let setStartButton = UIBarButtonItem(title: "Set Start", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryTableViewCell.handleStartPicker))
+        let setStartButton = BarButtonItem(title: "Set Start", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryTableViewCell.handleStartPicker))
         startToolBar.setItems([spaceButton, setStartButton], animated: false)
         startToolBar.isUserInteractionEnabled = true
         startTxtField.inputAccessoryView = startToolBar
@@ -174,7 +174,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         stopToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         stopToolBar.sizeToFit()
         //let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setStopButton = UIBarButtonItem(title: "Set Stop", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryTableViewCell.handleStopPicker))
+        let setStopButton = BarButtonItem(title: "Set Stop", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryTableViewCell.handleStopPicker))
         
         stopToolBar.setItems([spaceButton, setStopButton], animated: false)
         stopToolBar.isUserInteractionEnabled = true
@@ -240,7 +240,7 @@ class PayrollEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerV
         breakToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         breakToolBar.sizeToFit()
         //let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let setBreakButton = UIBarButtonItem(title: "Set Break", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryTableViewCell.handleBreakSet))
+        let setBreakButton = BarButtonItem(title: "Set Break", style: UIBarButtonItem.Style.plain, target: self, action: #selector(PayrollEntryTableViewCell.handleBreakSet))
         breakToolBar.setItems([spaceButton, setBreakButton], animated: false)
         breakToolBar.isUserInteractionEnabled = true
         breakTxtField.inputAccessoryView = breakToolBar

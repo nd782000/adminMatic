@@ -165,9 +165,9 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         statusToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         statusToolBar.sizeToFit()
         
-        let statusCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadSettingsViewController.cancelStatus))
+        let statusCloseButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadSettingsViewController.cancelStatus))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let statusSelectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadSettingsViewController.setStatus))
+        let statusSelectButton = BarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadSettingsViewController.setStatus))
         
         statusToolBar.setItems([statusCloseButton, spaceButton, statusSelectButton], animated: false)
         statusToolBar.isUserInteractionEnabled = true
@@ -208,7 +208,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         repToolBar.barStyle = UIBarStyle.default
         repToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         repToolBar.sizeToFit()
-        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadSettingsViewController.cancelRepInput))
+        let closeRepButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadSettingsViewController.cancelRepInput))
         
         repToolBar.setItems([closeRepButton], animated: false)
         repToolBar.isUserInteractionEnabled = true
@@ -247,8 +247,8 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         zoneToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         zoneToolBar.sizeToFit()
         
-        let zoneCloseButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadSettingsViewController.cancelZone))
-        let zoneSelectButton = UIBarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadSettingsViewController.setZone))
+        let zoneCloseButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadSettingsViewController.cancelZone))
+        let zoneSelectButton = BarButtonItem(title: "Select", style: UIBarButtonItem.Style.plain, target: self, action: #selector(LeadSettingsViewController.setZone))
         
         zoneToolBar.setItems([zoneCloseButton, spaceButton, zoneSelectButton], animated: false)
         zoneToolBar.isUserInteractionEnabled = true

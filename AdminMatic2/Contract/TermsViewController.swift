@@ -134,7 +134,7 @@ class TermsViewController: UIViewController, UITextViewDelegate{
             termsToolBar.barStyle = UIBarStyle.default
             termsToolBar.barTintColor = UIColor(hex:0x005100, op:1)
             termsToolBar.sizeToFit()
-            let closeTermsButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(TermsViewController.closeTextView))
+            let closeTermsButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(TermsViewController.closeTextView))
         
         
             termsToolBar.setItems([closeTermsButton], animated: false)

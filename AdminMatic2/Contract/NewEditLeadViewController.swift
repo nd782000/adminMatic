@@ -261,9 +261,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         statusToolBar.barStyle = UIBarStyle.default
         statusToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         statusToolBar.sizeToFit()
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelStatusInput))
+        let closeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelStatusInput))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let setStatusButton = UIBarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleStatusChange))
+        let setStatusButton = BarButtonItem(title: "Set Status", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleStatusChange))
         statusToolBar.setItems([closeButton, spaceButton, setStatusButton], animated: false)
         statusToolBar.isUserInteractionEnabled = true
         statusTxtField.inputAccessoryView = statusToolBar
@@ -291,7 +291,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         custToolBar.barStyle = UIBarStyle.default
         custToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         custToolBar.sizeToFit()
-        let closeCustButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelCustInput))
+        let closeCustButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelCustInput))
         
         custToolBar.setItems([closeCustButton], animated: false)
         custToolBar.isUserInteractionEnabled = true
@@ -338,9 +338,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         scheduleTypeToolBar.barStyle = UIBarStyle.default
         scheduleTypeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         scheduleTypeToolBar.sizeToFit()
-         let closeScheduleTypeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelScheduleTypeInput))
+         let closeScheduleTypeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelScheduleTypeInput))
         
-        let setScheduleTypeButton = UIBarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleScheduleTypeChange))
+        let setScheduleTypeButton = BarButtonItem(title: "Set Type", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleScheduleTypeChange))
         scheduleTypeToolBar.setItems([closeScheduleTypeButton, spaceButton, setScheduleTypeButton], animated: false)
         scheduleTypeToolBar.isUserInteractionEnabled = true
         scheduleTypeTxtField.inputAccessoryView = scheduleTypeToolBar
@@ -374,9 +374,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         aptDateToolBar.barStyle = UIBarStyle.default
         aptDateToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         aptDateToolBar.sizeToFit()
-        let closeAptDateButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelAptDateInput))
+        let closeAptDateButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelAptDateInput))
         
-        let setDateButton = UIBarButtonItem(title: "Set Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleAptDatePicker))
+        let setDateButton = BarButtonItem(title: "Set Date", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleAptDatePicker))
         aptDateToolBar.setItems([closeAptDateButton, spaceButton, setDateButton], animated: false)
         aptDateToolBar.isUserInteractionEnabled = true
         aptDateTxtField.inputAccessoryView = aptDateToolBar
@@ -396,9 +396,9 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         aptTimeToolBar.barStyle = UIBarStyle.default
         aptTimeToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         aptTimeToolBar.sizeToFit()
-        let closeAptTimeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelAptTimeInput))
+        let closeAptTimeButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelAptTimeInput))
         
-        let setTimeButton = UIBarButtonItem(title: "Set Time", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleAptTimePicker))
+        let setTimeButton = BarButtonItem(title: "Set Time", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleAptTimePicker))
         aptTimeToolBar.setItems([closeAptTimeButton, spaceButton, setTimeButton], animated: false)
         aptTimeToolBar.isUserInteractionEnabled = true
         aptTimeTxtField.inputAccessoryView = aptTimeToolBar
@@ -469,8 +469,8 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         deadlineToolBar.barStyle = UIBarStyle.default
         deadlineToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         deadlineToolBar.sizeToFit()
-        let closeDeadlineButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelDeadlineInput))
-        let setDeadlineButton = UIBarButtonItem(title: "Set Deadline", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleDeadlinePicker))
+        let closeDeadlineButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelDeadlineInput))
+        let setDeadlineButton = BarButtonItem(title: "Set Deadline", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.handleDeadlinePicker))
         deadlineToolBar.setItems([closeDeadlineButton, spaceButton, setDeadlineButton], animated: false)
         deadlineToolBar.isUserInteractionEnabled = true
         deadlineTxtField.inputAccessoryView = deadlineToolBar
@@ -536,7 +536,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         repToolBar.barStyle = UIBarStyle.default
         repToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         repToolBar.sizeToFit()
-        let closeRepButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelRepInput))
+        let closeRepButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelRepInput))
        
         repToolBar.setItems([closeRepButton], animated: false)
         repToolBar.isUserInteractionEnabled = true
@@ -601,7 +601,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         descriptionToolBar.barStyle = UIBarStyle.default
         descriptionToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         descriptionToolBar.sizeToFit()
-        let closeDescriptionButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelDescriptionInput))
+        let closeDescriptionButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(NewEditLeadViewController.cancelDescriptionInput))
         
         descriptionToolBar.setItems([closeDescriptionButton], animated: false)
         descriptionToolBar.isUserInteractionEnabled = true

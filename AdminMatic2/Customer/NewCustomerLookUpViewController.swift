@@ -213,7 +213,7 @@ class NewCustomerLookUpViewController: UIViewController, UITextFieldDelegate, UI
         custToolBar.barStyle = UIBarStyle.default
         custToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         custToolBar.sizeToFit()
-        let closeCustButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelCustInput))
+        let closeCustButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.cancelCustInput))
         
         custToolBar.setItems([closeCustButton], animated: false)
         custToolBar.isUserInteractionEnabled = true

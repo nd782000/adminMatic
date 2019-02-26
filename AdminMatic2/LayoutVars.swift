@@ -1125,13 +1125,18 @@ class Button:UIButton{
 
 class BarButtonItem:UIBarButtonItem{
     
+    let layoutVars:LayoutVars = LayoutVars()
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     override init() {
         super.init()
-        self.tintColor = UIColor.white
+        print("init of BarButtonItem")
+        self.setTitleTextAttributes([NSAttributedString.Key.foregroundColor : self.layoutVars.backgroundColor], for: .normal)
+        
+        //self.tintColor = UIColor.white
+        //super.setTitleColor( self.layoutVars.backgroundColor, for: .normal)
     }
     /*
     override init(frame: CGRect) {

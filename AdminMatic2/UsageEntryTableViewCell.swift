@@ -164,8 +164,8 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         startToolBar.barStyle = UIBarStyle.default
         startToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         startToolBar.sizeToFit()
-        let closeStartButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeStartPicker))
-        let setStartButton = UIBarButtonItem(title: "Set Start Time", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStartPicker))
+        let closeStartButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeStartPicker))
+        let setStartButton = BarButtonItem(title: "Set Start Time", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStartPicker))
         startToolBar.setItems([closeStartButton, spaceButton, setStartButton], animated: false)
         startToolBar.isUserInteractionEnabled = true
         startTxtField.inputAccessoryView = startToolBar
@@ -189,8 +189,8 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         stopToolBar.barStyle = UIBarStyle.default
         stopToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         stopToolBar.sizeToFit()
-        let closeStopButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeStopPicker))
-        let setStopButton = UIBarButtonItem(title: "Set Stop Time", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
+        let closeStopButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeStopPicker))
+        let setStopButton = BarButtonItem(title: "Set Stop Time", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleStopPicker))
         stopToolBar.setItems([closeStopButton, spaceButton, setStopButton], animated: false)
         stopToolBar.isUserInteractionEnabled = true
         stopTxtField.inputAccessoryView = stopToolBar
@@ -213,8 +213,8 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         breakToolBar.barStyle = UIBarStyle.default
         breakToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         breakToolBar.sizeToFit()
-        let closeBreakButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeBreak))
-        let setBreakButton = UIBarButtonItem(title: "Set Break Time", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleBreakTime))
+        let closeBreakButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeBreak))
+        let setBreakButton = BarButtonItem(title: "Set Break Time", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleBreakTime))
         breakToolBar.setItems([closeBreakButton, spaceButton, setBreakButton], animated: false)
         breakToolBar.isUserInteractionEnabled = true
         breakTxtField.inputAccessoryView = breakToolBar
@@ -274,8 +274,8 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         qtyToolBar.barStyle = UIBarStyle.default
         qtyToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         qtyToolBar.sizeToFit()
-        let closeQtyButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeQty))
-        let setQtyButton = UIBarButtonItem(title: "Set Qty", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleQty))
+        let closeQtyButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeQty))
+        let setQtyButton = BarButtonItem(title: "Set Qty", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleQty))
         qtyToolBar.setItems([closeQtyButton, spaceButton, setQtyButton], animated: false)
         qtyToolBar.isUserInteractionEnabled = true
         qtyTxtField.inputAccessoryView = qtyToolBar
@@ -315,8 +315,8 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         vendorToolBar.barStyle = UIBarStyle.default
         vendorToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         vendorToolBar.sizeToFit()
-        let closeVendorButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeVendor))
-        let setVendorButton = UIBarButtonItem(title: "Set Vendor", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleVendor))
+        let closeVendorButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeVendor))
+        let setVendorButton = BarButtonItem(title: "Set Vendor", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleVendor))
         vendorToolBar.setItems([closeVendorButton, spaceButton, setVendorButton], animated: false)
         vendorToolBar.isUserInteractionEnabled = true
         vendorTxtField.inputAccessoryView = vendorToolBar
@@ -341,9 +341,9 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         costToolBar.barStyle = UIBarStyle.default
         costToolBar.barTintColor = UIColor(hex:0x005100, op:1)
         costToolBar.sizeToFit()
-        let closeCostButton = UIBarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeCost))
+        let closeCostButton = BarButtonItem(title: "Close", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.closeCost))
         
-        let setCostButton = UIBarButtonItem(title: "Set Cost", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleCost))
+        let setCostButton = BarButtonItem(title: "Set Cost", style: UIBarButtonItem.Style.plain, target: self, action: #selector(UsageEntryTableViewCell.handleCost))
         costToolBar.setItems([closeCostButton, spaceButton, setCostButton], animated: false)
         costToolBar.isUserInteractionEnabled = true
         costTxtField.inputAccessoryView = costToolBar
