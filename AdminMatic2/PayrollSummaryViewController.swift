@@ -158,12 +158,12 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         
         let parameters = ["endDate": endDateDB,"empID":self.empID] as [String : String]
         
-        //print("parameters = \(parameters)")
+        print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/payroll.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                //print("payroll response = \(response)")
+                print("payroll response = \(response)")
             }
             
             .responseJSON(){
@@ -183,13 +183,13 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
     func parsePayrollJSON(){
         
         
-        //print("parse payrollJSON: \(self.payrollJSON)")
+        print("parse payrollJSON: \(self.payrollJSON)")
         
         self.payroll = []
         numberOfValidShifts = 0
         totalPending = false
         
-        let payrollCount = self.payrollJSON["payroll"].count
+       // let payrollCount = self.payrollJSON["payroll"].count
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         
@@ -200,7 +200,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         for day in 0 ..< 7 {
             
             print("day = \(day)")
-            if self.payrollJSON["payroll"]["\(day)"] != nil{
+            //if self.payrollJSON["payroll"]["\(day)"].stringValue != nil{
                 
                 let payrollShiftCount = self.payrollJSON["payroll"]["\(day)"].count
                 
@@ -266,7 +266,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
                 }
                 
                 
-            }else{
+          /*  }else{
                 print("payroll = nil")
                 let startTime = startOfRange.addNumberOfDaysToDate(_numberOfDays: day)
                 
@@ -277,10 +277,12 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
                 self.payroll.append(payroll)
                 
             }
+ */
+ 
         }
         
         
-        //print("payroll count \(self.payroll.count)")
+        print("payroll count \(self.payroll.count)")
         
         
         
@@ -289,7 +291,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
         
         
         if (UIDevice.current.orientation.isLandscape == true) {
-            //print("Landscape")
+            print("Landscape")
             //self.layoutViewsLandscape()
             
             if viewsLayedOut == false{
@@ -304,7 +306,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
             }
             
         } else {
-            //print("Portrait")
+            print("Portrait")
             //self.layoutViewsPortrait()
             
             if viewsLayedOut == false{
@@ -331,7 +333,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     
     func layoutViewsPortrait(){
-        //print("layoutViewsPortrait")
+        print("layoutViewsPortrait")
         
         viewsLayedOut = true
         
@@ -449,7 +451,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
     
     
     func layoutViewsLandscape(){
-        //print("layoutViewsLandscape")
+        print("layoutViewsLandscape")
         
         viewsLayedOut = true
         
@@ -729,7 +731,7 @@ class PayrollSummaryViewController: ViewControllerWithMenu, UITableViewDelegate,
     }
     
     
-    func canRotate() -> Void {}
+    @objc func canRotate() -> Void {}
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         if (UIDevice.current.orientation.isLandscape == true) {

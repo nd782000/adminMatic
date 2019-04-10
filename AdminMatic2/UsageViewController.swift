@@ -652,7 +652,7 @@ class UsageViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         
         if (UIDevice.current.orientation.isLandscape == true) {
-            //print("Landscape")
+            print("Landscape")
             
             cell.usage = usages[indexPath.row]
             cell.layoutLandscape()
@@ -671,7 +671,7 @@ class UsageViewController: UIViewController, UITableViewDelegate, UITableViewDat
             
             
         } else {
-            //print("Portrait")
+            print("Portrait")
             cell.usage = usages[indexPath.row]
              cell.layoutPortrait()
             cell.usageNameLbl.text = usages[indexPath.row].custName

@@ -66,21 +66,15 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var convertToPDFSwitch:UISwitch!
     var convertToPDFLabel:Label!
     
-    
-    
     var contractDelegate:EditContractDelegate?
     var invoiceDelegate:EditInvoiceDelegate?
     
     var sendBtn: Button!
     
     
-    
-    
-    
     init(_customerID:String,_customerName:String,_type:String,_docID:String){
         super.init(nibName:nil,bundle:nil)
         print("email init")
-        
         self.customerID = _customerID
         self.customerName = _customerName
         self.type = _type
@@ -264,7 +258,7 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.messageTxt.translatesAutoresizingMaskIntoConstraints = false
         self.messageTxt.delegate = self
         self.messageTxt.font = layoutVars.smallFont
-        self.messageTxt.returnKeyType = UIReturnKeyType.done
+        //self.messageTxt.returnKeyType = UIReturnKeyType.done
         self.messageTxt.layer.borderWidth = 1
         self.messageTxt.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
         self.messageTxt.layer.cornerRadius = 4.0
@@ -414,7 +408,7 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     
-    
+    /*
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         print("shouldChangeTextInRange")
         if (text == "\n") {
@@ -422,6 +416,7 @@ class EmailViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
         return true
     }
+    */
     
     
     

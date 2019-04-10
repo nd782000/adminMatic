@@ -24,6 +24,7 @@ class EquipmentTableViewCell: UITableViewCell {
     var typeLbl: UILabel!
     var typeValueLbl: UILabel!
     var crewLbl: UILabel!
+    var crewValueLbl: UILabel!
     
     var statusIcon: UIImageView!
     
@@ -77,6 +78,11 @@ class EquipmentTableViewCell: UITableViewCell {
         crewLbl.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(crewLbl)
         
+        crewValueLbl = UILabel()
+        crewValueLbl.font = layoutVars.extraSmallFont
+        crewValueLbl.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(crewValueLbl)
+        
         statusIcon = UIImageView()
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
@@ -94,7 +100,7 @@ class EquipmentTableViewCell: UITableViewCell {
         
         nameLbl.text = ""
         typeValueLbl.text = ""
-        crewLbl.text = ""
+        crewValueLbl.text = ""
         
         
         
@@ -107,12 +113,12 @@ class EquipmentTableViewCell: UITableViewCell {
         
         
         
-        let viewsDictionary = ["pic":equipmentImageView,"name":nameLbl,"type":typeLbl,"typeValue":typeValueLbl,"crew":crewLbl,"status":statusIcon] as [String : Any]
+        let viewsDictionary = ["pic":equipmentImageView,"name":nameLbl,"type":typeLbl,"typeValue":typeValueLbl,"crew":crewLbl,"crewValue":crewValueLbl,"status":statusIcon] as [String : Any]
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[pic(50)]-[name]-[status(30)]-|", options: [], metrics: nil, views: viewsDictionary))
         
        
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[pic(50)]-[type(36)][typeValue]-[crew(80)]-[status(30)]-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[pic(50)]-[type(36)][typeValue]-[crew(40)][crewValue(40)]-[status(30)]-|", options: [], metrics: nil, views: viewsDictionary))
        
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[pic(50)]", options: [], metrics: nil, views: viewsDictionary))
         
@@ -122,6 +128,7 @@ class EquipmentTableViewCell: UITableViewCell {
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[type(30)]|", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[typeValue(30)]|", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[crew(30)]|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[crewValue(30)]|", options: [], metrics: nil, views: viewsDictionary))
         
         
         let viewsDictionary2 = ["activityView":activityView] as [String : Any]

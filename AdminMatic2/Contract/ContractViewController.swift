@@ -138,7 +138,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     //sends request for lead tasks
     func getContract() {
-        //print(" GetContract  Contract Id \(self.contract.ID)")
+        print(" GetContract  Contract Id \(self.contract.ID)")
         
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -729,6 +729,8 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         var count:Int!
+        
+        print("numberOfRowsInSection count = \(self.itemsArray.count)")
         if tableView.isEditing{
             count = self.itemsArray.count
         }else{

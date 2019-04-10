@@ -11,7 +11,7 @@
 import Foundation
 import UIKit
  
-class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate{
+class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource{
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
     
@@ -249,6 +249,7 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
         self.plowDepthPicker = Picker()
         self.plowDepthPicker.tag = 1
         self.plowDepthPicker.delegate = self
+        self.plowDepthPicker.dataSource = self
         self.plowDepthPicker.selectRow(Int(plowDepth)!, inComponent: 0, animated: false)
         self.plowDepthTxtField = PaddedTextField()
         self.plowDepthTxtField.textAlignment = NSTextAlignment.center
@@ -397,12 +398,41 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
     }
     
     
-    // returns the number of 'columns' to display.
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
-        return 1
+    
+    
+    
+    
+   /*
+    
+    func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        return 60
     }
     
     
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if pickerView.tag == 0{
+            return self.layoutVars.salutations[row]
+        }else if pickerView.tag == 1 || pickerView.tag == 2{
+            return self.layoutVars.states[row]
+        }else{
+            return self.appDelegate.customerHearTypes[row]
+        }
+    }
+    
+    
+    
+    
+    */
+    
+  
+    
+    
+    // returns the number of 'columns' to display.
+   // func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
+       // return 1
+    //}
+    
+    /*
     // returns the # of rows in each component..
     func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
         // shows first 3 status options, not cancel or waiting
@@ -412,11 +442,28 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
        
         return count
     }
+    */
     
+    // Number of columns of data
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
     
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
         return 60
     }
+    
+    // returns the # of rows in each component..
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
+        // shows first 3 status options, not cancel or waiting
+        //print("pickerview tag: \(pickerView.tag)")
+        let count:Int = self.plowDepthArray.count
+        
+        
+        return count
+    }
+    
+    
     /*
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         print("pickerview tag: \(pickerView.tag)")

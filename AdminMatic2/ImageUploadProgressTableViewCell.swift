@@ -155,8 +155,8 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                         
                         upload.responseJSON { response in
                            // print(response.request ?? "")  // original URL request
-                            //print(response.response ?? "") // URL response
-                           // print(response.data ?? "")     // server data
+                            print(response.response ?? "") // URL response
+                            print(response.data ?? "")     // server data
                             print("result = \(response.result)")   // result of response serialization
                             
                             if("\(response.result)" == "FAILURE") {
@@ -170,6 +170,8 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                             if let result = response.result.value {
                                 self.layoutVars.playSaveSound()
                                 let json = result as! NSDictionary
+                                
+                                print("image json = \(json)")
                                 let thumbBase = JSON(json)["thumbBase"].stringValue
                                 let mediumBase = JSON(json)["mediumBase"].stringValue
                                 let rawBase = JSON(json)["rawBase"].stringValue
@@ -183,6 +185,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                                 let image = Image(_id: JSON(json)["images"][0]["ID"].stringValue, _thumbPath: thumbPath, _mediumPath: mediumPath, _rawPath: rawPath, _name: JSON(json)["images"][0]["name"].stringValue, _width: JSON(json)["images"][0]["width"].stringValue, _height: JSON(json)["images"][0]["height"].stringValue, _description: JSON(json)["images"][0]["description"].stringValue, _dateAdded: JSON(json)["images"][0]["dateAdded"].stringValue, _createdBy: JSON(json)["images"][0]["createdBy"].stringValue, _type: JSON(json)["images"][0]["type"].stringValue)
                                 
                                 image.customer = JSON(json)["images"][0]["customer"].stringValue
+                                image.customerName = JSON(json)["images"][0]["custName"].stringValue
                                 image.woID = JSON(json)["images"][0]["woID"].stringValue
                                 image.tags = JSON(json)["images"][0]["tags"].stringValue
                                 

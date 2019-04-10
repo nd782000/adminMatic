@@ -463,7 +463,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         self.notesView.layer.borderWidth = 1
         self.notesView.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
         self.notesView.layer.cornerRadius = 4.0
-        self.notesView.returnKeyType = .done
+        //self.notesView.returnKeyType = .done
         self.notesView.text = self.contract.notes
         self.notesView.font = layoutVars.smallFont
         self.notesView.isEditable = true
@@ -580,7 +580,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     }
     
     
-    
+    /*
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         //print("shouldChangeTextInRange")
         if (text == "\n") {
@@ -588,6 +588,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         }
         return true
     }
+    */
     
     
     

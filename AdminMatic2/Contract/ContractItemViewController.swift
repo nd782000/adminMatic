@@ -760,7 +760,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
                 //print(response.data ?? "")     // server data
                 //print(response.result)   // result of response serialization
                 if let json = response.result.value {
-                    //print("JSON: \(json)")
+                    print("JSON: \(json)")
                     
                     self.taskIDArray = []
                     for task in self.contractItem.tasks{

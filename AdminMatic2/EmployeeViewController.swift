@@ -89,8 +89,6 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     var usageViewController:UsageViewController!
     var licenseViewController:LicenseViewController!
     
-    var methodStart:Date!
-    var methodFinish:Date!
     
     
     //var controller:MFMessageComposeViewController?
@@ -161,7 +159,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
         
-         methodStart = Date()
+        
         
         Alamofire.request(API.Router.employee(["empID":_id as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
             response in
@@ -171,7 +169,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
             //print(response.result)   // result of response serialization
             
             if let json = response.result.value {
-                //print("JSON: \(json)")
+                print("JSON: \(json)")
                 //self.employeeJSON = JSON(json)
                 
                 //self.parseEmployeeJSON()
@@ -219,9 +217,6 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                         
                     }
                     
-                    self.methodFinish = Date()
-                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    //print("Execution time: \(executionTime)")
                     
                     
                 } catch {
@@ -314,9 +309,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                     
                     self.indicator.dismissIndicator()
                     
-                    self.methodFinish = Date()
-                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    //print("Execution time: \(executionTime)")
+                   
                     
                 } catch {
                     //print("Error deserializing JSON: \(error)")
@@ -965,7 +958,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         
     }
 
-    
+    /*
     func refreshImages(_images:[Image], _scoreAdjust:Int){
         //print("refreshImages")
         
@@ -982,6 +975,19 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                                           at: .top,
                                           animated: true)
     }
+    */
+    /*
+    func refreshImages(){
+        print("refreshImages")
+        self.getImages()
+    }
+ */
+    
+    func refreshImages(_images:[Image]){
+        print("refreshImages")
+        
+    }
+    
     
     
     func updateLikes(_index:Int, _liked:String, _likes:String){
@@ -1088,19 +1094,22 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                 //print(response.data ?? "")     // server data
                 //print(response.result)   // result of response serialization
                 
-                if let json = response.result.value {
-                    //print("Log In Json = \(json)")
+               // if let json = response.result.value {
+                
                     
                     
                     
                     let loggedIn:String
+                let sessionKey:String
                     
                     do {
                         if let data = response.data,
                             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]{
-                            
+                            print("Log In Json = \(json)")
                             loggedIn = json["loggedIn"] as! String
+                           // sessionKey = json["sessionKey"] as! String
                             
+                           // print("sessionKey = \(sessionKey)")
                             
                             //let images = json["images"] as? [[String: Any]] {
                             
@@ -1113,6 +1122,8 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                                 self.logInOutBtn.setTitle("Log Out (\(self.employee.name!))", for: UIControl.State.normal)
                                 //print("Login Success")
                                 self.appDelegate.loggedInEmployee = self.employee
+                               
+                                
                                 self.appDelegate.scheduleViewController.personalScheduleArray.removeAll()
                                 self.appDelegate.scheduleViewController.personalHistoryArray.removeAll()
                                 self.appDelegate.scheduleViewController.personalHistoryLoaded = false
@@ -1130,6 +1141,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                                 
                                 self.appDelegate.defaults = UserDefaults.standard
                                 self.appDelegate.defaults.setValue(self.employee.ID, forKey: loggedInKeys.loggedInId)
+                               // self.appDelegate.defaults.setValue(sessionKey, forKey: loggedInKeys.sessionKey)
                                 // self.appDelegate.defaults.setValue(self.employee.name, forKey: loggedInKeys.loggedInName)
                                 self.appDelegate.defaults.synchronize()
                                 
@@ -1165,7 +1177,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                     //let loggedIn = LogInJson["loggedIn"].stringValue
                     
                     
-                }
+                //}
                 
                 self.indicator.dismissIndicator()
                 

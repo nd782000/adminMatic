@@ -13,8 +13,14 @@ import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
+
+protocol WoItemDelegate{
+    func refreshWoItem()
+    //func refreshWo(_refeshWoID:String, _newWoStatus:String)
+}
+
  
-class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AttachmentDelegate, EditLeadDelegate{
+class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, WoItemDelegate, AttachmentDelegate, EditLeadDelegate{
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -35,6 +41,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var chargeTypeLabel:Label!
     var chargeTypeValueLabel:Label!
     var totalLabel:Label!
+    var taxLabel:Label!
     var totalValueLabel:Label!
     
     var estimatedView:UIView!
@@ -98,6 +105,8 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.woItem = _woItem
         self.empsOnWo = _empsOnWo
         self.newWoStatus = _woStatus
+        
+        print("woItem view init chargeID = \(self.woItem.chargeID)")
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -134,6 +143,225 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         
     }
+    
+    
+    func getWoItem(woItemID:String){
+        print("getWoItem \(String(describing: self.woItem.ID))")
+        
+        
+            //indicator = SDevIndicator.generate(self.view)!
+            
+            
+            
+            var parameters:[String:String]
+            parameters = [
+                "woItemID": "\(woItemID)"
+                
+            ]
+            
+            print("parameters = \(parameters)")
+            
+            
+            
+            layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/workOrderItem.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+                .responseString { response in
+                    print("woItem response = \(response)")
+                }
+                .responseJSON { response in
+                    print("woItem json response = \(response)")
+                    
+                    switch response.result {
+                    case .success(let value):
+                        let updatedJSON = JSON(value)["item"]
+                        //self.indicator.dismissIndicator()
+                        
+                        
+                        /*
+                        var chargeValue = ""
+                        
+                        
+                        switch (updatedJSON["ID"].stringValue) {
+                        case "1":
+                            chargeValue = "NC $0.00"
+                            break;
+                        case "2":
+                            chargeValue = "FL \(self.json["totalPrice"].string!)"
+                            break;
+                        case "3":
+                            chargeValue = "T & M"
+                            break;
+                            
+                        default:
+                            chargeValue = "Null"//online
+                            break;
+                        }
+                        */
+                        
+                        
+                        
+                            self.woItem = WoItem( _ID: updatedJSON["ID"].stringValue,_type: updatedJSON["type"].stringValue, _sort: updatedJSON["sort"].stringValue, _name: updatedJSON["input"].stringValue, _est: updatedJSON["est"].stringValue, _empDesc: updatedJSON["empDesc"].stringValue, _itemStatus: updatedJSON["itemStatus"].stringValue, _chargeID: updatedJSON["charge"].stringValue, _act: updatedJSON["act"].stringValue, _price: updatedJSON["price"].stringValue, _total: updatedJSON["total"].stringValue, _totalCost: updatedJSON["totalCost"].stringValue, _usageQty:updatedJSON["usageQty"].stringValue, _extraUsage:updatedJSON["extraUsage"].stringValue, _unit:updatedJSON["unitName"].stringValue)
+                            
+                         self.woItem.tax = updatedJSON["taxType"].stringValue
+                        self.woItem.name = updatedJSON["name"].stringValue
+                        self.woItem.chargeName = updatedJSON["chargeName"].stringValue
+                        print("est = \(String(describing: self.woItem.est))")
+                        print("usageQty = \(String(describing: self.woItem.usageQty))")
+                            
+                            //tasks
+                        self.woItem.name = updatedJSON["name"].stringValue
+                        
+                            
+                            let taskCount = updatedJSON["tasks"].count
+                            for n in 0 ..< taskCount {
+                                var taskImages:[Image] = []
+                                
+                                let imageCount = Int((updatedJSON["tasks"][n]["images"].count))
+                                print("imageCount: \(imageCount)")
+                                
+                                for p in 0 ..< imageCount {
+                                    
+                                    let fileName:String = (updatedJSON["tasks"][n]["images"][p]["fileName"].stringValue)
+                                    
+                                    let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
+                                    let mediumPath:String = "\(self.layoutVars.mediumBase)\(fileName)"
+                                    let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
+                                    
+                                    //create a item object
+                                   // print("create an image object \(i)")
+                                    
+                                    print("rawPath = \(rawPath)")
+                                    
+                                    let image = Image(_id: updatedJSON["tasks"][n]["images"][p]["ID"].stringValue,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: updatedJSON["tasks"][n]["images"][p]["name"].stringValue,_width: updatedJSON["tasks"][n]["images"][p]["width"].stringValue,_height: updatedJSON["tasks"][n]["images"][p]["height"].stringValue,_description: updatedJSON["tasks"][n]["images"][p]["description"].stringValue,_dateAdded: updatedJSON["tasks"][n]["images"][p]["dateAdded"].stringValue,_createdBy: updatedJSON["tasks"][n]["images"][p]["createdByName"].stringValue,_type: updatedJSON["tasks"][n]["images"][p]["type"].stringValue)
+                                    
+                                    image.customer = (updatedJSON["tasks"][n]["images"][p]["customer"].stringValue)
+                                    image.tags = (updatedJSON["tasks"][n]["images"][p]["tags"].stringValue)
+                                    
+                                    print("appending image")
+                                    taskImages.append(image)
+                                    
+                                }
+                                
+                                let task = Task(_ID: updatedJSON["tasks"][n]["ID"].stringValue, _sort: updatedJSON["tasks"][n]["sort"].stringValue, _status: updatedJSON["tasks"][n]["status"].stringValue, _task: updatedJSON["tasks"][n]["task"].stringValue, _images:taskImages)
+                                self.woItem.tasks.append(task)
+                            }
+                            
+                            let vendorCount = updatedJSON["vendors"].count
+                            for n in 0 ..< vendorCount {
+                                let vendor = Vendor(_name: updatedJSON["vendors"][n]["companyName"].stringValue, _id: updatedJSON["vendors"][n]["vendorID"].stringValue, _address: updatedJSON["vendors"][n]["address"].stringValue, _phone: updatedJSON["vendors"][n]["phone"].stringValue, _website: updatedJSON["vendors"][n]["website"].stringValue, _balance: updatedJSON["vendors"][n]["balance"].stringValue, _lng: updatedJSON["vendors"][n]["lng"].stringValue, _lat: updatedJSON["vendors"][n]["lat"].stringValue)
+                                vendor.itemCost = updatedJSON["vendors"][n]["cost"].stringValue
+                                self.woItem.vendors.append(vendor)
+                            }
+                            let vendor = Vendor(_name: "Other", _id: "0", _address: "", _phone: "", _website: "", _balance: "", _lng: "", _lat: "")
+                            self.woItem.vendors.append(vendor)
+                            
+                            let usageCount = updatedJSON["usage"].count
+                            let dateFormatter = DateFormatter()
+                            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                            
+                            for n in 0 ..< usageCount {
+                                let startDate = dateFormatter.date(from: updatedJSON["usage"][n]["start"].string!)!
+                                let stopDate:Date?
+                                
+                                var locked:Bool
+                                let usageQty = Double(updatedJSON["usage"][n]["qty"].stringValue)
+                                if(usageQty! > 0.0 && updatedJSON["usage"][n]["addedBy"].string != self.appDelegate.loggedInEmployee?.ID){
+                                    locked = true
+                                }else{
+                                    locked = false
+                                }
+                                
+                                let usage:Usage
+                                
+                                if(updatedJSON["usage"][n]["stop"].string != "0000-00-00 00:00:00"){
+                                    stopDate = dateFormatter.date(from: updatedJSON["usage"][n]["stop"].string!)!
+                                    
+                                    usage = Usage(_ID: updatedJSON["usage"][n]["ID"].stringValue,
+                                                  _empID: updatedJSON["usage"][n]["empID"].stringValue,
+                                                  _depID: updatedJSON["usage"][n]["depID"].stringValue,
+                                                  _woID: updatedJSON["usage"][n]["woID"].stringValue,
+                                                  _start: startDate,
+                                                  _stop: stopDate,
+                                                  _lunch: updatedJSON["usage"][n]["lunch"].stringValue,
+                                                  _qty: updatedJSON["usage"][n]["qty"].stringValue,
+                                                  _empName: updatedJSON["usage"][n]["empName"].stringValue,
+                                                  _type: updatedJSON["usage"][n]["type"].stringValue,
+                                                  _itemID: updatedJSON["usage"][n]["woItemID"].stringValue,
+                                                  _unitPrice: updatedJSON["usage"][n]["unitPrice"].stringValue,
+                                                  _totalPrice: updatedJSON["usage"][n]["totalPrice"].stringValue,
+                                                  _vendor: updatedJSON["usage"][n]["vendor"].stringValue,
+                                                  _unitCost: updatedJSON["usage"][n]["unitCost"].stringValue,
+                                                  _totalCost: updatedJSON["usage"][n]["totalCost"].stringValue,
+                                                  _chargeType: updatedJSON["chargeID"].stringValue,
+                                                  _override: updatedJSON["usage"][n]["override"].stringValue,
+                                                  _empPic: updatedJSON["usage"][n]["empPic"].stringValue,
+                                                  _locked: locked,
+                                                  _addedBy: self.appDelegate.loggedInEmployee?.ID,
+                                                  _del: ""
+                                    )
+                                }else{
+                                    usage = Usage(_ID: updatedJSON["usage"][n]["ID"].stringValue,
+                                                  _empID: updatedJSON["usage"][n]["empID"].stringValue,
+                                                  _depID: updatedJSON["usage"][n]["depID"].stringValue,
+                                                  _woID: updatedJSON["usage"][n]["woID"].stringValue,
+                                                  _start: startDate,
+                                                  _lunch: updatedJSON["usage"][n]["lunch"].stringValue,
+                                                  _qty: updatedJSON["usage"][n]["qty"].stringValue,
+                                                  _empName: updatedJSON["usage"][n]["empName"].stringValue,
+                                                  _type: updatedJSON["usage"][n]["type"].stringValue,
+                                                  _itemID: updatedJSON["usage"][n]["woItemID"].stringValue,
+                                                  _unitPrice: updatedJSON["usage"][n]["unitPrice"].stringValue,
+                                                  _totalPrice: updatedJSON["usage"][n]["totalPrice"].stringValue,
+                                                  _vendor: updatedJSON["usage"][n]["vendor"].stringValue,
+                                                  _unitCost: updatedJSON["usage"][n]["unitCost"].stringValue,
+                                                  _totalCost: updatedJSON["usage"][n]["totalCost"].stringValue,
+                                                  _chargeType: updatedJSON["chargeID"].stringValue,
+                                                  _override: updatedJSON["usage"][n]["override"].stringValue,
+                                                  _empPic: updatedJSON["usage"][n]["empPic"].stringValue,
+                                                  _locked: locked,
+                                                  _addedBy: self.appDelegate.loggedInEmployee?.ID,
+                                                  _del: ""
+                                    )
+                                    
+                                    
+                                }
+                                
+                                if updatedJSON["usage"][n]["hasReceipt"].stringValue == "1"{
+                                    usage.hasReceipt = "1"
+                                    usage.receipt = Image(_id: updatedJSON["usage"][n]["receipt"]["ID"].stringValue, _thumbPath:"https://www.atlanticlawnandgarden.com/uploads/general/thumbs/\(updatedJSON["usage"][n]["receipt"]["fileName"].stringValue)", _mediumPath: "https://www.atlanticlawnandgarden.com/uploads/general/medium/\(updatedJSON["usage"][n]["receipt"]["fileName"].stringValue)", _rawPath: "https://www.atlanticlawnandgarden.com/uploads/general/\(updatedJSON["usage"][n]["receipt"]["fileName"].stringValue)", _name: updatedJSON["usage"][n]["receipt"]["name"].stringValue, _width: updatedJSON["usage"][n]["receipt"]["width"].stringValue, _height: updatedJSON["usage"][n]["receipt"]["height"].stringValue, _description: updatedJSON["usage"][n]["description"]["ID"].stringValue, _dateAdded: updatedJSON["usage"][n]["receipt"]["dateAdded"].stringValue, _createdBy: updatedJSON["usage"][n]["receipt"]["createdBy"].stringValue, _type: updatedJSON["usage"][n]["receipt"]["type"].stringValue)
+                                }else{
+                                    usage.hasReceipt = "0"
+                                }
+                                
+                                
+                                self.woItem.usages.append(usage)
+                            }
+                           // self.woItemsArray.append(woItem)
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+
+
+                        self.layoutVars.playSaveSound()
+                        self.layoutViews()
+                        
+                        
+                    case .failure(let error):
+                       
+                        print("Error 4xx / 5xx: \(error)")
+                    }
+            }
+        
+        
+    }
+    
     
     
     
@@ -250,6 +478,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         
+        /*
         var chargeTypeName:String
         
         switch (self.woItem.chargeID) {
@@ -266,9 +495,10 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
             chargeTypeName = "Null"//online
             break;
         }
+        */
         
         self.chargeTypeValueLabel = Label()
-        self.chargeTypeValueLabel.text = chargeTypeName
+        self.chargeTypeValueLabel.text = self.woItem.chargeName
         self.chargeTypeView.addSubview(self.chargeTypeValueLabel)
         
         self.totalLabel = Label()
@@ -279,15 +509,25 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.totalValueLabel.text = "$\(self.woItem.total!)"
         self.chargeTypeView.addSubview(self.totalValueLabel)
         
+        self.taxLabel = Label()
+        //self.taxLabel.text = "Total:"
+        if woItem.tax == "1"{
+            self.taxLabel.text = "Taxable"
+        }else{
+            self.taxLabel.text = "Non-Taxable"
+        }
+        
+        self.chargeTypeView.addSubview(self.taxLabel)
         
         let chargeViewsDictionary = [
             "chargeTypeLabel":self.chargeTypeLabel,
             "chargeTypeValueLabel":self.chargeTypeValueLabel,
             "totalLabel":self.totalLabel,
-            "totalValueLabel":self.totalValueLabel
+            "totalValueLabel":self.totalValueLabel,
+            "taxLabel":self.taxLabel
         ]  as [String:AnyObject]
         
-        self.chargeTypeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[chargeTypeLabel][chargeTypeValueLabel]-[totalLabel][totalValueLabel]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: sizeVals, views: chargeViewsDictionary))
+        self.chargeTypeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[chargeTypeLabel][chargeTypeValueLabel]-[totalLabel][totalValueLabel]-[taxLabel]", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: sizeVals, views: chargeViewsDictionary))
         self.chargeTypeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[chargeTypeLabel(20)]", options: [], metrics: sizeVals, views: chargeViewsDictionary))
         
         
@@ -971,6 +1211,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         let usageEntryViewController = UsageEntryViewController(_workOrderID: woID,_workOrderItem:self.woItem,_empsOnWo:self.empsOnWo)
         usageEntryViewController.customerID = self.customerID
+        usageEntryViewController.delegate = self
         navigationController?.pushViewController(usageEntryViewController, animated: false )
         
     }
@@ -1073,7 +1314,10 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
     }
     
-    
+    func refreshWoItem(){
+        editsMade = true
+        self.getWoItem(woItemID:self.woItem.ID)
+    }
     
     
     override func didReceiveMemoryWarning() {

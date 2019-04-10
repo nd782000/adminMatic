@@ -39,6 +39,9 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
     var tableViewMode:String = "CURRENT"
     let items = ["Current","History"]
     
+    //set container to safe bounds of view
+    let safeContainer:UIView = UIView()
+    
     var editButton:UIBarButtonItem!
     var editsMade:Bool = false
     
@@ -197,13 +200,16 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         
         print("layoutViews")
         
+        
     
         editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(EquipmentViewController.displayEditView))
         navigationItem.rightBarButtonItem = editButton
         
         
-        //set container to safe bounds of view
-        let safeContainer:UIView = UIView()
+       
+        
+        safeContainer.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
         safeContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(safeContainer)
         safeContainer.leftAnchor.constraint(equalTo: view.safeLeftAnchor).isActive = true

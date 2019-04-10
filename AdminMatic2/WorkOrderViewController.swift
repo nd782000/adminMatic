@@ -185,6 +185,8 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func refreshWo(){
+        print("refreshWo")
+        
         numberAttachmentPics = 0
         json = []
         self.woItems = []
@@ -197,7 +199,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func refreshWo(_refeshWoID _refreshWoID:String, _newWoStatus:String){
-        print("refreshWo")
+        print("refreshWo 1")
        // print("current status = \(self.statusValue)")
         print("_newWoStatus = \(_newWoStatus)")
         
@@ -323,7 +325,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //sends request for wo Data
     func getWorkOrder() {
-       // print(" GetWo  Work Order Id \(self.workOrder.ID)")
+        print(" GetWo  Work Order Id \(workOrderID)")
         
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -384,6 +386,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.workOrder.totalCost = self.json["totalCost"].stringValue
         
         self.workOrder.charge = self.json["charge"].stringValue
+        self.workOrder.chargeName = self.json["chargeName"].stringValue
         self.workOrder.title = self.json["title"].stringValue
         
         
@@ -400,6 +403,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         print("date raw = \(self.json["dateRaw"].stringValue)")
         scheduleKeyWordValue = self.json["date"].stringValue
         
+        /*
         chargeValue = ""
         
         
@@ -415,10 +419,11 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             break;
             
         default:
-            chargeValue = "Null"//online
+            chargeValue = ""//online
             break;
         }
- 
+ */
+        
 
          //print("400")
         let crewsOnWoCount = self.json["crews"].count
@@ -501,8 +506,38 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
         let jsonCount = self.json["items"].count
         
+        
+        
+        
+        
         for i in 0 ..< jsonCount {
+            
+            /*
+            chargeValue = ""
+            
+            
+            switch (self.json["items"][i]["charge"].stringValue) {
+            case "1":
+                chargeValue = "NC $0.00"
+                break;
+            case "2":
+                chargeValue = "FL \(self.json["totalPrice"].string!)"
+                break;
+            case "3":
+                chargeValue = "T & M"
+                break;
+                
+            default:
+                chargeValue = "Null"//online
+                break;
+            }
+            */
+            
+            
             let woItem = WoItem( _ID: self.json["items"][i]["ID"].stringValue,_type: self.json["items"][i]["type"].stringValue, _sort: self.json["items"][i]["sort"].stringValue, _name: self.json["items"][i]["input"].stringValue, _est: self.json["items"][i]["est"].stringValue, _empDesc: self.json["items"][i]["empDesc"].stringValue, _itemStatus: self.json["items"][i]["itemStatus"].stringValue, _chargeID: self.json["items"][i]["chargeID"].stringValue, _act: self.json["items"][i]["act"].stringValue, _price: self.json["items"][i]["price"].stringValue, _total: self.json["items"][i]["total"].stringValue, _totalCost: self.json["items"][i]["totalCost"].stringValue, _usageQty:self.json["items"][i]["usageQty"].stringValue, _extraUsage:self.json["items"][i]["extraUsage"].stringValue, _unit:self.json["items"][i]["unitName"].stringValue)
+            
+            woItem.tax = self.json["items"][i]["taxType"].stringValue
+            woItem.chargeName = self.json["items"][i]["chargeName"].stringValue
             
             if(woItem.ID == refreshWoID){
                 //print("refreshWoID = \(woItem)")
@@ -850,7 +885,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.infoView.addSubview(chargeLbl)
         
         self.charge = GreyLabel()
-        self.charge.text = self.chargeValue
+        self.charge.text = self.workOrder.chargeName
         self.charge.font = layoutVars.labelBoldFont
         self.charge.textAlignment = .left
         self.charge.translatesAutoresizingMaskIntoConstraints = false

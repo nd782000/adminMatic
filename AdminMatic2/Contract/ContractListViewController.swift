@@ -54,9 +54,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     var contractsArray:[Contract] = []
     var names = [String]()
     
-    var methodStart:Date!
-    var methodFinish:Date!
-    
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -77,7 +75,6 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     func getContracts(_openNewContract:Bool){
         //print("getContracts")
         
-        methodStart = Date()
         
         self.contractsArray = []
         self.names = []
@@ -145,10 +142,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
                     
                     
                     
-                    self.methodFinish = Date()
-                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    //print("Execution time: \(executionTime)")
-                    
+                  
                     
                     self.indicator.dismissIndicator()
                     

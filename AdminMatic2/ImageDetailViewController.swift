@@ -84,21 +84,8 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         view.backgroundColor = UIColor.darkGray
         
         
-        //custom back button
-        /*
-        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
-        backButton.addTarget(self, action: #selector(ImageDetailViewController.goBack), for: UIControl.Event.touchUpInside)
-        backButton.setTitle("Back", for: UIControl.State.normal)
-        backButton.titleLabel!.font =  layoutVars.buttonFont
-        backButton.sizeToFit()
-        let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
-        navigationItem.leftBarButtonItem  = backButtonItem
-        */
-        
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
         navigationItem.leftBarButtonItem = backButton
-        
-        
         
         self.layoutViews()
     }
@@ -110,9 +97,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         if(self.textView != nil){
             self.textView.subviews.forEach({ $0.removeFromSuperview() })
         }
-       // if(self.likesView != nil){
-          //  self.likesView.subviews.forEach({ $0.removeFromSuperview() })
-       // }
+       
         if(self.backgroundImageView != nil){
             self.backgroundImageView.subviews.forEach({ $0.removeFromSuperview() })
         }
@@ -165,7 +150,8 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         
         imageView.backgroundColor = .black
-        imageView.contentMode = .scaleAspectFill
+        //imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         scrollView.addSubview(imageView)
         imageView.isUserInteractionEnabled = true
         
@@ -337,7 +323,10 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
                 self.backgroundImageView.image = self.imageView.image
                 self.activityView.stopAnimating()
                 
-                let shareBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.action, target: self, action: #selector(ImageDetailViewController.share))
+                
+                //let shareBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.action, target: self, action: #selector(ImageDetailViewController.share))
+                
+                let shareBtn = UIBarButtonItem(title: "Share", style: .plain, target: self, action: #selector(ImageDetailViewController.share))
                 self.navigationItem.rightBarButtonItem = shareBtn
                 
             }

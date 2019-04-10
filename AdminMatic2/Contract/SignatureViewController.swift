@@ -389,7 +389,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
                     //print("RESPONSE: \(response)")
                 }
             case .failure(let encodingError):
-                //print("fail \(encodingError)")
+                print("fail \(encodingError)")
                 
                 self.layoutVars.playErrorSound()
                 

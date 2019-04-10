@@ -23,6 +23,7 @@ class WorkOrder {
     var totalPriceRaw:String!
     var totalCostRaw:String!
     var charge:String!
+    var chargeName:String!
     
     var itemRemQty:String?
     

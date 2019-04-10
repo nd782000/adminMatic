@@ -1075,7 +1075,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
 
         
         let workOrderViewController:WorkOrderViewController = WorkOrderViewController(_workOrderID: _workOrder.ID)
-        workOrderViewController.workOrder.lead = self.lead
+       // workOrderViewController.workOrder.lead = self.lead
         
         self.navigationController?.pushViewController(workOrderViewController, animated: false )
         

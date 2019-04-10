@@ -52,12 +52,14 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
     var types = [String]()
     var prices = [String]()
     var units = [String]()
+    var taxes = [String]()
     
     var selectedID:String = ""
     var selectedName:String = ""
     var selectedType:String = ""
     var selectedPrice:String = ""
     var selectedUnit:String = ""
+    var selectedTax:String = ""
     
     var keyboardHeight:CGFloat = 216
     
@@ -151,9 +153,9 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
             
             response in
             //print(response.request ?? "")  // original URL request
-            //print(response.response ?? "") // URL response
-            //print(response.data ?? "")     // server data
-            //print(response.result)   // result of response serialization
+            print(response.response ?? "") // URL response
+            print(response.data ?? "")     // server data
+            print(response.result)   // result of response serialization
             do {
                 if let data = response.data,
                     let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -173,6 +175,9 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
                         }
                         if let unit = result["unit"] as? String {
                             self.units.append(unit)
+                        }
+                        if let tax = result["tax"] as? String {
+                            self.taxes.append(tax)
                         }
                     }
                 }
@@ -454,11 +459,13 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
                 cell.type = self.types[i]
                 cell.price = self.prices[i]
                 cell.unit = self.units[i]
+                cell.tax = self.taxes[i]
             } else {
                 cell.id = ""
                 cell.type = ""
                 cell.price = ""
                 cell.unit = ""
+                cell.tax = ""
             }
             return cell
        // }
@@ -511,6 +518,7 @@ class NewWoItemViewController: UIViewController, UITextFieldDelegate, UITextView
             selectedType = currentCell.type
             selectedPrice = currentCell.price
             selectedUnit = currentCell.unit
+            selectedTax = currentCell.tax
             
             self.priceTxtField.text = currentCell.price
             print("select item")

@@ -683,7 +683,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         self.notesView.layer.borderWidth = 1
         self.notesView.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
         self.notesView.layer.cornerRadius = 4.0
-        self.notesView.returnKeyType = .done
+        //self.notesView.returnKeyType = .done
         self.notesView.text = self.wo.notes
         self.notesView.font = layoutVars.smallFont
         self.notesView.isEditable = true
@@ -883,6 +883,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         
     }
     
+    /*
      func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         print("shouldChangeTextInRange")
         if (text == "\n") {
@@ -890,6 +891,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         }
         return true
     }
+    */
     
     
     
@@ -934,15 +936,17 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         return 1
     }
     
-    
+  
+    /*
     // returns the number of 'columns' to display.
     func numberOfComponentsInPickerView(_ pickerView: UIPickerView!) -> Int{
         return 1
     }
+    */
     
-    
+   
     // returns the # of rows in each component..
-    func pickerView(_ pickerView: UIPickerView!, numberOfRowsInComponent component: Int) -> Int{
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
         // shows first 3 status options, not cancel or waiting
         print("pickerview tag: \(pickerView.tag)")
         var count:Int = 0

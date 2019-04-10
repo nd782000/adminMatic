@@ -498,7 +498,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //print("You selected cell #\(indexPath.row)!")
+        print("You selected cell #\(indexPath.row)!")
         
         let indexPath = tableView.indexPathForSelectedRow;
         

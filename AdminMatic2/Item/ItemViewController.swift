@@ -17,7 +17,7 @@ import CoreLocation
 
  
 
-class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate{
+class ItemViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate{
     
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
@@ -68,6 +68,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
     init(_item:Item){
         super.init(nibName:nil,bundle:nil)
         self.item = _item
+        print("itemID = \(String(describing: self.item.ID))")
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -81,7 +82,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         view.backgroundColor = layoutVars.backgroundColor
         title = "Item"
         
-        /*
+        
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(ItemViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -90,9 +91,9 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
-        */
         
         
+        print("get Item")
         getItemData(_id: self.item.ID!)
         
         
@@ -114,7 +115,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/item.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                print("lead response = \(response)")
+                print("item response = \(response)")
             }
             .responseJSON(){
                 response in
@@ -210,7 +211,7 @@ class ItemViewController: ViewControllerWithMenu, UITableViewDelegate, UITableVi
         
         //itemLbl.text = self.itemJSON["item"]["item"].stringValue
        // priceUnitLbl.text = self.itemJSON["item"]["price"].stringValue  self.itemJSON["item"]["unit"].stringValue
-        
+        print("parse item json")
         item.description = self.itemJSON["item"]["description"].stringValue
         item.taxable = self.itemJSON["item"]["tax"].stringValue
         item.typeID = self.itemJSON["item"]["type"].stringValue

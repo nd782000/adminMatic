@@ -11,7 +11,7 @@
 import Foundation
 import UIKit
 import Alamofire
-import AlamofireImage
+//import AlamofireImage
 import SwiftyJSON
 //import Nuke
 

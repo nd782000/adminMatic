@@ -934,7 +934,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         
         
         if pickerMode == "WORKORDER"{
-            if self.selectedRow == woItemsArray.count{
+            if self.selectedRow == woItemsArray.count || woItemsArray.count == 0{
                 //print("needs new wo")
                 
                 //self.editsMade = true
@@ -942,7 +942,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                 let editWoViewController = NewEditWoViewController(_lead: self.lead,_tasks: self.tasksArray)
                 editWoViewController.leadTaskDelegate = self
                 navigationController?.pushViewController(editWoViewController, animated: false )
-                
+                scheduleTxtField.resignFirstResponder()
                 return
                 
                 //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Make New Work Order", _message: "This feature is coming soon.")
@@ -953,7 +953,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
             scheduleTxtField.resignFirstResponder()
         }else{
             
-            if self.selectedRow == contractItemsArray.count{
+            if self.selectedRow == contractItemsArray.count || contractItemsArray.count == 0{
                 //print("needs new contract")
                 //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Make New Contract", _message: "This feature is coming soon.")
                 //return
@@ -963,7 +963,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                 let editContractViewController = NewEditContractViewController(_lead: self.lead,_tasks: self.tasksArray)
                 editContractViewController.leadTaskDelegate = self
                 navigationController?.pushViewController(editContractViewController, animated: false )
-                
+                contractTxtField.resignFirstResponder()
                 return
             }
             
@@ -1067,7 +1067,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                             self.layoutVars.playSaveSound()
                             
                             self.tasksTableView.reloadData()
-                        case .failure(let error):
+                        case .failure(_):
                             self.indicator.dismissIndicator()
                             self.tasksTableView.reloadData()
                             //print("Error: \(error)")

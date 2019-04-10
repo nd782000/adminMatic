@@ -245,7 +245,7 @@ class AttachmentListViewController: ViewControllerWithMenu, UITextFieldDelegate,
         //print("Add Field Note")
         
         print("making prep view")
-        print("self.customerID = \(self.customerID)")
+        //print("self.customerID = \(self.customerID)")
         
         //let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Field Note", _ID: "0")
         //let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Attachment", _woID: self.workOrderID, _attachmentID: "0", _images: [])

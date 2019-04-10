@@ -81,9 +81,12 @@ class UsageTableViewCell: UITableViewCell {
     
     func layoutLandscape(){
         
+        
         for view in self.contentView.subviews{
             view.removeFromSuperview()
         }
+ 
+        
         
         statusIcon = UIImageView()
         

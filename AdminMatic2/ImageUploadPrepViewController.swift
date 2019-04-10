@@ -16,6 +16,7 @@ import Alamofire
 //import SwiftyJSON
 import DKImagePickerController
 
+//import BSImagePicker
  
 protocol ImageUploadPrepDelegate {
     func scrollToCell(_indexPath:IndexPath)
@@ -27,7 +28,9 @@ protocol ImageDrawingDelegate{
     func updateImage(_indexPath:IndexPath, _image:UIImage)
 }
 
-
+public protocol ImagePickerDelegate: class {
+    func didSelect(image: UIImage?)
+}
 
 
 class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UISearchBarDelegate, ImageUploadPrepDelegate, ImageDrawingDelegate, ImageViewDelegate{
@@ -170,10 +173,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.customerID = _customerID
         self.images = _images
         
-        print("imageType = \(imageType)")
-        print("leadID = \(leadID)")
-        print("leadTaskID = \(leadTaskID)")
-        print("customerID = \(customerID)")
+       // print("imageType = \(imageType)")
+        //print("leadID = \(leadID)")
+       // print("leadTaskID = \(leadTaskID)")
+       // print("customerID = \(customerID)")
     }
     
     
@@ -1104,16 +1107,140 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             break
             
         }
+        
+        /*
+        let allAssets = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: nil)
+        var evenAssetIds = [String]()
+        
+        allAssets.enumerateObjects({ (asset, idx, stop) -> Void in
+            if idx % 2 == 0 {
+                evenAssetIds.append(asset.localIdentifier)
+            }
+        })
+        
+        let evenAssets = PHAsset.fetchAssets(withLocalIdentifiers: evenAssetIds, options: nil)
+        
+        let vc = BSImagePickerViewController()
+        
+        if(imageType == "Equipment" || imageType == "Receipt"){
+            vc.maxNumberOfSelections = 1
+        }
+        
+        vc.defaultSelections = evenAssets
+        
+        bs_presentImagePickerController(vc, animated: true,
+                                        select: { (asset: PHAsset) -> Void in
+                                            print("Selected: \(asset)")
+        }, deselect: { (asset: PHAsset) -> Void in
+            print("Deselected: \(asset)")
+        }, cancel: { (assets: [PHAsset]) -> Void in
+            print("Cancel: \(assets)")
+        }, finish: { (assets: [PHAsset]) -> Void in
+            print("Finish: \(assets)")
+        }, completion: nil)
+        
+        
+        */
+        
         //disable sesarch to prevent double modal present issue
         
         
+        /*
+        let pickerController = ImagePicker
+        pickerController.delegate = self
+        pickerController.allowsEditing = true
+        pickerController.mediaTypes = ["public.image"]
+        pickerController.sourceType = .camera
+        
+       
+        pickerController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        */
+        
+        
+        /*
+        let vc = BSImagePickerViewController()
+        
+        if(imageType == "Equipment" || imageType == "Receipt"){
+            vc.maxNumberOfSelections = 1
+        }
+        
+        bs_presentImagePickerController(vc, animated: true,
+                                        select: { (asset: PHAsset) -> Void in
+                                            print("didSelectAssets")
+                                            print(assets)
+                                            
+                                            self.imageAdded = true
+                                            
+                                            for i in 0..<assets.count
+                                            {
+                                                print("looping images")
+                                                selectedAssets.append(assets[i])
+                                                //print(self.selectedAssets)
+                                                
+                                                
+                                                //assets[i].fetchOriginalImage(completeBlock: <#T##(UIImage?, [AnyHashable : Any]?) -> Void#>)
+                                                assets[i].fetchOriginalImage(completeBlock: { image, info in
+                                                    
+                                                    
+                                                    print("making image")
+                                                    
+                                                    
+                                                    let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
+                                                    
+                                                    if self.taskID != "" || self.leadTaskID != "" || self.contractTaskID != ""{
+                                                        imageToAdd.description = self.groupDescriptionTxt.text!
+                                                        imageToAdd.customer = self.customerID
+                                                        imageToAdd.customerName = self.customerName
+                                                    }
+                                                    
+                                                    if self.usageID != ""{
+                                                        imageToAdd.usageID = self.usageID
+                                                    }
+                                                    if self.vendorID != ""{
+                                                        imageToAdd.vendorID = self.vendorID
+                                                    }
+                                                    
+                                                    
+                                                    
+                                                    imageToAdd.image = image
+                                                    
+                                                    
+                                                    self.images.append(imageToAdd)
+                                                    self.imagesAdded.append(imageToAdd)
+                                                    
+                                                    if i == assets.count - 1{
+                                                        print("images count = \(self.images.count)")
+                                                        print("imagesAdded = \(self.imagesAdded.count)")
+                                                        
+                                                        self.imageCollectionView.reloadData()
+                                                        
+                                                        
+                                                        let lastItem = self.collectionView(self.imageCollectionView, numberOfItemsInSection: 0) - 1
+                                                        let indexPath: NSIndexPath = NSIndexPath.init(item: lastItem, section: 0)
+                                                        
+                                                        self.imageCollectionView.scrollToItem(at: indexPath as IndexPath, at: .top, animated: true)
+                                                    }
+                                                    
+                                                })
+                                            }
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+        }, deselect: { (asset: PHAsset) -> Void in
+            print("Deselected: \(asset)")
+        }, cancel: { (assets: [PHAsset]) -> Void in
+            print("Cancel: \(assets)")
+        }, finish: { (assets: [PHAsset]) -> Void in
+            print("Finish: \(assets)")
+        }, completion: nil)
+        */
         
         
         
-        
-        
-        
-        let multiPicker = DKImagePickerController()
+       let multiPicker = DKImagePickerController()
         
         multiPicker.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
         
@@ -1121,11 +1248,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         print("add images 4")
         
         var selectedAssets = [DKAsset]()
-        //var selectedImages:[Image] = [Image]()
+        var selectedImages:[Image] = [Image]()
         
         
         multiPicker.showsCancelButton = true
-        multiPicker.assetType = .allPhotos
+       multiPicker.assetType = .allPhotos
         
         if(imageType == "Equipment" || imageType == "Receipt"){
             multiPicker.maxSelectableCount = 1
@@ -1134,6 +1261,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.layoutVars.getTopController().present(multiPicker, animated: true) {}
         
         
+       
         
         multiPicker.didSelectAssets = { (assets: [DKAsset]) in
             print("didSelectAssets")
@@ -1198,6 +1326,9 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             
         }
+ 
+        
+        
     }
     
     
@@ -1209,6 +1340,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         
         self.images = []
         self.imagesAdded = []
+        
         
         let multiPicker = DKImagePickerController()
         
@@ -1269,6 +1401,8 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             
         }
+ 
+        
     }
     
     
@@ -1298,7 +1432,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         print("upload complete")
 
         if(self.imageType == "Gallery" || self.imageType == "Customer"){
-            delegate.refreshImages(_images: _images, _scoreAdjust: _scoreAdjust)
+            delegate.refreshImages(_images: _images)
+            
+           // delegate.refreshImages()
+            
+            
         }else if(self.imageType == "Task" || self.imageType == "Lead Task" || self.imageType == "Contract Task"){
             attachmentDelegate.updateTable(_points: (_scoreAdjust + points))
         }else if self.imageType == "Equipment"{
@@ -1372,8 +1510,21 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     }
     
     
+    func refreshImages(_images:[Image]){
+        print("refreshImages")
+       
+    }
     
     
+    
+    
+    /*
+    func refreshImages(){
+        print("refreshImages")
+    }
+ */
+    
+    /*
     func refreshImages(_images:[Image], _scoreAdjust:Int){
         print("refreshImages")
         /*
@@ -1415,6 +1566,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         */
     }
     
+    */
     
     
     
@@ -1587,7 +1739,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             case .pad:
                 let nav = UINavigationController(rootViewController: actionSheet)
                 nav.modalPresentationStyle = UIModalPresentationStyle.popover
-                let popover = nav.popoverPresentationController as! UIPopoverPresentationController
+                let popover = nav.popoverPresentationController!
                 actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
                 popover.sourceView = self.view
                 popover.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
@@ -2651,6 +2803,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         
     }
     
+    
+    func didSelect(image: UIImage?){
+        print("did select image")
+    }
     
     
     override func didReceiveMemoryWarning() {

@@ -1156,7 +1156,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
     
     
     @objc func addImage(){
-        //print("Add Image")
+        print("Add Image")
         
         
         let multiPicker = DKImagePickerController()
@@ -1175,8 +1175,8 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
         
         
         multiPicker.didSelectAssets = { (assets: [DKAsset]) in
-            //print("didSelectAssets")
-            //print(assets)
+            print("didSelectAssets")
+            print(assets)
             
             for i in 0..<assets.count
             {
@@ -1195,7 +1195,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                     
                     
                     selectedImages.append(imageToAdd)
-                    //print("selectedimages count = \(selectedImages.count)")
+                    print("selectedimages count = \(selectedImages.count)")
                     
                     if selectedImages.count == assets.count{
                       //  self.createPrepView()
@@ -1654,8 +1654,19 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     
+    func refreshImages(_images:[Image]){
+        print("refreshImages")
+        
+    }
     
+    /*
+    func refreshImages(){
+        print("refreshImages")
+        self.getImages()
+    }
+    */
     
+    /*
     func refreshImages(_images:[Image], _scoreAdjust:Int){
         //print("refreshImages")
         
@@ -1673,7 +1684,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                                           at: .top,
                                           animated: true)
     }
-    
+    */
     
    
     

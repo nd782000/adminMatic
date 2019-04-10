@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string></string>
+	<string>AdminMatic</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleGetInfoString</key>
@@ -19,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.4.9</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSApplicationCategoryType</key>
@@ -32,9 +32,13 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Used to record job field notes.</string>
+	<string>Used to record job images.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Needed for in app maps</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Needed for in app maps</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Used to record job field notes.</string>
+	<string>Used to record job images.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -49,9 +53,5 @@
 	</array>
 	<key>re</key>
 	<string></string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Needed for in app maps</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Needed for in app maps</string>
 </dict>
 </plist>

@@ -15,7 +15,7 @@ import UIKit
 //import Nuke
 
 import  Alamofire
-import  AlamofireImage
+//import  AlamofireImage
 
 
 import UIKit

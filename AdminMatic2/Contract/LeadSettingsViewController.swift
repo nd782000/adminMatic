@@ -518,7 +518,7 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
             regex = nil
         }
         if let regexError = error {
-            //print("Oh no! \(regexError)")
+            print("error \(regexError)")
         } else {
             for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
                 highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)

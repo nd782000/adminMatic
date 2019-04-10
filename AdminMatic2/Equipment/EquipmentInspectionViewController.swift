@@ -576,7 +576,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
                 
                 if shouldUpdateEquipmentStatus{
                     let alertController = UIAlertController(title: "Update Equipment", message: "You marked a question to BAD, do you want to update equipment status?", preferredStyle: UIAlertController.Style.alert)
-                    let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
+                    let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.default) {
                         (result : UIAlertAction) -> Void in
                         print("Cancel")
                         self.serviceListDelegate.updateServiceList()
@@ -603,10 +603,12 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
                     
                     alertController.addAction(cancelAction)
                     //check if equipment isn't already set to needsService
-                    if self.equipment.status != "1"{
-                        alertController.addAction(serviceAction)
-                    }
+                    //if self.equipment.status != "1"{
+                    serviceAction.setValue(UIColor.orange, forKey: "titleTextColor")
+                    alertController.addAction(serviceAction)
+                    //}
                     
+                    brokenAction.setValue(UIColor.red, forKey: "titleTextColor")
                     alertController.addAction(brokenAction)
                     self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
                 }else{

@@ -94,7 +94,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     init(_employeeID:String){
         super.init(nibName:nil,bundle:nil)
         self.employeeID = _employeeID
-        title = "Schedule"
+        title = "Work Orders"
         //print("empID = \(String(describing: self.employeeID))")
         self.view.backgroundColor = layoutVars.backgroundColor
         self.personalScheduleBtn = Button()
@@ -344,6 +344,9 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         refreshFromTable = false
         
         
+        self.fullScheduleArray = []
+        self.personalScheduleArray = []
+        
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
         
@@ -364,9 +367,37 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         }
         
         
+        print("call alamofire")
+        /*
+        var parameters:[String:String]
+        parameters = ["employeeID":_empID,"custID":"","startDate":self.startDateDB,"endDate":self.endDateDB,"sort":sort,"plowDepth":self.plowDepth,"active":"1", "cb":"\(timeStamp)"]
+        //print("parameters = \(parameters)")
         
-        Alamofire.request(API.Router.workOrderList(["employeeID":_empID as AnyObject,"custID":"" as AnyObject,"startDate":self.startDateDB as AnyObject,"endDate":self.endDateDB as AnyObject,"sort":sort as AnyObject,"plowDepth":self.plowDepth as AnyObject,"active":"1" as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/workOrders.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+            .responseString { response in
+                print("equipment response = \(response)")
+        }
+ */
+            
+        
+        
+        Alamofire.request(API.Router.workOrderList(["employeeID":_empID as AnyObject,"custID":"" as AnyObject,"startDate":self.startDateDB as AnyObject,"endDate":self.endDateDB as AnyObject,"sort":sort as AnyObject,"plowDepth":self.plowDepth as AnyObject,"active":"1" as AnyObject, "cb":timeStamp as AnyObject])).responseString() {
             response in
+            
+            print("response string")
+            
+            print(response.request ?? "")
+            print(response.response ?? "") // URL response
+            print(response.data ?? "")     // server data
+            print(response.result)
+                
+            }
+            
+            .responseJSON() {
+            response in
+            
+            print("response")
             
             print(response.request ?? "")  // original URL request
             // //print(response.response) // URL response
@@ -434,9 +465,10 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     if(self.layoutViewsCalled == false ){
                         self.layoutViews()
                     }else{
-                        DispatchQueue.main.async {
+                       // DispatchQueue.main.async {
+                            print("reload data")
                             self.scheduleTableView.reloadData()
-                        }
+                       // }
                     }
                     // Close Indicator
                     self.indicator.dismissIndicator()
@@ -502,6 +534,52 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                             
                             
                         }
+                        
+                        
+                        //check if personal schedule is empty, switch to full and re get data
+                        
+                         if self.personalScheduleArray.count == 0{
+                            print("personal schedule is empty")
+                            
+                            let alertController = UIAlertController(title: "No Work Orders", message: "There are no work orders assigned to you.  Would you like to load the full schedule?", preferredStyle: UIAlertController.Style.alert)
+                            
+                            let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
+                                (result : UIAlertAction) -> Void in
+                                print("YES")
+                                self.filterUsersSchedule()
+                            }
+                            
+                            let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.cancel) {
+                                (result : UIAlertAction) -> Void in
+                                print("NO")
+                            }
+                            
+                            alertController.addAction(cancelAction)
+                            alertController.addAction(okAction)
+                            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
+                            
+                            
+                            /*
+                            
+                         self.personalMode = false
+                         
+                            if(self.fullScheduleLoaded != true){
+                                self.getSchedule(_empID: "")
+                         }else{
+                                
+                         self.scheduleTableView.reloadData()
+                         }
+                         
+                         
+                         // self.customSC.selectedSegmentIndex = 1
+                         // Close Indicator
+                         self.indicator.dismissIndicator()
+                         return
+                            */
+                         }
+                        
+                        
+                        
                     }
                     
                     
@@ -522,9 +600,10 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     if(self.layoutViewsCalled == false ){
                         self.layoutViews()
                     }else{
-                        DispatchQueue.main.async {
+                       // DispatchQueue.main.async {
+                            print("reload data")
                             self.scheduleTableView.reloadData()
-                        }
+                       // }
                     }
                     // Close Indicator
                     self.indicator.dismissIndicator()
@@ -856,9 +935,10 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         var count:Int!
         
+        print("numberOfRowsInSection")
         if (shouldShowSearchResults == true) {
             count = self.workOrdersSearchResults.count
-            //print("search count = \(self.workOrdersSearchResults.count)")
+            print("search count = \(self.workOrdersSearchResults.count)")
             self.countLbl.text = "\(count!) Work Order(s) Found"
             return count
             
@@ -867,12 +947,12 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             switch self.tableViewMode{
             case "SCHEDULE":
                 if(personalMode == false){
-                    //print("------FULL-------")
+                    print("------FULL-------")
                     count = self.fullScheduleArray.count
-                    //print("full schedule count = \(count)")
+                    print("full schedule count = \(String(describing: count))")
                 }else{
                     count = self.personalScheduleArray.count
-                    //print("personal schedule count = \(count)")
+                    print("personal schedule count = \(String(describing: count))")
                 }
                 self.countLbl.text = "\(count!) Scheduled Work Order(s)"
                 break
@@ -959,7 +1039,9 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 
                 //print("make cell for schedule reg mode row: \(indexPath.row)")
                 if(personalMode == false){
-                    // //print("------FULL-------")
+                    print("------FULL-------")
+                    print("array count \(self.fullScheduleArray.count)")
+                    
                     cell.workOrder = self.fullScheduleArray[indexPath.row]
                 }else{
                     cell.workOrder = self.personalScheduleArray[indexPath.row]
@@ -1076,9 +1158,9 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             cell.depthLbl.text = "\(cell.workOrder.plowDepth)\""
             cell.priorityLbl.text = "Priority: \(cell.workOrder.plowPriority)"
             if(cell.workOrder.plowMonitoring == "1"){
-                cell.monitoringLbl.text = "Monitor: Yes"
+                cell.monitoringLbl.text = "Monitor: Y"
             }else{
-                cell.monitoringLbl.text = "Monitor: No"
+                cell.monitoringLbl.text = "Monitor: N"
             }
             
         }
@@ -1238,9 +1320,15 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     @objc func refresh(_ sender: AnyObject){
-        //print("refresh")
+        print("refresh")
         refreshFromTable = true
-        getSchedule(_empID: (appDelegate.loggedInEmployee?.ID)!)
+        if personalMode == true{
+            getSchedule(_empID: (appDelegate.loggedInEmployee?.ID)!)
+
+        }else{
+            getSchedule(_empID: "")
+
+        }
        // getSchedule()
     }
     

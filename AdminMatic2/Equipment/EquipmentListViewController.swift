@@ -456,7 +456,7 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
             
             
             //return type name or name
-            return (aEquipment.name!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil  || aEquipment.typeName!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
+            return (aEquipment.name!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil  || aEquipment.typeName!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil || aEquipment.crewName!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
 
         })
         self.equipmentTableView.reloadData()
@@ -654,6 +654,28 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
             cell.nameLbl.attributedText = highlightedText2
             
             
+            let baseString3:NSString = cell.equipment.crewName as NSString
+            let highlightedText3 = NSMutableAttributedString(string: cell.equipment.crewName!)
+            var error3: NSError?
+            let regex3: NSRegularExpression?
+            do {
+                regex3 = try NSRegularExpression(pattern: searchString, options: .caseInsensitive)
+            } catch let error3a as NSError {
+                error3 = error3a
+                regex3 = nil
+            }
+            if let regexError3 = error3 {
+                print("Oh no! \(regexError3)")
+            } else {
+                for match in (regex3?.matches(in: baseString3 as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString3.length)))! as [NSTextCheckingResult] {
+                    highlightedText3.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
+                }
+                
+            }
+            //cell.nameLbl.attributedText = highlightedText
+            cell.crewValueLbl.attributedText = highlightedText3
+            
+            
             
             
             
@@ -702,7 +724,8 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
         
         
         cell.nameLbl.text = cell.equipment.name!
-        cell.crewLbl.text = "Crew: \(cell.equipment.crewName!)"
+        cell.crewLbl.text = "Crew:"
+        cell.crewValueLbl.text = cell.equipment.crewName
         cell.statusIcon.image = nil
         cell.setStatus(status: cell.equipment.status)
         

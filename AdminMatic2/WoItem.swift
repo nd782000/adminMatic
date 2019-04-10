@@ -21,6 +21,7 @@ class WoItem {
     var empDesc: String!
     var itemStatus: String!
     var chargeID: String!
+    var chargeName: String!
     var act: String!
     var price: String!
     var total: String!
@@ -42,7 +43,7 @@ class WoItem {
     var contractID: String!
     var contractTitle: String!
     
-    
+    var tax:String!
     
     
     

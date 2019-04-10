@@ -153,68 +153,18 @@
 		01EC4E751E1EF8BC009CE261 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EC4E741E1EF8BC009CE261 /* HomeViewController.swift */; };
 		01EE1B2E1E20105A00E5E061 /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EE1B2D1E20105A00E5E061 /* HomeCollectionViewCell.swift */; };
 		01F33DCF203F3E1E00C43EFD /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A1F31F1E07084C00DCCB39 /* Alamofire.framework */; settings = {ATTRIBUTES = (Required, ); }; };
-		01F33DE2203F44E800C43EFD /* DKImagePickerController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01E01C371E7E05F600385B86 /* DKImagePickerController.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		01F33DE4203F44EF00C43EFD /* ObjectMapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CC8E21E539C9B00D48A26 /* ObjectMapper.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		01F33DE5203F44F200C43EFD /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A1F3231E07084C00DCCB39 /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		F927ADDEFEB19ED7A80575A6 /* Pods_AdminMatic2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4075364696C1C40435E111F /* Pods_AdminMatic2.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		012EBE982175157500819791 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A75BEB121D63D3DC736D58CBDCC63391;
-			remoteInfo = CLImageEditor;
-		};
-		012EBE9A2175157500819791 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = E402F67BA411C7289BCA4A3A992B1B52;
-			remoteInfo = DKCamera;
-		};
-		012EBE9C2175157500819791 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = AFB7D489539F728C1F17D3C42D6C2604;
-			remoteInfo = "DKImagePickerController-DKImagePickerController";
-		};
-		012EBE9E2175157500819791 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9D74861CCBB6D6660B5EAA938BDD003B;
-			remoteInfo = DKPhotoGallery;
-		};
-		012EBEA02175157500819791 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 609F15D1BFC87EC5F863CB46E0A3E710;
-			remoteInfo = "DKPhotoGallery-DKPhotoGallery";
-		};
-		012EBEA22175157500819791 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 66512697A6D0D78B5C503A8EE0E1CF26;
-			remoteInfo = FLAnimatedImage;
-		};
 		012EBEA42175157500819791 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = ADEE2ED45FEB8B16B8178A4E4354848A;
 			remoteInfo = QuickLayout;
-		};
-		012EBEA62175157500819791 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = DFCA27693D6C7CB166586C80B45CF302;
-			remoteInfo = SDWebImage;
 		};
 		012EBEA82175157500819791 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -243,6 +193,69 @@
 			proxyType = 2;
 			remoteGlobalIDString = DBA05FE9A04B24AF7A427E63D433B87E;
 			remoteInfo = IQKeyboardManagerSwift;
+		};
+		01A07E0A225D9DC600F6FC2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A3556606A05493BC732E7F2FCF0662F9;
+			remoteInfo = CropViewController;
+		};
+		01A07E0C225D9DC600F6FC2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C97714E8430C9EA7D40429D5AD002316;
+			remoteInfo = "CropViewController-TOCropViewControllerBundle";
+		};
+		01A07E0E225D9DC600F6FC2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 421341C12FDD8472C359D697846E1D50;
+			remoteInfo = DKCamera;
+		};
+		01A07E10225D9DC600F6FC2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0886884C688C532F75666160ADF43F41;
+			remoteInfo = DKImagePickerController;
+		};
+		01A07E12225D9DC600F6FC2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 85C7EB4A6841BADFBA8ECE105B04F19A;
+			remoteInfo = "DKImagePickerController-DKImagePickerController";
+		};
+		01A07E14225D9DC600F6FC2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E1FCC70F00BAB44540AA8F3C28DE8269;
+			remoteInfo = DKPhotoGallery;
+		};
+		01A07E16225D9DC600F6FC2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F6E230A7DB6C5DF0F95FC549DF7D6FC7;
+			remoteInfo = "DKPhotoGallery-DKPhotoGallery";
+		};
+		01A07E18225D9DC600F6FC2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 344F006CA095801B80E8C2A59BFE09E2;
+			remoteInfo = FLAnimatedImage;
+		};
+		01A07E1A225D9DC600F6FC2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B0E195BA855B1EB827909C251EB643B6;
+			remoteInfo = SDWebImage;
 		};
 		01A1F2F01E0704FF00DCCB39 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -279,13 +292,6 @@
 			remoteGlobalIDString = 29F9CA3F564FDAD0791545217EAE3089;
 			remoteInfo = SwiftyJSON;
 		};
-		01E01C361E7E05F600385B86 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = E64FC4756130D7E5E842F83E0CC94CBE;
-			remoteInfo = DKImagePickerController;
-		};
 		01F33DC7203F3DFA00C43EFD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
@@ -293,32 +299,25 @@
 			remoteGlobalIDString = E76458C58C9140B6A16D60547E68E80C;
 			remoteInfo = Alamofire;
 		};
-		01F33DD0203F3FD800C43EFD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 85AFB28C35335580EACC4B3EBC23EBF7;
-			remoteInfo = DKImagePickerController;
-		};
 		01F33DD4203F3FE300C43EFD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 555F434AEAF049D6FFA879E4EA258208;
+			remoteGlobalIDString = 08BC6B6F95716AEE0A0D4790D6718DB5;
 			remoteInfo = ObjectMapper;
 		};
 		01F33DD6203F3FE900C43EFD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = CF89131EF64766AEBC4CD1971EDA884A;
+			remoteGlobalIDString = 00DD4E10F87A1C0C958430760C5958D9;
 			remoteInfo = "Pods-AdminMatic2";
 		};
 		01F33DD8203F3FEE00C43EFD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 01A1F3181E07084C00DCCB39 /* Pods.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = A41A2C1B60FDD4A756625F7419D46A76;
+			remoteGlobalIDString = FF86F06A3D0D4F1814CA678C805561E3;
 			remoteInfo = SwiftyJSON;
 		};
 /* End PBXContainerItemProxy section */
@@ -423,6 +422,7 @@
 		01A9DDE21FE430C90075AC72 /* EquipmentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentService.swift; sourceTree = "<group>"; };
 		01A9DDE41FE715E20075AC72 /* EquipmentServiceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentServiceTableViewCell.swift; sourceTree = "<group>"; };
 		01A9DDE61FE9868F0075AC72 /* NewEditEquipmentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditEquipmentViewController.swift; sourceTree = "<group>"; };
+		01B2271422397E8700549C14 /* AdminMatic2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AdminMatic2.entitlements; sourceTree = "<group>"; };
 		01C0F19C21654BF80018300E /* EmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailViewController.swift; sourceTree = "<group>"; };
 		01C0F1A021663CBF0018300E /* EmailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailTableViewCell.swift; sourceTree = "<group>"; };
 		01C0F1A4216926410018300E /* StackController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackController.swift; sourceTree = "<group>"; };
@@ -489,7 +489,6 @@
 			files = (
 				01F33DE5203F44F200C43EFD /* SwiftyJSON.framework in Frameworks */,
 				01F33DE4203F44EF00C43EFD /* ObjectMapper.framework in Frameworks */,
-				01F33DE2203F44E800C43EFD /* DKImagePickerController.framework in Frameworks */,
 				01F33DCF203F3E1E00C43EFD /* Alamofire.framework in Frameworks */,
 				F927ADDEFEB19ED7A80575A6 /* Pods_AdminMatic2.framework in Frameworks */,
 			);
@@ -537,6 +536,7 @@
 		01A1F2DD1E0704FF00DCCB39 /* AdminMatic2 */ = {
 			isa = PBXGroup;
 			children = (
+				01B2271422397E8700549C14 /* AdminMatic2.entitlements */,
 				01A1F2DE1E0704FF00DCCB39 /* AppDelegate.swift */,
 				015231B51E1D64A9009949BD /* LaunchScreen.xib */,
 				015231A51E1A95A7009949BD /* Images.xcassets */,
@@ -573,18 +573,19 @@
 			children = (
 				01A1F31F1E07084C00DCCB39 /* Alamofire.framework */,
 				012EBEB72176464800819791 /* AlamofireImage.framework */,
-				012EBE992175157500819791 /* CLImageEditor.framework */,
-				012EBE9B2175157500819791 /* DKCamera.framework */,
-				01E01C371E7E05F600385B86 /* DKImagePickerController.framework */,
-				012EBE9D2175157500819791 /* DKImagePickerController.bundle */,
-				012EBE9F2175157500819791 /* DKPhotoGallery.framework */,
-				012EBEA12175157500819791 /* DKPhotoGallery.bundle */,
-				012EBEA32175157500819791 /* FLAnimatedImage.framework */,
+				01A07E0B225D9DC600F6FC2C /* CropViewController.framework */,
+				01A07E0D225D9DC600F6FC2C /* TOCropViewControllerBundle.bundle */,
+				01A07E0F225D9DC600F6FC2C /* DKCamera.framework */,
+				01A07E11225D9DC600F6FC2C /* DKImagePickerController.framework */,
+				01A07E13225D9DC600F6FC2C /* DKImagePickerController.bundle */,
+				01A07E15225D9DC600F6FC2C /* DKPhotoGallery.framework */,
+				01A07E17225D9DC600F6FC2C /* DKPhotoGallery.bundle */,
+				01A07E19225D9DC600F6FC2C /* FLAnimatedImage.framework */,
 				014F1C5D2218ACDD00185B86 /* IQKeyboardManagerSwift.framework */,
 				014CC8E21E539C9B00D48A26 /* ObjectMapper.framework */,
 				01A1F3211E07084C00DCCB39 /* Pods_AdminMatic2.framework */,
 				012EBEA52175157500819791 /* QuickLayout.framework */,
-				012EBEA72175157500819791 /* SDWebImage.framework */,
+				01A07E1B225D9DC600F6FC2C /* SDWebImage.framework */,
 				012EBEA92175157500819791 /* SwiftEntryKit.framework */,
 				01A1F3231E07084C00DCCB39 /* SwiftyJSON.framework */,
 			);
@@ -893,7 +894,6 @@
 				01F33DD9203F3FEE00C43EFD /* PBXTargetDependency */,
 				01F33DD7203F3FE900C43EFD /* PBXTargetDependency */,
 				01F33DD5203F3FE300C43EFD /* PBXTargetDependency */,
-				01F33DD1203F3FD800C43EFD /* PBXTargetDependency */,
 				01F33DC8203F3DFA00C43EFD /* PBXTargetDependency */,
 			);
 			name = AdminMatic2;
@@ -951,18 +951,21 @@
 						CreatedOnToolsVersion = 8.2;
 						DevelopmentTeam = Q78B4XEVQ4;
 						LastSwiftMigration = 1000;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 0;
+							};
+						};
 					};
 					01A1F2EE1E0704FF00DCCB39 = {
 						CreatedOnToolsVersion = 8.2;
-						DevelopmentTeam = Q78B4XEVQ4;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 01A1F2DA1E0704FF00DCCB39;
 					};
 					01A1F2F91E0704FF00DCCB39 = {
 						CreatedOnToolsVersion = 8.2;
-						DevelopmentTeam = Q78B4XEVQ4;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 01A1F2DA1E0704FF00DCCB39;
@@ -996,60 +999,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		012EBE992175157500819791 /* CLImageEditor.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = CLImageEditor.framework;
-			remoteRef = 012EBE982175157500819791 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		012EBE9B2175157500819791 /* DKCamera.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = DKCamera.framework;
-			remoteRef = 012EBE9A2175157500819791 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		012EBE9D2175157500819791 /* DKImagePickerController.bundle */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = DKImagePickerController.bundle;
-			remoteRef = 012EBE9C2175157500819791 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		012EBE9F2175157500819791 /* DKPhotoGallery.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = DKPhotoGallery.framework;
-			remoteRef = 012EBE9E2175157500819791 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		012EBEA12175157500819791 /* DKPhotoGallery.bundle */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = DKPhotoGallery.bundle;
-			remoteRef = 012EBEA02175157500819791 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		012EBEA32175157500819791 /* FLAnimatedImage.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = FLAnimatedImage.framework;
-			remoteRef = 012EBEA22175157500819791 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		012EBEA52175157500819791 /* QuickLayout.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = QuickLayout.framework;
 			remoteRef = 012EBEA42175157500819791 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		012EBEA72175157500819791 /* SDWebImage.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = SDWebImage.framework;
-			remoteRef = 012EBEA62175157500819791 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		012EBEA92175157500819791 /* SwiftEntryKit.framework */ = {
@@ -1080,6 +1034,69 @@
 			remoteRef = 014F1C5C2218ACDD00185B86 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		01A07E0B225D9DC600F6FC2C /* CropViewController.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = CropViewController.framework;
+			remoteRef = 01A07E0A225D9DC600F6FC2C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		01A07E0D225D9DC600F6FC2C /* TOCropViewControllerBundle.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = TOCropViewControllerBundle.bundle;
+			remoteRef = 01A07E0C225D9DC600F6FC2C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		01A07E0F225D9DC600F6FC2C /* DKCamera.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = DKCamera.framework;
+			remoteRef = 01A07E0E225D9DC600F6FC2C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		01A07E11225D9DC600F6FC2C /* DKImagePickerController.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = DKImagePickerController.framework;
+			remoteRef = 01A07E10225D9DC600F6FC2C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		01A07E13225D9DC600F6FC2C /* DKImagePickerController.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = DKImagePickerController.bundle;
+			remoteRef = 01A07E12225D9DC600F6FC2C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		01A07E15225D9DC600F6FC2C /* DKPhotoGallery.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = DKPhotoGallery.framework;
+			remoteRef = 01A07E14225D9DC600F6FC2C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		01A07E17225D9DC600F6FC2C /* DKPhotoGallery.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = DKPhotoGallery.bundle;
+			remoteRef = 01A07E16225D9DC600F6FC2C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		01A07E19225D9DC600F6FC2C /* FLAnimatedImage.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = FLAnimatedImage.framework;
+			remoteRef = 01A07E18225D9DC600F6FC2C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		01A07E1B225D9DC600F6FC2C /* SDWebImage.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDWebImage.framework;
+			remoteRef = 01A07E1A225D9DC600F6FC2C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		01A1F31F1E07084C00DCCB39 /* Alamofire.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -1099,13 +1116,6 @@
 			fileType = wrapper.framework;
 			path = SwiftyJSON.framework;
 			remoteRef = 01A1F3221E07084C00DCCB39 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		01E01C371E7E05F600385B86 /* DKImagePickerController.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = DKImagePickerController.framework;
-			remoteRef = 01E01C361E7E05F600385B86 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1165,7 +1175,7 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-AdminMatic2/Pods-AdminMatic2-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/AlamofireImage/AlamofireImage.framework",
-				"${BUILT_PRODUCTS_DIR}/CLImageEditor/CLImageEditor.framework",
+				"${BUILT_PRODUCTS_DIR}/CropViewController/CropViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/DKCamera/DKCamera.framework",
 				"${BUILT_PRODUCTS_DIR}/DKImagePickerController/DKImagePickerController.framework",
 				"${BUILT_PRODUCTS_DIR}/DKPhotoGallery/DKPhotoGallery.framework",
@@ -1181,7 +1191,7 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AlamofireImage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CLImageEditor.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CropViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DKCamera.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DKImagePickerController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DKPhotoGallery.framework",
@@ -1382,11 +1392,6 @@
 			name = Alamofire;
 			targetProxy = 01F33DC7203F3DFA00C43EFD /* PBXContainerItemProxy */;
 		};
-		01F33DD1203F3FD800C43EFD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = DKImagePickerController;
-			targetProxy = 01F33DD0203F3FD800C43EFD /* PBXContainerItemProxy */;
-		};
 		01F33DD5203F3FE300C43EFD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ObjectMapper;
@@ -1454,7 +1459,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
@@ -1508,7 +1513,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				SDKROOT = iphoneos;
@@ -1525,17 +1530,18 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = Q78B4XEVQ4;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AdminMatic2/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = AdminMatic;
 				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
@@ -1547,17 +1553,18 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = Q78B4XEVQ4;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AdminMatic2/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = AdminMatic;
 				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
@@ -1567,11 +1574,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = Q78B4XEVQ4;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = AdminMatic2Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AdminMatic2.app/AdminMatic2";
 			};
@@ -1582,11 +1592,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = Q78B4XEVQ4;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = AdminMatic2Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AdminMatic2.app/AdminMatic2";
 			};
@@ -1596,11 +1609,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				DEVELOPMENT_TEAM = Q78B4XEVQ4;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = AdminMatic2UITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2UITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TEST_TARGET_NAME = AdminMatic2;
 			};
@@ -1610,11 +1626,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				DEVELOPMENT_TEAM = Q78B4XEVQ4;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = AdminMatic2UITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2UITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TEST_TARGET_NAME = AdminMatic2;
 			};

@@ -38,6 +38,8 @@ class Employee {
     
     var licenseArray:[License] = []
     
+   // var sessionKey: String!
+    
     required init(_ID:String?, _name: String?, _lname:String?, _fname:String?, _username:String?, _pic:String?, _phone:String?, _depID:String?, _payRate:String?, _appScore:String?, _userLevel:Int?, _userLevelName:String?) {
         //print(json)
         if _ID != nil {

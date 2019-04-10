@@ -820,7 +820,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
                 case .pad:
                     let nav = UINavigationController(rootViewController: actionSheet)
                     nav.modalPresentationStyle = UIModalPresentationStyle.popover
-                    let popover = nav.popoverPresentationController as! UIPopoverPresentationController
+                    let popover = nav.popoverPresentationController! 
                     actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
                     popover.sourceView = self.view
                     popover.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)

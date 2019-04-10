@@ -7,7 +7,6 @@
 //
 
 
-
 //  Find Compile Time Jam Ups Tool
 // run in terminal set to same folder as app project
 // returns text file of compliled functions and their compile time sorted slowest to fastest
@@ -44,6 +43,7 @@ struct defaultsKeys {
     static let loggedInId = ""
     static let loggedInName = ""
     static let loggedInPic = ""
+    static let sessionKey = ""
 }
 
 
@@ -162,7 +162,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 jsonDataHolder.jsonData = JSON(json)
                 self.fieldsJson = JSON(json)
                 
-                print("fieldsJson \(self.fieldsJson )") // URL response
+                //print("fieldsJson \(self.fieldsJson )") // URL response
                 let zonesCount:Int = self.fieldsJson["zones"].count
                 
                 for i in 0 ..< zonesCount {
@@ -686,7 +686,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         
         if let rootViewController = self.topViewControllerWithRootViewController(rootViewController: window?.rootViewController) {
-            if (rootViewController.responds(to: #selector(ImageDetailViewController.canRotate)) || rootViewController.responds(to: #selector(UsageViewController.canRotate)) || rootViewController.responds(to: #selector(SignatureViewController.canRotate))) {
+            if (rootViewController.responds(to: #selector(ImageDetailViewController.canRotate)) || rootViewController.responds(to: #selector(UsageViewController.canRotate)) || rootViewController.responds(to: #selector(SignatureViewController.canRotate)) || rootViewController.responds(to: #selector(PayrollSummaryViewController.canRotate))) {
                 // Unlock landscape view orientations for this view controller
                 return .allButUpsideDown;
             }

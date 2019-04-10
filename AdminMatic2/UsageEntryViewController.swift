@@ -35,6 +35,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
 
     var layoutVars:LayoutVars = LayoutVars()
     
+    var delegate:WoItemDelegate!
     
     var indicator: SDevIndicator!
     let safeContainer:UIView = UIView()
@@ -85,6 +86,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         self.dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         self.shortFormatter.dateFormat = "hh:mm a"
 
+        print("init usage entry chargeID = \(String(describing: self.woItem.chargeID))")
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -420,7 +422,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                 cell.totalCostTxtField.text = usage.totalCost!
             }
             
-            print("usage has receipt = \(usage.hasReceipt)")
+            //print("usage has receipt = \(usage.hasReceipt)")
             if usage.hasReceipt == "1"{
                 cell.setReceiptUrl(_url: (usage.receipt?.thumbPath!)!)
             }else{
@@ -443,7 +445,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     }
     
     func receiptBtnTapped(_usage: Usage, _index: Int) {
-        print("add receipt ID = \(_usage.ID) index = \(_index)")
+        //print("add receipt ID = \(_usage.ID) index = \(_index)")
         
         
         let usage = usageToLog[_index]
@@ -492,7 +494,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
        
-        let usage = usageToLog[indexPath.row]
+        //let usage = usageToLog[indexPath.row]
         //indexPath
        /* let receipt = UITableViewRowAction(style: .normal, title: "Receipt") { action, index in
             
@@ -1307,6 +1309,9 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                         self.layoutVars.playSaveSound()
                         self.usageTableView.reloadData()
                         
+                        if self.delegate != nil{
+                            self.delegate.refreshWoItem()
+                        }
                         
                     case .failure(let error):
                         self.indicator.dismissIndicator()
@@ -1404,7 +1409,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
             case .pad:
                 let nav = UINavigationController(rootViewController: actionSheet)
                 nav.modalPresentationStyle = UIModalPresentationStyle.popover
-                let popover = nav.popoverPresentationController as! UIPopoverPresentationController
+                let popover = nav.popoverPresentationController!
                 actionSheet.preferredContentSize = CGSize(width: 500.0, height: 600.0)
                 popover.sourceView = self.view
                 popover.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)

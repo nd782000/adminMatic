@@ -16,8 +16,13 @@ import DKImagePickerController
 
 protocol ImageViewDelegate{
     func getPrevNextImage(_next:Bool)
-    func refreshImages(_images:[Image], _scoreAdjust:Int)
+    //func refreshImages(_images:[Image], _scoreAdjust:Int)
     func showCustomerImages(_customer:String)
+    
+    //func refreshImages()
+    
+    func refreshImages(_images:[Image])
+    
 }
  
 protocol ImageSettingsDelegate{
@@ -864,6 +869,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     
     @objc func addImage(){
         print("Add Image")
+        
         if(searchController != nil){
             searchController.isActive = false
         }
@@ -918,6 +924,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             
 
         }
+        
         
         
     }
@@ -1013,8 +1020,41 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     }
 
     
+    func refreshImages(_images:[Image]){
+        print("refreshImages")
+        
+        for insertImage in _images{
+            
+            imageArray.insert(insertImage, at: 0)
+        }
+        
+        offset = 0
+        batch = 0
+        
+        shouldShowSearchResults = false
+        
+        
+        imageCollectionView?.reloadData()
+        
+        imageCollectionView?.scrollToItem(at: IndexPath(row: 0, section: 0),
+                                          at: .top,
+                                          animated: true)
+        
+        
+        
+        
+        
+    }
     
     
+    /*
+    func refreshImages(){
+        print("refreshImages")
+        self.getImages()
+    }
+    */
+    
+    /*
     func refreshImages(_images:[Image], _scoreAdjust:Int){
         print("refreshImages")
         
@@ -1039,7 +1079,8 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
        
         
         
-    }
+    }*/
+    
     
     func showCustomerImages(_customer:String){
         print("show customer images cust: \(_customer)")

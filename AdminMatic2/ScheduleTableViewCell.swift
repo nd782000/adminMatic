@@ -100,8 +100,8 @@ class ScheduleTableViewCell: UITableViewCell {
         dateLbl.text = ""
         firstItemLbl.text = ""
         customerLbl.text = ""
-         chargeLbl.text = ""
-         priceLbl.text = ""
+        chargeLbl.text = ""
+        priceLbl.text = ""
         priorityLbl.text = ""
         depthLbl.text = ""
         monitoringLbl.text = ""
@@ -209,10 +209,11 @@ class ScheduleTableViewCell: UITableViewCell {
                     contentView.addSubview(firstItemLbl)
                     contentView.addSubview(chargeLbl)
                     contentView.addSubview(priceLbl)
+                    contentView.addSubview(remainingQtyLbl)
                    
                     print("layout views 4b")
                     contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[customerLbl]-|", options: [], metrics: nil, views: viewsDictionary))
-                    contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-60-[remainingQtyLbl]-|", options: [], metrics: nil, views: viewsDictionary))
+                   contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-60-[remainingQtyLbl]-|", options: [], metrics: nil, views: viewsDictionary))
                     print("layout views 4c")
                     contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[customerLbl(22)]", options: [], metrics: nil, views: viewsDictionary))
                     contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))
@@ -290,7 +291,7 @@ class ScheduleTableViewCell: UITableViewCell {
                 //contentView.addSubview(remainingQtyLbl)
                 
                 contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-7-[statusIcon(30)]-[customerLbl]", options: [], metrics: nil, views: viewsDictionary))
-                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[priorityLbl(80)]-[depthLbl(20)]-[monitoringLbl(100)]-[profitBarView(100)]", options: [], metrics: nil, views: viewsDictionary))
+                contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[priorityLbl(100)]-[depthLbl(30)]-[monitoringLbl(90)]-[profitBarView(100)]", options: [], metrics: nil, views: viewsDictionary))
                 
                 contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[customerLbl(30)]", options: [], metrics: nil, views: viewsDictionary))
                 contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[statusIcon(30)]", options: [], metrics: nil, views: viewsDictionary))

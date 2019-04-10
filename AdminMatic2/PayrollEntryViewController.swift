@@ -72,6 +72,9 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
     var payrollArrayCounter: Int = 0 //counter var to set table cells to either start or stop style
     var viewsLayedOut:Bool = false
     
+    var del:String = "0"
+    
+    
     init(_employee:Employee){
         super.init(nibName:nil,bundle:nil)
         self.employee = _employee
@@ -623,6 +626,11 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
        // payrollToLog.startTime = start
         payroll[row].startTime = start
         //payrollTableView.reloadData()
+        
+        //payroll[row - 3].del = "0"
+        
+        del = "0"
+        
         submitPayroll()
         
             
@@ -769,6 +777,9 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         //payrollToLog.stopTime = stop
         payroll[row - 1].stopTime = stop
        // payrollTableView.reloadData()
+        
+        del = "0"
+        
         submitPayroll()
         
         
@@ -843,6 +854,9 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         //payrollToLog.lunch = "\(lunch)"
         payroll[row - 2].lunch = "\(lunch)"
         // payrollTableView.reloadData()
+        
+        del = "0"
+        
         submitPayroll()
        
     }
@@ -875,7 +889,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         stopCell.stopTxtField.text = ""
         breakCell.breakTxtField.text = "0"
         
-        payroll[row - 3].del = "1"
+        del = "1"
         
         
         submitPayroll()
@@ -902,9 +916,9 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         }
         var lunch:String = "0"
         if self.payroll[0].lunch != nil{
-            lunch  = "\(self.payroll[0].lunch!))"
+            lunch  = "\(self.payroll[0].lunch!)"
         }
-        var del:String = "0"
+        
         if self.payroll[0].del != nil{
             del  = "\(self.payroll[0].del!)"
         }
@@ -912,7 +926,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
         let parameters:[String:String]
         parameters = ["ID": self.payroll[0].ID, "appCreatedBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "empID": self.employee.ID, "startTime": start, "stopTime": stop, "lunch": lunch, "date": todaysDate, "del": del] as! [String : String]
         
-        //print("parameters = \(parameters)")
+        print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/payroll.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
@@ -922,7 +936,7 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
             .responseJSON(){
                 response in
                 if let json = response.result.value {
-                    //print("JSON: \(json)")
+                    print("JSON: \(json)")
                     let returnJson = JSON(json)
                     
                     if returnJson["errorArray"][0]["error"].stringValue.count > 0{
@@ -934,7 +948,11 @@ class PayrollEntryViewController: UIViewController, UITableViewDelegate, UITable
                     
                     
                     //print("del = \(del)")
-                    if del == "1" {
+                    if returnJson["del"].string! == "1" {
+                        
+                         self.payroll = []
+                        
+                        
                         let payroll:Payroll!
                         
                         payroll = Payroll(_ID: "0", _empID: "0", _startTime: nil, _stopTime: nil, _lunch: "0", _date: nil, _total: "0.00", _verified: "0", _appCreatedBy: self.appDelegate.loggedInEmployee?.ID)

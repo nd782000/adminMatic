@@ -424,7 +424,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                 regex = nil
             }
             if let regexError = error {
-                //print("Oh no! \(regexError)")
+                print("error \(regexError)")
             } else {
                 for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
                     highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
@@ -444,7 +444,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
                 regex2 = nil
             }
             if let regexError2 = error2 {
-                //print("Oh no! \(regexError2)")
+                print("error \(regexError2)")
             } else {
                 for match in (regex2?.matches(in: baseString2 as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString2.length)))! as [NSTextCheckingResult] {
                     highlightedText2.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
