@@ -85,6 +85,8 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     var usage:Usage?
     var index:Int?
     
+    var addUsageLbl:Label = Label()
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -434,6 +436,41 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     }
     
     
+    func layoutAddBtn(){
+        
+        print("layoutAddBtn")
+        
+        self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
+        
+        // self.selectedImageView.image = nil
+        
+        self.addUsageLbl.text = "Add Usage"
+        self.addUsageLbl.textColor = UIColor.white
+        self.addUsageLbl.backgroundColor = UIColor(hex: 0x005100, op: 1.0)
+        //self.addUsageLbl.backgroundColor = UIColor.clear
+        
+        self.addUsageLbl.layer.cornerRadius = 4.0
+        self.addUsageLbl.clipsToBounds = true
+        self.addUsageLbl.textAlignment = .center
+        contentView.addSubview(self.addUsageLbl)
+        
+        
+        
+        self.separatorInset = UIEdgeInsets.zero
+        self.layoutMargins = UIEdgeInsets.zero
+        self.preservesSuperviewLayoutMargins = false
+        
+        
+        let viewsDictionary = ["addBtn":self.addUsageLbl] as [String : Any]
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[addBtn]-10-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
+        
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[addBtn(40)]", options: [], metrics: nil, views: viewsDictionary))
+        
+    }
+    
+    
+    
+    /*
     func displayHistoryMode(){
         //print("displayHistoryMode")
     
@@ -462,7 +499,7 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-15-[historyBtn]-15-|", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[historyBtn]-20-|", options: NSLayoutConstraint.FormatOptions.alignAllCenterY, metrics: nil, views: viewsDictionary))
     }
-
+*/
     
     
     @objc func receiptTap(){

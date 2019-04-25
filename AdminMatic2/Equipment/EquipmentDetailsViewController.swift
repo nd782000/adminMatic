@@ -98,9 +98,11 @@ class EquipmentDetailsViewController: UIViewController, UITextFieldDelegate, UIT
         self.detailsTableView.register(EquipmentFieldTableViewCell.self, forCellReuseIdentifier: "cell")
         safeContainer.addSubview(detailsTableView)
         
+        let halfWidth = (layoutVars.fullWidth/2)-15
+        let fullHeight = layoutVars.fullHeight - 344
+        let navBottom = layoutVars.navAndStatusBarHeight + 8
         
-        
-        let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": (layoutVars.fullWidth/2)-15, "height": 24,"fullHeight":layoutVars.fullHeight - 344, "navBottom":layoutVars.navAndStatusBarHeight + 8] as [String:Any]
+        let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": halfWidth, "height": 24,"fullHeight":fullHeight, "navBottom":navBottom] as [String:Any]
         
         //auto layout group
         let viewsDictionary = [

@@ -193,7 +193,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         
         imageView.backgroundColor = .black
-        imageView.contentMode = .scaleAspectFill
+        //imageView.contentMode = .scaleAspectFill
         scrollView.addSubview(imageView)
         imageView.isUserInteractionEnabled = true
         
@@ -955,7 +955,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         // Dispose of any resources that can be recreated.
     }
     
-    @objc func canRotate() -> Void {}
+   @objc func canRotate() -> Void {}
     
     
 }

@@ -977,6 +977,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -1536,7 +1537,7 @@
 				DEVELOPMENT_TEAM = Q78B4XEVQ4;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AdminMatic2/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2;
@@ -1559,7 +1560,7 @@
 				DEVELOPMENT_TEAM = Q78B4XEVQ4;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AdminMatic2/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				PRODUCT_BUNDLE_IDENTIFIER = com.atlanticlawnandgarden.AdminMatic2;

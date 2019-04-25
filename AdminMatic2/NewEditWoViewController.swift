@@ -122,9 +122,14 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
     //init for edit
     init(_wo:WorkOrder){
         super.init(nibName:nil,bundle:nil)
-        //print("wo edit init \(_wo.ID)")
-        //print("wo title \(_wo.title)")
-        //print("wo custName \(_wo.customerName)")
+        print("wo edit init \(String(describing: _wo.ID))")
+        print("wo title \(String(describing: _wo.title))")
+        print("wo custName \(_wo.customerName)")
+        print("wo rep \(_wo.rep)")
+        print("wo repName \(_wo.repName)")
+        print("wo invoice \(_wo.invoiceType)")
+        print("wo notes \(_wo.notes)")
+        
         self.wo = _wo
         
     }

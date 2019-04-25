@@ -464,6 +464,12 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             
         }
         
+        self.workOrder.rep = self.json["salesRep"].stringValue
+        self.workOrder.repName = self.json["salesRepName"].stringValue
+        self.workOrder.invoiceType = self.json["invoice"].stringValue
+        self.workOrder.notes = self.json["notes"].stringValue
+        
+        
         self.salesRepValue = self.json["salesRep"].string
         
         self.priceValue = self.json["totalPrice"].string
@@ -914,7 +920,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.infoView.addSubview(salesRepLbl)
         
         self.salesRep = GreyLabel()
-        self.salesRep.text = self.salesRepValue
+        self.salesRep.text = self.workOrder.repName
         self.salesRep.font = layoutVars.labelBoldFont
         self.salesRep.textAlignment = .left
         self.salesRep.translatesAutoresizingMaskIntoConstraints = false

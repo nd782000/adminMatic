@@ -707,15 +707,6 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
     }
     
     
-    /*
-     func textFieldDidChange(_ textField: UITextField) {
-     print("textFieldDidChange")
-     
-     
-     
-     }
-     */
-    
     
     
     
@@ -801,32 +792,7 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
     
     
     
-    /*
-    @objc func keyboardWillShow(notification: NSNotification) {
-        
-        if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as AnyObject).cgRectValue {
-            if(!keyBoardShown){
-                UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                    self.view.frame.origin.y -= keyboardFrame.height
-                    
-                }, completion: { finished in
-                })
-            }
-        }
-        keyBoardShown = true
-    }
     
-    
-    @objc func keyboardDidHide(notification: NSNotification) {
-        keyBoardShown = false
-        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-            self.view.frame.origin.y = 0
-            
-        }, completion: { finished in
-        })
-        
-    }
- */
     func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
        // NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -981,7 +947,8 @@ class EquipmentServiceViewController: UIViewController, UITextFieldDelegate, UIT
                 "completeValue":self.equipmentService.completionMileage,
                 "completionNotes":self.equipmentService.notes,
                 "nextValue":self.equipmentService.nextValue,
-                "status":self.statusValueToUpdate
+                "status":self.statusValueToUpdate,
+                "type":self.equipmentService.type
             ]
             
             print("parameters = \(parameters)")

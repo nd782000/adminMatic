@@ -26,6 +26,7 @@ protocol UsageDelegate{
 protocol UpdateReceiptImageDelegate{
     func receiptBtnTapped(_usage:Usage,_index:Int)
     func updateImage(_image:Image,_usageIndex:Int)
+    
 }
 
 class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource,  UITableViewDelegate, UITableViewDataSource, UsageDelegate, AttachmentDelegate,  UpdateReceiptImageDelegate{
@@ -112,8 +113,15 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
         navigationItem.leftBarButtonItem = backButton
         
+        let historyButton = UIBarButtonItem(title: "History", style: .plain, target: self, action: #selector(self.showHistory))
         
         
+        
+        if(woItem.extraUsage! == "1"){
+            navigationItem.rightBarButtonItem = historyButton
+        }
+            
+            
         //set container to safe bounds of view
         
         safeContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -247,6 +255,8 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         self.usageTableView.delegate  =  self
         self.usageTableView.dataSource  =  self
         self.usageTableView.rowHeight = 255.0
+        //self.usageTableView.rowHeight = UITableView.automaticDimension
+        //self.usageTableView.estimatedRowHeight = 255.0
         self.usageTableView.register(UsageEntryTableViewCell.self, forCellReuseIdentifier: "cell")
         self.containerView.addSubview(self.usageTableView)
         
@@ -317,16 +327,22 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     // table view methods
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        if(woItem.extraUsage! == "1"){
-            return usageToLog.count + 1
-        }else{
+        if(woItem.type == "1"){
             return usageToLog.count
+        }else{
+            if usageToLog[0].ID == "0"{
+                return usageToLog.count
+            }else{
+                return usageToLog.count + 1
+            }
+            
         }
     }
     
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         
         print("woItem.extraUsage = \(woItem.extraUsage!)")
+        /*
         if(woItem.extraUsage! == "1" && indexPath.row > (usageToLog.count - 1)){
             print("show history cell")
             let cell:UsageEntryTableViewCell = usageTableView.dequeueReusableCell(withIdentifier: "cell") as! UsageEntryTableViewCell
@@ -334,114 +350,154 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
             cell.delegate = self
             cell.displayHistoryMode()
             return cell
-        }
-        let usage = usageToLog[indexPath.row]
-        
+        }*/
         let cell:UsageEntryTableViewCell = usageTableView.dequeueReusableCell(withIdentifier: "cell") as! UsageEntryTableViewCell
         
-        cell.delegate = self
-        cell.row = indexPath.row
-        cell.selectionStyle = .none
         
-        if(usage.type == "1"){
-            cell.displayLaborMode()
-            
-            
-            cell.imageView?.image = nil
-            cell.empID = usage.empID
-            cell.nameLbl.text = usage.empName
-            if(usage.qty == ""){
-                cell.qtyLbl.text = ""
-            }else{
-                cell.qtyLbl.text = "\(usage.qty!) hrs."
-            }
-            
-            if(usage.start != nil){
-                
-                
-                cell.startTxtField.text = shortFormatter.string(from: usage.start!)
-                
-                cell.startPickerView.date = usage.start!
-                
-            }else{
-                cell.startTxtField.text = ""
-            }
-            if(usage.stop != nil){
-                cell.stopTxtField.text = shortFormatter.string(from:usage.stop!)
-                cell.stopPickerView.date = usage.stop!
-            }else{
-                cell.stopTxtField.text = ""
-            }
-            if(usage.lunch != nil){
-                cell.breakTxtField.text = usage.lunch
-            }else{
-                cell.breakTxtField.text = ""
-            }
-            cell.startTxtField.isUserInteractionEnabled = !usage.locked!
-            cell.stopTxtField.isUserInteractionEnabled = !usage.locked!
-            cell.breakTxtField.isUserInteractionEnabled = !usage.locked!
-            cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+usage.empPic!)
+        if(indexPath.row == usageToLog.count && woItem.type == "2"){
+            //cell add btn mode
+            cell.layoutAddBtn()
+            //cell.receiptDelegate = self
         }else{
-            cell.usage = usage
-            cell.index = indexPath.row
+            let usage = usageToLog[indexPath.row]
+        
             
-            cell.displayMaterialMode()
-            cell.receiptDelegate = self
-            
-            
-           
-            
-            cell.vendorList = self.woItem.vendors
-            if(usage.qty == ""){
-                cell.qtyTxtField.text = ""
-            }else{
-                cell.qtyTxtField.text = "\(usage.qty!)"
-            }
-            if(woItem.unit == ""){
-                cell.unitsLbl.text = ""
-            }else{
-                cell.unitsLbl.text = "\(woItem.unit!)(s)"
-            }
-            for vendor in self.woItem.vendors {
-                if (vendor.ID == usage.vendor){
-                    cell.vendorTxtField.text = "\(vendor.name!)"
+        
+            cell.delegate = self
+            cell.row = indexPath.row
+            cell.selectionStyle = .none
+        
+            if(usage.type == "1"){
+                cell.displayLaborMode()
+                
+                
+                cell.imageView?.image = nil
+                cell.empID = usage.empID
+                cell.nameLbl.text = usage.empName
+                if(usage.qty == ""){
+                    cell.qtyLbl.text = ""
+                }else{
+                    cell.qtyLbl.text = "\(usage.qty!) hrs."
                 }
-            }
-            if(usage.unitCost == ""){
-                cell.costTxtField.text = ""
-            }else{
-                cell.costTxtField.text = "\(usage.unitCost!)"
-            }
-            
-            //cell.totalCostLbl.text = "Total Cost $"
-            
-            if(usage.totalCost == ""){
                 
-                cell.totalCostTxtField.text = "0.00"
+                if(usage.start != nil){
+                    
+                    
+                    cell.startTxtField.text = shortFormatter.string(from: usage.start!)
+                    
+                    cell.startPickerView.date = usage.start!
+                    
+                }else{
+                    cell.startTxtField.text = ""
+                }
+                if(usage.stop != nil){
+                    cell.stopTxtField.text = shortFormatter.string(from:usage.stop!)
+                    cell.stopPickerView.date = usage.stop!
+                }else{
+                    cell.stopTxtField.text = ""
+                }
+                if(usage.lunch != nil){
+                    cell.breakTxtField.text = usage.lunch
+                }else{
+                    cell.breakTxtField.text = ""
+                }
+                cell.startTxtField.isUserInteractionEnabled = !usage.locked!
+                cell.stopTxtField.isUserInteractionEnabled = !usage.locked!
+                cell.breakTxtField.isUserInteractionEnabled = !usage.locked!
+                cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+usage.empPic!)
             }else{
-                cell.totalCostTxtField.text = usage.totalCost!
+                cell.usage = usage
+                cell.index = indexPath.row
+                
+                cell.displayMaterialMode()
+                cell.receiptDelegate = self
+                
+                
+               
+                
+                cell.vendorList = self.woItem.vendors
+                if(usage.qty == ""){
+                    cell.qtyTxtField.text = ""
+                }else{
+                    cell.qtyTxtField.text = "\(usage.qty!)"
+                }
+                if(woItem.unit == ""){
+                    cell.unitsLbl.text = ""
+                }else{
+                    cell.unitsLbl.text = "\(woItem.unit!)(s)"
+                }
+                for vendor in self.woItem.vendors {
+                    if (vendor.ID == usage.vendor){
+                        cell.vendorTxtField.text = "\(vendor.name!)"
+                    }
+                }
+                if(usage.unitCost == ""){
+                    cell.costTxtField.text = ""
+                }else{
+                    cell.costTxtField.text = "\(usage.unitCost!)"
+                }
+                
+                //cell.totalCostLbl.text = "Total Cost $"
+                
+                if(usage.totalCost == ""){
+                    
+                    cell.totalCostTxtField.text = "0.00"
+                }else{
+                    cell.totalCostTxtField.text = usage.totalCost!
+                }
+                
+                //print("usage has receipt = \(usage.hasReceipt)")
+                if usage.hasReceipt == "1"{
+                    cell.setReceiptUrl(_url: (usage.receipt?.thumbPath!)!)
+                }else{
+                    cell.setBlankImage()
+                }
+                
+                
+                
             }
-            
-            //print("usage has receipt = \(usage.hasReceipt)")
-            if usage.hasReceipt == "1"{
-                cell.setReceiptUrl(_url: (usage.receipt?.thumbPath!)!)
+            if(usage.locked == false){
+                cell.locked = false
+                cell.lockIcon.alpha = 0
             }else{
-                cell.setBlankImage()
+                cell.locked = true
+                cell.lockIcon.alpha = 1
             }
-            
-            
-            
-        }
-        if(usage.locked == false){
-            cell.locked = false
-            cell.lockIcon.alpha = 0
-        }else{
-            cell.locked = true
-            cell.lockIcon.alpha = 1
         }
         
         
         return cell;
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if(indexPath.row == usageToLog.count && woItem.type == "2"){
+            let usage:Usage = Usage(_ID: "0",
+                                    _empID: nil,
+                                    _depID: nil,
+                                    _woID: self.workOrderID,
+                                    _start: nil,
+                                    _stop: nil,
+                                    _lunch: "",
+                                    _qty: "",
+                                    _empName: nil,
+                                    _type: self.woItem.type,
+                                    _itemID: self.woItem.ID,
+                                    _unitPrice: self.woItem.price,
+                                    _totalPrice: self.woItem.total,
+                                    _vendor: "",
+                                    _unitCost: "",
+                                    _totalCost: "",
+                                    _chargeType: self.woItem.chargeID,
+                                    _override: "1",
+                                    _empPic: nil,
+                                    _locked: false,
+                                    _addedBy: appDelegate.loggedInEmployee!.ID!,
+                                    _del: ""
+            )
+            
+            usageToLog.insert(usage, at: usageToLog.count)
+            usageTableView.reloadData()
+        }
     }
     
     func receiptBtnTapped(_usage: Usage, _index: Int) {
@@ -634,32 +690,6 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     }
     
     
-    /*
-    override func displayHomeView() {
-        if(self.editsMade == true){
-            print("editsMade = true")
-            let alertController = UIAlertController(title: "Edits Made", message: "Leave without submitting?", preferredStyle: UIAlertController.Style.alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive) {
-                (result : UIAlertAction) -> Void in
-                print("Cancel")
-            }
-            
-            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
-                (result : UIAlertAction) -> Void in
-                print("OK")
-                self.appDelegate.menuChange(100)//home
-            }
-            
-            alertController.addAction(cancelAction)
-            alertController.addAction(okAction)
-            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
-        }else{
-            appDelegate.menuChange(100)//home
-        }
-    }
-    
-    */
-    
     
     
     override func didReceiveMemoryWarning() {
@@ -772,31 +802,33 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                 
             }
         }else{
-            let usage:Usage = Usage(_ID: "0",
-                                    _empID: nil,
-                                    _depID: nil,
-                                    _woID: self.workOrderID,
-                                    _start: nil,
-                                    _stop: nil,
-                                    _lunch: "",
-                                    _qty: "",
-                                    _empName: nil,
-                                    _type: self.woItem.type,
-                                    _itemID: self.woItem.ID,
-                                    _unitPrice: self.woItem.price,
-                                    _totalPrice: self.woItem.total,
-                                    _vendor: "",
-                                    _unitCost: "",
-                                    _totalCost: "",
-                                    _chargeType: self.woItem.chargeID,
-                                    _override: "1",
-                                    _empPic: nil,
-                                    _locked: false,
-                                    _addedBy: appDelegate.loggedInEmployee!.ID!,
-                                    _del: ""
-            )
-            
-            usageToLog.insert(usage, at: 0)
+            if usageToLog.count == 0{
+                let usage:Usage = Usage(_ID: "0",
+                                        _empID: nil,
+                                        _depID: nil,
+                                        _woID: self.workOrderID,
+                                        _start: nil,
+                                        _stop: nil,
+                                        _lunch: "",
+                                        _qty: "",
+                                        _empName: nil,
+                                        _type: self.woItem.type,
+                                        _itemID: self.woItem.ID,
+                                        _unitPrice: self.woItem.price,
+                                        _totalPrice: self.woItem.total,
+                                        _vendor: "",
+                                        _unitCost: "",
+                                        _totalCost: "",
+                                        _chargeType: self.woItem.chargeID,
+                                        _override: "1",
+                                        _empPic: nil,
+                                        _locked: false,
+                                        _addedBy: appDelegate.loggedInEmployee!.ID!,
+                                        _del: ""
+                )
+                
+                usageToLog.insert(usage, at: 0)
+            }
             
         }
         self.usageTableView.reloadData()
@@ -1020,7 +1052,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     }
     
     
-    func showHistory(){
+    @objc func showHistory(){
         
         
         if(self.editsMade == true){
@@ -1063,7 +1095,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     //loop thru usage array and edit start time
         for usage in usageToLog {
             let usageStop = usage.stop
-            if(usage.locked == false){
+            if(usage.locked == false && usage.start == nil){
                 //test if start is before stop or stop is nil
                 if(usage.stop == nil){
                     usage.start = Date()
@@ -1073,9 +1105,11 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                     self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "\(usage.empName!)'s start time can not be later then their stop time.")
                 }else{
                     
-                    usage.start = Date()
+                   // if usage.start == nil{
+                        usage.start = Date()
+                        self.editsMade = true
+                    //}
                     
-                    self.editsMade = true
                 }
             }
             
@@ -1098,8 +1132,11 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                     //stop is before start
                      self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Time Error", _message: "\(usage.empName!)'s stop time can not be earlier then their start time.")
                 }else{
-                    usage.stop =  Date()
-                    self.editsMade = true
+                    
+                    if(usage.stop == nil){
+                        usage.stop =  Date()
+                        self.editsMade = true
+                    }
                 }
             }
         }

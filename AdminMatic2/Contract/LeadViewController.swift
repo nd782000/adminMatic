@@ -400,7 +400,11 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         }
         /////////  Auto Layout   //////////////////////////////////////
         
-        let metricsDictionary = ["fullWidth": layoutVars.fullWidth - 30,"halfWidth": (layoutVars.fullWidth - 38)/2, "nameWidth": layoutVars.fullWidth - 150] as [String:Any]
+        let fullWidth = layoutVars.fullWidth - 30
+        let halfWidth = (layoutVars.fullWidth - 38)/2
+        let nameWidth = layoutVars.fullWidth - 150
+        
+        let metricsDictionary = ["fullWidth": fullWidth,"halfWidth": halfWidth, "nameWidth": nameWidth] as [String:Any]
         
         //main views
         let viewsDictionary = [

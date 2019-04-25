@@ -298,7 +298,12 @@ class ScheduleSettingsViewController: UIViewController, UITextFieldDelegate, UIP
             "plowDepthTxtField":self.plowDepthTxtField
             ] as [String:Any]
         
-        let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": (layoutVars.fullWidth/2)-15, "height": 24,"fullHeight":layoutVars.fullHeight - 344, "navHeight":layoutVars.navAndStatusBarHeight + 20] as [String:Any]
+        
+        let halfWidth = (layoutVars.fullWidth/2)-15
+        let fullHeight = layoutVars.fullHeight - 344
+        let navBottom = layoutVars.navAndStatusBarHeight + 20
+        
+        let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": halfWidth, "height": 24,"fullHeight":fullHeight, "navHeight":navBottom] as [String:Any]
         
         //////////////   auto layout position constraints   /////////////////////////////
         

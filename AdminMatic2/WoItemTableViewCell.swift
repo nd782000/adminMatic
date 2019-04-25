@@ -28,6 +28,7 @@ class WoItemTableViewCell: UITableViewCell {
     
     var addItemLbl:Label = Label()
     
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }

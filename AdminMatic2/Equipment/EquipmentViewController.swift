@@ -378,8 +378,12 @@ class EquipmentViewController: UIViewController, UITextFieldDelegate, UIPickerVi
         self.addServiceButton.addTarget(self, action: #selector(self.addService), for: UIControl.Event.touchUpInside)
         safeContainer.addSubview(self.addServiceButton)
         
+        let halfWidth = (layoutVars.fullWidth/2)-15
+        let fullHeight = layoutVars.fullHeight - 344
+        let navBottom = layoutVars.navAndStatusBarHeight + 8
+        
     
-        let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": (layoutVars.fullWidth/2)-15, "height": 24,"fullHeight":layoutVars.fullHeight - 344, "navBottom":layoutVars.navAndStatusBarHeight + 8] as [String:Any]
+        let sizeVals = ["width": layoutVars.fullWidth,"halfWidth": halfWidth, "height": 24,"fullHeight":fullHeight, "navBottom":navBottom] as [String:Any]
         
         //auto layout group
         let equipmentViewsDictionary = [
