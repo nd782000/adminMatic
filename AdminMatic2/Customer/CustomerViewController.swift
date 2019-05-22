@@ -488,6 +488,8 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
     
     func getCustomerSchedule(_id:String){
         
+        
+        self.customerScheduleArray = []
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
@@ -1158,6 +1160,9 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
     @objc func addImage(){
         print("Add Image")
         
+       // self.selectedImages = []
+        
+        
         
         let multiPicker = DKImagePickerController()
         
@@ -1689,7 +1694,8 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
    
     
     func updateSchedule() {
-        //print("update schedule")
+        print("update schedule")
+        self.getCustomerSchedule(_id: self.customerID)
     }
     
     // not used, just to have this class conform to schedule delegate protocol

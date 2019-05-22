@@ -88,7 +88,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var salesRepLbl:GreyLabel!
     var salesRep:GreyLabel!
-    var salesRepValue:String!
+   // var salesRepValue:String!
 
     
     //attachments is disabled for now
@@ -325,7 +325,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //sends request for wo Data
     func getWorkOrder() {
-        print(" GetWo  Work Order Id \(workOrderID)")
+        print(" GetWo  Work Order Id \(String(describing: workOrderID))")
         
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -470,7 +470,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.workOrder.notes = self.json["notes"].stringValue
         
         
-        self.salesRepValue = self.json["salesRep"].string
+        //self.salesRepValue = self.json["salesRep"].string
         
         self.priceValue = self.json["totalPrice"].string
         self.costValue = self.json["totalCost"].string
@@ -553,7 +553,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
                     self.woItemViewController!.woItem = self.currentWoItem
                     self.woItemViewController?.customerID = self.workOrder.customer
                     self.woItemViewController?.customerName = self.workOrder.customerName
-                    self.woItemViewController?.saleRepName = self.salesRepValue
+                    self.woItemViewController?.saleRepName = self.workOrder.repName
                     self.woItemViewController?.layoutViews()
                 }
                 
@@ -771,7 +771,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             //self.woItemViewController!.woItem = self.currentWoItem
             self.woItemViewController?.customerID = self.workOrder.customer
             self.woItemViewController?.customerName = self.workOrder.customerName
-            self.woItemViewController?.saleRepName = self.salesRepValue
+            self.woItemViewController?.saleRepName = self.workOrder.repName
             self.woItemViewController?.layoutViews()
         }
         
@@ -1487,7 +1487,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
                 //self.woItemViewController!.woItem = self.currentWoItem
                 self.woItemViewController?.customerID = self.workOrder.customer
                 self.woItemViewController?.customerName = self.workOrder.customerName
-                self.woItemViewController?.saleRepName = self.salesRepValue
+                self.woItemViewController?.saleRepName = self.workOrder.repName
                 
                 self.woItemViewController!.woDelegate = self
                 print("task count = \(currentCell.woItem.tasks.count)")
@@ -1508,13 +1508,13 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
     func addItem(){
-        print("add item rep: \(self.salesRepValue!)")
+        print("add item rep: \(self.workOrder.repName)")
         
         
-        if(self.json["charge"].stringValue == "2"){
+        if(self.json["charge"].stringValue == "2" && self.appDelegate.loggedInEmployee?.ID != self.workOrder.rep){
             var message:String = ""
-            if(self.salesRepValue! != "No Rep"){
-                message = "Contact sales rep: \(self.salesRepValue!) or the office to add items to this work order."
+            if(self.workOrder.repName != "No Rep"){
+                message = "Contact sales rep: \(self.workOrder.repName) or the office to add items to this work order."
             }else{
                 message = "Contact the office to add items to this work order."
             }

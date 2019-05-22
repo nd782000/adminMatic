@@ -136,21 +136,13 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         self.imageView = UIImageView()
         
         
-        /*
-        self.imageView.clipsToBounds = true
-        self.imageView.contentMode = UIView.ContentMode.scaleAspectFit
-        self.imageView.translatesAutoresizingMaskIntoConstraints = false
-        self.imageView.isUserInteractionEnabled = true
-        self.imageView.image = nil
- */
-        
+       
         
         imageView.frame = CGRect(x:0, y:0, width:scrollView.frame.width, height:scrollView.frame.height)
         
         
         
         imageView.backgroundColor = .black
-        //imageView.contentMode = .scaleAspectFill
         imageView.contentMode = .scaleAspectFit
         scrollView.addSubview(imageView)
         imageView.isUserInteractionEnabled = true
@@ -597,7 +589,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
     }
     
     @objc func share() {
-        //print("share")
+        print("share")
         if self.presentedViewController == nil {
             let activity = UIActivityViewController(activityItems: [self.imageView.image!], applicationActivities: nil)
             present(activity, animated: true, completion: nil)

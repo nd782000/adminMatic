@@ -39,7 +39,7 @@ class WorkOrder {
     var crew:String = "0"
     var crewName:String = ""
     var rep:String = ""
-    var repName:String = ""
+    var repName:String = "No Rep"
     var notes:String = ""
     
     

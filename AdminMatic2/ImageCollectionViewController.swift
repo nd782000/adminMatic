@@ -870,6 +870,10 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     @objc func addImage(){
         print("Add Image")
         
+        
+        self.selectedImages = []
+        
+        
         if(searchController != nil){
             searchController.isActive = false
         }

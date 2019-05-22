@@ -1242,7 +1242,15 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         
         //print("show full screen")
         
-        navigationController?.pushViewController(imageDetailViewController, animated: false )
+        if self.employee.pic != nil{
+            let image2 = Image(_path: self.employee.pic)
+            //let image2 = Image(_path: "https://atlanticlawnandgarden.com/uploads/general/medium/"+self.employee.pic!)
+            //self.imageFullViewController = ImageFullViewController(_image: image2)
+            self.imageDetailViewController = ImageDetailViewController(_image: image2)
+            
+            navigationController?.pushViewController(imageDetailViewController, animated: false )
+        }
+        
     }
     
     

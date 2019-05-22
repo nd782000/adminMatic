@@ -541,7 +541,8 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
             "completionNotes":self.notesTxtView.text,
             "nextValue":self.equipmentService.nextValue,
             "questions": "\(questionsToLogJSON)",
-            "status":"2"
+            "status":"2",
+            "type":"4"
             
         ]
         
@@ -583,7 +584,7 @@ class EquipmentInspectionViewController: UIViewController, UITableViewDelegate, 
                         self.goBack()
                     }
                     
-                    let serviceAction = UIAlertAction(title: "Service", style: UIAlertAction.Style.default) {
+                    let serviceAction = UIAlertAction(title: "Needs Service", style: UIAlertAction.Style.default) {
                         (result : UIAlertAction) -> Void in
                         print("Service")
                         self.equipment.status = "1"
