@@ -14,7 +14,30 @@ import Alamofire
 // import this
 import AVFoundation
 
- 
+
+/*
+extension Collection where Iterator.Element == [String:AnyObject] {
+    func toJSONString(options: JSONSerialization.WritingOptions = .prettyPrinted) -> String {
+        if let arr = self as? [[String:AnyObject]],
+            let dat = try? JSONSerialization.data(withJSONObject: arr, options: options),
+            let str = String(data: dat, encoding: String.Encoding.utf8) {
+            return str
+        }
+        return "[]"
+    }
+}
+*/
+
+
+/*
+extension UIImage {
+    func toBase64() -> String? {
+        guard let imageData = self.pngData() else { return nil }
+        return imageData.base64EncodedString(options: Data.Base64EncodingOptions.lineLength64Characters)
+    }
+}
+*/
+
 
 extension UIColor {
     
@@ -435,6 +458,58 @@ class LayoutVars: UIViewController {
     
    
     
+    func imageOrientation(_ srcImage: UIImage)->UIImage {
+        if srcImage.imageOrientation == UIImage.Orientation.up {
+            return srcImage
+        }
+        var transform: CGAffineTransform = CGAffineTransform.identity
+        switch srcImage.imageOrientation {
+        case UIImageOrientation.down, UIImageOrientation.downMirrored:
+            transform = transform.translatedBy(x: srcImage.size.width, y: srcImage.size.height)
+            transform = transform.rotated(by: CGFloat(Double.pi))// replace M_PI by Double.pi when using swift 4.0
+            break
+        case UIImageOrientation.left, UIImageOrientation.leftMirrored:
+            transform = transform.translatedBy(x: srcImage.size.width, y: 0)
+            transform = transform.rotated(by: CGFloat(Double.pi/2))// replace M_PI_2 by Double.pi/2 when using swift 4.0
+            break
+        case UIImageOrientation.right, UIImageOrientation.rightMirrored:
+            transform = transform.translatedBy(x: 0, y: srcImage.size.height)
+            transform = transform.rotated(by: CGFloat(-Double.pi/2))// replace M_PI_2 by Double.pi/2 when using swift 4.0
+            break
+        case UIImageOrientation.up, UIImageOrientation.upMirrored:
+            break
+        }
+        switch srcImage.imageOrientation {
+        case UIImageOrientation.upMirrored, UIImageOrientation.downMirrored:
+            transform.translatedBy(x: srcImage.size.width, y: 0)
+            transform.scaledBy(x: -1, y: 1)
+            break
+        case UIImageOrientation.leftMirrored, UIImageOrientation.rightMirrored:
+            transform.translatedBy(x: srcImage.size.height, y: 0)
+            transform.scaledBy(x: -1, y: 1)
+        case UIImageOrientation.up, UIImageOrientation.down, UIImageOrientation.left, UIImageOrientation.right:
+            break
+        }
+        let ctx:CGContext = CGContext(data: nil, width: Int(srcImage.size.width), height: Int(srcImage.size.height), bitsPerComponent: (srcImage.cgImage)!.bitsPerComponent, bytesPerRow: 0, space: (srcImage.cgImage)!.colorSpace!, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+        ctx.concatenate(transform)
+        switch srcImage.imageOrientation {
+        case UIImageOrientation.left, UIImageOrientation.leftMirrored, UIImageOrientation.right, UIImageOrientation.rightMirrored:
+            ctx.draw(srcImage.cgImage!, in: CGRect(x: 0, y: 0, width: srcImage.size.height, height: srcImage.size.width))
+            break
+        default:
+            ctx.draw(srcImage.cgImage!, in: CGRect(x: 0, y: 0, width: srcImage.size.width, height: srcImage.size.height))
+            break
+        }
+        let cgimg:CGImage = ctx.makeImage()!
+        let img:UIImage = UIImage(cgImage: cgimg)
+        return img
+    }
+    
+    
+    
+    
+    
+    
     func simpleAlert(_vc:UIViewController,_title:String,_message:String?){
         print("simpleAlert: \(String(describing: _message))")
         let alertController = UIAlertController(title: _title, message: _message, preferredStyle: UIAlertController.Style.alert)
@@ -735,7 +810,7 @@ func testFormat(sourcePhoneNumber: String) -> String {
 
 
 
-class PaddedTextField: UITextField {
+class PaddedTextField: UITextField{
     
     var placeHolder:String!
     var canPaste:Bool = true
@@ -743,7 +818,6 @@ class PaddedTextField: UITextField {
     override init(frame:CGRect)
     {
         super.init(frame:frame)
-        
         
         self.layer.borderWidth = 1
         self.layer.borderColor = UIColor(hex:0x005100, op: 1.0).cgColor
@@ -806,6 +880,10 @@ class PaddedTextField: UITextField {
         self.backgroundColor = UIColor(hex:0xFFFFFF, op: 1)
         self.layer.borderWidth = 3
     }
+    
+    
+    
+    
     
     
     
@@ -1857,6 +1935,8 @@ internal extension DateComponents {
     }
 }
 
+
+//for alamofire 4
 
 
 

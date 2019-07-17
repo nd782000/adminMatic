@@ -16,6 +16,12 @@
 		0121DF001FBD147800AD6039 /* NewEditLeadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0121DEFF1FBD147800AD6039 /* NewEditLeadViewController.swift */; };
 		0125B6D41E26AE2500BAC949 /* NetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0125B6D31E26AE2500BAC949 /* NetData.swift */; };
 		0125B6D91E26B10E00BAC949 /* ImageDrawingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0125B6D81E26B10E00BAC949 /* ImageDrawingViewController.swift */; };
+		01266E8F22AAD5D500643F55 /* Employee2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01266E8E22AAD5D500643F55 /* Employee2.swift */; };
+		01266E9E22AE9D4400643F55 /* License2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01266E9D22AE9D4400643F55 /* License2.swift */; };
+		01266EA022AE9F0A00643F55 /* Crew2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01266E9F22AE9F0A00643F55 /* Crew2.swift */; };
+		01266EA222AE9FE700643F55 /* Department2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01266EA122AE9FE700643F55 /* Department2.swift */; };
+		012DBA3322D76E4100898351 /* Image2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012DBA3222D76E4100898351 /* Image2.swift */; };
+		012DBA4422D8BD5E00898351 /* ImageArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012DBA4322D8BD5E00898351 /* ImageArray.swift */; };
 		0137DA562080300400A29F4E /* NewEditContractViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0137DA552080300100A29F4E /* NewEditContractViewController.swift */; };
 		014B02951E21577D002A41DE /* CustomerListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02941E21577D002A41DE /* CustomerListViewController.swift */; };
 		014B029C1E21585A002A41DE /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B029B1E21585A002A41DE /* Customer.swift */; };
@@ -32,6 +38,11 @@
 		014B02B21E2690AC002A41DE /* WoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02B11E2690AC002A41DE /* WoItemTableViewCell.swift */; };
 		014B02B61E269449002A41DE /* AttachmentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02B51E269449002A41DE /* AttachmentListViewController.swift */; };
 		014B02B81E26A8E6002A41DE /* AttachmentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02B71E26A8E6002A41DE /* AttachmentTableViewCell.swift */; };
+		014C12F422A84A4C00EBB3DA /* Customer2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014C12F322A84A4C00EBB3DA /* Customer2.swift */; };
+		014C130322A9376800EBB3DA /* WoItem2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014C130222A9376800EBB3DA /* WoItem2.swift */; };
+		014C130522A939AC00EBB3DA /* Task2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014C130422A939AC00EBB3DA /* Task2.swift */; };
+		014C130722A93BC800EBB3DA /* Usage2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014C130622A93BC800EBB3DA /* Usage2.swift */; };
+		014C130922A944FC00EBB3DA /* Vendor2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014C130822A944FC00EBB3DA /* Vendor2.swift */; };
 		014CC8DC1E539C9A00D48A26 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014CC8DB1E539C9A00D48A26 /* Image.swift */; };
 		014CC8E41E539EB100D48A26 /* ImageCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014CC8E31E539EB100D48A26 /* ImageCollectionViewController.swift */; };
 		014CC8E61E53A00F00D48A26 /* ImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014CC8E51E53A00F00D48A26 /* ImageCollectionViewCell.swift */; };
@@ -71,6 +82,12 @@
 		016634281E3415FE002F7763 /* VendorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016634271E3415FE002F7763 /* VendorListViewController.swift */; };
 		0166342A1E341616002F7763 /* VendorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016634291E341616002F7763 /* VendorViewController.swift */; };
 		016DD5901E9AF8EC00359405 /* UsageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016DD58F1E9AF8EB00359405 /* UsageViewController.swift */; };
+		0173DEDF22BD37BF00F81412 /* Lead2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0173DEDE22BD37BE00F81412 /* Lead2.swift */; };
+		0173DEE122C11A1F00F81412 /* Zone2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0173DEE022C11A1F00F81412 /* Zone2.swift */; };
+		0173DEE322C11BE400F81412 /* Contract2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0173DEE222C11BE400F81412 /* Contract2.swift */; };
+		0173DEE522C11DB600F81412 /* Invoice2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0173DEE422C11DB600F81412 /* Invoice2.swift */; };
+		0173DEE722C12D6D00F81412 /* InvoiceArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0173DEE622C12D6D00F81412 /* InvoiceArray.swift */; };
+		0173DEE922C19CCC00F81412 /* InvoiceItem2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0173DEE822C19CCC00F81412 /* InvoiceItem2.swift */; };
 		017F083621FE65D800CC751D /* InvoiceListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083521FE65D800CC751D /* InvoiceListViewController.swift */; };
 		017F083821FE65EF00CC751D /* InvoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083721FE65EF00CC751D /* InvoiceViewController.swift */; };
 		017F083A21FE6FDE00CC751D /* InvoiceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083921FE6FDE00CC751D /* InvoiceTableViewCell.swift */; };
@@ -135,6 +152,12 @@
 		01D8671A212C8C1A005379E1 /* Zone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D86719212C8C1A005379E1 /* Zone.swift */; };
 		01D8671C212CB75A005379E1 /* LeadSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D8671B212CB75A005379E1 /* LeadSettingsViewController.swift */; };
 		01D86764212DF27B005379E1 /* NewEditWoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D86763212DF27B005379E1 /* NewEditWoViewController.swift */; };
+		01D8FFB422C59E74004FDE8D /* LeadArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D8FFB322C59E74004FDE8D /* LeadArray.swift */; };
+		01D8FFC322D3F89D004FDE8D /* ContractArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D8FFC222D3F89D004FDE8D /* ContractArray.swift */; };
+		01D8FFC522D3FEF9004FDE8D /* ContractItem2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D8FFC422D3FEF9004FDE8D /* ContractItem2.swift */; };
+		01D8FFC722D403E2004FDE8D /* ContractTask2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D8FFC622D403E2004FDE8D /* ContractTask2.swift */; };
+		01D8FFC922D65AFD004FDE8D /* ContractTaskArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D8FFC822D65AFD004FDE8D /* ContractTaskArray.swift */; };
+		01D8FFCB22D67960004FDE8D /* WorkOrderArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D8FFCA22D67960004FDE8D /* WorkOrderArray.swift */; };
 		01D9AD971E6DD14900BD35AE /* UnderConstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */; };
 		01DC79371E2803BB0022566C /* UsageEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DC79361E2803BB0022566C /* UsageEntryViewController.swift */; };
 		01DC793E1E2805200022566C /* UsageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DC793D1E2805200022566C /* UsageTableViewCell.swift */; };
@@ -155,6 +178,7 @@
 		01F33DCF203F3E1E00C43EFD /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A1F31F1E07084C00DCCB39 /* Alamofire.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		01F33DE4203F44EF00C43EFD /* ObjectMapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014CC8E21E539C9B00D48A26 /* ObjectMapper.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		01F33DE5203F44F200C43EFD /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A1F3231E07084C00DCCB39 /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		01FA01A722A012D10003836F /* WorkOrder2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01FA01A622A012D10003836F /* WorkOrder2.swift */; };
 		F927ADDEFEB19ED7A80575A6 /* Pods_AdminMatic2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4075364696C1C40435E111F /* Pods_AdminMatic2.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
 
@@ -332,6 +356,12 @@
 		0121DEFF1FBD147800AD6039 /* NewEditLeadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditLeadViewController.swift; sourceTree = "<group>"; };
 		0125B6D31E26AE2500BAC949 /* NetData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetData.swift; sourceTree = "<group>"; };
 		0125B6D81E26B10E00BAC949 /* ImageDrawingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageDrawingViewController.swift; sourceTree = "<group>"; };
+		01266E8E22AAD5D500643F55 /* Employee2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Employee2.swift; sourceTree = "<group>"; };
+		01266E9D22AE9D4400643F55 /* License2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = License2.swift; sourceTree = "<group>"; };
+		01266E9F22AE9F0A00643F55 /* Crew2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crew2.swift; sourceTree = "<group>"; };
+		01266EA122AE9FE700643F55 /* Department2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Department2.swift; sourceTree = "<group>"; };
+		012DBA3222D76E4100898351 /* Image2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Image2.swift; sourceTree = "<group>"; };
+		012DBA4322D8BD5E00898351 /* ImageArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageArray.swift; sourceTree = "<group>"; };
 		0137DA552080300100A29F4E /* NewEditContractViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditContractViewController.swift; sourceTree = "<group>"; };
 		014B02941E21577D002A41DE /* CustomerListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomerListViewController.swift; sourceTree = "<group>"; };
 		014B029B1E21585A002A41DE /* Customer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
@@ -348,6 +378,11 @@
 		014B02B11E2690AC002A41DE /* WoItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WoItemTableViewCell.swift; sourceTree = "<group>"; };
 		014B02B51E269449002A41DE /* AttachmentListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentListViewController.swift; sourceTree = "<group>"; };
 		014B02B71E26A8E6002A41DE /* AttachmentTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentTableViewCell.swift; sourceTree = "<group>"; };
+		014C12F322A84A4C00EBB3DA /* Customer2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Customer2.swift; sourceTree = "<group>"; };
+		014C130222A9376800EBB3DA /* WoItem2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WoItem2.swift; sourceTree = "<group>"; };
+		014C130422A939AC00EBB3DA /* Task2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task2.swift; sourceTree = "<group>"; };
+		014C130622A93BC800EBB3DA /* Usage2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Usage2.swift; sourceTree = "<group>"; };
+		014C130822A944FC00EBB3DA /* Vendor2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendor2.swift; sourceTree = "<group>"; };
 		014CC8DB1E539C9A00D48A26 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		014CC8E31E539EB100D48A26 /* ImageCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCollectionViewController.swift; sourceTree = "<group>"; };
 		014CC8E51E53A00F00D48A26 /* ImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -387,6 +422,12 @@
 		016634271E3415FE002F7763 /* VendorListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VendorListViewController.swift; sourceTree = "<group>"; };
 		016634291E341616002F7763 /* VendorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VendorViewController.swift; sourceTree = "<group>"; };
 		016DD58F1E9AF8EB00359405 /* UsageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsageViewController.swift; sourceTree = "<group>"; };
+		0173DEDE22BD37BE00F81412 /* Lead2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lead2.swift; sourceTree = "<group>"; };
+		0173DEE022C11A1F00F81412 /* Zone2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zone2.swift; sourceTree = "<group>"; };
+		0173DEE222C11BE400F81412 /* Contract2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contract2.swift; sourceTree = "<group>"; };
+		0173DEE422C11DB600F81412 /* Invoice2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Invoice2.swift; sourceTree = "<group>"; };
+		0173DEE622C12D6D00F81412 /* InvoiceArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceArray.swift; sourceTree = "<group>"; };
+		0173DEE822C19CCC00F81412 /* InvoiceItem2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceItem2.swift; sourceTree = "<group>"; };
 		017F083521FE65D800CC751D /* InvoiceListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceListViewController.swift; sourceTree = "<group>"; };
 		017F083721FE65EF00CC751D /* InvoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceViewController.swift; sourceTree = "<group>"; };
 		017F083921FE6FDE00CC751D /* InvoiceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceTableViewCell.swift; sourceTree = "<group>"; };
@@ -459,6 +500,12 @@
 		01D86719212C8C1A005379E1 /* Zone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zone.swift; sourceTree = "<group>"; };
 		01D8671B212CB75A005379E1 /* LeadSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadSettingsViewController.swift; sourceTree = "<group>"; };
 		01D86763212DF27B005379E1 /* NewEditWoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditWoViewController.swift; sourceTree = "<group>"; };
+		01D8FFB322C59E74004FDE8D /* LeadArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeadArray.swift; sourceTree = "<group>"; };
+		01D8FFC222D3F89D004FDE8D /* ContractArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractArray.swift; sourceTree = "<group>"; };
+		01D8FFC422D3FEF9004FDE8D /* ContractItem2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractItem2.swift; sourceTree = "<group>"; };
+		01D8FFC622D403E2004FDE8D /* ContractTask2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractTask2.swift; sourceTree = "<group>"; };
+		01D8FFC822D65AFD004FDE8D /* ContractTaskArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractTaskArray.swift; sourceTree = "<group>"; };
+		01D8FFCA22D67960004FDE8D /* WorkOrderArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkOrderArray.swift; sourceTree = "<group>"; };
 		01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnderConstructionViewController.swift; sourceTree = "<group>"; };
 		01DC79361E2803BB0022566C /* UsageEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsageEntryViewController.swift; sourceTree = "<group>"; };
 		01DC793D1E2805200022566C /* UsageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsageTableViewCell.swift; sourceTree = "<group>"; };
@@ -477,6 +524,7 @@
 		01EC4E741E1EF8BC009CE261 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		01EE1B2D1E20105A00E5E061 /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
 		01F33DDC203F429900C43EFD /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		01FA01A622A012D10003836F /* WorkOrder2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkOrder2.swift; sourceTree = "<group>"; };
 		37CA98F8ACDF15CD0E5F79DC /* Pods-AdminMatic2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AdminMatic2.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AdminMatic2/Pods-AdminMatic2.debug.xcconfig"; sourceTree = "<group>"; };
 		F4075364696C1C40435E111F /* Pods_AdminMatic2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AdminMatic2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD855DB83737CF2F4503E538 /* Pods-AdminMatic2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AdminMatic2.release.xcconfig"; path = "Pods/Target Support Files/Pods-AdminMatic2/Pods-AdminMatic2.release.xcconfig"; sourceTree = "<group>"; };
@@ -604,6 +652,7 @@
 		01C43C6F203CA4390068A5E0 /* Old Views */ = {
 			isa = PBXGroup;
 			children = (
+				015B9AF61E27DDFD0020FB58 /* Date.swift */,
 				014CC8E91E53F4E000D48A26 /* ImageFullViewController.swift */,
 				01C43C652037AE8C0068A5E0 /* CrewListViewController.swift */,
 				01D9AD961E6DD14800BD35AE /* UnderConstructionViewController.swift */,
@@ -633,9 +682,9 @@
 			isa = PBXGroup;
 			children = (
 				015231AB1E1A982F009949BD /* EmployeeListViewController.swift */,
-				015231AD1E1A9EFF009949BD /* EmployeeViewController.swift */,
 				01C43C5F203725150068A5E0 /* DeptCrewListViewController.swift */,
 				017F08432200DA4900CC751D /* LicenseViewController.swift */,
+				015231AD1E1A9EFF009949BD /* EmployeeViewController.swift */,
 				01C43C692039F04F0068A5E0 /* ShiftsViewController.swift */,
 				01C43C78203DB9D20068A5E0 /* PayrollEntryViewController.swift */,
 				01C43C72203CC88D0068A5E0 /* PayrollSummaryViewController.swift */,
@@ -782,34 +831,57 @@
 			isa = PBXGroup;
 			children = (
 				01DDE06F1E071FB3002C0F8B /* JsonDataHolder.swift */,
-				015B9AF61E27DDFD0020FB58 /* Date.swift */,
 				01EC4E6B1E1DDA90009CE261 /* WorkOrder.swift */,
+				01FA01A622A012D10003836F /* WorkOrder2.swift */,
+				014B02A71E2168DF002A41DE /* WoItem.swift */,
+				014C130222A9376800EBB3DA /* WoItem2.swift */,
+				014B02A91E216939002A41DE /* Task.swift */,
+				014C130422A939AC00EBB3DA /* Task2.swift */,
+				014B02AB1E216944002A41DE /* Usage.swift */,
+				014C130622A93BC800EBB3DA /* Usage2.swift */,
 				01C8B97E1FB278AA00ADF284 /* Lead.swift */,
+				0173DEDE22BD37BE00F81412 /* Lead2.swift */,
+				01D8FFB322C59E74004FDE8D /* LeadArray.swift */,
+				01D8FFCA22D67960004FDE8D /* WorkOrderArray.swift */,
 				01634B5120811BCD00D22832 /* Contract.swift */,
+				0173DEE222C11BE400F81412 /* Contract2.swift */,
+				01D8FFC422D3FEF9004FDE8D /* ContractItem2.swift */,
+				01D8FFC622D403E2004FDE8D /* ContractTask2.swift */,
+				01D8FFC822D65AFD004FDE8D /* ContractTaskArray.swift */,
+				01D8FFC222D3F89D004FDE8D /* ContractArray.swift */,
 				01C0F1A6216928E50018300E /* Invoice.swift */,
+				0173DEE422C11DB600F81412 /* Invoice2.swift */,
+				0173DEE622C12D6D00F81412 /* InvoiceArray.swift */,
 				017F083B21FFD1C100CC751D /* InvoiceItem.swift */,
+				0173DEE822C19CCC00F81412 /* InvoiceItem2.swift */,
 				01A9DDDC1FE0BAD60075AC72 /* Equipment.swift */,
 				01C43C61203725DD0068A5E0 /* Department.swift */,
+				01266EA122AE9FE700643F55 /* Department2.swift */,
 				01C43C672037AFB20068A5E0 /* Crew.swift */,
+				01266E9F22AE9F0A00643F55 /* Crew2.swift */,
 				01A9DDE21FE430C90075AC72 /* EquipmentService.swift */,
 				01A23ACB21F90A9700C872FC /* InspectionQuestion.swift */,
 				014B029B1E21585A002A41DE /* Customer.swift */,
+				014C12F322A84A4C00EBB3DA /* Customer2.swift */,
 				014B02A31E2168C6002A41DE /* Employee.swift */,
+				01266E8E22AAD5D500643F55 /* Employee2.swift */,
 				017F08412200C80F00CC751D /* License.swift */,
+				01266E9D22AE9D4400643F55 /* License2.swift */,
 				014B02A51E2168D3002A41DE /* Attachment.swift */,
-				014B02A71E2168DF002A41DE /* WoItem.swift */,
 				01634B572086D13500D22832 /* ContractItem.swift */,
-				014B02A91E216939002A41DE /* Task.swift */,
 				01D8670D21236075005379E1 /* ContractTask.swift */,
 				01C43C6B203A02F10068A5E0 /* Shift.swift */,
 				01D8670B21221901005379E1 /* Signature.swift */,
 				01C43C74203CD14C0068A5E0 /* Payroll.swift */,
-				014B02AB1E216944002A41DE /* Usage.swift */,
 				014B02AD1E216950002A41DE /* Vendor.swift */,
+				014C130822A944FC00EBB3DA /* Vendor2.swift */,
 				0166341B1E33F510002F7763 /* Contact.swift */,
 				016634211E340F6D002F7763 /* Item.swift */,
 				014CC8DB1E539C9A00D48A26 /* Image.swift */,
+				012DBA3222D76E4100898351 /* Image2.swift */,
+				012DBA4322D8BD5E00898351 /* ImageArray.swift */,
 				01D86719212C8C1A005379E1 /* Zone.swift */,
+				0173DEE022C11A1F00F81412 /* Zone2.swift */,
 				0160A1B51E89EA8400C2AB4A /* Bug.swift */,
 			);
 			name = "Data Classes";
@@ -1216,8 +1288,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01266EA022AE9F0A00643F55 /* Crew2.swift in Sources */,
 				01A23ACA21F7F18800C872FC /* EquipmentInspectionTableViewCell.swift in Sources */,
 				019B24621EB82EC5008D4475 /* NewWoItemTableViewCell.swift in Sources */,
+				01D8FFC322D3F89D004FDE8D /* ContractArray.swift in Sources */,
 				014B02B21E2690AC002A41DE /* WoItemTableViewCell.swift in Sources */,
 				014B02951E21577D002A41DE /* CustomerListViewController.swift in Sources */,
 				01D8671A212C8C1A005379E1 /* Zone.swift in Sources */,
@@ -1230,6 +1304,7 @@
 				0160A1B41E89BD2D00C2AB4A /* BugsListViewController.swift in Sources */,
 				017F08442200DA4900CC751D /* LicenseViewController.swift in Sources */,
 				01D8670A2121BFF9005379E1 /* TermsViewController.swift in Sources */,
+				0173DEE922C19CCC00F81412 /* InvoiceItem2.swift in Sources */,
 				014B02A81E2168DF002A41DE /* WoItem.swift in Sources */,
 				01C43C77203CD5810068A5E0 /* PayrollSummaryTableViewCell.swift in Sources */,
 				0116A7FB1E1DD4B7002C5051 /* ScheduleTableViewCell.swift in Sources */,
@@ -1255,6 +1330,7 @@
 				01D8670C21221901005379E1 /* Signature.swift in Sources */,
 				014B029E1E215DB5002A41DE /* CustomerTableViewCell.swift in Sources */,
 				0125B6D91E26B10E00BAC949 /* ImageDrawingViewController.swift in Sources */,
+				01266EA222AE9FE700643F55 /* Department2.swift in Sources */,
 				017F083C21FFD1C100CC751D /* InvoiceItem.swift in Sources */,
 				0125B6D41E26AE2500BAC949 /* NetData.swift in Sources */,
 				01C0F1A121663CBF0018300E /* EmailTableViewCell.swift in Sources */,
@@ -1267,6 +1343,7 @@
 				01C43C6A2039F0500068A5E0 /* ShiftsViewController.swift in Sources */,
 				01EE1B2E1E20105A00E5E061 /* HomeCollectionViewCell.swift in Sources */,
 				014B02AE1E216950002A41DE /* Vendor.swift in Sources */,
+				0173DEDF22BD37BF00F81412 /* Lead2.swift in Sources */,
 				01A9DDE71FE9868F0075AC72 /* NewEditEquipmentViewController.swift in Sources */,
 				0166342A1E341616002F7763 /* VendorViewController.swift in Sources */,
 				014CC8E81E53E8E900D48A26 /* ImageDetailViewController.swift in Sources */,
@@ -1274,14 +1351,17 @@
 				019B24591EB6D1BB008D4475 /* NewWoItemViewController.swift in Sources */,
 				01C43C682037AFB20068A5E0 /* Crew.swift in Sources */,
 				01A9DDDD1FE0BAD60075AC72 /* Equipment.swift in Sources */,
+				0173DEE722C12D6D00F81412 /* InvoiceArray.swift in Sources */,
 				01E01C2F1E7E05F400385B86 /* ImageUploadPrepCollectionViewCell.swift in Sources */,
 				01C0F1A7216928E50018300E /* Invoice.swift in Sources */,
 				01EC4E751E1EF8BC009CE261 /* HomeViewController.swift in Sources */,
 				01A9DDE51FE715E20075AC72 /* EquipmentServiceTableViewCell.swift in Sources */,
+				01266E9E22AE9D4400643F55 /* License2.swift in Sources */,
 				015EB55E1FF9611B000CA2A7 /* EquipmentDetailsViewController.swift in Sources */,
 				016634281E3415FE002F7763 /* VendorListViewController.swift in Sources */,
 				01D9AD971E6DD14900BD35AE /* UnderConstructionViewController.swift in Sources */,
 				017F083821FE65EF00CC751D /* InvoiceViewController.swift in Sources */,
+				014C130922A944FC00EBB3DA /* Vendor2.swift in Sources */,
 				015EB5511FF695ED000CA2A7 /* EquipmentFieldsListViewController.swift in Sources */,
 				01DDE0701E071FB3002C0F8B /* JsonDataHolder.swift in Sources */,
 				0137DA562080300400A29F4E /* NewEditContractViewController.swift in Sources */,
@@ -1294,10 +1374,14 @@
 				014B02AC1E216944002A41DE /* Usage.swift in Sources */,
 				01D8670E21236075005379E1 /* ContractTask.swift in Sources */,
 				014B02A61E2168D3002A41DE /* Attachment.swift in Sources */,
+				01FA01A722A012D10003836F /* WorkOrder2.swift in Sources */,
+				01D8FFC522D3FEF9004FDE8D /* ContractItem2.swift in Sources */,
 				016634261E3415DF002F7763 /* VendorTableViewCell.swift in Sources */,
+				012DBA4422D8BD5E00898351 /* ImageArray.swift in Sources */,
 				01634B562084F52500D22832 /* ContractViewController.swift in Sources */,
 				01A9DDD41FE0B59C0075AC72 /* EquipmentListViewController.swift in Sources */,
 				01634B5C2088E04F00D22832 /* TagTableViewCell.swift in Sources */,
+				01D8FFB422C59E74004FDE8D /* LeadArray.swift in Sources */,
 				01E01C1A1E7DB54D00385B86 /* ImageUploadPrepViewController.swift in Sources */,
 				014B02A41E2168C6002A41DE /* Employee.swift in Sources */,
 				0109382B1E835394007865FB /* CustomImageCropperOverlayView.swift in Sources */,
@@ -1314,6 +1398,7 @@
 				017F084A2203A96D00CC751D /* NewEditCustomerViewController.swift in Sources */,
 				01C43C71203CA5330068A5E0 /* ContractListViewController.swift in Sources */,
 				014B029C1E21585A002A41DE /* Customer.swift in Sources */,
+				01D8FFC922D65AFD004FDE8D /* ContractTaskArray.swift in Sources */,
 				01D86718212C5FDF005379E1 /* ImageEmployeeLikesListViewController.swift in Sources */,
 				016DD5901E9AF8EC00359405 /* UsageViewController.swift in Sources */,
 				01C43C75203CD14C0068A5E0 /* Payroll.swift in Sources */,
@@ -1321,9 +1406,11 @@
 				0121DEF51FBA71BF00AD6039 /* LeadTaskTableViewCell.swift in Sources */,
 				01DDE0731E071FEC002C0F8B /* EmployeeTableViewCell.swift in Sources */,
 				01DC79371E2803BB0022566C /* UsageEntryViewController.swift in Sources */,
+				01D8FFCB22D67960004FDE8D /* WorkOrderArray.swift in Sources */,
 				010937C01E81EE24007865FB /* ImageCroppingViewController.swift in Sources */,
 				0160A1BA1E8A08B900C2AB4A /* BugViewController.swift in Sources */,
 				014B02A01E2160BF002A41DE /* CustomerViewController.swift in Sources */,
+				01266E8F22AAD5D500643F55 /* Employee2.swift in Sources */,
 				016634201E340F5A002F7763 /* ItemViewController.swift in Sources */,
 				017F084822033CD600CC751D /* NewCustomerLookUpViewController.swift in Sources */,
 				01DC79401E2805590022566C /* UsageEntryTableViewCell.swift in Sources */,
@@ -1333,24 +1420,33 @@
 				01A9DDDF1FE0D4480075AC72 /* EquipmentTableViewCell.swift in Sources */,
 				0121DF001FBD147800AD6039 /* NewEditLeadViewController.swift in Sources */,
 				015B9AF01E27D4C50020FB58 /* TaskTableViewCell.swift in Sources */,
+				0173DEE122C11A1F00F81412 /* Zone2.swift in Sources */,
+				0173DEE322C11BE400F81412 /* Contract2.swift in Sources */,
 				01DDE0691E071BAC002C0F8B /* ViewControllerWithMenu.swift in Sources */,
 				0166341E1E340F48002F7763 /* ItemListViewController.swift in Sources */,
 				01D86764212DF27B005379E1 /* NewEditWoViewController.swift in Sources */,
 				016634241E340F91002F7763 /* ItemTableViewCell.swift in Sources */,
 				0160A1B81E89F98200C2AB4A /* BugTableViewCell.swift in Sources */,
+				014C130522A939AC00EBB3DA /* Task2.swift in Sources */,
 				01C43C602037251B0068A5E0 /* DeptCrewListViewController.swift in Sources */,
 				016634171E33F496002F7763 /* ContactTableViewCell.swift in Sources */,
+				012DBA3322D76E4100898351 /* Image2.swift in Sources */,
 				01634B542084F09B00D22832 /* ContractTableViewCell.swift in Sources */,
 				01C43C79203DB9D20068A5E0 /* PayrollEntryViewController.swift in Sources */,
 				01C43C73203CC88E0068A5E0 /* PayrollSummaryViewController.swift in Sources */,
+				014C12F422A84A4C00EBB3DA /* Customer2.swift in Sources */,
+				0173DEE522C11DB600F81412 /* Invoice2.swift in Sources */,
 				014B02B61E269449002A41DE /* AttachmentListViewController.swift in Sources */,
+				01D8FFC722D403E2004FDE8D /* ContractTask2.swift in Sources */,
 				015231AE1E1A9EFF009949BD /* EmployeeViewController.swift in Sources */,
 				01A1F2DF1E0704FF00DCCB39 /* AppDelegate.swift in Sources */,
 				01634B5A2086E35700D22832 /* ContractItemTableViewCell.swift in Sources */,
 				01634B582086D13500D22832 /* ContractItem.swift in Sources */,
 				015EB55A1FF6D6D0000CA2A7 /* EquipmentFieldTableViewCell.swift in Sources */,
 				017F084021FFDF9700CC751D /* InvoiceItemTableViewCell.swift in Sources */,
+				014C130322A9376800EBB3DA /* WoItem2.swift in Sources */,
 				014CC8E41E539EB100D48A26 /* ImageCollectionViewController.swift in Sources */,
+				014C130722A93BC800EBB3DA /* Usage2.swift in Sources */,
 				014B02B81E26A8E6002A41DE /* AttachmentTableViewCell.swift in Sources */,
 				01634B5220811BCD00D22832 /* Contract.swift in Sources */,
 				014CC8DC1E539C9A00D48A26 /* Image.swift in Sources */,

@@ -112,10 +112,17 @@ class EquipmentListViewController: ViewControllerWithMenu, UITableViewDelegate, 
                             
                             
                             if equip[i]["pic"] as? String == "0"{
-                                let image:Image = Image(_ID: "0", _noPicPath: equip[i]["picInfo"] as? String)
+                                //let image:Image = Image(_ID: "0", _noPicPath: equip[i]["picInfo"] as? String)
+                                let image:Image2 = Image2(_id: "0", _fileName: "", _name: "", _width: "", _height: "", _description: "", _dateAdded: "", _createdBy: "", _type: "")
+                                image.setDefaultPath()
+                                
                                 equipment.image = image
                             }else{
-                                let image:Image = Image(_ID: equip[i]["pic"] as? String)
+                                //let image:Image = Image(_ID: equip[i]["pic"] as? String)
+                                let image:Image2 = Image2(_id: equip[i]["pic"] as! String, _fileName: "", _name: "", _width: "", _height: "", _description: "", _dateAdded: "", _createdBy: "", _type: "")
+                                //image.setImagePaths()
+                                image.setEquipmentImagePaths()
+                                
                                 equipment.image = image
                                 
                                 // print("pic path = \(equipment.image.thumbPath)")

@@ -24,16 +24,16 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
     var multiButton:UIBarButtonItem!
     
     
-    var lead:Lead!
+    var lead:Lead2!
     
     var editDelegate:EditLeadDelegate!
     
     var json:JSON!
-    var tasksArray:[Task] = []
+    var tasksArray:[Task2] = []
     var woItemsJson:JSON!
     var contractItemsJson:JSON!
-    var woItemsArray:[WoItem] = []
-    var contractItemsArray:[ContractItem] = []
+    var woItemsArray:[WoItem2] = []
+    var contractItemsArray:[ContractItem2] = []
     var selectedTasks:[Int] = []
     var selectedRow:Int!
     
@@ -55,7 +55,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
     var multiSelectMode:Bool = false
     
     var editsMade:Bool = false
-    var tasksToLog: [Task] = []//data array
+    var tasksToLog: [Task2] = []//data array
     var tasksToLogJSON: [JSON] = []//data array
     
     var pickerMode: String = ""
@@ -66,9 +66,9 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
     var itemID:String = ""
     
     var fromContractItem:Bool = false
-    var contractItem:ContractItem?
+    var contractItem:ContractItem2?
     var fromWorkOrderItem:Bool = false
-    var workOrderItem:WoItem?
+    var workOrderItem:WoItem2?
     
     var type:String = "1"
     
@@ -76,7 +76,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
     
     var leadTaskDelegate:LeadTaskDelegate!
     
-    init(_leadFromContractItem:Lead, _contractItem:ContractItem){
+    init(_leadFromContractItem:Lead2, _contractItem:ContractItem2){
         super.init(nibName:nil,bundle:nil)
         
        // print("_leadFromContractItem")
@@ -93,7 +93,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         getLead()
     }
     
-    init(_leadFromWorkOrderItem:Lead, _workOrderItem:WoItem){
+    init(_leadFromWorkOrderItem:Lead2, _workOrderItem:WoItem2){
         super.init(nibName:nil,bundle:nil)
         
         //print("_leadFromWorkOrderItem")
@@ -101,7 +101,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         self.lead = _leadFromWorkOrderItem
         self.fromWorkOrderItem = true
         self.workOrderItem = _workOrderItem
-        self.itemID = (self.workOrderItem?.ID!)!
+        self.itemID = (self.workOrderItem?.ID)!
         self.type = "1"
         self.multiSelectMode = true
         //print("workOrderItem Name = \(String(describing: self.workOrderItem!.name!))")
@@ -110,7 +110,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         getLead()
     }
     
-    init(_lead:Lead, _tasks:[Task]){
+    init(_lead:Lead2, _tasks:[Task2]){
         super.init(nibName:nil,bundle:nil)
         
         //print("Basic init")
@@ -201,7 +201,22 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                 //print("appending image")
                 taskImages.append(image)
             }
-            let task = Task(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue, _images:taskImages)
+            
+            let task = Task2(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue)
+            
+            
+            
+            
+            
+            
+            //task.images = taskImages
+            
+            
+            
+            
+            
+            
+            //let task = Task(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue, _images:taskImages)
             self.tasksArray.append(task)
         }
         //getStack()
@@ -224,7 +239,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         // Show Loading Indicator
         //reset task array
         self.woItemsArray = []
-        let parameters: [String:String] = ["custID": self.lead.customer]
+        let parameters: [String:String] = ["custID": self.lead.customerID!]
         //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leadCustomerWoSearch.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
@@ -250,8 +265,9 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         let itemCount = self.woItemsJson["items"].count
         for n in 0 ..< itemCount {
             
-            let item = WoItem(_ID: self.woItemsJson["items"][n]["itemID"].stringValue, _name: self.woItemsJson["items"][n]["itemName"].stringValue, _woID: self.woItemsJson["items"][n]["woID"].stringValue, _woTitle: self.woItemsJson["items"][n]["woTitle"].stringValue)
-            
+           // let item = WoItem(_ID: self.woItemsJson["items"][n]["itemID"].stringValue, _name: self.woItemsJson["items"][n]["itemName"].stringValue, _woID: self.woItemsJson["items"][n]["woID"].stringValue, _woTitle: self.woItemsJson["items"][n]["woTitle"].stringValue)
+            let item = WoItem2(_ID: self.woItemsJson["items"][n]["itemID"].stringValue, _name: self.woItemsJson["items"][n]["itemName"].stringValue, _type: self.woItemsJson["items"][n]["type"].stringValue, _sort: self.woItemsJson["items"][n]["sort"].stringValue, _status: self.woItemsJson["items"][n]["status"].stringValue, _charge: self.woItemsJson["items"][n]["charge"].stringValue, _total: self.woItemsJson["items"][n]["total"].stringValue)
+            item.woID = self.woItemsJson["items"][n]["woID"].stringValue
             
             self.woItemsArray.append(item)
         }
@@ -270,7 +286,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         //indicator = SDevIndicator.generate(self.view)!
         //reset task array
         self.contractItemsArray = []
-        let parameters: [String:String] = ["custID": self.lead.customer]
+        let parameters: [String:String] = ["custID": self.lead.customerID!]
         //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leadCustomerContractSearch.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
@@ -297,7 +313,10 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         for n in 0 ..< itemCount {
             
            
-            let item = ContractItem(_ID: self.contractItemsJson["items"][n]["itemID"].stringValue, _contractID: self.contractItemsJson["items"][n]["contractID"].stringValue, _name: self.contractItemsJson["items"][n]["itemName"].stringValue, _contractTitle: self.contractItemsJson["items"][n]["contractTitle"].stringValue)
+           // let item = ContractItem(_ID: self.contractItemsJson["items"][n]["itemID"].stringValue, _contractID: self.contractItemsJson["items"][n]["contractID"].stringValue, _name: self.contractItemsJson["items"][n]["itemName"].stringValue, _contractTitle: self.contractItemsJson["items"][n]["contractTitle"].stringValue)
+            
+            let item = ContractItem2(_ID: self.contractItemsJson["items"][n]["itemID"].stringValue, _chargeType: self.contractItemsJson["items"][n]["chargeType"].stringValue, _contractID: self.contractItemsJson["items"][n]["contractID"].stringValue, _itemID: self.contractItemsJson["items"][n]["item"].stringValue, _name: self.contractItemsJson["items"][n]["itemName"].stringValue, _qty: self.contractItemsJson["items"][n]["qty"].stringValue)
+            
             
             self.contractItemsArray.append(item)
         }
@@ -463,7 +482,9 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         // safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[addBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         if fromContractItem == true || fromWorkOrderItem == true{
-//            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[setToItemBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+            
+            print("fromContractItem == true || fromWorkOrderItem == true")
+           safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[contractBtn(halfWidth)]-[scheduleBtn]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         }else{
            
             //print("3")
@@ -474,7 +495,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         
         
         if fromContractItem == true || fromWorkOrderItem == true{
-            //print("4")
+            print("4")
             
           // safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[countLbl(30)][table]-[setToItemBtn(40)]-10-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
             
@@ -556,7 +577,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                 
                 
                 var itemString = String()
-                itemString = "\(woItemsArray[row].name!) Item"
+                itemString = "\(woItemsArray[row].item) Item"
                 let itemLabel = UILabel(frame: CGRect(x:60, y:30, width:pickerView.bounds.width - 60, height:30 ))
                 itemLabel.font = layoutVars.buttonFont
                 itemLabel.textAlignment = .center
@@ -576,7 +597,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
             }else{
                 
                 var contractString = String()
-                contractString =  "Contract #\(contractItemsArray[row].contractID!)  \(contractItemsArray[row].contractTitle!)"
+                contractString =  "Contract #\(contractItemsArray[row].contractID)  \(contractItemsArray[row].contractTitle!)"
                 
                
                 
@@ -588,7 +609,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                 
                 
                 var itemString = String()
-                itemString = "\(contractItemsArray[row].name!) Item # \(contractItemsArray[row].ID!)"
+                itemString = "\(contractItemsArray[row].name) Item # \(contractItemsArray[row].ID)"
                 let itemLabel = UILabel(frame: CGRect(x:60, y:30, width:pickerView.bounds.width - 60, height:30 ))
                 itemLabel.font = layoutVars.buttonFont
                 itemLabel.textAlignment = .center
@@ -691,19 +712,23 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
             }else{
                 
             
-           
+           /*
             
             
                 tableView.deselectRow(at: indexPath as IndexPath, animated: true)
-                imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Lead Task", _leadID: self.lead.ID, _leadTaskID: self.tasksArray[indexPath.row].ID, _customerID: self.lead.customer, _images: self.tasksArray[indexPath.row].images)
+                imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Lead Task", _leadID: self.lead.ID, _leadTaskID: self.tasksArray[indexPath.row].ID, _customerID: self.lead.customerID!, _images: self.tasksArray[indexPath.row].images!)
                 imageUploadPrepViewController.layoutViews()
                 imageUploadPrepViewController.groupDescriptionTxt.text = self.tasksArray[indexPath.row].task
                 imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
-                imageUploadPrepViewController.selectedID = self.lead.customer
+                imageUploadPrepViewController.selectedID = self.lead.customerID!
                 imageUploadPrepViewController.groupImages = true
                 imageUploadPrepViewController.attachmentDelegate = self
                 self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
-            }
+ 
+ */
+ 
+ 
+        }
     }
     
     
@@ -954,7 +979,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                 //return
             }
             woID = woItemsArray[self.selectedRow].woID!
-            itemID = woItemsArray[self.selectedRow].ID!
+            itemID = woItemsArray[self.selectedRow].ID
             scheduleTxtField.resignFirstResponder()
         }else{
             
@@ -973,8 +998,8 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
             }
             
           
-            contractID = contractItemsArray[self.selectedRow].contractID!
-            itemID = contractItemsArray[self.selectedRow].ID!
+            contractID = contractItemsArray[self.selectedRow].contractID
+            itemID = contractItemsArray[self.selectedRow].ID
             
             contractTxtField.resignFirstResponder()
             
@@ -1040,7 +1065,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                         "itemID":"\(itemID)",
                         "leadTasks": "\(tasksToLogJSON)",
                         "createdBy":"\(self.appDelegate.loggedInEmployee!.ID!)",
-                        "leadID":self.lead.ID!,
+                        "leadID":self.lead.ID,
                         "linkID":self.woID
                     ]
                 }else{
@@ -1049,7 +1074,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                         "itemID":"\(itemID)",
                         "leadTasks": "\(tasksToLogJSON)",
                         "createdBy":"\(self.appDelegate.loggedInEmployee!.ID!)",
-                        "leadID":self.lead.ID!,
+                        "leadID":self.lead.ID,
                         "linkID":self.contractID
                     ]
                 }
@@ -1184,7 +1209,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
             
             
             
-            if(self.lead?.statusId != newStatusValue && newStatusValue != "na"){
+            if(self.lead.statusID != newStatusValue && newStatusValue != "na"){
                 //print("should update status _newStatusValue = \(newStatusValue)")
                 
                 var statusName = ""
@@ -1216,7 +1241,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                     
                     
                     
-                    self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: self.lead.statusId)
+                    self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: self.lead.statusID)
                     
                     _ = self.navigationController?.popViewController(animated: false)
                     
@@ -1241,14 +1266,14 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                         //self.editsMade = true
                         //self.statusValue = self.statusValueToUpdate
                         //self.setStatus(status: _newStatusValue)
-                        self.lead!.statusId = newStatusValue
+                        self.lead.statusID = newStatusValue
                         }.responseString() {
                             response in
                             //print(response)  // original URL request
                             
                             // self.getLead()
                             
-                            self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: self.lead.statusId)
+                            self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: self.lead.statusID)
                             _ = self.navigationController?.popViewController(animated: false)
                     }
                     
@@ -1263,7 +1288,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
                 layoutVars.getTopController().present(alertController, animated: true, completion: nil)
                 
             }else{
-                self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: self.lead.statusId)
+                self.editDelegate.updateLead(_lead: self.lead, _newStatusValue: self.lead.statusID)
                  _ = navigationController?.popViewController(animated: false)
             }
             
@@ -1300,7 +1325,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
     
    
     
-    func handleNewContract(_contract: Contract) {
+    func handleNewContract(_contract: Contract2) {
         //print("handle new contract in assign view contract.ID: \(_contract.ID)")
         
         _ = self.navigationController?.popViewController(animated: false)
@@ -1310,7 +1335,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         
     }
     
-    func handleNewWorkOrder(_workOrder: WorkOrder) {
+    func handleNewWorkOrder(_workOrder: WorkOrder2) {
        // print("handle new work order in assign view workOrder.ID: \(_workOrder.ID)")
         
     

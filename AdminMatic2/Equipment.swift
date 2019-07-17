@@ -31,7 +31,7 @@ class Equipment {
     var purchaseDate: String!
     var description: String!
     
-    var image:Image!
+    var image:Image2!
 
     required init(_ID:String?, _name: String?,_make:String?,  _model:String?,  _serial:String?, _crew:String?, _crewName:String?, _status:String?, _type:String?, _typeName:String?, _fuelType:String?, _fuelTypeName:String?, _engineType:String?, _engineTypeName:String?, _mileage:String?,  _dealer:String?, _dealerName:String?, _purchaseDate:String?, _description:String?) {
         //print(json)

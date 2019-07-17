@@ -24,7 +24,7 @@ import UIKit
 
 class InvoiceTableViewCell: UITableViewCell {
     var layoutVars:LayoutVars = LayoutVars()
-    var invoice:Invoice!
+    var invoice:Invoice2!
     var statusIcon: UIImageView!
     var titleLbl: UILabel!
     var totalLbl: UILabel!

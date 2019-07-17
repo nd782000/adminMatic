@@ -16,7 +16,7 @@ import SwiftyJSON
 
 
 protocol UpdateEquipmentImageDelegate{
-    func updateImage(_image:Image)
+    func updateImage(_image:Image2)
 }
 
  
@@ -291,8 +291,13 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
             title =  "New Equipment"
             submitButton = UIBarButtonItem(title: "Submit", style: .plain, target: self, action: #selector(NewEditEquipmentViewController.submit))
             self.equipment = Equipment(_ID: "0", _name: "", _make: "", _model: "", _serial: "", _crew: "", _crewName: "", _status: "0", _type: "", _typeName: "", _fuelType: "", _fuelTypeName: "", _engineType: "", _engineTypeName: "", _mileage: "", _dealer: "", _dealerName: "", _purchaseDate: "", _description: "")
-            let image:Image = Image(_ID: "0", _noPicPath: noPic)
+            //let image:Image = Image(_ID: "0", _noPicPath: noPic)
+            let image = Image2(_id: "0", _fileName: "", _name: "", _width: "", _height: "", _description: "", _dateAdded: "", _createdBy: "", _type: "")
+            image.setDefaultPath()
+            
             self.equipment.image = image
+            
+            
         }else{
            
             title =  "Edit Equipment"
@@ -1478,14 +1483,14 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
     }
     
     
-    func updateImage(_image:Image){
+    func updateImage(_image:Image2){
         print("update image")
         
         
         activityView.startAnimating()
         self.equipment.image = _image
         //self.equipment.pic = _image.thumbPath
-        let imgURL:URL = URL(string: self.equipment.image.thumbPath)!
+        let imgURL:URL = URL(string: self.equipment.image.thumbPath!)!
         
         
         Alamofire.request(imgURL).responseImage { response in

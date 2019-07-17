@@ -10,14 +10,14 @@
 
 import Foundation
 import UIKit
-import SwiftyJSON
+//import SwiftyJSON
  
 
 class ContractItemTableViewCell: UITableViewCell {
     
     var layoutVars:LayoutVars = LayoutVars()
     
-    var contractItem:ContractItem!
+    var contractItem:ContractItem2!
 
     
     var nameLbl: UILabel! = UILabel()
@@ -50,12 +50,12 @@ class ContractItemTableViewCell: UITableViewCell {
         self.preservesSuperviewLayoutMargins = false
         
         nameLbl.translatesAutoresizingMaskIntoConstraints = false
-        nameLbl.text = self.contractItem.name!
+        nameLbl.text = self.contractItem.name
         nameLbl.font = self.layoutVars.labelBoldFont
         contentView.addSubview(nameLbl)
         
         totalPriceLbl.translatesAutoresizingMaskIntoConstraints = false
-        totalPriceLbl.text = "\(self.contractItem.qty!) x \(layoutVars.numberAsCurrency(_number: self.contractItem.price!)) = \(layoutVars.numberAsCurrency(_number:self.contractItem.total!))"
+        totalPriceLbl.text = "\(self.contractItem.qty) x \(layoutVars.numberAsCurrency(_number: self.contractItem.price!)) = \(layoutVars.numberAsCurrency(_number:self.contractItem.total!))"
         totalPriceLbl.textAlignment = .right
         totalPriceLbl.font = self.layoutVars.labelBoldFont
         contentView.addSubview(totalPriceLbl)

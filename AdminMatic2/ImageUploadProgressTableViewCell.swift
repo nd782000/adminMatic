@@ -17,7 +17,8 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
     
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var imageData:Image!
+    var imageData:Image2!
+    var uiImage:UIImage!
     //var albumID:String = "0"
     var uploadDelegate:ImageUploadProgressDelegate!
     let saveURLString:String = "https://www.atlanticlawnandgarden.com/cp/app/functions/update/image.php"
@@ -47,7 +48,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
         self.selectedImageView.clipsToBounds = true
         self.selectedImageView.contentMode = .scaleAspectFill
         self.selectedImageView.translatesAutoresizingMaskIntoConstraints = false
-        self.selectedImageView.image = self.imageData.image
+        self.selectedImageView.image = self.uiImage
         self.contentView.addSubview(self.selectedImageView)
         
         self.progressLbl = Label(text: imageData.uploadStatus, valueMode: false)
@@ -68,7 +69,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
         self.progressView = UIProgressView()
         self.progressView.tintColor = layoutVars.buttonColor1
         self.progressView.translatesAutoresizingMaskIntoConstraints = false
-        self.progressView.setProgress(imageData.uploadProgress, animated: true)
+        self.progressView.setProgress(imageData.uploadProgress!, animated: true)
         self.contentView.addSubview(self.progressView)
         
         self.separatorInset = UIEdgeInsets.zero
@@ -120,7 +121,7 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                     "albumID":imageData.albumID,
                     "usageID":imageData.usageID,
                     "vendorID":imageData.vendorID
-                ]
+                    ] as! [String : String]
                 print("parameters = \(parameters)")
                 
                 let URL = try! URLRequest(url: self.saveURLString, method: .post, headers: nil)
@@ -131,10 +132,18 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                         multipartFormData.append(value.data(using: String.Encoding.utf8)!, withName: key)
                     }
                     
-                    if  let imageData = self.imageData.image!.fixedOrientation().jpegData(compressionQuality: 0.85) {
+                   /* if  let imageData = self.uiImage.fixedOrientation().jpegData(compressionQuality: 0.85) {
+                        multipartFormData.append(imageData, withName: "pic", fileName: "swift_file.jpeg", mimeType: "image/jpeg")
+                        
+                    }*/
+                    
+                    
+                    if  let imageData = self.uiImage.fixedOrientation().jpegData(compressionQuality: 0.85) {
                         multipartFormData.append(imageData, withName: "pic", fileName: "swift_file.jpeg", mimeType: "image/jpeg")
                         
                     }
+                    
+                    
                     
                 }, with: URL, encodingCompletion: { (result) in
                     
@@ -182,13 +191,20 @@ class ImageUploadProgressTableViewCell: UITableViewCell {
                                 //let image = Image(_id: JSON(json)["images"][0]["ID"].stringValue, _thumbPath: thumbPath, _rawPath: rawPath, _name: JSON(json)["images"][0]["name"].stringValue, _width: JSON(json)["images"][0]["width"].stringValue, _height: JSON(json)["images"][0]["height"].stringValue, _description: JSON(json)["images"][0]["description"].stringValue, _customer: JSON(json)["images"][0]["customer"].stringValue, _woID: JSON(json)["images"][0]["woID"].stringValue, _dateAdded: JSON(json)["images"][0]["dateAdded"].stringValue, _createdBy: JSON(json)["images"][0]["createdBy"].stringValue, _type: JSON(json)["images"][0]["type"].stringValue, _tags: JSON(json)["images"][0]["tags"].stringValue)
                                 
                                 
-                                let image = Image(_id: JSON(json)["images"][0]["ID"].stringValue, _thumbPath: thumbPath, _mediumPath: mediumPath, _rawPath: rawPath, _name: JSON(json)["images"][0]["name"].stringValue, _width: JSON(json)["images"][0]["width"].stringValue, _height: JSON(json)["images"][0]["height"].stringValue, _description: JSON(json)["images"][0]["description"].stringValue, _dateAdded: JSON(json)["images"][0]["dateAdded"].stringValue, _createdBy: JSON(json)["images"][0]["createdBy"].stringValue, _type: JSON(json)["images"][0]["type"].stringValue)
+                               // let image = Image(_id: JSON(json)["images"][0]["ID"].stringValue, _thumbPath: thumbPath, _mediumPath: mediumPath, _rawPath: rawPath, _name: JSON(json)["images"][0]["name"].stringValue, _width: JSON(json)["images"][0]["width"].stringValue, _height: JSON(json)["images"][0]["height"].stringValue, _description: JSON(json)["images"][0]["description"].stringValue, _dateAdded: JSON(json)["images"][0]["dateAdded"].stringValue, _createdBy: JSON(json)["images"][0]["createdBy"].stringValue, _type: JSON(json)["images"][0]["type"].stringValue)
+                               
+                                
+                                let image = Image2(_id: JSON(json)["images"][0]["ID"].stringValue, _fileName: "", _name: JSON(json)["images"][0]["name"].stringValue, _width: JSON(json)["images"][0]["width"].stringValue, _height: JSON(json)["images"][0]["height"].stringValue, _description: JSON(json)["images"][0]["description"].stringValue, _dateAdded: JSON(json)["images"][0]["dateAdded"].stringValue, _createdBy: JSON(json)["images"][0]["createdBy"].stringValue, _type: JSON(json)["images"][0]["type"].stringValue)
+                                
                                 
                                 image.customer = JSON(json)["images"][0]["customer"].stringValue
-                                image.customerName = JSON(json)["images"][0]["custName"].stringValue
+                                image.custName = JSON(json)["images"][0]["custName"].stringValue
                                 image.woID = JSON(json)["images"][0]["woID"].stringValue
                                 image.tags = JSON(json)["images"][0]["tags"].stringValue
                                 
+                                image.thumbPath = thumbPath
+                                image.mediumPath = mediumPath
+                                image.rawPath = rawPath
                                 
                                 
                                 self.scoreAdjust = JSON(json)["scoreAdjust"].intValue

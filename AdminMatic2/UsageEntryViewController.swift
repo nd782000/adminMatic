@@ -18,14 +18,14 @@ protocol UsageDelegate{
     func editStop(row:Int,stop:Date)
     func editBreak(row:Int,lunch:Int)
     func editQty(row:Int,qty:Double)
-    func editVendor(row:Int,vendor:String)
+    func editVendor(row:Int,vendor:String,_unitCost:Double)
     func editCost(row:Int,cost:Double)
     func showHistory()
 }
  
 protocol UpdateReceiptImageDelegate{
-    func receiptBtnTapped(_usage:Usage,_index:Int)
-    func updateImage(_image:Image,_usageIndex:Int)
+    func receiptBtnTapped(_usage:Usage2,_index:Int)
+    func updateImage(_image:Image2,_usageIndex:Int)
     
 }
 
@@ -44,7 +44,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     var startStopContainerView:UIView!
     
     var workOrderID:String!
-    var woItem:WoItem!
+    var woItem:WoItem2!
     var usageCharge:String!
     var customerID:String!
     
@@ -57,8 +57,10 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     var employeeCode:String!
     var employeeID:Int!
     
-    var empsOnWo:[Employee]!
-    var usageToLog: [Usage] = []//data array
+    var empsOnWo:[Employee2]!
+    var usageToLog: [Usage2] = []//data array
+    
+    
     var usageToLogJSON: [JSON] = []//data array
     
     var usageTableView: TableView!
@@ -77,7 +79,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     
     
     
-    init(_workOrderID:String,_workOrderItem:WoItem,_empsOnWo:[Employee]){
+    init(_workOrderID:String,_workOrderItem:WoItem2,_empsOnWo:[Employee2]){
         super.init(nibName:nil,bundle:nil)
         self.workOrderID = _workOrderID
         self.woItem = _workOrderItem
@@ -87,7 +89,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         self.dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         self.shortFormatter.dateFormat = "hh:mm a"
 
-        print("init usage entry chargeID = \(String(describing: self.woItem.chargeID))")
+        print("init usage entry chargeID = \(String(describing: self.woItem.charge))")
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -99,27 +101,21 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         super.viewDidLoad()
         title = "Today's Usage"
         
-        /*
-        
-        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
-        backButton.addTarget(self, action: #selector(UsageEntryViewController.goBack), for: UIControl.Event.touchUpInside)
-        backButton.setTitle("Back", for: UIControl.State.normal)
-        backButton.titleLabel!.font =  layoutVars.buttonFont
-        backButton.sizeToFit()
-        let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
-        navigationItem.leftBarButtonItem  = backButtonItem
-        */
+       
         
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
         navigationItem.leftBarButtonItem = backButton
         
-        let historyButton = UIBarButtonItem(title: "History", style: .plain, target: self, action: #selector(self.showHistory))
         
         
         
-        if(woItem.extraUsage! == "1"){
-            navigationItem.rightBarButtonItem = historyButton
+        if woItem.extraUsage != nil{
+            if(woItem.extraUsage! == "1"){
+                let historyButton = UIBarButtonItem(title: "History", style: .plain, target: self, action: #selector(self.showHistory))
+                navigationItem.rightBarButtonItem = historyButton
+            }
         }
+        
             
             
         //set container to safe bounds of view
@@ -255,14 +251,12 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         self.usageTableView.delegate  =  self
         self.usageTableView.dataSource  =  self
         self.usageTableView.rowHeight = 255.0
-        //self.usageTableView.rowHeight = UITableView.automaticDimension
-        //self.usageTableView.estimatedRowHeight = 255.0
+        
         self.usageTableView.register(UsageEntryTableViewCell.self, forCellReuseIdentifier: "cell")
         self.containerView.addSubview(self.usageTableView)
         
         
         self.submitBtn = Button(titleText: "Submit")
-        //self.submitBtn.backgroundColor = UIColor(hex:0x00ff00, op:1)
         self.containerView.addSubview(submitBtn)
         self.submitBtn.addTarget(self, action: #selector(UsageEntryViewController.submit), for: UIControl.Event.touchUpInside)
         
@@ -330,6 +324,8 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         if(woItem.type == "1"){
             return usageToLog.count
         }else{
+            
+            print("usageToLog.count \(usageToLog.count)")
             if usageToLog[0].ID == "0"{
                 return usageToLog.count
             }else{
@@ -354,11 +350,12 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         let cell:UsageEntryTableViewCell = usageTableView.dequeueReusableCell(withIdentifier: "cell") as! UsageEntryTableViewCell
         
         
-        if(indexPath.row == usageToLog.count && woItem.type == "2"){
+        if(indexPath.row == usageToLog.count && woItem.type != "1"){
             //cell add btn mode
             cell.layoutAddBtn()
             //cell.receiptDelegate = self
         }else{
+            print("row = \(indexPath.row)")
             let usage = usageToLog[indexPath.row]
         
             
@@ -370,7 +367,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
             if(usage.type == "1"){
                 cell.displayLaborMode()
                 
-                
+                print("usage.empID = \(usage.empID!)")
                 cell.imageView?.image = nil
                 cell.empID = usage.empID
                 cell.nameLbl.text = usage.empName
@@ -404,7 +401,10 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                 cell.startTxtField.isUserInteractionEnabled = !usage.locked!
                 cell.stopTxtField.isUserInteractionEnabled = !usage.locked!
                 cell.breakTxtField.isUserInteractionEnabled = !usage.locked!
-                cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+usage.empPic!)
+                if usage.empPic != nil{
+                    cell.setImageUrl(_url: "https://atlanticlawnandgarden.com/uploads/general/thumbs/"+usage.empPic!)
+                }
+                
             }else{
                 cell.usage = usage
                 cell.index = indexPath.row
@@ -414,8 +414,10 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                 
                 
                
+                if self.woItem.vendors != nil{
+                    cell.vendorList = self.woItem.vendors!
+                }
                 
-                cell.vendorList = self.woItem.vendors
                 if(usage.qty == ""){
                     cell.qtyTxtField.text = ""
                 }else{
@@ -424,11 +426,16 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                 if(woItem.unit == ""){
                     cell.unitsLbl.text = ""
                 }else{
-                    cell.unitsLbl.text = "\(woItem.unit!)(s)"
+                    if woItem.unit != nil{
+                        cell.unitsLbl.text = "\(woItem.unit!)(s)"
+                    }else{
+                        cell.unitsLbl.text = "N/A"
+                    }
+                    
                 }
-                for vendor in self.woItem.vendors {
+                for vendor in self.woItem.vendors! {
                     if (vendor.ID == usage.vendor){
-                        cell.vendorTxtField.text = "\(vendor.name!)"
+                        cell.vendorTxtField.text = "\(vendor.name)"
                     }
                 }
                 if(usage.unitCost == ""){
@@ -437,7 +444,6 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                     cell.costTxtField.text = "\(usage.unitCost!)"
                 }
                 
-                //cell.totalCostLbl.text = "Total Cost $"
                 
                 if(usage.totalCost == ""){
                     
@@ -470,37 +476,42 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if(indexPath.row == usageToLog.count && woItem.type == "2"){
-            let usage:Usage = Usage(_ID: "0",
-                                    _empID: nil,
-                                    _depID: nil,
-                                    _woID: self.workOrderID,
-                                    _start: nil,
-                                    _stop: nil,
-                                    _lunch: "",
-                                    _qty: "",
-                                    _empName: nil,
-                                    _type: self.woItem.type,
-                                    _itemID: self.woItem.ID,
-                                    _unitPrice: self.woItem.price,
-                                    _totalPrice: self.woItem.total,
-                                    _vendor: "",
-                                    _unitCost: "",
-                                    _totalCost: "",
-                                    _chargeType: self.woItem.chargeID,
-                                    _override: "1",
-                                    _empPic: nil,
-                                    _locked: false,
-                                    _addedBy: appDelegate.loggedInEmployee!.ID!,
-                                    _del: ""
-            )
+        
+        //add new usage row
+        if(indexPath.row == usageToLog.count && woItem.type != "1"){
+           
+            let usage = Usage2(_ID: "0", _woID: self.workOrderID, _itemID: self.woItem.ID, _type: self.woItem.type, _addedBy: appDelegate.loggedInEmployee!.ID!,_qty: "")
+            
+            
+            
+            usage.unitPrice = self.woItem.price
+            usage.totalPrice = self.woItem.total
+            usage.chargeType = self.woItem.charge
+            usage.override = "1"
+            usage.locked = false
+            
+            usage.empID = nil
+            usage.empName = nil
+            usage.empPic = nil
+            usage.depID = nil
+            usage.start = nil
+            usage.stop = nil
+            usage.lunch = ""
+            
+            usage.vendor = ""
+            usage.unitCost = ""
+            usage.totalCost = ""
+            usage.del = ""
+            
+           
+            
             
             usageToLog.insert(usage, at: usageToLog.count)
             usageTableView.reloadData()
         }
     }
     
-    func receiptBtnTapped(_usage: Usage, _index: Int) {
+    func receiptBtnTapped(_usage: Usage2, _index: Int) {
         //print("add receipt ID = \(_usage.ID) index = \(_index)")
         
         
@@ -606,6 +617,10 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                         self.usageToLog.remove(at: indexPath.row)
                         self.usageTableView.reloadData()
                     }else{
+                        
+                        
+                        
+                        
                         self.usageToLog[indexPath.row].del = "1"
                         self.usageToLogJSON = []
                         let JSONString = self.usageToLog[indexPath.row].toJSONString(prettyPrint: true)
@@ -614,6 +629,10 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                         self.callAlamoFire(_type: "delete")
                         self.usageToLog.remove(at: indexPath.row)
                         self.usageTableView.reloadData()
+ 
+                        
+                        
+                        
                     }
                     
                     
@@ -703,6 +722,23 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         let row = employeePicker.selectedRow(inComponent: 0)
         if(row == 0){
             for employee in self.empsOnWo {
+                
+                
+                
+                let usage = Usage2(_ID: "0", _woID: self.workOrderID, _itemID: self.woItem.ID, _type: self.woItem.type, _addedBy: appDelegate.loggedInEmployee!.ID!,_qty: self.woItem.usageQty!)
+                
+                usage.empID = employee.ID
+                usage.empName = employee.name
+                usage.empPic = employee.pic
+                usage.depID = employee.depID
+                usage.unitPrice = self.woItem.price
+                usage.totalPrice = self.woItem.total
+                usage.chargeType = self.woItem.charge
+                usage.override = "1"
+                usage.locked = false
+                
+                
+                /*
                 let usage:Usage = Usage(_ID: "0",
                                         _empID: employee.ID,
                                         _depID: employee.depID,
@@ -726,9 +762,26 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                                         _addedBy: appDelegate.loggedInEmployee!.ID,
                                         _del: ""
                 )
+ */
+                
                 usageToLog.insert(usage, at: 0)
             }
         }else{
+            
+            let usage = Usage2(_ID: "0", _woID: self.workOrderID, _itemID: self.woItem.ID, _type: self.woItem.type, _addedBy: appDelegate.loggedInEmployee!.ID!,_qty: self.woItem.usageQty!)
+            
+            usage.empID = appDelegate.employeeArray[row-1].ID!
+            usage.empName = appDelegate.employeeArray[row-1].name!
+            usage.empPic = appDelegate.employeeArray[row-1].pic!
+            usage.depID = appDelegate.employeeArray[row-1].depID!
+            usage.unitPrice = self.woItem.price
+            usage.totalPrice = self.woItem.total
+            usage.chargeType = self.woItem.charge
+            usage.override = "1"
+            usage.locked = false
+            
+            
+            /*
             let usage:Usage = Usage(_ID: "0",
                                     _empID: appDelegate.employeeArray[row-1].ID!,
                                     _depID: appDelegate.employeeArray[row-1].depID!,
@@ -751,7 +804,9 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                                     _locked: false,
                                     _addedBy: appDelegate.loggedInEmployee!.ID,
                                     _del: ""
-            )
+            )*/
+            
+            
             usageToLog.insert(usage, at: 0)
         }
         self.usageTableView.reloadData()
@@ -761,48 +816,115 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     func addActiveUsage(){
         //loop thru usage array and edit start time
         print("addActiveUsage()")
+        
+        print("usageToLog.count = \(usageToLog.count)")
         var openUsage:Bool = false
-        for usage in self.woItem.usages {
-            print("usage.qty = \(String(describing: usage.qty))")
-            usageToLog.append(usage)//append to your list
-            if(usage.stop == nil){
+        for usage in self.woItem.usages! {
+           // print("usage.qty = \(String(describing: usage.qty))")
+            print("usage.startString = \(String(describing: usage.startString))")
+            print("usage.start = \(String(describing: usage.start))")
+            
+            print("usage.stopString = \(String(describing: usage.stopString))")
+            print("usage.stop = \(String(describing: usage.stop))")
+            
+           // let todaysDate = Date()
+            
+            let todaysDate = Date()
+            let formatLong = DateFormatter()
+            formatLong.dateFormat = "yyyy-MM-dd HH:mm:ss"
+            let formatShort = DateFormatter()
+            formatShort.dateFormat = "yyyy-MM-dd"
+            let formattedTodaysDate = formatShort.string(from: todaysDate)
+            print("todays date = \(formattedTodaysDate)")
+            
+            var formattedUsageDateString:String = ""
+            
+            if usage.startString != nil{
+                //let formattedUsageDate = format.string(from: usage.startString!)
+                let formattedUsageDate = formatLong.date(from: usage.startString!)
+                
+                print("usage date = \(String(describing: formattedUsageDate))")
+                
+                formattedUsageDateString = formatShort.string(from: formattedUsageDate!)
+                print("usage date string = \(formattedUsageDateString)")
+            }
+            
+            
+            
+            //if usage.start == Date
+            if(usage.stop == nil || formattedTodaysDate == formattedUsageDateString){
                 openUsage = true
+                usageToLog.append(usage)//append to your list
             }
         }
+        
+        print("usageToLog.count = \(usageToLog.count)")
+        
+        //add rows for emps on work order if there is no open usage rows
         if(woItem.type == "1"){
             print("openUsage = \(openUsage)")
             if(openUsage == false){
                 for employee in self.empsOnWo {
-                    //print("empName = \(employee.name)")
-                    let usage:Usage = Usage(_ID: "0",
-                                            _empID: employee.ID,
-                                            _depID: employee.depID,
-                                            _woID: self.workOrderID,
-                                            _start: nil,
-                                            _stop: nil,
-                                            _lunch: "",
-                                            _qty: "",
-                                            _empName: employee.name,
-                                            _type: self.woItem.type,
-                                            _itemID: self.woItem.ID,
-                                            _unitPrice: self.woItem.price,
-                                            _totalPrice: self.woItem.total,
-                                            _vendor: "",
-                                            _unitCost: "",
-                                            _totalCost: "",
-                                            _chargeType: self.woItem.chargeID,
-                                            _override: "1",
-                                            _empPic: employee.pic,
-                                            _locked: false,
-                                            _addedBy: appDelegate.loggedInEmployee?.ID!,
-                                            _del: ""
-                    )
+                    print("empName = \(employee.name)")
+                    
+                    
+                    
+                    let usage = Usage2(_ID: "0", _woID: self.workOrderID, _itemID: self.woItem.ID, _type: self.woItem.type, _addedBy: appDelegate.loggedInEmployee!.ID!,_qty: "")
+                    
+                    usage.empID = employee.ID
+                    usage.empName = employee.name
+                    usage.empPic = employee.pic
+                    usage.depID = employee.depID
+                    usage.unitPrice = self.woItem.price
+                    usage.totalPrice = self.woItem.total
+                    usage.chargeType = self.woItem.charge
+                    usage.override = "1"
+                    usage.locked = false
+                    
+                    usage.start = nil
+                    usage.stop = nil
+                    usage.lunch = ""
+                    
+                    usage.vendor = ""
+                    usage.unitCost = ""
+                    usage.totalCost = ""
+                    usage.del = ""
+                   
+                    
+                    
+                   
+                    
                     usageToLog.insert(usage, at: 0)
                 }
                 
             }
         }else{
             if usageToLog.count == 0{
+                
+                let usage = Usage2(_ID: "0", _woID: self.workOrderID, _itemID: self.woItem.ID, _type: self.woItem.type, _addedBy: appDelegate.loggedInEmployee!.ID!,_qty: "")
+                
+                usage.empID = nil
+                usage.empName = nil
+                usage.empPic = nil
+                usage.depID = nil
+                usage.unitPrice = self.woItem.price
+                usage.totalPrice = self.woItem.total
+                usage.chargeType = self.woItem.charge
+                usage.override = "1"
+                usage.locked = false
+                
+                usage.start = nil
+                usage.stop = nil
+                usage.lunch = ""
+                
+                usage.vendor = ""
+                usage.unitCost = ""
+                usage.totalCost = ""
+                usage.del = ""
+                
+                
+                
+                /*
                 let usage:Usage = Usage(_ID: "0",
                                         _empID: nil,
                                         _depID: nil,
@@ -826,6 +948,9 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                                         _addedBy: appDelegate.loggedInEmployee!.ID!,
                                         _del: ""
                 )
+ */
+                
+                
                 
                 usageToLog.insert(usage, at: 0)
             }
@@ -1035,18 +1160,26 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     
     
     
-    func editVendor(row:Int,vendor:String) {
+    func editVendor(row:Int,vendor:String,_unitCost:Double) {
         print("edit vendor \(vendor)")
         usageToLog[row].vendor = vendor
         self.editsMade = true
+        
+       // editCost(row: row, cost: _unitCost)
     }
     
     func editCost(row:Int,cost:Double){
+        
+        print("edit cost = \(cost)")
         usageToLog[row].unitCost = String(cost)
         
         if usageToLog[row].qty != ""{
             usageToLog[row].totalCost =   String(format: "%.2f", cost * Double(usageToLog[row].qty!)!)
+            
+           // usageTableView.reloadData()
         }
+        
+        
         
         self.editsMade = true
     }
@@ -1069,9 +1202,9 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                 print("OK")
                 print("woItem type = \(String(describing: self.woItem.type))")
 
-                let usageListViewController = UsageListViewController(_workOrderItemID: self.woItem.ID, _units: self.woItem.unit,_type:self.woItem.type)
+                let usageListViewController = UsageListViewController(_workOrderItemID: self.woItem.ID, _units: self.woItem.unit!,_type:self.woItem.type)
                 
-                self.navigationController?.pushViewController(usageListViewController, animated: true )
+                self.navigationController?.pushViewController(usageListViewController, animated: false )
             }
             
             alertController.addAction(cancelAction)
@@ -1079,10 +1212,10 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
             self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
         }else{
             print("woItem type = \(String(describing: self.woItem.type))")
-            let usageListViewController = UsageListViewController(_workOrderItemID: self.woItem.ID, _units: self.woItem.unit,_type:self.woItem.type)
+            let usageListViewController = UsageListViewController(_workOrderItemID: self.woItem.ID, _units: self.woItem.unit!,_type:self.woItem.type)
             
             
-            self.navigationController?.pushViewController(usageListViewController, animated: true )
+            self.navigationController?.pushViewController(usageListViewController, animated: false )
         }
     }
     
@@ -1182,13 +1315,13 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     }
     
     @objc func submit() {
-        usageToLogJSON = []
+       usageToLogJSON = []
         //loop thru usage array and build JSON array
         self.editsMade = false //resets edit checker
         for (index, usage) in usageToLog.enumerated() {
             var usageQty = 0.0
             print("usage.qty = \(String(describing: usage.qty))")
-            if(usage.qty != nil && usage.qty != "0.0" && usage.qty != ""){
+            if(usage.qty != "0.0" && usage.qty != ""){
                 print("set usage.qty to 0.0")
                 usageQty = Double(usage.qty!)!
             }
@@ -1206,9 +1339,23 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                                 usage.locked = true
                             }
                         }
+                        
+                        
+                        
+                        
+                        
+                        
                         let JSONString = usage.toJSONString(prettyPrint: true)
                         usageToLogJSON.append(JSON(JSONString ?? ""))
                         print("usage JSONString = \(String(describing: JSONString))")
+ 
+                        
+                        
+                        
+                        
+                        
+                        
+                        
                     }
                 }else{
                     if(usageQty > 0.0){
@@ -1224,8 +1371,20 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                             
                         usage.start = Date()
                         usage.stop = Date()
+                        
+                        
+                        
+                        
+                        
+                        
                         let JSONString = usage.toJSONString(prettyPrint: true)
                         usageToLogJSON.append(JSON(JSONString ?? ""))
+ 
+                        
+                        
+                        
+                        
+                        
                     }else{
                         self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Qty Error", _message: "Qty needs to be added.")
                         return
@@ -1239,12 +1398,25 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         
     }
     
+    
+   
+    
+    
     func callAlamoFire(_type:String){
-        if(usageToLogJSON.count > 0){
+        print("call alamofire")
+        
+        /*
+ usageCharge  woItemChargeType
+ */
+        
+        
+        if(usageToLog.count > 0){
             indicator = SDevIndicator.generate(self.view)!
             
-              
-                
+            
+            
+            
+            
             var parameters:[String:String]
             parameters = [
                 "usageToLog": "\(usageToLogJSON)"
@@ -1252,99 +1424,26 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
             ]
             
             print("parameters = \(parameters)")
-            
-            
-            
             layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/usage.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                
+            
                 .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
                 .responseString { response in
                     print("usage response = \(response)")
                 }
                 .responseJSON { response in
+                    
+                    self.usageToLog = []
+                    
                     switch response.result {
                     case .success(let value):
                         let updatedJSON = JSON(value)
                         self.indicator.dismissIndicator()
                         
+                        print("success \(updatedJSON)")
                         
-                        let usageCount = updatedJSON["usage"].count
-                        let dateFormatter = DateFormatter()
-                        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-                        if(_type == "new"){
-                            self.usageToLog = []
-                            
-                            for n in 0 ..< usageCount {
-                               
-                                
-                                let start = dateFormatter.date(from: updatedJSON["usage"][n]["start"].string!)
-                                let stop = dateFormatter.date(from: updatedJSON["usage"][n]["stop"].string!)
-                                
-                                var locked:Bool
-                                let usageQty = Double(updatedJSON["usage"][n]["qty"].string!)
-                                if(usageQty! > 0.0 && updatedJSON["usage"][n]["addedBy"].string != self.appDelegate.loggedInEmployee!.ID!){
-                                    locked = true
-                                }else{
-                                    locked = false
-                                }
-                                
-                                print("usage json = \(updatedJSON["usage"][n])")
-                                let usage = Usage(_ID: updatedJSON["usage"][n]["ID"].stringValue,
-                                                  _empID: updatedJSON["usage"][n]["empID"].stringValue,
-                                                  _depID: updatedJSON["usage"][n]["depID"].stringValue,
-                                                  _woID: updatedJSON["usage"][n]["woID"].stringValue,
-                                                  _start: start,
-                                                  _stop: stop,
-                                                  _lunch: updatedJSON["usage"][n]["lunch"].stringValue,
-                                                  _qty: updatedJSON["usage"][n]["qty"].stringValue,
-                                                  _empName: updatedJSON["usage"][n]["empName"].stringValue,
-                                                  _type: updatedJSON["usage"][n]["type"].stringValue,
-                                                  _itemID: updatedJSON["usage"][n]["woItemID"].stringValue,
-                                                  _unitPrice: updatedJSON["usage"][n]["unitPrice"].stringValue,
-                                                  _totalPrice: updatedJSON["usage"][n]["totalPrice"].stringValue,
-                                                  _vendor: updatedJSON["usage"][n]["vendor"].stringValue,
-                                                  _unitCost: updatedJSON["usage"][n]["unitCost"].stringValue,
-                                                  _totalCost: updatedJSON["usage"][n]["totalCost"].stringValue,
-                                                  _chargeType: self.woItem.chargeID,
-                                                  _override: "1",
-                                                  _empPic: updatedJSON["usage"][n]["empPic"].stringValue,
-                                                  _locked: locked,
-                                                  _addedBy: updatedJSON["usage"][n]["addedBy"].stringValue,
-                                                  _del: ""
-                                )
-                                self.usageToLog.append(usage)
-                            }
-                        }
-                        if(_type == "new" && self.woItem.type == "2"){
-                            
-                           
-                            
-                            let usage:Usage = Usage(_ID: "0",
-                                                    _empID: nil,
-                                                    _depID: nil,
-                                                    _woID: self.workOrderID,
-                                                    _start: nil,
-                                                    _stop: nil,
-                                                    _lunch: "",
-                                                    _qty: "",
-                                                    _empName: nil,
-                                                    _type: self.woItem.type,
-                                                    _itemID: self.woItem.ID,
-                                                    _unitPrice: self.woItem.price,
-                                                    _totalPrice: self.woItem.total,
-                                                    _vendor: "",
-                                                    _unitCost: "",
-                                                    _totalCost: "",
-                                                    _chargeType: self.woItem.chargeID,
-                                                    _override: "1",
-                                                    _empPic: nil,
-                                                    _locked: false,
-                                                    _addedBy: self.appDelegate.loggedInEmployee!.ID!,
-                                                    _del: ""
-                            )
-                            self.usageToLog.insert(usage, at: 0)
-                        }
                         self.layoutVars.playSaveSound()
-                        self.usageTableView.reloadData()
+                        //self.usageTableView.reloadData()
                         
                         if self.delegate != nil{
                             self.delegate.refreshWoItem()
@@ -1355,6 +1454,115 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                         self.usageTableView.reloadData()
                         print("Error 4xx / 5xx: \(error)")
                     }
+                        
+                        
+                        /*
+                        let updatedJSON = JSON(value)
+                        self.indicator.dismissIndicator()
+                    
+                        do{
+                            //created the json decoder
+                            
+                           // let json = response.data
+                            
+                            
+                            //print("json = \(json)")
+                            
+                            let decoder = JSONDecoder()
+                            
+                            
+                            
+                            let parsedData = try decoder.decode(Usage2.self, from: updatedJSON)
+                            
+                            
+                            print("parsedData = \(parsedData)")
+                            
+                            let usage = parsedData
+                            
+                            
+                            print("woItem.usage = \(String(describing: self.woItem.usages))")
+                            
+                            //self.indicator.dismissIndicator()
+                            
+                            
+                            
+                            
+                            let usageCount = updatedJSON["usage"].count
+                            let dateFormatter = DateFormatter()
+                            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                            if(_type == "new"){
+                                self.usageToLog = []
+                                
+                                for n in 0 ..< usageCount {
+                                    
+                                    
+                                    let start = dateFormatter.date(from: updatedJSON["usage"][n]["start"].string!)
+                                    let stop = dateFormatter.date(from: updatedJSON["usage"][n]["stop"].string!)
+                                    
+                                    var locked:Bool
+                                    let usageQty = Double(updatedJSON["usage"][n]["qty"].string!)
+                                    if(usageQty! > 0.0 && updatedJSON["usage"][n]["addedBy"].string != self.appDelegate.loggedInEmployee!.ID!){
+                                        locked = true
+                                    }else{
+                                        locked = false
+                                    }
+                                    
+                                    print("usage json = \(updatedJSON["usage"][n])")
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                }
+                            }
+                            
+                            
+                            if(_type == "new" && self.woItem.type == "2"){
+                                
+                                let usage = Usage2(_ID: "0", _woID: self.workOrderID, _itemID: self.woItem.ID, _type: self.woItem.type, _addedBy: self.appDelegate.loggedInEmployee!.ID!,_qty: self.woItem.usageQty!)
+                                
+                                
+                                usage.unitPrice = self.woItem.price
+                                usage.totalPrice = self.woItem.total
+                                usage.chargeType = self.woItem.charge
+                                usage.override = "1"
+                                usage.locked = false
+                                
+                                
+                                
+                                
+                               
+                                
+                                
+                                self.usageToLog.insert(usage, at: 0)
+                            }
+                            self.layoutVars.playSaveSound()
+                            self.usageTableView.reloadData()
+                            
+                            if self.delegate != nil{
+                                self.delegate.refreshWoItem()
+                            }
+
+                            
+                           
+                            
+                            //self.layoutViews()
+                        }catch let err{
+                            print(err)
+                        }
+
+                    case .failure(let error):
+                        self.indicator.dismissIndicator()
+                        self.usageTableView.reloadData()
+                        print("Error 4xx / 5xx: \(error)")
+                    }
+                    
+                    */
+                   
             }
         }else{
             //print("No Usage to Save")
@@ -1383,7 +1591,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
     */
     
     
-    func addReceipt(_usage:Usage,_usageIndex:Int){
+    func addReceipt(_usage:Usage2,_usageIndex:Int){
         
         
         print("addReceipt 2")
@@ -1439,7 +1647,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
             
             switch UIDevice.current.userInterfaceIdiom {
             case .phone:
-                layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
+                layoutVars.getTopController().present(actionSheet, animated: false, completion: nil)
                 
                 break
             // It's an iPhone
@@ -1451,13 +1659,13 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
                 popover.sourceView = self.view
                 popover.sourceRect = CGRect(x: 100.0, y: 100.0, width: 0, height: 0)
                 
-                layoutVars.getTopController().present(nav, animated: true, completion: nil)
+                layoutVars.getTopController().present(nav, animated: false, completion: nil)
                 break
             // It's an iPad
             case .unspecified:
                 break
             default:
-                layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
+                layoutVars.getTopController().present(actionSheet, animated: false, completion: nil)
                 break
                 
                 // Uh, oh! What could it be?
@@ -1470,7 +1678,7 @@ class UsageEntryViewController: UIViewController, UITextFieldDelegate, UIPickerV
         
     }
     
-    func updateImage(_image:Image,_usageIndex:Int){
+    func updateImage(_image:Image2,_usageIndex:Int){
         print("update image index = \(_usageIndex)")
         
         

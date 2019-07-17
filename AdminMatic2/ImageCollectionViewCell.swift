@@ -14,7 +14,7 @@ class ImageCollectionViewCell: UICollectionViewCell {
     var textLabel: UILabel!
     var imageView: UIImageView!
     var layoutVars: LayoutVars = LayoutVars()
-    var image:Image!
+    var image:Image2!
     var activityView:UIActivityIndicatorView!
     
     

@@ -12,7 +12,7 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 
 
 
@@ -35,11 +35,13 @@ protocol EditInvoiceDelegate{
 
 //class InvoiceViewController: UIViewController{
 class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableViewDelegate, UITableViewDataSource, StackDelegate, EditInvoiceDelegate{
+    
+    
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
-    var json:JSON!
-    var invoice:Invoice!
+    //var json:JSON!
+    var invoice:Invoice2!
     
     var delegate:InvoiceListDelegate?
     var index:Int?
@@ -72,7 +74,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     
     
     var itemsLbl:GreyLabel!
-    var items: JSON!
+    //var items: JSON!
     var itemsArray:[InvoiceItem] = []
     
     
@@ -89,7 +91,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     
     
     
-    init(_invoice:Invoice){
+    init(_invoice:Invoice2){
         super.init(nibName:nil,bundle:nil)
         
         self.invoice = _invoice
@@ -152,27 +154,111 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
             }
             .responseJSON(){
                 response in
-                if let json = response.result.value {
-                    print("JSON: \(json)")
+                
+                
+                
+               // if let json = response.result.value {
+                   // print("JSON: \(json)")
                     //self.json = JSON(json)
                     
-                    self.json = JSON(json)["invoice"]
+                    //self.json = JSON(json)["invoice"]
                     
-                    self.parseJSON()
+                    //self.parseJSON()
+                    
+                    
+               // }
+                
+                
+                do{
+                    //created the json decoder
+                    
+                    let json = response.data
+                    
+                    
+                    //print("json = \(json)")
+                    
+                    let decoder = JSONDecoder()
+                    
+                    
+                    
+                    let parsedData = try decoder.decode(Invoice2.self, from: json!)
+                    
+                    
+                    print("parsedData = \(parsedData)")
+                    
+                    
+                    self.invoice = parsedData
+                    
+                    
+                    if self.invoice.subTotal != nil{
+                        self.invoice.subTotal = self.layoutVars.numberAsCurrency(_number: self.invoice.subTotal!)
+                    }
+                     if self.invoice.taxTotal != nil{
+                        self.invoice.taxTotal = self.layoutVars.numberAsCurrency(_number: self.invoice.taxTotal!)
+                    }
+                    
+                    self.invoice.totalPrice = self.layoutVars.numberAsCurrency(_number: self.invoice.totalPrice)
+                    
+                    
+                    //self.invoice.customer = Customer2(_ID: self.invoice.customerID, _sysname: <#T##String#>)
+                    //self.workOrder = parsedData
+                    
+                    //self.statusValueToUpdate = self.workOrder.status
+                    
+                    
+                    //print("self.workOrder.status = \(self.workOrder.status)")
+                    //print("_newWoStatus = \(_newWoStatus)")
+                    
+                    
+                    // print("crews.count = \(self.workOrder.crews!.count)")
+                    
+                    
+                    // self.workOrder.setEmps()
+                    
+                    //self.indicator.dismissIndicator()
+                    
+                    
+                   
+                    
+                    
+                    
+                    
+                    self.layoutViews()
+                    
+                    
+                    
+                    // print(parsedData.date!)
+                    
+                    //using the array to put values
+                    //self.heroes = try decoder.decode([Hero].self, from: json!)
+                    
+                    //printing all the hero names
+                    //for hero in self.heroes{
+                    // print(hero.name!)
+                    // }
+                    
+                }catch let err{
+                    print(err)
                 }
+
+                
+                
+                
                 print(" dismissIndicator")
                 self.indicator.dismissIndicator()
         }
     }
     
-    
+    /*
     func parseJSON(){
         
         //primary info
         
         print("invoice status = \(self.json["invoiceStatus"].stringValue)")
         
-        self.invoice = Invoice(_ID: self.json["ID"].stringValue, _date: self.json["invoiceDate"].stringValue, _customer: self.json["customer"].stringValue, _customerName: self.json["custName"].stringValue, _totalPrice: self.layoutVars.numberAsCurrency(_number: self.json["total"].stringValue) , _status: self.json["invoiceStatus"].stringValue)
+        //self.invoice = Invoice(_ID: self.json["ID"].stringValue, _date: self.json["invoiceDate"].stringValue, _customer: self.json["customer"].stringValue, _customerName: self.json["custName"].stringValue, _totalPrice: self.layoutVars.numberAsCurrency(_number: self.json["total"].stringValue) , _status: self.json["invoiceStatus"].stringValue)
+        
+         self.invoice = Invoice(_ID: self.json["ID"].stringValue, _date: self.json["invoiceDate"].stringValue, _customer: self.json["customer"].stringValue, _customerName: self.json["custName"].stringValue, _totalPrice: self.layoutVars.numberAsCurrency(_number: self.json["total"].stringValue) , _status: self.json["invoiceStatus"].stringValue)
         
         self.invoice.title = self.json["title"].stringValue
         self.invoice.chargeType = self.json["chargeType"].stringValue
@@ -204,6 +290,9 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     
         self.layoutViews()
     }
+ 
+ */
+    
     
     
     func layoutViews(){
@@ -252,7 +341,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         //setStatus(status: invoice.status)
         
        
-        self.customerBtn = Button(titleText: "\(self.invoice.customerName!)")
+        self.customerBtn = Button(titleText: "\(self.invoice.customerName)")
         self.customerBtn.contentHorizontalAlignment = .left
         let custIcon:UIImageView = UIImageView()
         custIcon.backgroundColor = UIColor.clear
@@ -300,9 +389,9 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         self.infoView.addSubview(dateLbl)
         
         self.dateValue = GreyLabel()
-        if self.invoice.date != nil{
-            self.dateValue.text = self.invoice.date!
-        }
+       // if self.invoice.date != nil{
+            self.dateValue.text = self.invoice.date
+        //}
         self.dateValue.font = layoutVars.labelBoldFont
         self.dateValue.textAlignment = .left
         //self.titleValue.text = self.invoice.title!
@@ -317,7 +406,9 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         self.infoView.addSubview(chargeTypeLbl)
         
         self.chargeType = GreyLabel()
-        if self.invoice.chargeType != ""{
+        if self.invoice.chargeType != nil{
+            print("self.invoice.chargeType = \(String(describing: self.invoice.chargeType))")
+        //if self.invoice.chargeType != ""{
             self.chargeType.text = self.chargeTypeArray[Int(self.invoice.chargeType!)! - 1]
 
         }
@@ -401,7 +492,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         
         //total
         self.totalLbl = GreyLabel()
-        self.totalLbl.text =  self.invoice.totalPrice!
+        self.totalLbl.text =  self.invoice.totalPrice
         self.totalLbl.textAlignment = .right
         self.totalLbl.font = layoutVars.largeFont
         self.totalLbl.translatesAutoresizingMaskIntoConstraints = false
@@ -484,7 +575,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
    
     @objc func showCustInfo() {
         ////print("SHOW CUST INFO")
-        let customerViewController = CustomerViewController(_customerID: self.invoice.customer!,_customerName: self.invoice.customerName)
+        let customerViewController = CustomerViewController(_customerID: self.invoice.customerID,_customerName: self.invoice.customerName)
         
         navigationController?.pushViewController(customerViewController, animated: false )
     }
@@ -504,8 +595,12 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         var count:Int!
+        if self.invoice.items != nil{
+            count = self.invoice.items!.count
+        }else{
+            count = 0
+        }
         
-        count = self.itemsArray.count
         
         
         
@@ -516,12 +611,12 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         let cell:InvoiceItemTableViewCell = itemsTableView.dequeueReusableCell(withIdentifier: "cell") as! InvoiceItemTableViewCell
         
         
-        cell.invoiceItem = self.itemsArray[indexPath.row]
+        cell.invoiceItem = self.invoice.items![indexPath.row]
         cell.layoutViews()
         
         
         
-        return cell;
+        return cell
     }
     
    
@@ -617,7 +712,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     
     @objc func markInvoiceFinal(_send:Bool = false){
         let parameters:[String:String]
-        parameters = ["invoiceID": self.invoice.ID!,"final":"1"]
+        parameters = ["invoiceID": self.invoice.ID,"final":"1"]
         
         indicator = SDevIndicator.generate(self.view)!
         print("parameters = \(parameters)")
@@ -654,7 +749,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     
     @objc func markInvoicePending(){
         let parameters:[String:String]
-        parameters = ["invoiceID": self.invoice.ID!,"final":"0"]
+        parameters = ["invoiceID": self.invoice.ID,"final":"0"]
         
         indicator = SDevIndicator.generate(self.view)!
         print("parameters = \(parameters)")
@@ -788,7 +883,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     func displayEmailView(){
         print("display email view")
         
-        let emailViewController:EmailViewController = EmailViewController(_customerID: self.invoice.customer!, _customerName: self.invoice.customerName, _type: "1", _docID: self.invoice.ID)
+        let emailViewController:EmailViewController = EmailViewController(_customerID: self.invoice.customerID, _customerName: self.invoice.customerName, _type: "1", _docID: self.invoice.ID)
         
         
         emailViewController.invoiceDelegate = self
@@ -964,7 +1059,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     }
     
     
-    func newLeadView(_lead:Lead){
+    func newLeadView(_lead:Lead2){
         
         let leadViewController:LeadViewController = LeadViewController(_lead: _lead)
         //leadViewController
@@ -973,7 +1068,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
     }
     
     
-    func newContractView(_contract:Contract){
+    func newContractView(_contract:Contract2){
         
         let contractViewController:ContractViewController = ContractViewController(_contract: _contract)
         //contractViewController.editLeadDelegate = self
@@ -981,7 +1076,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         
     }
     
-    func newWorkOrderView(_workOrder:WorkOrder){
+    func newWorkOrderView(_workOrder:WorkOrder2){
         
         //self.navigationController?.pushViewController(_view, animated: false )
         let workOrderViewController:WorkOrderViewController = WorkOrderViewController(_workOrderID: _workOrder.ID)
@@ -991,7 +1086,7 @@ class InvoiceViewController: UIViewController, UITextFieldDelegate,  UITableView
         
     }
     
-    func newInvoiceView(_invoice:Invoice){
+    func newInvoiceView(_invoice:Invoice2){
         
         //self.navigationController?.pushViewController(_view, animated: false )
         

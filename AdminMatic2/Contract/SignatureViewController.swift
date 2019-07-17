@@ -36,7 +36,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     var acceptBtn:Button = Button(titleText: "Accept")
     
     
-    var contract:Contract!
+    var contract:Contract2!
     var employee:Employee!
     
     var signatureImage:UIImage!
@@ -52,7 +52,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     
     
     //from contract view
-    init(_contract:Contract){
+    init(_contract:Contract2){
         self.contract = _contract
         
         super.init(nibName:nil,bundle:nil)
@@ -66,7 +66,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     }
     
     //from contract view for employee signature
-    init(_employee:Employee, _contract:Contract){
+    init(_employee:Employee, _contract:Contract2){
         self.employee = _employee
         self.contract = _contract
         super.init(nibName:nil,bundle:nil)
@@ -245,7 +245,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
     
     @objc func terms(){
         //print("terms")
-        let termsViewController:TermsViewController = TermsViewController(_terms: self.contract.terms, _contractID: self.contract.ID, _editable: false)
+        let termsViewController:TermsViewController = TermsViewController(_terms: self.contract.terms!, _contractID: self.contract.ID, _editable: false)
         termsViewController.delegate = self
         navigationController?.pushViewController(termsViewController, animated: false )
     }
@@ -293,7 +293,7 @@ class SignatureViewController: UIViewController, YPSignatureDelegate, EditTermsD
             parameters = [
                 "type":"1",
                 "contractID": self.contract.ID,
-                "customerID": self.contract.customer
+                "customerID": self.contract.customerID!
             ]
         }else{
             parameters = [

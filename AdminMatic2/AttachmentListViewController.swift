@@ -337,7 +337,7 @@ class AttachmentListViewController: ViewControllerWithMenu, UITextFieldDelegate,
         //print("You selected cell #\(indexPath.row)!")
         tableView.deselectRow(at: indexPath as IndexPath, animated: true)
         
-        
+        /*
         
         let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Attachment", _woID: self.workOrderID, _customerID: self.customerID, _attachmentID: self.attachments[indexPath.row].ID, _images: self.attachments[indexPath.row].images)
         
@@ -351,6 +351,9 @@ class AttachmentListViewController: ViewControllerWithMenu, UITextFieldDelegate,
         imageUploadPrepViewController.groupImages = true
         imageUploadPrepViewController.attachmentDelegate = self
         self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+ */
+        
+        
     }
     
     

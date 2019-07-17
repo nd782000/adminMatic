@@ -11,18 +11,18 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 
 protocol EditLeadDelegate{
-    func updateLead(_lead:Lead,_newStatusValue:String)
+    func updateLead(_lead:Lead2,_newStatusValue:String)
     //func updateStack()
     
 }
 
  
 protocol LeadTaskDelegate{
-    func handleNewContract(_contract:Contract)
-    func handleNewWorkOrder(_workOrder:WorkOrder)
+    func handleNewContract(_contract:Contract2)
+    func handleNewWorkOrder(_workOrder:WorkOrder2)
     
 }
 
@@ -34,9 +34,9 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
-    var json:JSON!
+    //var json:JSON!
    
-    var lead:Lead!
+    var lead:Lead2!
     var delegate:LeadListDelegate!
     
     var editButton:UIBarButtonItem!
@@ -65,7 +65,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     var descriptionLbl:GreyLabel!
     var descriptionView:UITextView!
     var tasksLbl:GreyLabel!
-    var tasks: JSON!
+   // var tasks: JSON!
     var tasksTableView: TableView!
     var imageUploadPrepViewController:ImageUploadPrepViewController!
     
@@ -74,7 +74,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     
     
-    init(_lead:Lead){
+    init(_lead:Lead2){
         super.init(nibName:nil,bundle:nil)
         //print("lead init \(_leadID)")
         self.lead = _lead
@@ -123,7 +123,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
 
     //sends request for lead tasks
     func getLead() {
-        //print(" GetLead  Lead Id \(self.lead.ID)")
+        print(" GetLead  Lead Id \(self.lead.ID)")
         
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -131,9 +131,9 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.lead.tasksArray = []
         let parameters:[String:String]
         parameters = ["leadID": self.lead.ID]
-        //print("parameters = \(parameters)")
+        print("parameters = \(parameters)")
         
-        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leadTasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/lead.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
                 //print("lead response = \(response)")
@@ -144,14 +144,57 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
                 
                 
                 
+                //self.indicator.dismissIndicator()
+               // self.layoutViews()
+                
+                
+                
+                do{
+                    //created the json decoder
+                    
+                    let json = response.data
+                    
+                    let decoder = JSONDecoder()
+                    
+                    let parsedData = try decoder.decode(Lead2.self, from: json!)
+                    
+                    print("parsedData = \(parsedData)")
+                    
+                    self.lead = parsedData
+                    
+                    for task in self.lead.tasksArray!{
+                        for image in task.images!{
+                            image.setImagePaths()
+                        }
+                        
+                    }
+                    
+                
+                    self.indicator.dismissIndicator()
+                    
+                    self.layoutViews()
+                    
+                }catch let err{
+                    print(err)
+                }
+                
+
+                
+                
+                
+                
+                
                 //swifty way
                 
+                /*
                 if let json = response.result.value {
                     //print("JSON: \(json)")
                     self.json = JSON(json)
                     self.parseJSON()
                 }
- 
+ */
+                
+                
                  //print(" dismissIndicator")
                 
                 
@@ -159,7 +202,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         }
     }
     
-    
+    /*
     func parseJSON(){
             //tasks
             let taskCount = self.json["leadTasks"].count
@@ -181,17 +224,25 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
                     //print("appending image")
                     taskImages.append(image)
                 }
-                let task = Task(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue, _images:taskImages)
-                self.lead.tasksArray.append(task)
+               // let task = Task(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue, _images:taskImages)
+                let task = Task2(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue)
+                self.lead.tasksArray!.append(task)
             }
+        
+        
+       // lead.customer = Customer2(_ID: lead., _sysname: lead.customerName)
+        
+        
+        
         self.indicator.dismissIndicator()
         self.layoutViews()
     }
+    */
     
     
    
     func layoutViews(){
-        //print("layout views")
+        print("layout views")
         title =  "Lead #" + self.lead.ID
         
         editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(LeadViewController.displayEditView))
@@ -204,7 +255,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
             self.infoView.subviews.forEach({ $0.removeFromSuperview() })
         }
         
-      
+      print("layout views 1")
         //set container to safe bounds of view
         let safeContainer:UIView = UIView()
         safeContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -225,7 +276,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
         safeContainer.addSubview(statusIcon)
-        setStatus(status: lead.statusId)
+        setStatus(status: self.lead!.statusID)
         
         //picker
         self.statusPicker = Picker()
@@ -235,8 +286,8 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.statusPicker.delegate = self
         self.statusPicker.dataSource = self
         
-        
-        self.statusPicker.selectRow(Int(lead.statusId)! - 1, inComponent: 0, animated: false)
+        print("layout views 2")
+        self.statusPicker.selectRow(Int(self.lead!.statusID)! - 1, inComponent: 0, animated: false)
       
         self.statusTxtField = PaddedTextField(placeholder: "")
         self.statusTxtField.textAlignment = NSTextAlignment.center
@@ -263,7 +314,9 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         
         statusTxtField.inputAccessoryView = toolBar
     
-        self.customerBtn = Button(titleText: "\(self.lead.customerName!)")
+        
+        print("layout views 3")
+        self.customerBtn = Button(titleText: "\(self.lead.customerName!) \(self.lead.address!)")
         self.customerBtn.contentHorizontalAlignment = .left
         let custIcon:UIImageView = UIImageView()
         custIcon.backgroundColor = UIColor.clear
@@ -286,6 +339,8 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.infoView.layer.cornerRadius = 4.0
         safeContainer.addSubview(infoView)
         
+        
+        print("layout views 4")
         //date
         self.scheduleLbl = GreyLabel()
         self.scheduleLbl.text = "Schedule:"
@@ -300,6 +355,8 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.schedule.translatesAutoresizingMaskIntoConstraints = false
         self.infoView.addSubview(schedule)
         
+        
+        print("layout views 5")
         //deadline
         self.deadlineLbl = GreyLabel()
         self.deadlineLbl.text = "Deadline:"
@@ -314,6 +371,8 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.deadline.translatesAutoresizingMaskIntoConstraints = false
         self.infoView.addSubview(deadline)
         
+        
+        print("layout views 6")
         //sales rep
         self.salesRepLbl = GreyLabel()
         self.salesRepLbl.text = "Sales Rep:"
@@ -328,6 +387,8 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.salesRep.translatesAutoresizingMaskIntoConstraints = false
         self.infoView.addSubview(salesRep)
         
+        
+        print("layout views 7")
         //urgent
         self.urgentLbl = GreyLabel()
         self.urgentLbl.text = "\u{22C6}URGENT\u{22C6}"
@@ -336,7 +397,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.urgentLbl.translatesAutoresizingMaskIntoConstraints = false
         self.infoView.addSubview(urgentLbl)
         
-        
+        print("layout views 8")
         //req by cust
         self.reqByCustLbl = GreyLabel()
         self.reqByCustLbl.text = "Requsted By Customer:"
@@ -355,7 +416,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.reqByCust.translatesAutoresizingMaskIntoConstraints = false
         self.infoView.addSubview(reqByCust)
         
-        
+        print("layout views 9")
         //description
         self.descriptionLbl = GreyLabel()
         self.descriptionLbl.text = "Description:"
@@ -370,6 +431,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.descriptionView.translatesAutoresizingMaskIntoConstraints = false
         self.infoView.addSubview(descriptionView)
         
+        print("layout views 10")
         //tasks
         self.tasksLbl = GreyLabel()
         self.tasksLbl.text = "Tasks:"
@@ -394,8 +456,9 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.assignBtn.addTarget(self, action: #selector(LeadViewController.assignTasks), for: UIControl.Event.touchUpInside)
         safeContainer.addSubview(self.assignBtn)
         
+        print("layout views 11 \(lead.tasksArray!.count)")
         
-        if lead.tasksArray.count == 0{
+        if lead.tasksArray!.count == 0{
             newLeadMessage()
         }
         /////////  Auto Layout   //////////////////////////////////////
@@ -431,7 +494,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
-        
+        print("layout views 12")
         
         //auto layout group
         let infoDictionary = [
@@ -449,12 +512,15 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
             ] as [String:AnyObject]
         
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[scheduleLbl(85)][schedule]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
+        
+        print("layout views 13")
         if(self.lead.urgent == "1"){
             self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[deadlineLbl(80)][deadline]-[urgentLbl(120)]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         }else{
              self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[deadlineLbl(80)]-[deadline]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
             self.urgentLbl.isHidden = true;
         }
+        print("layout views 14")
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[salesRepLbl(80)]-[salesRep]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[reqByCustLbl(200)][reqByCust]-|", options: NSLayoutConstraint.FormatOptions.alignAllTop, metrics: metricsDictionary, views: infoDictionary))
@@ -470,6 +536,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     func newLeadMessage(){
         
+        print("newLeadMessage 1")
         let alertController = UIAlertController(title: "Add Tasks/Images Now?", message: "This lead has no tasks or images added.", preferredStyle: UIAlertController.Style.alert)
         let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
@@ -494,7 +561,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     @objc func showCustInfo() {
         ////print("SHOW CUST INFO")
-        let customerViewController = CustomerViewController(_customerID: self.lead.customer,_customerName: self.lead.customerName)
+        let customerViewController = CustomerViewController(_customerID: self.lead.customerID!,_customerName: self.lead.customerName!)
         navigationController?.pushViewController(customerViewController, animated: false )
     }
     
@@ -598,7 +665,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
                 self.editsMade = true
                 self.statusValue = self.statusValueToUpdate
                 self.setStatus(status: self.statusValue)
-                self.lead.statusId = self.statusValue
+                self.lead.statusID = self.statusValue
                 }.responseString() {
                     response in
                     //print(response)  // original URL request
@@ -609,8 +676,8 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         var count:Int!
-        count = self.lead.tasksArray.count
-        
+        count = self.lead.tasksArray!.count
+        print("task count = \(self.lead.tasksArray!.count)")
         return count
     }
     
@@ -618,7 +685,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         let cell:LeadTaskTableViewCell = tasksTableView.dequeueReusableCell(withIdentifier: "cell") as! LeadTaskTableViewCell
         //if(indexPath.row == self.tasksArray.count){
         
-            cell.task = self.lead.tasksArray[indexPath.row]
+            cell.task = self.lead.tasksArray![indexPath.row]
             cell.layoutViews()
             cell.setConstraints()
        // }
@@ -626,18 +693,27 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if(indexPath.row == self.lead.tasksArray.count){
+        if(indexPath.row == self.lead.tasksArray!.count){
             self.addTask()
         }else{
             tableView.deselectRow(at: indexPath as IndexPath, animated: true)
-            imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Lead Task", _leadID: self.lead.ID, _leadTaskID: self.lead.tasksArray[indexPath.row].ID, _customerID: self.lead.customer, _images: self.lead.tasksArray[indexPath.row].images)
+            
+            
+            
+            
+            imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Lead Task", _leadID: self.lead.ID, _leadTaskID: self.lead.tasksArray![indexPath.row].ID, _customerID: self.lead.customerID!, _images: self.lead.tasksArray![indexPath.row].images!)
+            
+            
+          //  imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Lead Task", _leadID: self.lead.ID, _leadTaskID: self.lead.tasksArray![indexPath.row].ID, _customerID: self.lead.customerID!, _images: self.lead.tasksArray![indexPath.row].images!)
             imageUploadPrepViewController.layoutViews()
-            imageUploadPrepViewController.groupDescriptionTxt.text = self.lead.tasksArray[indexPath.row].task
+            imageUploadPrepViewController.groupDescriptionTxt.text = self.lead.tasksArray![indexPath.row].task
             imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
-            imageUploadPrepViewController.selectedID = self.lead.customer
+            imageUploadPrepViewController.selectedID = self.lead.customerID!
             imageUploadPrepViewController.groupImages = true
             imageUploadPrepViewController.attachmentDelegate = self
             self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+ 
+            
         }
     }
     
@@ -657,14 +733,14 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
             
             
             if(lead.createdBy == appDelegate.loggedInEmployee?.ID){
-                if(lead.tasksArray[indexPath.row].ID != "0"){
+                if(lead.tasksArray![indexPath.row].ID != "0"){
                     
                 
                     //print("delete lead task")
                     
                     var parameters:[String:String]
                     parameters = [
-                        "leadTaskID":lead.tasksArray[indexPath.row].ID
+                        "leadTaskID":lead.tasksArray![indexPath.row].ID
                     ]
                     //print("parameters = \(parameters)")
                     layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/delete/leadTask.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
@@ -677,7 +753,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
                             //print(response)  // original URL request
                     }
                     
-                    lead.tasksArray.remove(at: indexPath.row)
+                    lead.tasksArray!.remove(at: indexPath.row)
                     tasksTableView.reloadData()
                     
                     
@@ -703,7 +779,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
        // }
         
         
-        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Lead Task", _leadID: self.lead.ID, _leadTaskID: "0", _customerID: self.lead.customer, _images: [])
+        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Lead Task", _leadID: self.lead.ID, _leadTaskID: "0", _customerID: self.lead.customerID!, _images: [])
          imageUploadPrepViewController.layoutViews()
          imageUploadPrepViewController.groupImages = true
          imageUploadPrepViewController.attachmentDelegate = self
@@ -720,12 +796,12 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         }else{
             
             
-            if lead.tasksArray.count == 0{
+            if lead.tasksArray!.count == 0{
                 self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "No Tasks to Assign", _message: "You need to add some tasks to assign them to a work order or contract")
                 return
             }
             
-            let leadTaskAssignViewController = LeadTaskAssignViewController(_lead: self.lead, _tasks: self.lead.tasksArray)
+            let leadTaskAssignViewController = LeadTaskAssignViewController(_lead: self.lead, _tasks: self.lead.tasksArray!)
             leadTaskAssignViewController.editDelegate = self
             leadTaskAssignViewController.leadTaskDelegate = self
             leadTaskAssignViewController.getWoItems()
@@ -756,7 +832,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         if self.layoutVars.grantAccess(_level: 1,_view: self) {
             return
         }else{
-            let editLeadViewController = NewEditLeadViewController(_lead: self.lead,_tasks: self.lead.tasksArray)
+            let editLeadViewController = NewEditLeadViewController(_lead: self.lead,_tasks: self.lead.tasksArray!)
             editLeadViewController.editDelegate = self
             navigationController?.pushViewController(editLeadViewController, animated: false )
         }
@@ -820,16 +896,16 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     
     
-    func updateLead(_lead: Lead, _newStatusValue:String){
-        //print("update Lead")
+    func updateLead(_lead: Lead2, _newStatusValue:String){
+        print("update Lead")
         editsMade = true
         self.lead = _lead
         
         
-        self.setStatus(status: self.lead.statusId)
+        self.setStatus(status: self.lead.statusID)
         
         
-        if(self.lead.statusId != _newStatusValue && _newStatusValue != "na"){
+        if(self.lead.statusID != _newStatusValue && _newStatusValue != "na"){
             //print("should update status _newStatusValue = \(_newStatusValue)")
         
             var statusName = ""
@@ -880,7 +956,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
                     //print(response.result)   // result of response serialization
                     self.editsMade = true
                     self.setStatus(status: _newStatusValue)
-                    self.lead.statusId = _newStatusValue
+                    self.lead.statusID = _newStatusValue
                     }.responseString() {
                         response in
                         //print(response)  // original URL request
@@ -911,7 +987,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     }
     
     
-    func newLeadView(_lead:Lead){
+    func newLeadView(_lead:Lead2){
         
         //let leadViewController:LeadViewController = LeadViewController(_lead: lead)
         //leadViewController
@@ -920,7 +996,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     }
     
     
-    func newContractView(_contract:Contract){
+    func newContractView(_contract:Contract2){
         
         let contractViewController:ContractViewController = ContractViewController(_contract: _contract)
         //contractViewController.
@@ -929,7 +1005,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         
     }
     
-    func newWorkOrderView(_workOrder:WorkOrder){
+    func newWorkOrderView(_workOrder:WorkOrder2){
         
         //self.navigationController?.pushViewController(_view, animated: false )
         let workOrderViewController:WorkOrderViewController = WorkOrderViewController(_workOrderID: _workOrder.ID)
@@ -939,7 +1015,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         
     }
     
-    func newInvoiceView(_invoice:Invoice){
+    func newInvoiceView(_invoice:Invoice2){
         
         
         let invoiceViewController:InvoiceViewController = InvoiceViewController(_invoice: _invoice)
@@ -978,7 +1054,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
             if self.layoutVars.grantAccess(_level: 1,_view: self) {
                 return
             }else{
-                let editContractViewController = NewEditContractViewController(_lead: self.lead,_tasks: self.lead.tasksArray)
+                let editContractViewController = NewEditContractViewController(_lead: self.lead,_tasks: self.lead.tasksArray!)
                 editContractViewController.leadTaskDelegate = self
                 self.navigationController?.pushViewController(editContractViewController, animated: false )
             }
@@ -1012,7 +1088,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
             if self.layoutVars.grantAccess(_level: 1,_view: self) {
                 return
             }else{
-                let editWoViewController = NewEditWoViewController(_lead: self.lead,_tasks: self.lead.tasksArray)
+                let editWoViewController = NewEditWoViewController(_lead: self.lead,_tasks: self.lead.tasksArray!)
                 editWoViewController.leadTaskDelegate = self
             
                 self.navigationController?.pushViewController(editWoViewController, animated: false )
@@ -1056,7 +1132,7 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     
     //leadTaskDelegate Methods
-    func handleNewContract(_contract: Contract) {
+    func handleNewContract(_contract: Contract2) {
         //print("handle new contract in lead view")
         
         //print("handle new contract in lead view contract.ID: \(_contract.ID)")
@@ -1069,11 +1145,11 @@ class LeadViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         self.navigationController?.pushViewController(contractViewController, animated: false )
         
         
-        updateLead(_lead: self.lead, _newStatusValue: self.lead.statusId)
+        updateLead(_lead: self.lead, _newStatusValue: self.lead.statusID)
         
     }
     
-    func handleNewWorkOrder(_workOrder: WorkOrder) {
+    func handleNewWorkOrder(_workOrder: WorkOrder2) {
        // print("handle new work order in lead view")
        // print("handle new work order in lead view workOrder.ID: \(_workOrder.ID)")
 

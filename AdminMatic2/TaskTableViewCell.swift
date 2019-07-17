@@ -14,7 +14,7 @@ import Alamofire
 class TaskTableViewCell: UITableViewCell {
      
     
-    var task:Task!
+    var task:Task2!
     var thumbView:UIImageView = UIImageView()
     var activityView:UIActivityIndicatorView!
     var taskLbl: UILabel! = UILabel()
@@ -142,8 +142,6 @@ class TaskTableViewCell: UITableViewCell {
                     print("image downloaded: \(image)")
                     
                     self.thumbView.image = image
-                    
-                    
                     
                     self.activityView.stopAnimating()
                     

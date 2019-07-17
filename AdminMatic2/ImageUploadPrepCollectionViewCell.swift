@@ -19,7 +19,8 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
     var layoutVars:LayoutVars = LayoutVars()
 
     //data object
-    var imageData:Image!
+    var imageData:Image2!
+    var uiImage:UIImage?
     var delegate:ImageUploadPrepDelegate!
     var indexPath:IndexPath!
     
@@ -72,7 +73,9 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
         
         //print("self.imageData.ID = \(self.imageData.ID)")
         if(self.imageData.ID == "0"){
-            self.selectedImageView.image = self.imageData.image
+            //self.selectedImageView.image = self.uiImage
+            let image = UIImage(data: self.imageData.imageData!)
+             self.selectedImageView.image = image?.resized(withPercentage: 0.25)
             self.activityView.stopAnimating()
         }else{
             
@@ -85,26 +88,30 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
                 self.activityView.startAnimating()
             }
             
-            Alamofire.request(self.imageData.mediumPath).responseImage { response in
-                debugPrint(response)
-                
-                //print(response.request)
-                //print(response.response)
-                debugPrint(response.result)
-                
-                if let image = response.result.value {
-                    print("image downloaded: \(image)")
+           
+            
+                Alamofire.request(self.imageData.mediumPath!).responseImage { response in
+                    debugPrint(response)
                     
-                    self.selectedImageView.image = image
+                    //print(response.request)
+                    //print(response.response)
+                    debugPrint(response.result)
                     
-                    
-                    
-                    self.activityView.stopAnimating()
-                    self.imageLoaded = true
-                    
-                    
+                    if let image = response.result.value {
+                        print("image downloaded: \(image)")
+                        
+                        self.selectedImageView.image = image
+                        
+                        
+                        
+                        self.activityView.stopAnimating()
+                        self.imageLoaded = true
+                        
+                        
+                    }
                 }
-            }
+            
+
             
             
             
@@ -289,4 +296,9 @@ class ImageUploadPrepCollectionViewCell: UICollectionViewCell, UITextFieldDelega
         
         
     }
+    
+    
+   
+    
+    
 }

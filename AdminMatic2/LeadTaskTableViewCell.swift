@@ -15,7 +15,7 @@ import Alamofire
  
 class LeadTaskTableViewCell: UITableViewCell {
     
-    var task:Task!
+    var task:Task2!
     var checkMarkView:UIImageView = UIImageView()
     var thumbView:UIImageView = UIImageView()
     var activityView:UIActivityIndicatorView!
@@ -40,7 +40,7 @@ class LeadTaskTableViewCell: UITableViewCell {
     }
     
     func layoutViews(){
-        
+        print("cell layout")
         self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
         self.selectionStyle = .none
@@ -98,8 +98,12 @@ class LeadTaskTableViewCell: UITableViewCell {
         
         
         
-        if(self.task.images.count > 1){
-            imageQtyLbl.text = "+\(self.task.images.count - 1)"
+        
+        
+        
+        
+        if(self.task.images!.count > 1){
+            imageQtyLbl.text = "+\(self.task.images!.count - 1)"
             imageQtyLbl.layer.opacity = 0.5
         }else{
             imageQtyLbl.text = ""
@@ -116,9 +120,15 @@ class LeadTaskTableViewCell: UITableViewCell {
         activityView.center = CGPoint(x: self.thumbView.frame.size.width, y: self.thumbView.frame.size.height)
         thumbView.addSubview(activityView)
         
-        if(self.task.images.count > 0){
-            self.setImageUrl(_url: self.task.images[0].thumbPath)
+        if(self.task.images!.count > 0){
+            self.setImageUrl(_url: self.task.images![0].thumbPath)
         }
+        
+        
+        
+        
+        
+        
         
         
         

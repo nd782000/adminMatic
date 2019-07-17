@@ -163,7 +163,7 @@ class TermsViewController: UIViewController, UITextViewDelegate{
             safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view1]-|", options: [], metrics: nil, views: viewsDictionary))
             safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[regenBtn]-|", options: [], metrics: nil, views: viewsDictionary))
             
-            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[view1]-220-[regenBtn(40)]-|", options: [], metrics: nil, views: viewsDictionary))
+            safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[view1]-[regenBtn(40)]-|", options: [], metrics: nil, views: viewsDictionary))
             
         }else{
            

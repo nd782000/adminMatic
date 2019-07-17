@@ -18,9 +18,9 @@ import SwiftyJSON
 
 
 protocol EditContractDelegate{
-    func updateContract(_contract:Contract)
-    func updateContract(_contractItem:ContractItem)
-    func updateContract(_contract:Contract, _status:String)
+    func updateContract(_contract:Contract2)
+    func updateContract(_contractItem:ContractItem2)
+    func updateContract(_contract:Contract2, _status:String)
     func suggestStatusChange(_emailCount:Int)
 }
 
@@ -33,7 +33,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
     var json:JSON!
-    var contract:Contract!
+    var contract:Contract2!
     var delegate:ContractListDelegate!
     
     var editLeadDelegate:EditLeadDelegate!
@@ -67,8 +67,8 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     var notesLbl:GreyLabel!
     var notesView:UITextView!
     var itemsLbl:GreyLabel!
-    var items: JSON!
-    var itemsArray:[ContractItem] = []
+    //var items: JSON!
+    //var itemsArray:[ContractItem2] = []
     var itemIDArray:[String] = []
     var itemRowToEdit:Int?
     
@@ -93,7 +93,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     var contractItemViewController:ContractItemViewController?
 
     
-    init(_contract:Contract){
+    init(_contract:Contract2){
         super.init(nibName:nil,bundle:nil)
         
         self.contract = _contract
@@ -143,29 +143,53 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
         //reset task array
-        self.itemsArray = []
+        //self.itemsArray = []
         let parameters:[String:String]
-        parameters = ["contractID": self.contract.ID,"customerID": self.contract.customer,"repID": self.contract.salesRep]
-        //print("parameters = \(parameters)")
+        parameters = ["contractID": self.contract.ID,"customerID": self.contract.customerID!,"repID": self.contract.salesRep!]
+        print("parameters = \(parameters)")
         
-        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/contract.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/contract2.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
                 //print("contract response = \(response)")
             }
             .responseJSON(){
                 response in
-                if let json = response.result.value {
-                    //print("JSON: \(json)")
-                    self.json = JSON(json)
-                    self.parseJSON()
+                
+                do{
+                    //created the json decoder
+                    
+                    let json = response.data
+                    
+                    let decoder = JSONDecoder()
+                    
+                    let parsedData = try decoder.decode(Contract2.self, from: json!)
+                    
+                    print("parsedData = \(parsedData)")
+                    
+                    self.contract = parsedData
+                    
+                    self.indicator.dismissIndicator()
+                    
+                    self.layoutViews()
+                    
+                }catch let err{
+                    print(err)
                 }
+                
+                
+                
+                //if let json = response.result.value {
+                    //print("JSON: \(json)")
+                    //self.json = JSON(json)
+                   // self.parseJSON()
+               // }
                 //print(" dismissIndicator")
                 self.indicator.dismissIndicator()
         }
     }
     
-    
+    /*
     func parseJSON(){
         
         //primary info
@@ -264,6 +288,9 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
         self.layoutViews()
     }
+ */
+    
+    
     
     
     func layoutViews(){
@@ -375,13 +402,13 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
         //charge type
         self.chargeTypeLbl = GreyLabel()
-        self.chargeTypeLbl.text = "Charge Type:"
+        self.chargeTypeLbl.text = "Charge:"
         self.chargeTypeLbl.textAlignment = .left
         self.chargeTypeLbl.translatesAutoresizingMaskIntoConstraints = false
         self.infoView.addSubview(chargeTypeLbl)
         
         self.chargeType = GreyLabel()
-        self.chargeType.text = self.chargeTypeArray[Int(self.contract.chargeType)! - 1]
+        self.chargeType.text = self.chargeTypeArray[Int(self.contract.chargeType!)! - 1]
         self.chargeType.font = layoutVars.labelBoldFont
         self.chargeType.textAlignment = .left
         self.chargeType.translatesAutoresizingMaskIntoConstraints = false
@@ -507,7 +534,8 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         }
         
     
-        if itemsArray.count == 0{
+       // if itemsArray.count == 0{
+         if self.contract.items!.count == 0{
             newContractMessage()
         }
         /////////  Auto Layout   //////////////////////////////////////
@@ -585,11 +613,11 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             "notes":self.notesView
             ] as [String:AnyObject]
         
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[titleLbl(85)][title]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleLbl]-[title]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeLbl(80)][chargeType]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chargeTypeLbl]-[chargeType]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[salesRepLbl(80)]-[salesRep]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[salesRepLbl]-[salesRep]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         
        
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[notesLbl]-|", options: NSLayoutConstraint.FormatOptions.alignAllTop, metrics: metricsDictionary, views: infoDictionary))
@@ -626,7 +654,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     @objc func showCustInfo() {
         ////print("SHOW CUST INFO")
-        let customerViewController = CustomerViewController(_customerID: self.contract.customer,_customerName: self.contract.customerName)
+        let customerViewController = CustomerViewController(_customerID: self.contract.customerID!,_customerName: self.contract.customerName!)
         navigationController?.pushViewController(customerViewController, animated: false )
     }
     
@@ -730,11 +758,11 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         var count:Int!
         
-        print("numberOfRowsInSection count = \(self.itemsArray.count)")
+        //print("numberOfRowsInSection count = \(self.itemsArray.count)")
         if tableView.isEditing{
-            count = self.itemsArray.count
+            count = self.contract.items!.count
         }else{
-            count = self.itemsArray.count + 1
+            count = self.contract.items!.count + 1
         }
         
         
@@ -744,13 +772,13 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell:ContractItemTableViewCell = itemsTableView.dequeueReusableCell(withIdentifier: "cell") as! ContractItemTableViewCell
         
-            if(indexPath.row == self.itemsArray.count){
+            if(indexPath.row == self.contract.items!.count){
                 //cell add btn mode
                 cell.layoutAddBtn()
             }else{
-                cell.contractItem = self.itemsArray[indexPath.row]
+                cell.contractItem = self.contract.items![indexPath.row]
                 cell.layoutViews()
-                cell.contractItem.tasks = self.itemsArray[indexPath.row].tasks
+                cell.contractItem.tasks = self.contract.items![indexPath.row].tasks
             }
         
        
@@ -758,7 +786,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if(indexPath.row == self.itemsArray.count){
+        if(indexPath.row == self.contract.items!.count){
             tableView.deselectRow(at: indexPath, animated: false)
             self.addItem()
         }else{
@@ -794,7 +822,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        if(indexPath.row != itemsArray.count){
+        if(indexPath.row != self.contract.items!.count){
             return true
         }else{
             return false
@@ -833,13 +861,13 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         //let indexPath = tableView.indexPathForSelectedRow;
        // let currentCell = tableView.cellForRow(at: indexPath!) as! ContractItemTableViewCell;
         
-        let ID = self.itemsArray[sourceIndexPath.row].ID!
+        let ID = self.contract.items![sourceIndexPath.row].ID
         self.itemIDArray.remove(at: sourceIndexPath.row)
         self.itemIDArray.insert(ID, at: destinationIndexPath.row)
         
-        let item:ContractItem = self.itemsArray[sourceIndexPath.row]
-        self.itemsArray.remove(at: sourceIndexPath.row)
-        self.itemsArray.insert(item, at: destinationIndexPath.row)
+        let item:ContractItem2 = self.contract.items![sourceIndexPath.row]
+        self.contract.items!.remove(at: sourceIndexPath.row)
+        self.contract.items!.insert(item, at: destinationIndexPath.row)
         
         
         sortEditsMade = true
@@ -873,7 +901,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             
                 var parameters:[String:String]
                 parameters = [
-                    "contractItemID":self.itemsArray[_row].ID,
+                    "contractItemID":self.contract.items![_row].ID,
                     "contractID":self.contract.ID
                 ]
                 //print("parameters = \(parameters)")
@@ -927,7 +955,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                                     (result : UIAlertAction) -> Void in
                                     //print("No")
                                     
-                                    self.itemsArray.remove(at: _row)
+                                    self.contract.items!.remove(at: _row)
                                     
                                     
                                     self.updateContract(_contract: self.contract)
@@ -977,7 +1005,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                                                 
                                                 
                                                 
-                                                self.itemsArray.remove(at: _row)
+                                                self.contract.items!.remove(at: _row)
                                                 
                                                 
                                                 self.updateContract(_contract: self.contract)
@@ -1004,7 +1032,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                                 
                                 
                             }else{
-                                self.itemsArray.remove(at: _row)
+                                self.contract.items!.remove(at: _row)
                                 self.updateContract(_contract: self.contract)
                             }
                             
@@ -1081,7 +1109,15 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         self.itemRowToEdit = _row
         
         //let newEditContractItemViewController:NewEditContractItemViewController = NewEditContractItemViewController(_contract:self.contract,_itemID:self.itemsArray[_row].ID,_itemName:self.itemsArray[_row].name,_itemType:self.itemsArray[_row].type,_est:self.itemsArray[_row].qty,_price:self.itemsArray[_row].price,_originalID:self.itemsArray[_row].itemID,_hideUnits:self.itemsArray[_row].hideUnits)
-        let contractItem:ContractItem = ContractItem(_ID: self.itemsArray[_row].ID, _chargeType: self.itemsArray[_row].chargeType, _contractID: self.contract.ID, _itemID: self.itemsArray[_row].itemID, _name: self.itemsArray[_row].name, _price: self.itemsArray[_row].price, _qty: self.itemsArray[_row].qty, _total: self.itemsArray[_row].total, _type: self.itemsArray[_row].type, _taxCode: self.itemsArray[_row].taxCode, _subcontractor: self.itemsArray[_row].subcontractor, _hideUnits: self.itemsArray[_row].hideUnits)
+       // let contractItem:ContractItem = ContractItem(_ID: self.itemsArray[_row].ID, _chargeType: self.itemsArray[_row].chargeType, _contractID: self.contract.ID, _itemID: self.itemsArray[_row].itemID, _name: self.itemsArray[_row].name, _price: self.itemsArray[_row].price, _qty: self.itemsArray[_row].qty, _total: self.itemsArray[_row].total, _type: self.itemsArray[_row].type, _taxCode: self.itemsArray[_row].taxCode, _subcontractor: self.itemsArray[_row].subcontractor, _hideUnits: self.itemsArray[_row].hideUnits)
+        
+        let contractItem:ContractItem2 = ContractItem2(_ID: self.contract.items![_row].ID, _chargeType: self.contract.items![_row].chargeType, _contractID: self.contract.ID, _itemID: self.contract.items![_row].itemID, _name: self.contract.items![_row].name, _qty: self.contract.items![_row].qty)
+        contractItem.price = self.contract.items![_row].price
+        contractItem.total = self.contract.items![_row].total
+        contractItem.type = self.contract.items![_row].type
+        contractItem.taxCode = self.contract.items![_row].taxCode
+        contractItem.subcontractor = self.contract.items![_row].subcontractor
+        contractItem.hideUnits = self.contract.items![_row].hideUnits
         
         let newEditContractItemViewController:NewEditContractItemViewController = NewEditContractItemViewController(_contract: self.contract, _contractItem: contractItem)
         newEditContractItemViewController.delegate = self
@@ -1132,7 +1168,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     func displayAddItemView(){
-        let newEditContractItemViewController:NewEditContractItemViewController = NewEditContractItemViewController(_contract: self.contract,_itemCount:self.itemsArray.count)
+        let newEditContractItemViewController:NewEditContractItemViewController = NewEditContractItemViewController(_contract: self.contract,_itemCount:self.contract.items!.count)
         
         newEditContractItemViewController.delegate = self
         let now = Date()
@@ -1258,7 +1294,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     @objc func displayTermsView(){
         //print("terms")
-        let termsViewController:TermsViewController = TermsViewController(_terms: self.contract.terms, _contractID: self.contract.ID)
+        let termsViewController:TermsViewController = TermsViewController(_terms: self.contract.terms!, _contractID: self.contract.ID)
         termsViewController.delegate = self
         navigationController?.pushViewController(termsViewController, animated: false )
     }
@@ -1339,7 +1375,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     @objc func sendContract(){
         
-        let emailViewController:EmailViewController = EmailViewController(_customerID: self.contract.customer, _customerName: self.contract.customerName, _type: "2", _docID: self.contract.ID)
+        let emailViewController:EmailViewController = EmailViewController(_customerID: self.contract.customerID!, _customerName: self.contract.customerName!, _type: "2", _docID: self.contract.ID)
         emailViewController.contractDelegate = self
         navigationController?.pushViewController(emailViewController, animated: false )
     
@@ -1352,7 +1388,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     //sends request for lead tasks
     func scheduleContract() {
-        //print(" scheduleContract \(self.contract.ID!)")
+        print(" scheduleContract \(self.contract.ID)")
         
         
         if self.contract.status == "3"{
@@ -1371,87 +1407,89 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             
             alertController.addAction(okAction)
             layoutVars.getTopController().present(alertController, animated: true)
-            }
-        
+        }else{
+            // Show Loading Indicator
+            indicator = SDevIndicator.generate(self.view)!
+            //reset task array
+            //self.itemsArray = []
+            let parameters:[String:String]
+            parameters = ["contractID": self.contract.ID,"createdBy":self.appDelegate.loggedInEmployee?.ID, "notes":self.contract.notes] as! [String : String]
+            print("parameters = \(parameters)")
             
-        
-        // Show Loading Indicator
-        indicator = SDevIndicator.generate(self.view)!
-        //reset task array
-        //self.itemsArray = []
-        let parameters:[String:String]
-        parameters = ["contractID": self.contract.ID,"createdBy":self.appDelegate.loggedInEmployee?.ID, "notes":self.contract.notes] as! [String : String]
-        //print("parameters = \(parameters)")
-        
-        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/new/workOrder.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
-            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
-            .responseString { response in
-                //print("contract response = \(response)")
-            }
-            .responseJSON(){
-                response in
-                if let json = response.result.value {
-                    //print("JSON: \(json)")
-                    
-                    let newWoID = JSON(json)["newWoID"].stringValue
-                    
-                    
-                    
-                    if self.contract.status == "0" || self.contract.status == "1" || self.contract.status == "2" || self.contract.status == "4" || self.contract.status == "5" || self.contract.status == "6"{
-                        self.indicator.dismissIndicator()
+            layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/new/workOrder.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
+                .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
+                .responseString { response in
+                    //print("contract response = \(response)")
+                }
+                .responseJSON(){
+                    response in
+                    if let json = response.result.value {
+                        print("JSON: \(json)")
                         
-                        let alertController = UIAlertController(title: "Update Contract Status?", message: "Do you want to set the contract to SCHEDULED?", preferredStyle: UIAlertController.Style.alert)
-                        let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
-                            (result : UIAlertAction) -> Void in
-                            
-                            
-                            self.goToNewWorkOrder(_newWoID:newWoID)
+                        let newWoID = JSON(json)["woID"].stringValue
                         
-                        }
-                        let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
-                            (result : UIAlertAction) -> Void in
+                        
+                        
+                        if self.contract.status == "0" || self.contract.status == "1" || self.contract.status == "2" || self.contract.status == "4" || self.contract.status == "5" || self.contract.status == "6"{
+                            self.indicator.dismissIndicator()
                             
-                            self.indicator = SDevIndicator.generate(self.view)!
-                            
-                            var parameters:[String:String]
-                            parameters = [
-                                "contractID":self.contract.ID,
-                                "statusID":"3"
-                            ]
-                            
-                            self.contract.status = "3"
-                            self.setStatus(status: "3")
-                            //print("parameters = \(parameters)")
-                            
-                            self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/changeContractStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
-                                response in
-                                //print(response.request ?? "")  // original URL request
-                                //print(response.result)   // result of response serialization
+                            let alertController = UIAlertController(title: "Update Contract Status?", message: "Do you want to set the contract to SCHEDULED?", preferredStyle: UIAlertController.Style.alert)
+                            let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.destructive) {
+                                (result : UIAlertAction) -> Void in
                                 
-                                
-                                
-                                self.indicator.dismissIndicator()
                                 
                                 self.goToNewWorkOrder(_newWoID:newWoID)
                                 
+                            }
+                            let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
+                                (result : UIAlertAction) -> Void in
+                                
+                                self.indicator = SDevIndicator.generate(self.view)!
+                                
+                                var parameters:[String:String]
+                                parameters = [
+                                    "contractID":self.contract.ID,
+                                    "statusID":"3"
+                                ]
+                                
+                                self.contract.status = "3"
+                                self.setStatus(status: "3")
+                                //print("parameters = \(parameters)")
+                                
+                                self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/changeContractStatus.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil).responseJSON() {
+                                    response in
+                                    //print(response.request ?? "")  // original URL request
+                                    //print(response.result)   // result of response serialization
+                                    
+                                    
+                                    
+                                    self.indicator.dismissIndicator()
+                                    
+                                    self.goToNewWorkOrder(_newWoID:newWoID)
+                                    
+                                    
+                                }
                                 
                             }
-                            
+                            alertController.addAction(cancelAction)
+                            alertController.addAction(okAction)
+                            self.layoutVars.getTopController().present(alertController, animated: true)
+                        }else{
+                            self.goToNewWorkOrder(_newWoID:newWoID)
                         }
-                        alertController.addAction(cancelAction)
-                        alertController.addAction(okAction)
-                        self.layoutVars.getTopController().present(alertController, animated: true)
-                    }else{
-                        self.goToNewWorkOrder(_newWoID:newWoID)
+                        
+                        
+                        
+                        
                     }
-                    
-                    
-                    
-                
-                }
-                //print(" dismissIndicator")
-                self.indicator.dismissIndicator()
+                    //print(" dismissIndicator")
+                    self.indicator.dismissIndicator()
+            }
         }
+        
+            
+        
+        
     }
     
     
@@ -1459,7 +1497,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     func goToNewWorkOrder(_newWoID:String){
-        //print("goToNewWorkOrder ID = \(_newWoID)")
+        print("goToNewWorkOrder ID = \(_newWoID)")
         
         
         
@@ -1469,7 +1507,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
             (result : UIAlertAction) -> Void in
             //print("No")
-            self.getContract()
+            //self.getContract()
             
             return
         }
@@ -1479,6 +1517,28 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             //print("Yes")
             
             
+            
+            
+            
+            let workOrder = WorkOrder2(_ID: _newWoID, _title: self.contract.title, _status: "1", _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _profitValue: "", _percentValue: "")
+            
+          //  let customer = Customer2(_ID: self.contract.customerID!, _sysname: self.contract.customerName!)
+            workOrder.customer = self.contract.customerID!
+            workOrder.charge = self.contract.chargeType
+            workOrder.rep = self.contract.salesRep
+            workOrder.repName = self.contract.repName
+            workOrder.notes = self.contract.notes
+            
+            
+            
+            let newEditWorkOrderViewController = NewEditWoViewController(_contract: self.contract, _wo: workOrder)
+            
+            newEditWorkOrderViewController.editContractDelegate = self
+            self.navigationController?.pushViewController(newEditWorkOrderViewController, animated: false )
+            
+            
+            
+            /*
             
             let wo:WorkOrder = WorkOrder(_ID: _newWoID, _statusID: "1", _date: "", _firstItem: "", _statusName: "", _customer: self.contract.customer, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: self.contract.chargeType, _title: self.contract.title, _customerName: self.contract.customerName)
             
@@ -1492,6 +1552,17 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             newEditWorkOrderViewController.editContractDelegate = self
             //newEditWorkOrderViewController.editDelegate = self
             self.navigationController?.pushViewController(newEditWorkOrderViewController, animated: false )
+ 
+ */
+            
+            
+            
+            
+            
+            
+            
+            
+            
             
         }
         
@@ -1653,7 +1724,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                 var parameters:[String:String]
                 parameters = [
                     "contractID":self.contract.ID,
-                    "customerID":self.contract.customer
+                    "customerID":self.contract.customerID!
                 ]
                 //print("parameters = \(parameters)")
                 
@@ -1842,33 +1913,39 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     
-    func updateContract(_contract: Contract){
-        //print("update Contract")
+    func updateContract(_contract: Contract2){
+        print("update Contract")
         editsMade = true
         self.contract = _contract
         
+        if self.contract.repSignature == nil{
+            self.contract.repSignature = "0"
+        }
         
+        if self.contract.customerSignature == nil{
+            self.contract.customerSignature = "0"
+        }
         
         var parameters:[String:String]
         parameters = [
             "contractID":self.contract.ID,
             "createdBy":self.contract.createdBy,
-            "customer":self.contract.customer,
-            "salesRep":self.contract.salesRep,
+            "customer":self.contract.customerID!,
+            "salesRep":self.contract.salesRep!,
         
-            "chargeType":self.contract.chargeType,
+            "chargeType":self.contract.chargeType!,
             "status":self.contract.status,
-            "total":self.contract.total,
-            "notes":self.contract.notes,
-            "repName":self.contract.repName,
-            "customerName":self.contract.customerName,
+            "total":self.contract.total!,
+            "notes":self.contract.notes!,
+            "repName":self.contract.repName!,
+            "customerName":self.contract.customerName!,
             "title":self.contract.title,
-            "companySigned":self.contract.repSignature,
-            "customerSigned":self.contract.customerSignature
+            "companySigned":self.contract.repSignature!,
+            "customerSigned":self.contract.customerSignature!
             
         ]
         
-        //print("parameters = \(parameters)")
+        print("parameters = \(parameters)")
         
         
         
@@ -1889,8 +1966,8 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     }
     
-    func updateContract(_contractItem: ContractItem){
-        //print("updateContract Item")
+    func updateContract(_contractItem: ContractItem2){
+        print("updateContract Item")
         //self.itemsArray[itemRowToEdit!] = _contractItem
         self.getContract()
     }
@@ -1898,7 +1975,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     
-    func updateContract(_contract: Contract, _status:String){
+    func updateContract(_contract: Contract2, _status:String){
         //print("update Contract")
         editsMade = true
         self.contract = _contract
@@ -1909,18 +1986,18 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         parameters = [
             "contractID":self.contract.ID,
             "createdBy":self.contract.createdBy,
-            "customer":self.contract.customer,
-            "salesRep":self.contract.salesRep,
+            "customer":self.contract.customerID!,
+            "salesRep":self.contract.salesRep!,
             
-            "chargeType":self.contract.chargeType,
+            "chargeType":self.contract.chargeType!,
             "status":self.contract.status,
-            "total":self.contract.total,
-            "notes":self.contract.notes,
-            "repName":self.contract.repName,
-            "customerName":self.contract.customerName,
+            "total":self.contract.total!,
+            "notes":self.contract.notes!,
+            "repName":self.contract.repName!,
+            "customerName":self.contract.customerName!,
             "title":self.contract.title,
-            "companySigned":self.contract.repSignature,
-            "customerSigned":self.contract.customerSignature,
+            "companySigned":self.contract.repSignature!,
+            "customerSigned":self.contract.customerSignature!,
             
             
         ]
@@ -1950,11 +2027,11 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
   
     
     //lead Delegate
-    func updateLead(_lead:Lead,_newStatusValue:String){
+    func updateLead(_lead:Lead2,_newStatusValue:String){
         self.contract.lead = _lead
         
         if self.editLeadDelegate != nil{
-            self.editLeadDelegate.updateLead(_lead: self.contract.lead!, _newStatusValue: (self.contract.lead?.statusId)!)
+            self.editLeadDelegate.updateLead(_lead: self.contract.lead!, _newStatusValue: (self.contract.lead?.statusID)!)
         }
         
         
@@ -1970,7 +2047,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     
     
-    func newLeadView(_lead:Lead){
+    func newLeadView(_lead:Lead2){
         
         let leadViewController:LeadViewController = LeadViewController(_lead: _lead)
         //leadViewController
@@ -1979,12 +2056,12 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     
-    func newContractView(_contract:Contract){
+    func newContractView(_contract:Contract2){
         
         
     }
     
-    func newWorkOrderView(_workOrder:WorkOrder){
+    func newWorkOrderView(_workOrder:WorkOrder2){
         
         let workOrderViewController:WorkOrderViewController = WorkOrderViewController(_workOrderID: _workOrder.ID)
         workOrderViewController.editLeadDelegate = self
@@ -1993,7 +2070,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
     }
     
-    func newInvoiceView(_invoice:Invoice){
+    func newInvoiceView(_invoice:Invoice2){
         
         let invoiceViewController:InvoiceViewController = InvoiceViewController(_invoice: _invoice)
         self.navigationController?.pushViewController(invoiceViewController, animated: false )
@@ -2019,7 +2096,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             return
         }else{
             
-            let alertController = UIAlertController(title: "No Work Order Exists", message: "Would you like to link a new WorkOrder now?", preferredStyle: UIAlertController.Style.alert)
+            let alertController = UIAlertController(title: "No Work Order Exists", message: "Would you like to link a new Work Order now?", preferredStyle: UIAlertController.Style.alert)
             let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 //print("No")
@@ -2090,7 +2167,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                 delegate.getContracts(_openNewContract: false)
             }
             if editLeadDelegate != nil{
-                editLeadDelegate.updateLead(_lead: self.contract.lead!, _newStatusValue: (self.contract.lead?.statusId!)!)
+                editLeadDelegate.updateLead(_lead: self.contract.lead!, _newStatusValue: self.contract.lead!.statusID)
             }
         }
         _ = navigationController?.popViewController(animated: false)

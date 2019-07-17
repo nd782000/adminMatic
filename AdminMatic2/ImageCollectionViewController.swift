@@ -21,7 +21,7 @@ protocol ImageViewDelegate{
     
     //func refreshImages()
     
-    func refreshImages(_images:[Image])
+    func refreshImages(_images:[Image2])
     
 }
  
@@ -39,7 +39,8 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     var layoutVars:LayoutVars!
     var indicator: SDevIndicator!
     var totalImages:Int!
-    var imageArray:[Image] = []
+   // var imageArray:[Image2] = []
+    var imageArray:ImageArray = ImageArray(_images: [])
     var shouldShowSearchResults:Bool = false
     var searchTerm:String = "" // used to retain search when leaving this view and having to deactivate search to enable device rotation - a real pain
     var searchController:UISearchController!
@@ -49,8 +50,9 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     var tagsSearchResults:[String] = []
     var selectedTag:String = ""
     
-    var selectedImages:[Image] = [Image]()
-    
+    //var selectedImages:[Image] = [Image]()
+    var selectedImages:ImageArray = ImageArray(_images: [])
+    var selectedUIImages:[UIImage] = []
     
     
     let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -310,6 +312,43 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                 response in
                 
                 
+                
+                do{
+                    //created the json decoder
+                    let json = response.data
+                    let decoder = JSONDecoder()
+                    let parsedData = try decoder.decode(ImageArray.self, from: json!)
+                    print("parsedData = \(parsedData)")
+                    let images = parsedData
+                    let imageCount = images.images.count
+                    print("image count = \(imageCount)")
+                    for i in 0 ..< imageCount {
+                        //create an object
+                        print("create a image object \(i)")
+                        
+                       // images.images[i].custNameAndID = "\(leads.leads[i].customerName!) #\(leads.leads[i].ID)"
+                        images.images[i].index = i
+                        images.images[i].setImagePaths()
+                        self.imageArray.images.append(images.images[i])
+                        
+                    }
+                    
+                    if(self.lazyLoad == 0){
+                        self.layoutViews()
+                    }else{
+                        self.lazyLoad = 0
+                        self.imageCollectionView?.reloadData()
+                    }
+                    
+                    self.indicator.dismissIndicator()
+                    self.layoutViews()
+                }catch let err{
+                    print(err)
+                }
+                
+                
+                
+                /*
                 //native way
                 
                 do {
@@ -387,7 +426,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                 } catch {
                     print("Error deserializing JSON: \(error)")
                 }
-                
+                */
                
                 
                 /*
@@ -612,7 +651,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         }*/
         
         
-        return self.imageArray.count
+        return self.imageArray.images.count
         
     }
     
@@ -624,21 +663,23 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         cell.imageView.image = nil
         
        
-        print("name = \(self.imageArray[indexPath.row].name!)")
-        
-        cell.textLabel.text = " \(self.imageArray[indexPath.row].customerName)"
+        print("name = \(self.imageArray.images[indexPath.row].name)")
         
         
+        cell.textLabel.text = " \(self.imageArray.images[indexPath.row].custName!)"
+       
         
         
         
-        print("thumb = \(self.imageArray[indexPath.row].thumbPath!)")
+        
+        
+        print("thumb = \(self.imageArray.images[indexPath.row].thumbPath!)")
         
         //let imgURL:URL = URL(string: self.imageArray[indexPath.row].thumbPath!)!
         
         //print("imgURL = \(imgURL)")
         
-        Alamofire.request(self.imageArray[indexPath.row].thumbPath!).responseImage { response in
+        Alamofire.request(self.imageArray.images[indexPath.row].thumbPath!).responseImage { response in
             debugPrint(response)
             
             //print(response.request)
@@ -648,7 +689,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             if let image = response.result.value {
                 print("image downloaded: \(image)")
                 cell.imageView.image = image
-                cell.image = self.imageArray[indexPath.row]
+                cell.image = self.imageArray.images[indexPath.row]
                 cell.activityView.stopAnimating()
                 
                 
@@ -727,7 +768,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         self.tagsResultsTableView.alpha = 0.0
         self.tagsResultsTableView.reloadData()
         self.selectedTag = ""
-        self.imageArray = []
+        self.imageArray.images = []
         self.imageCollectionView?.reloadData()
         getImages()
     }
@@ -811,7 +852,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             self.limit = 100
             self.offset = 0
             self.batch = 0
-            self.imageArray = []
+            self.imageArray.images = []
         
         
             getImages()
@@ -852,7 +893,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         offset = 0
         batch = 0
         
-        imageArray = []
+        imageArray.images = []
         
         
         print("loadData")
@@ -871,7 +912,8 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         print("Add Image")
         
         
-        self.selectedImages = []
+        self.selectedImages.images = []
+        self.selectedUIImages = []
         
         
         if(searchController != nil){
@@ -910,15 +952,18 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                     
                     print("making image 1")
                     
-                     let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
+                     //let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
                     
-                    imageToAdd.image = image
+                    let imageToAdd = Image2(_id: "0", _fileName: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId)!, _type: "")
                     
                     
-                   self.selectedImages.append(imageToAdd)
-                    print("selectedimages count = \(self.selectedImages.count)")
                     
-                    if self.selectedImages.count == assets.count{
+                    
+                   self.selectedImages.images.append(imageToAdd)
+                    self.selectedUIImages.append(image!)
+                    print("selectedimages count = \(self.selectedImages.images.count)")
+                    
+                    if self.selectedImages.images.count == assets.count{
                         self.createPrepView()
                     }
                 })
@@ -943,16 +988,16 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         let timeStamp = Int(timeInterval)
         
         print("making prep view")
-        print("selectedimages count = \(selectedImages.count)")
+        print("selectedimages count = \(selectedImages.images.count)")
         
         // let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Gallery", _ID: "0", _images: selectedImages, _saveURLString: "https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
         
-        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Gallery", _images: selectedImages)
+        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Gallery", _images: selectedImages.images,_uiImages:selectedUIImages)
         
         
         print("url = https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
         
-        print("self.selectedImages.count = \(selectedImages.count)")
+        print("self.selectedImages.count = \(selectedImages.images.count)")
         
         imageUploadPrepViewController.loadLinkList(_linkType: "customers", _loadScript: API.Router.customerList(["cb":timeStamp as AnyObject]))
         
@@ -982,9 +1027,9 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         //print("IN  getPrevNextImage currentImageIndex = \(currentImageIndex!)")
         //if(shouldShowSearchResults == false){
             if(_next == true){
-                if(currentImageIndex + 1) > (self.imageArray.count - 1){
+                if(currentImageIndex + 1) > (self.imageArray.images.count - 1){
                     currentImageIndex = 0
-                    imageDetailViewController.image = self.imageArray[currentImageIndex]
+                    imageDetailViewController.image = self.imageArray.images[currentImageIndex]
                     imageDetailViewController.layoutViews()
                     //imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
                     //imageDetailViewController.imageFullViewController.layoutViews()
@@ -992,7 +1037,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                     
                 }else{
                     currentImageIndex = currentImageIndex + 1
-                    imageDetailViewController.image = self.imageArray[currentImageIndex]
+                    imageDetailViewController.image = self.imageArray.images[currentImageIndex]
                     imageDetailViewController.layoutViews()
                     //imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
                     //imageDetailViewController.imageFullViewController.layoutViews()
@@ -1000,14 +1045,14 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                 
             }else{
                 if(currentImageIndex - 1) < 0{
-                    currentImageIndex = self.imageArray.count - 1
-                    imageDetailViewController.image = self.imageArray[currentImageIndex]
+                    currentImageIndex = self.imageArray.images.count - 1
+                    imageDetailViewController.image = self.imageArray.images[currentImageIndex]
                     imageDetailViewController.layoutViews()
                     //imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
                     //imageDetailViewController.imageFullViewController.layoutViews()
                 }else{
                     currentImageIndex = currentImageIndex - 1
-                    imageDetailViewController.image = self.imageArray[currentImageIndex]
+                    imageDetailViewController.image = self.imageArray.images[currentImageIndex]
                     imageDetailViewController.layoutViews()
                    // imageDetailViewController.imageFullViewController.image = self.imageArray[currentImageIndex]
                     //imageDetailViewController.imageFullViewController.layoutViews()
@@ -1024,12 +1069,12 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     }
 
     
-    func refreshImages(_images:[Image]){
+    func refreshImages(_images:[Image2]){
         print("refreshImages")
         
         for insertImage in _images{
             
-            imageArray.insert(insertImage, at: 0)
+            imageArray.images.insert(insertImage, at: 0)
         }
         
         offset = 0
@@ -1090,7 +1135,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         print("show customer images cust: \(_customer)")
         
         self.customer = _customer
-        self.imageArray = []
+        self.imageArray.images = []
         getImages()
         
         
@@ -1122,7 +1167,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             view.removeFromSuperview()
         }
         
-        imageArray = []
+        imageArray.images = []
         
         
         getImages()
@@ -1131,8 +1176,8 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
     
     func updateLikes(_index:Int, _liked:String, _likes:String){
         print("update likes _liked: \(_liked)  _likes\(_likes)")
-        imageArray[_index].liked = _liked
-        imageArray[_index].likes = _likes
+        imageArray.images[_index].liked = _liked
+        imageArray.images[_index].likes = _likes
         
     }
 

@@ -11,7 +11,7 @@ import UIKit
 
 class LeadTableViewCell: UITableViewCell {
     var layoutVars:LayoutVars = LayoutVars()
-    var lead:Lead!
+    var lead:Lead2!
     //var name: String!
     var statusIcon: UIImageView!
     var titleLbl: UILabel!
@@ -72,7 +72,7 @@ class LeadTableViewCell: UITableViewCell {
         urgentLbl.text = ""
         descriptionLbl.text = ""
         daysAgedLbl.text = ""
-        setStatus(status: lead.statusId)
+        setStatus(status: lead.statusID)
         
         
         

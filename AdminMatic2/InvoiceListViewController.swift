@@ -12,7 +12,7 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 
 /*
  Status
@@ -34,9 +34,11 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
     var searchController:UISearchController!
-    var invoices:JSON!
-    var invoiceArray:[Invoice] = []
-    var invoiceSearchResults:[Invoice] = []
+    //var invoices:JSON!
+    //var invoiceArray:[Invoice] = []
+    var invoiceArray:InvoiceArray = InvoiceArray(_invoices: [])
+    //var invoiceSearchResults:[Invoice] = []
+    var invoiceSearchResults:InvoiceArray = InvoiceArray(_invoices: [])
     var shouldShowSearchResults:Bool = false
     
     
@@ -85,7 +87,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
         print("getInvoices")
         
         
-        self.invoiceArray = []
+        self.invoiceArray.invoices = []
         
        
         //Get lead list
@@ -102,6 +104,47 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
                 response in
                 
                 
+                
+                
+                do{
+                    //created the json decoder
+                    let json = response.data
+                    let decoder = JSONDecoder()
+                
+                    let parsedData = try decoder.decode(InvoiceArray.self, from: json!)
+                
+                    print("parsedData = \(parsedData)")
+                
+                    let invoices = parsedData
+                    
+                    let invoiceCount = invoices.invoices.count
+                    print("invoice count = \(invoiceCount)")
+                    
+                    
+                    
+                    
+                    for i in 0 ..< invoiceCount {
+                       
+                        
+                        invoices.invoices[i].totalPrice = self.layoutVars.numberAsCurrency(_number: invoices.invoices[i].totalPrice)
+                        //create an object
+                        print("create a invoice object \(i)")
+                       
+                        self.invoiceArray.invoices.append(invoices.invoices[i])
+                    }
+                
+                    self.indicator.dismissIndicator()
+                    self.layoutViews()
+                    
+                    
+                }catch let err{
+                    print(err)
+                }
+
+                
+                
+                
+                /*
                 //native way
                 
                 do {
@@ -138,6 +181,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
                 } catch {
                     print("Error deserializing JSON: \(error)")
                 }
+                */
                 
                 
         }
@@ -238,13 +282,15 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
     func filterSearchResults(){
         
         print("filterSearchResults")
-        self.invoiceSearchResults = []
+        self.invoiceSearchResults.invoices = []
         
-        self.invoiceSearchResults = self.invoiceArray.filter({( aInvoice: Invoice) -> Bool in
+        self.invoiceSearchResults.invoices = self.invoiceArray.invoices.filter({( aInvoice: Invoice2) -> Bool in
             
           //search by 4 fields (ID, customerName, date, totalPrice)
             
-            return (aInvoice.customerName!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil  || aInvoice.ID!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil || aInvoice.date!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil || aInvoice.totalPrice!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
+           // return (aInvoice.customerName!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil  || aInvoice.ID!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil || aInvoice.date!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil || aInvoice.totalPrice!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
+            
+            return (aInvoice.customerName.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil  || aInvoice.ID.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil || aInvoice.date.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil || aInvoice.totalPrice.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
             
         })
         
@@ -290,12 +336,12 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         if shouldShowSearchResults{
             
-            self.countLbl.text = "\(self.invoiceSearchResults.count) Invoice(s) Found"
-            return self.invoiceSearchResults.count
+            self.countLbl.text = "\(self.invoiceSearchResults.invoices.count) Invoice(s) Found"
+            return self.invoiceSearchResults.invoices.count
         } else {
             
-            self.countLbl.text = "\(self.invoiceArray.count) Invoices(s) "
-            return self.invoiceArray.count
+            self.countLbl.text = "\(self.invoiceArray.invoices.count) Invoices(s) "
+            return self.invoiceArray.invoices.count
             
         }
     }
@@ -308,13 +354,13 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
     
         if shouldShowSearchResults{
             
-            cell.invoice = self.invoiceSearchResults[indexPath.row]
+            cell.invoice = self.invoiceSearchResults.invoices[indexPath.row]
             
             
             let searchString = self.searchController.searchBar.text!.lowercased()
             
             let baseString1:NSString = cell.invoice.customerName as NSString
-            let highlightedText1 = NSMutableAttributedString(string: cell.invoice.customerName!)
+            let highlightedText1 = NSMutableAttributedString(string: cell.invoice.customerName)
             var error1: NSError?
             let regex1: NSRegularExpression?
             do {
@@ -336,7 +382,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
             
             
             let baseString2:NSString = cell.invoice.ID as NSString
-            let highlightedText2 = NSMutableAttributedString(string: cell.invoice.ID!)
+            let highlightedText2 = NSMutableAttributedString(string: cell.invoice.ID)
             var error2: NSError?
             let regex2: NSRegularExpression?
             do {
@@ -360,7 +406,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
             
             
             let baseString3:NSString = cell.invoice.date as NSString
-            let highlightedText3 = NSMutableAttributedString(string: cell.invoice.date!)
+            let highlightedText3 = NSMutableAttributedString(string: cell.invoice.date)
             var error3: NSError?
             let regex3: NSRegularExpression?
             do {
@@ -383,7 +429,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
             
             
             let baseString4:NSString = cell.invoice.totalPrice as NSString
-            let highlightedText4 = NSMutableAttributedString(string: cell.invoice.totalPrice!)
+            let highlightedText4 = NSMutableAttributedString(string: cell.invoice.totalPrice)
             var error4: NSError?
             let regex4: NSRegularExpression?
             do {
@@ -404,15 +450,15 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
             cell.setStatus(status: cell.invoice.status)
             
         } else {
-            print("count = \(self.invoiceArray.count)")
+            print("count = \(self.invoiceArray.invoices.count)")
             cell.layoutViews()
-            cell.invoice = self.invoiceArray[indexPath.row]
+            cell.invoice = self.invoiceArray.invoices[indexPath.row]
             
-            cell.titleLbl.text = self.invoiceArray[indexPath.row].customerName!
-            cell.totalLbl.text = self.invoiceArray[indexPath.row].totalPrice!
-            cell.IDLbl.text = self.invoiceArray[indexPath.row].ID!
-            cell.dateLbl.text = self.invoiceArray[indexPath.row].date!
-            cell.setStatus(status: self.invoiceArray[indexPath.row].status)
+            cell.titleLbl.text = self.invoiceArray.invoices[indexPath.row].customerName
+            cell.totalLbl.text = self.invoiceArray.invoices[indexPath.row].totalPrice
+            cell.IDLbl.text = self.invoiceArray.invoices[indexPath.row].ID
+            cell.dateLbl.text = self.invoiceArray.invoices[indexPath.row].date
+            cell.setStatus(status: self.invoiceArray.invoices[indexPath.row].status)
             
             
         }
@@ -434,7 +480,7 @@ class InvoiceListViewController: ViewControllerWithMenu, UISearchControllerDeleg
     }
     
     func updateInvoice(_atIndex:Int,_status:String){
-        self.invoiceArray[_atIndex].status  = _status
+        self.invoiceArray.invoices[_atIndex].status  = _status
         self.invoiceTableView.reloadData()
     }
     

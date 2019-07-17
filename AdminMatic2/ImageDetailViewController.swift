@@ -19,7 +19,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
     var imageLikeDelegate:ImageLikeDelegate!
     var layoutVars:LayoutVars = LayoutVars()
     var indicator: SDevIndicator!
-    var image:Image!
+    var image:Image2!
     var backgroundImageView:UIImageView!
     var scrollView:UIScrollView=UIScrollView()
     var blurEffect:UIBlurEffect!
@@ -64,7 +64,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
     var UIHidden:Bool = false
     
     
-    init(_image:Image, _ID:String = "0"){
+    init(_image:Image2, _ID:String = "0"){
         
         self.image = _image
         //self.mode = _mode
@@ -229,9 +229,9 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         //self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControlState.normal)
         
         if self.image.likes == "1"{
-            self.likesBtn.setTitle("x\(self.image.likes) Like", for: UIControl.State.normal)
+            self.likesBtn.setTitle("x\(self.image.likes!) Like", for: UIControl.State.normal)
         }else{
-            self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControl.State.normal)
+            self.likesBtn.setTitle("x\(self.image.likes!) Likes", for: UIControl.State.normal)
         }
         // self.likesBtn.titleLabel?.textColor = layoutVars.buttonColor1
         self.likesBtn.setTitleColor(layoutVars.buttonColor1, for: UIControl.State())
@@ -250,8 +250,13 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         self.customerBtn.titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         self.customerBtn.backgroundColor = UIColor.clear
         
-        
-        self.customerBtn.setTitle(image.customerName, for: UIControl.State.normal)
+        //if image.custName != nil{
+            self.customerBtn.setTitle(image.custName, for: UIControl.State.normal)
+
+       // }else{
+           // self.customerBtn.setTitle("Unassigned", for: UIControl.State.normal)
+
+       // }
         //self.customerBtn.titleLabel?.textColor = layoutVars.buttonColor1
         self.customerBtn.setTitleColor(layoutVars.buttonColor1, for: UIControl.State())
 
@@ -267,7 +272,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         self.descriptionLbl = UITextView()
-        if self.image.dateAdded != nil{
+       if self.image.dateAdded != ""{
             let date = dateFormatter.date(from: self.image.dateAdded)!
         
             let shortDateFormatter = DateFormatter()
@@ -276,10 +281,10 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
             
             let addedByDate = shortDateFormatter.string(from: date)
         
-            self.descriptionLbl.text = "Uploaded by \(self.image.createdBy!) on \(addedByDate) - \(self.image.description!)"
+        self.descriptionLbl.text = "Uploaded by \(self.image.createdBy!) on \(addedByDate) - \(self.image.description)"
         }else{
-            textView.isHidden = true
-        }
+           // textView.isHidden = true
+       }
 
         //self.descriptionLbl.text = "\(self.image.customerName)     \(self.image.description!)"
         self.descriptionLbl.backgroundColor = UIColor(hex: 0xffffff, op: 0.1)
@@ -298,7 +303,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         
         
-        Alamofire.request(image.mediumPath).responseImage { response in
+        Alamofire.request(image.mediumPath!).responseImage { response in
             debugPrint(response)
             
             print(response.request!)
@@ -361,22 +366,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
     }
     
-    /*
-    override func viewWillLayoutSubviews() {
-        print("viewWillLayoutSubviews")
-        
-        print("view width = \(self.view.frame.width)")
-        scrollView.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:self.view.frame.height)
-        imageView.frame = CGRect(x:0, y:0, width:scrollView.frame.width, height:scrollView.frame.height)
-        
-        //setUpViews()
-        
-        
-        setZoomScale()
-    }
-    
-    */
-    
+   
     func setZoomScale() {
         print("setZoomScale")
         let imageViewSize = imageView.bounds.size
@@ -433,7 +423,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
                 //print("show cam 1")
                 
                 
-                    let customerViewController = CustomerViewController(_customerID: self.image.customer, _customerName: self.image.customerName, _imageView: true)
+                let customerViewController = CustomerViewController(_customerID: self.image.customer!, _customerName: self.image.custName!, _imageView: true)
                     //let customerViewController = CustomerViewController(_customerID: image.customer,_customerName: image.customerName)
                     self.navigationController?.pushViewController(customerViewController, animated: false )
                     //customerViewController.showImages()
@@ -443,7 +433,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
             
             actionSheet.addAction(UIAlertAction(title: "Customer Images", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                 
-                self.delegate.showCustomerImages(_customer: self.image.customer)
+                self.delegate.showCustomerImages(_customer: self.image.customer!)
                 self.goBack()
               
             }))
@@ -481,15 +471,8 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
                 self.layoutVars.getTopController().present(actionSheet, animated: true, completion: nil)
                 break
                 
-                // Uh, oh! What could it be?
             }
             
-        
-        
-       
-        
-        
-        
         }
         
         
@@ -635,17 +618,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         setUpViews()
         
-        /*
-       
         
-        scrollView.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:self.view.frame.height)
-        imageView.frame = CGRect(x:0, y:0, width:scrollView.frame.width, height:scrollView.frame.height)
-        
-        //setUpViews()
-        
-        
-        setZoomScale()
-        */
     
     }
     
@@ -659,16 +632,11 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         self.view.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
         
-       // _ = ["navHeight":self.layoutVars.navAndStatusBarHeight, "landscapeNavHeight":self.layoutVars.navAndStatusBarHeight - self.layoutVars.statusBarHeight] as [String : Any]
         
-        //print("navHeight = \(self.layoutVars.navAndStatusBarHeight)  statusBarHeight = \(self.layoutVars.statusBarHeight) ")
         
         if(self.textView != nil){
             self.textView.subviews.forEach({ $0.removeFromSuperview() })
         }
-        //if(self.likesView != nil){
-           // self.likesView.subviews.forEach({ $0.removeFromSuperview() })
-       // }
         
     
         self.scrollView.addSubview(self.imageView)
@@ -683,8 +651,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         
         self.textView.addSubview(self.likesBtn)
-       // self.textView.addSubview(self.createdByLbl)
-        //self.textView.addSubview(self.customerLbl)
+       
         self.textView.addSubview(self.customerBtn)
         
         self.likeBtn.addSubview(self.likesImageView)
@@ -697,16 +664,8 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
         
         
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[backgroundImageView]|", options: [], metrics: nil, views: viewsDictionary))
-        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[imageView]|", options: [], metrics: nil, views: viewsDictionary))
-        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[textView]|", options: [], metrics: nil, views: viewsDictionary))
-       // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[likesView]|", options: [], metrics: nil, views: viewsDictionary))
+        
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[backgroundImageView]|", options: [], metrics: nil, views: viewsDictionary))
-       // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[imageView]|", options: [], metrics: nil, views: viewsDictionary))
-        
-        
-        
-        
-        
        
         
 
@@ -718,11 +677,7 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
             
           
             self.textView.frame = CGRect(x:0, y:(layoutVars.fullWidth - 40), width:scrollView.frame.width, height:40)
-            //self.textView.translatesAutoresizingMaskIntoConstraints = false
-            //self.textView.backgroundColor = UIColor(hex: 0x005100, op: 0.6)
-           // self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(40)]|", options: [], metrics: nil, views: viewsDictionary))
-            
-            self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likeBtn(30)][likesBtn(80)]-[customerLbl]-|", options: [NSLayoutConstraint.FormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
+             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likeBtn(30)][likesBtn(80)]-[customerLbl]-|", options: [NSLayoutConstraint.FormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
             
             
             
@@ -739,11 +694,6 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
             
             self.textView.addSubview(self.tagsLbl)
             self.textView.frame = CGRect(x:0, y:(layoutVars.fullHeight - 150), width:scrollView.frame.width, height:150)
-            //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[textView(150)]|", options: [], metrics: nil, views: viewsDictionary))
-            
-            
-          
-            
             
             self.textView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[likeBtn(30)][likesBtn(80)]-[customerLbl]-|", options: [NSLayoutConstraint.FormatOptions.alignAllCenterY], metrics: nil, views: viewsDictionary2))
             
@@ -789,10 +739,6 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
             self.image.liked = "1"
             self.likesImageView.image = UIImage(named:"liked.png")
             
-           
-            
-            
-            
             
             print("parameters = \(parameters)")
             
@@ -814,7 +760,6 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
                             
                         
                         
-                       // print("newLikes = \(json["newLikes"] as? Int)")
                         
                         
                             let imageLikes = json["newLikes"] as? String{
@@ -822,14 +767,14 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
                                 self.image.likes = "\(imageLikes)"
                             
                             
-                                print("self.image.likes = \(self.image.likes)")
+                            print("self.image.likes = \(String(describing: self.image.likes))")
                             
                                 if self.image.likes == "1"{
-                                    self.likesBtn.setTitle("x\(self.image.likes) Like", for: UIControl.State.normal)
+                                    self.likesBtn.setTitle("x\(String(describing: self.image.likes!)) Like", for: UIControl.State.normal)
                                 }else{
-                                    self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControl.State.normal)
+                                    self.likesBtn.setTitle("x\(String(describing: self.image.likes!)) Likes", for: UIControl.State.normal)
                                 }
-                            self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: json["newLikes"] as! String)
+                            self.imageLikeDelegate.updateLikes(_index: self.image.index!, _liked: self.image.liked!, _likes: json["newLikes"] as! String)
                                 
                            
                         }
@@ -900,11 +845,11 @@ class ImageDetailViewController: UIViewController, UIDocumentInteractionControll
                             self.self.image.likes = imageLikes
                             
                             if self.image.likes == "1"{
-                                self.likesBtn.setTitle("x\(self.image.likes) Like", for: UIControl.State.normal)
+                                self.likesBtn.setTitle("x\(String(describing: self.image.likes)) Like", for: UIControl.State.normal)
                             }else{
-                                self.likesBtn.setTitle("x\(self.image.likes) Likes", for: UIControl.State.normal)
+                                self.likesBtn.setTitle("x\(String(describing: self.image.likes)) Likes", for: UIControl.State.normal)
                             }
-                            self.imageLikeDelegate.updateLikes(_index: self.image.index, _liked: self.image.liked, _likes: json["newLikes"] as! String)
+                            self.imageLikeDelegate.updateLikes(_index: self.image.index!, _liked: self.image.liked!, _likes: json["newLikes"] as! String)
                             
                             
                         }

@@ -25,7 +25,7 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     var empName:String!
     var itemType:String!
     
-    var vendorList:[Vendor] = []
+    var vendorList:[Vendor2] = []
     var vendorValue:String!
     
     
@@ -82,7 +82,7 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     
     var imageUploadPrepViewController:ImageUploadPrepViewController!
 
-    var usage:Usage?
+    var usage:Usage2?
     var index:Int?
     
     var addUsageLbl:Label = Label()
@@ -683,16 +683,22 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
     {
         let row = self.vendorPicker.selectedRow(inComponent: 0)
         let vendor = vendorList[row]
-        if(vendor.ID == nil){
-            self.delegate.editVendor(row: self.row, vendor: "0")
+        //if(vendor.ID == nil){
+            //self.delegate.editVendor(row: self.row, vendor: "0",_unitCost:0.00)
+        //}else{
+        print("vendor.itemCost = \(String(describing: vendor.itemCost))")
+       if vendor.itemCost != nil{
+            self.delegate.editVendor(row: self.row, vendor: String(vendor.ID),_unitCost: Double(vendor.itemCost!)!)
         }else{
-            self.delegate.editVendor(row: self.row, vendor: String(vendor.ID))
-            
+            self.delegate.editVendor(row: self.row, vendor: String(vendor.ID),_unitCost: 0.00)
         }
+        
+            
+        //}
         self.vendorTxtField.text = String(vendor.name)
         self.vendorTxtField.resignFirstResponder()
         
-        if(vendor.itemCost != ""){
+        if(vendor.itemCost != nil){
             costTxtField.text = vendor.itemCost
             let cost = Double(costTxtField.text!)
             if(cost != nil){
@@ -792,10 +798,24 @@ class UsageEntryTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerVie
         self.vendorValue = self.vendorList[row].name
         
     }
+    
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        print("textFieldDidBeginEditing")
+        print("tag = \(textField.tag)")
+        if textField.tag == 8{
+            
+           textField.selectAll(nil)
+        }
+        
+        
+        
+    }
+    
 
     
     
-    func updateReceipt(_image:Image){
+    func updateReceipt(_image:Image2){
         print("update image")
         
         

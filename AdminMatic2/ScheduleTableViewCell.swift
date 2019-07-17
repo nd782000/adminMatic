@@ -11,10 +11,10 @@ import UIKit
 
 class ScheduleTableViewCell: UITableViewCell {
     var layoutVars:LayoutVars = LayoutVars()
-    var workOrder:WorkOrder!
-    var lead:Lead?
-    var contract:Contract?
-    var invoice:Invoice?
+    var workOrder:WorkOrder2!
+    var lead:Lead2?
+    var contract:Contract2?
+    var invoice:Invoice2?
     var dateLbl: UILabel!
     var customerLbl: UILabel!
     var firstItemLbl: UILabel!

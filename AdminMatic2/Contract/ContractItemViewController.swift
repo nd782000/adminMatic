@@ -16,7 +16,7 @@ import SwiftyJSON
 
 
 protocol EditContractItemDelegate{
-    func updateContractItem(_contractItem:ContractItem)
+    func updateContractItem(_contractItem:ContractItem2)
 }
     
  
@@ -35,8 +35,8 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     var editsMade:Bool = false
     var sortEditsMade:Bool = false
     
-    var contract:Contract!
-    var contractItem:ContractItem!
+    var contract:Contract2!
+    var contractItem:ContractItem2!
     
     //container views
     var itemView:UIView!
@@ -64,7 +64,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     var taskIDArray:[String] = []
     
     var json:JSON!
-    var lead:Lead?
+    var lead:Lead2?
     var leadTasksWaiting:String?
     var leadTasksWaitingBtn:Button = Button(titleText: "Open LeadTasks to Assign...")
     
@@ -72,10 +72,12 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     var imageUploadPrepViewController:ImageUploadPrepViewController!
     
 
-    init(_contract:Contract,_contractItem:ContractItem){
+    init(_contract:Contract2,_contractItem:ContractItem2){
         super.init(nibName:nil,bundle:nil)
         self.contract = _contract
         self.contractItem = _contractItem
+        
+        print("self.contractItem.ID = \(String(describing: self.contractItem.ID))")
         
         
     }
@@ -87,7 +89,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     
     override func viewWillAppear(_ animated: Bool) {
-        //print("view will appear")
+        print("view will appear")
         
        // print("contractItem = \(self.contract.ID)")
         // Do any additional setup after loading the view.
@@ -181,7 +183,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
         
         self.estValueLabel = Label()
         self.estValueLabel.font = layoutVars.smallBoldFont
-        self.estValueLabel.text = self.contractItem.qty!
+        self.estValueLabel.text = self.contractItem.qty
         self.itemView.addSubview(self.estValueLabel)
         
         
@@ -614,14 +616,14 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             cell.layoutViews()
             cell.taskLbl.text = self.contractItem.tasks[indexPath.row].taskDescription
             
-            if(self.contractItem.tasks[indexPath.row].images.count == 0){
+            if(self.contractItem.tasks[indexPath.row].images!.count == 0){
                 cell.imageQtyLbl.text = "No Images"
             }else{
-                if(self.contractItem.tasks[indexPath.row].images.count == 1){
+                if(self.contractItem.tasks[indexPath.row].images!.count == 1){
                     cell.imageQtyLbl.text = "1 Image"
                     
                 }else{
-                    cell.imageQtyLbl.text = "\(self.contractItem.tasks[indexPath.row].images.count) Images"
+                    cell.imageQtyLbl.text = "\(self.contractItem.tasks[indexPath.row].images!.count) Images"
                 }
             }
             
@@ -629,10 +631,15 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             
             //print("image count = \(self.contractItem.tasks[indexPath.row].images.count)")
             
-            if(self.contractItem.tasks[indexPath.row].images.count > 0){
+            if(self.contractItem.tasks[indexPath.row].images!.count > 0){
                 //print("image path = \(self.contractItem.tasks[indexPath.row].images[0].thumbPath!)")
                 cell.activityView.startAnimating()
-                cell.setImageUrl(_url: "\(self.contractItem.tasks[indexPath.row].images[0].thumbPath!)")
+               // cell.setImageUrl(_url: "\(self.contractItem.tasks[indexPath.row].images[0].thumbPath!)")
+                
+               cell.setImageUrl(_url: "\(self.contractItem.tasks[0])")
+                
+                //cell.setImageUrl(_url: "\(self.contractItem.tasks)")
+                
             }else{
                 //print("set blank image")
                 cell.setBlankImage()
@@ -652,16 +659,22 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             self.addTask()
         }else{
             tableView.deselectRow(at: indexPath as IndexPath, animated: true)
-            imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Contract Task", _contractItemID: self.contractItem.ID, _contractTaskID: self.contractItem.tasks[indexPath.row].ID, _customerID: self.contract.customer, _images: self.contractItem.tasks[indexPath.row].images)
+            
+            
+            /*imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Contract Task", _contractItemID: self.contractItem.ID, _contractTaskID: self.contractItem.tasks[indexPath.row].ID, _customerID: self.contract.customerID!, _images: self.contractItem.tasks[indexPath.row].images!)
+            
+            
             
             imageUploadPrepViewController.layoutViews()
             imageUploadPrepViewController.groupDescriptionTxt.text = self.contractItem.tasks[indexPath.row].taskDescription
             imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
-            imageUploadPrepViewController.selectedID = self.contract.customer
+            imageUploadPrepViewController.selectedID = self.contract.customerID!
             imageUploadPrepViewController.contractID = self.contract.ID
             imageUploadPrepViewController.groupImages = true
             imageUploadPrepViewController.attachmentDelegate = self
             self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+ */
+            
         }
     }
     
@@ -793,7 +806,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
        
         
         
-        let imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Contract Task", _contractItemID: self.contractItem.ID, _contractTaskID: "0", _customerID: self.contract.customer, _images: [])
+        let imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Contract Task", _contractItemID: self.contractItem.ID, _contractTaskID: "0", _customerID: self.contract.customerID!, _images: [])
         
         
         
@@ -820,14 +833,14 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     
     func getTasks(){
-        //print("get tasks")
+        print("get tasks")
         
-       
+       self.contractItem.tasks = []
         
         let parameters:[String:String]
         parameters = ["contractItemID": self.contractItem.ID]
         
-        //print("parameters = \(parameters)")
+        print("parameters = \(parameters)")
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/contractTasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
@@ -837,11 +850,125 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             .responseJSON(){
                 response in
                 
+                do{
+                    //created the json decoder
+                    
+                    let json = response.data
+                    
+                    
+                    print("json = \(String(describing: json))")
+                    
+                    let decoder = JSONDecoder()
+                    
+                    
+                    
+                    let parsedData = try decoder.decode(ContractTaskArray.self, from: json!)
+                    
+                    
+                    print("parsedData = \(parsedData)")
+                    
+                    
+                    let contractTasks = parsedData
+                    
+                    
+                    //let contracts = parsedData
+                    //self.workOrder = parsedData
+                    
+                    //self.statusValueToUpdate = self.workOrder.status
+                    
+                    
+                    //print("self.workOrder.status = \(self.workOrder.status)")
+                    //print("_newWoStatus = \(_newWoStatus)")
+                    
+                    
+                    // print("crews.count = \(self.workOrder.crews!.count)")
+                    
+                    
+                    // self.workOrder.setEmps()
+                    
+                    //self.indicator.dismissIndicator()
+                    
+                    
+                    let contractCount = contractTasks.contractTasks.count
+                    print("contract count = \(contractCount)")
+                    
+                    
+                    
+                    
+                    for i in 0 ..< contractCount {
+                        // invoices.invoices[i].customer = Customer2(_ID: invoices.invoices[i].customerID, _sysname: invoices.invoices[i].customerName)
+                        
+                        // leads.leads[i].totalPrice = self.layoutVars.numberAsCurrency(_number: invoices.invoices[i].totalPrice)
+                        
+                        
+                        // print("invoice customer = \(String(describing: invoices.invoices[i].customer?.sysname))!)")
+                        //print("invoice status = \(String(describing: invoices.invoices[i].totalPrice))!)")
+                        
+                        //create an object
+                        print("create a contract object \(i)")
+                        //let invoice = Invoice(_ID: (invoices[i]["ID"] as? String)!, _date: (invoices[i]["invoiceDate"] as? String)!, _customer: (invoices[i]["customer"] as? String)!, _customerName: (invoices[i]["custName"] as? String)!, _totalPrice: self.layoutVars.numberAsCurrency(_number: (invoices[i]["total"] as? String)!), _status: (invoices[i]["invoiceStatus"] as? String)!)
+                        //leads.leads[i].custNameAndID =
+                        
+                        // contracts.contracts[i].custNameAndID = "\(contracts.contracts[i].customerName!) #\(contracts.contracts[i].ID)"
+                        
+                        // leads.leads[i].custNameAndZone = "\(leads.leads[i].customer!.sysname) \(leads.leads[i].zone!.name)"
+                        
+                        
+                        //self.contractsArray.contracts.append(contracts.contracts[i])
+                        
+                        //self.contractsArray.contracts.append(contracts.contracts[i])
+                        
+                        self.contractItem.tasks.append(contractTasks.contractTasks[i])
+                        
+                    }
+                    
+                    
+                    
+                    self.itemDetailsTableView.reloadData()
+                    
+                    self.taskIDArray = []
+                    for task in self.contractItem.tasks{
+                        let ID = task.ID!
+                        self.taskIDArray.append(ID)
+                    }
+                    
+                    let indexPath = IndexPath(row: self.contractItem.tasks.count, section: 0)
+                    self.itemDetailsTableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                    
+                    
+                    
+                    
+                    //self.indicator.dismissIndicator()
+                    
+                    
+                    //self.layoutViews()
+                    
+                    
+                    
+                    // print(parsedData.date!)
+                    
+                    //using the array to put values
+                    //self.heroes = try decoder.decode([Hero].self, from: json!)
+                    
+                    //printing all the hero names
+                    //for hero in self.heroes{
+                    // print(hero.name!)
+                    // }
+                    
+                }catch let err{
+                    print(err)
+                }
+                
+                
+                
+                
+
+                
                 //print(response.request ?? "")  // original URL request
                 //print(response.response ?? "") // URL response
                 //print(response.data ?? "")     // server data
                 //print(response.result)   // result of response serialization
-                
+                /*
                 if let json = response.result.value {
                     //print("Tasks Json = \(json)")
                     self.tasksJson = JSON(json)
@@ -878,7 +1005,10 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
                             taskImages.append(image)
                             
                         }
-                        let task = ContractTask(_ID: ts?[n]["ID"].stringValue, _contractItemID: self.contractItem.ID, _createDate: ts?[n]["createDate"].stringValue, _createdBy: ts?[n]["createdBy"].stringValue, _sort: ts?[n]["sort"].stringValue, _taskDescription: ts?[n]["taskDescription"].stringValue, _images: taskImages)
+                        //let task = ContractTask(_ID: ts?[n]["ID"].stringValue, _contractItemID: self.contractItem.ID, _createDate: ts?[n]["createDate"].stringValue, _createdBy: ts?[n]["createdBy"].stringValue, _sort: ts?[n]["sort"].stringValue, _taskDescription: ts?[n]["taskDescription"].stringValue, _images: taskImages)
+                        let task = ContractTask2(_ID: ts?[n]["ID"].stringValue, _contractItemID: self.contractItem.ID, _createdBy: ts?[n]["createdBy"].stringValue, _sort: ts?[n]["sort"].stringValue, _createDate: ts?[n]["createDate"].stringValue, _taskDescription: ts?[n]["taskDescription"].stringValue)
+                        
+                        
                         self.contractItem.tasks.append(task)
                         
                     }
@@ -893,7 +1023,9 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
                     
                     let indexPath = IndexPath(row: self.contractItem.tasks.count, section: 0)
                     self.itemDetailsTableView.scrollToRow(at: indexPath, at: .top, animated: true)
-                }
+                }*/
+                
+                
         }
         
     }
@@ -902,13 +1034,13 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
     
     
     
-    func updateLead(_lead: Lead, _newStatusValue:String){
+    func updateLead(_lead: Lead2, _newStatusValue:String){
         //print("update Lead")
         editsMade = true
         self.lead = _lead
         
         
-        if self.lead?.statusId! == "3"{
+        if self.lead!.statusID == "3"{
             self.hideLeadTaskBtn()
         }
         
@@ -972,15 +1104,26 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
                 //print("appending image")
                 taskImages.append(image)
             }
-            let task = Task(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue, _images:taskImages)
-            self.lead!.tasksArray.append(task)
+            let task = Task2(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue)
+            
+            
+            
+            
+            
+            //task.images = taskImages
+            
+            
+            
+            
+            
+            self.lead!.tasksArray!.append(task)
         }
         
     }
     
     
     
-    func updateContractItem(_contractItem: ContractItem){
+    func updateContractItem(_contractItem: ContractItem2){
         //print("update Contract Item")
         editsMade = true
         self.contractItem = _contractItem
@@ -1027,7 +1170,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
         
         if contractDelegate != nil && self.editsMade == true{
             contractDelegate.updateContract(_contract: self.contract)
-            contractDelegate.updateContract(_contractItem: self.contractItem)
+            //contractDelegate.updateContract(_contractItem: self.contractItem)
             
         }
         _ = navigationController?.popViewController(animated: false)

@@ -21,7 +21,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     var json:JSON!
     
     
-    var lead:Lead!
+    var lead:Lead2!
     var submitButton:UIBarButtonItem!
     var delegate:LeadListDelegate!
     var editDelegate:EditLeadDelegate!
@@ -116,12 +116,30 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     init(_customer:String,_customerName:String){
         super.init(nibName:nil,bundle:nil)
         
-        self.lead =  Lead(_ID: "0", _statusID: "1",_scheduleType: "", _date: "", _time: "", _statusName: "", _customer: _customer, _customerName: _customerName, _urgent: "0", _description: "", _rep: "", _repName: "", _deadline: "", _requestedByCust: "0", _createdBy: appDelegate.loggedInEmployee?.ID, _daysAged: "0")
+        //self.lead =  Lead(_ID: "0", _statusID: "1",_scheduleType: "", _date: "", _time: "", _statusName: "", _customer: _customer, _customerName: _customerName, _urgent: "0", _description: "", _rep: "", _repName: "", _deadline: "", _requestedByCust: "0", _createdBy: appDelegate.loggedInEmployee?.ID, _daysAged: "0")
+        
+        self.lead = Lead2(_ID: "0", _statusID: "1", _scheduleType: "", _createdBy: appDelegate.loggedInEmployee!.ID)
+        self.lead.date = ""
+        self.lead.time = ""
+        self.lead.statusName = ""
+        
+       // let customer = Customer2(_ID: _customer, _sysname: _customerName)
+        
+        self.lead.customerID = _customer
+        self.lead.customerName = _customerName
+        self.lead.urgent = "0"
+        self.lead.description = ""
+        self.lead.rep = ""
+        self.lead.repName = ""
+        self.lead.deadline = ""
+        self.lead.requestedByCust = "0"
+        self.lead.daysAged = "0"
+        
         
     }
     
     
-    init(_lead:Lead,_tasks:[Task]){
+    init(_lead:Lead2,_tasks:[Task2]){
         super.init(nibName:nil,bundle:nil)
         //print("lead init \(_leadID)")
         self.lead = _lead
@@ -211,7 +229,23 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
             submitButton = UIBarButtonItem(title: "Submit", style: .plain, target: self, action: #selector(NewEditLeadViewController.submit))
            
             
-            self.lead =  Lead(_ID: "0", _statusID: "1",_scheduleType: "", _date: "", _time: "", _statusName: "", _customer: "", _customerName: "", _urgent: "0", _description: "", _rep: "", _repName: "", _deadline: "", _requestedByCust: "0", _createdBy: appDelegate.loggedInEmployee?.ID, _daysAged: "0")
+            //self.lead =  Lead(_ID: "0", _statusID: "1",_scheduleType: "", _date: "", _time: "", _statusName: "", _customer: "", _customerName: "", _urgent: "0", _description: "", _rep: "", _repName: "", _deadline: "", _requestedByCust: "0", _createdBy: appDelegate.loggedInEmployee?.ID, _daysAged: "0")
+            
+            self.lead = Lead2(_ID: "0", _statusID: "1", _scheduleType: "", _createdBy: appDelegate.loggedInEmployee!.ID)
+            self.lead.date = ""
+            self.lead.time = ""
+            self.lead.statusName = ""
+            self.lead.customerID = nil
+            self.lead.customerName = nil
+            self.lead.urgent = "0"
+            self.lead.description = ""
+            self.lead.rep = ""
+            self.lead.repName = ""
+            self.lead.deadline = ""
+            self.lead.requestedByCust = "0"
+            self.lead.daysAged = "0"
+            
+            
         }else{
             if(self.lead.ID == "0"){
                 //coming from customer page
@@ -240,14 +274,14 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
         safeContainer.addSubview(statusIcon)
-        setStatus(status: self.lead.statusId)
+        setStatus(status: self.lead.statusID)
         
         //status picker
         self.statusPicker = Picker()
         self.statusPicker.tag = 1
         self.statusPicker.delegate = self
         //set status
-        self.statusPicker.selectRow(Int(lead.statusId)! - 1, inComponent: 0, animated: false)
+        self.statusPicker.selectRow(Int(lead.statusID)! - 1, inComponent: 0, animated: false)
         self.statusTxtField = PaddedTextField(placeholder: "")
         self.statusTxtField.textAlignment = NSTextAlignment.center
         self.statusTxtField.translatesAutoresizingMaskIntoConstraints = false
@@ -303,8 +337,8 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         if(self.customerIDs.count == 0){
             customerSearchBar.isUserInteractionEnabled = false
         }
-        if(lead.customerName != ""){
-            customerSearchBar.text = lead.customerName
+        if(lead.customerName != nil){
+            customerSearchBar.text = lead.customerName!
         }
         
         
@@ -855,7 +889,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         //print("pickerview tag: \(pickerView.tag)")
         if(pickerView.tag == 1){
-            lead.statusId = "\(row + 1)"
+            lead.statusID = "\(row + 1)"
             
         }else{
             lead.scheduleType = "\(row)"
@@ -894,8 +928,8 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     @objc func handleStatusChange(){
         self.statusTxtField.resignFirstResponder()
-        lead.statusId = "\(self.statusPicker.selectedRow(inComponent: 0) + 1)"
-        setStatus(status: lead.statusId)
+        lead.statusID = "\(self.statusPicker.selectedRow(inComponent: 0) + 1)"
+        setStatus(status: lead.statusID)
         editsMade = true
     }
     
@@ -1008,8 +1042,8 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
             //count = self.tasksArray.count + 1
             if (searchText.count == 0) {
                 self.customerResultsTableView.alpha = 0.0
-                lead.customer = ""
-                lead.customerName = ""
+                lead.customerID = nil
+                lead.customerName = nil
             }else{
                 self.customerResultsTableView.alpha = 1.0
             }
@@ -1228,7 +1262,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
             
         case "CUSTOMER":
             let currentCell = tableView.cellForRow(at: indexPath) as! CustomerTableViewCell
-            lead.customer = currentCell.id
+            lead.customerID = currentCell.id
             lead.customerName = currentCell.name
             
             customerSearchBar.text = currentCell.name
@@ -1246,7 +1280,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
             break
         default:
             let currentCell = tableView.cellForRow(at: indexPath) as! CustomerTableViewCell
-            lead.customer = currentCell.id
+            lead.customerID = currentCell.id
             lead.customerName = currentCell.name
             
             customerSearchBar.text = currentCell.name
@@ -1308,7 +1342,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         //print("validate fields")
        // print("lead.scheduleType = \(lead.scheduleType)")
         //customer check
-        if(lead.customer == ""){
+        if(lead.customerID == nil){
             //print("select a customer")
             self.layoutVars.playErrorSound()
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Lead", _message: "Select a Customer")
@@ -1377,7 +1411,7 @@ class NewEditLeadViewController: UIViewController, UIPickerViewDelegate, UIPicke
         //reset task array
         
         let parameters:[String:String]
-        parameters = ["leadID": self.lead.ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "custID": self.lead.customer, "urgent": self.lead.urgent,"repID": self.lead.rep, "requestedByCust": self.lead.requestedByCust, "description": lead.description , "timeType": self.lead.scheduleType, "date": self.lead.date, "time": self.lead.time, "deadline": self.lead.deadline, "status": self.lead.statusId] as! [String : String]
+        parameters = ["leadID": self.lead.ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "custID": self.lead.customerID!, "urgent": self.lead.urgent,"repID": self.lead.rep, "requestedByCust": self.lead.requestedByCust, "description": lead.description , "timeType": self.lead.scheduleType, "date": self.lead.date, "time": self.lead.time, "deadline": self.lead.deadline, "status": self.lead.statusID] as! [String : String]
         //print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/lead.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)

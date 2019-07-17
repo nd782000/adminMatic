@@ -37,7 +37,7 @@ class Contract {
     
     
     
-    var lead:Lead?
+    var lead:Lead2?
     
     
     required init(_ID:String?, _title:String?, _status: String?, _statusName: String?, _chargeType:String?, _customer:String?, _customerName:String?, _notes:String?, _salesRep:String?, _repName:String?, _createdBy:String?, _createDate:String?, _subTotal:String?, _taxTotal:String?, _total:String?, _terms:String?, _daysAged:String?) {

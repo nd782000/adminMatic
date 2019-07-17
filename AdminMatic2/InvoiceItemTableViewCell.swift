@@ -15,13 +15,13 @@ class InvoiceItemTableViewCell: UITableViewCell {
     
     var layoutVars:LayoutVars = LayoutVars()
     
-    var invoiceItem:InvoiceItem!
+    var invoiceItem:InvoiceItem2!
     
     
     var nameLbl: UILabel! = UILabel()
     var totalPriceLbl: UILabel! = UILabel()
     var descriptionLbl: UILabel! = UILabel()
-    var totalImagesLbl: UILabel! = UILabel()
+   // var totalImagesLbl: UILabel! = UILabel()
     
     //var addItemLbl:Label = Label()
     
@@ -47,12 +47,12 @@ class InvoiceItemTableViewCell: UITableViewCell {
         self.preservesSuperviewLayoutMargins = false
         
         nameLbl.translatesAutoresizingMaskIntoConstraints = false
-        nameLbl.text = self.invoiceItem.name!
+        nameLbl.text = self.invoiceItem.name
         nameLbl.font = self.layoutVars.labelBoldFont
         contentView.addSubview(nameLbl)
         
         totalPriceLbl.translatesAutoresizingMaskIntoConstraints = false
-        totalPriceLbl.text = "\(self.invoiceItem.qty!) x \(layoutVars.numberAsCurrency(_number: self.invoiceItem.price!)) = \(layoutVars.numberAsCurrency(_number:self.invoiceItem.total!))"
+        totalPriceLbl.text = "\(self.invoiceItem.qty) x \(layoutVars.numberAsCurrency(_number: self.invoiceItem.price)) = \(layoutVars.numberAsCurrency(_number:self.invoiceItem.total))"
         totalPriceLbl.textAlignment = .right
         totalPriceLbl.font = self.layoutVars.labelBoldFont
         contentView.addSubview(totalPriceLbl)
@@ -65,7 +65,7 @@ class InvoiceItemTableViewCell: UITableViewCell {
         descriptionLbl.text = invoiceItem.custDescription
         contentView.addSubview(descriptionLbl)
         
-        
+        /*
         totalImagesLbl.translatesAutoresizingMaskIntoConstraints = false
         if self.invoiceItem.totalImages! == "1"{
             totalImagesLbl.text = "(\(self.invoiceItem.totalImages!) Image)"
@@ -75,22 +75,23 @@ class InvoiceItemTableViewCell: UITableViewCell {
         
         totalImagesLbl.textAlignment = .center
         contentView.addSubview(totalImagesLbl)
+        */
         
         
-        let viewsDictionary = ["name":nameLbl,"totalPrice":totalPriceLbl,"description":descriptionLbl,"totalImages":totalImagesLbl] as [String:AnyObject]
+        let viewsDictionary = ["name":nameLbl,"totalPrice":totalPriceLbl,"description":descriptionLbl] as [String:AnyObject]
         
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[name(110)]-[totalPrice]-|", options: [], metrics: nil, views: viewsDictionary))
         
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[description]-|", options: [], metrics: nil, views: viewsDictionary))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[totalImages]-|", options: [], metrics: nil, views: viewsDictionary))
+        //contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[totalImages]-|", options: [], metrics: nil, views: viewsDictionary))
         
         
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[name(20)]", options: [], metrics: nil, views: viewsDictionary))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[totalPrice(20)]", options: [], metrics: nil, views: viewsDictionary))
         
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-30-[description][totalImages(20)]-|", options: [], metrics: nil, views: viewsDictionary))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-30-[description]-|", options: [], metrics: nil, views: viewsDictionary))
         
     }
     

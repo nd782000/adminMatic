@@ -12,7 +12,6 @@ import Foundation
 
 import UIKit
 import Alamofire
-import SwiftyJSON
 
 protocol WoDelegate{
     func refreshWo()
@@ -32,17 +31,16 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     var editsMade:Bool = false
     
     
-    //var scrollView: UIScrollView!
     var tapBtn:UIButton!
     
     var scheduleDelegate:ScheduleDelegate!
     var scheduleIndex:Int!
     
-    var json:JSON!
-    var workOrder:WorkOrder!
+   
+    var workOrder:WorkOrder2!
+    
     var workOrderID:String!
-    //var customerID:String!
-    //var customerName:String!
+    
     
     var editLeadDelegate:EditLeadDelegate!
     var stackController:StackController!
@@ -54,7 +52,6 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     var statusArray = ["Not Started","In Progress","Done","Cancel","Waiting"]
     
     
-    var statusValue: String!
     var statusValueToUpdate: String!
     
     var workOrderView:UIView!
@@ -80,7 +77,6 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var chargeLbl:GreyLabel!
     var charge:GreyLabel!
-    var chargeValue:String!
     
     var crewLbl:GreyLabel!
     var crew:GreyLabel!
@@ -88,7 +84,6 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var salesRepLbl:GreyLabel!
     var salesRep:GreyLabel!
-   // var salesRepValue:String!
 
     
     //attachments is disabled for now
@@ -100,14 +95,10 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
  
     
     
-    var woItems: JSON!
-    var woItemsArray:[WoItem] = []
-    var empsOnWo:[Employee] = []
-    
     
     var woItemViewController:WoItemViewController?
     var refreshWoID:String?
-    var currentWoItem:WoItem?
+    var currentWoItem:WoItem2?
     
     
     
@@ -117,21 +108,17 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var priceLbl:GreyLabel!
     var price:GreyLabel!
-    var priceValue:String?
-    var priceRawValue:String?
+    
     
     var costLbl:GreyLabel!
     var cost:GreyLabel!
-    var costValue:String?
-    var costRawValue:String?
+    
     
     var profitLbl:GreyLabel!
     var profit:GreyLabel!
-    var profitValue:String?
     
     var percentLbl:GreyLabel!
     var percent:GreyLabel!
-    var percentValue:String?
     
     var profitBarView:UIView!
     var incomeView:UIView!
@@ -149,35 +136,16 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
     init(_workOrderID:String){
-        //init(_workOrder:WorkOrder){
-        //init(_workOrderID:String,_customerName:String){
+        
         
         super.init(nibName:nil,bundle:nil)
         print("workorder init ID = \(_workOrderID)")
         self.workOrderID = _workOrderID
-        //self.workOrderID = _workOrderID
-       // self.customerName = _customerName
         
-        //self.workOrder = WorkOrder(_ID: self.workOrderID, _customerName: self.customerName)
         
     }
     
     
-    /*
-    init(_workOrder:WorkOrder,_customerName:String){
-    //init(_workOrder:WorkOrder){
-    //init(_workOrderID:String,_customerName:String){
-        
-        super.init(nibName:nil,bundle:nil)
-       // print("workorder init")
-        
-        print("_workorder.ID init ID = \(_workOrder.ID) custName = \(_customerName)")
-        self.workOrder = _workOrder
-        //self.workOrderID = _workOrderID
-        self.customerName = _customerName
-        
-    }
- */
     
     
     required init?(coder aDecoder: NSCoder) {
@@ -188,11 +156,13 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         print("refreshWo")
         
         numberAttachmentPics = 0
-        json = []
-        self.woItems = []
-        self.woItemsArray = []
-        self.empsOnWo = []
-        self.crewsValue = ""
+        
+        
+        self.workOrder.woItems = []
+        self.workOrder.crews = []
+        
+        self.workOrder.emps = []
+        
         self.deadLineValue = ""
         self.attachments = []
         self.getWorkOrder()
@@ -200,46 +170,52 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func refreshWo(_refeshWoID _refreshWoID:String, _newWoStatus:String){
         print("refreshWo 1")
-       // print("current status = \(self.statusValue)")
         print("_newWoStatus = \(_newWoStatus)")
         
         
         self.refreshWoID = _refreshWoID
         numberAttachmentPics = 0
-        json = []
-        self.woItems = []
-        self.woItemsArray = []
-        self.empsOnWo = []
-        self.crewsValue = ""
+       
+        
+        self.workOrder.woItems = []
+        
+        
+        self.workOrder.crews = []
+        
+        self.workOrder.emps = []
+        
         self.deadLineValue = ""
         self.attachments = []
     
-        if(self.statusValue != _newWoStatus && _newWoStatus != "na"){
+        print("self.workOrder.status = \(self.workOrder.status)")
+        print("_newWoStatus = \(_newWoStatus)")
+        
+        
+        if(self.workOrder.status != _newWoStatus && _newWoStatus != "na"){
             
-            var statusName = ""
             switch (_newWoStatus) {
             case "1":
-                statusName = "Un-Done"
+                self.workOrder.statusName = "Un-Done"
                 break;
             case "2":
-                statusName = "In Progress"
+                self.workOrder.statusName = "In Progress"
                 break;
             case "3":
-                statusName = "Done"
+                self.workOrder.statusName = "Done"
                 break;
             case "4":
-                statusName = "Cancel"
+                self.workOrder.statusName = "Cancel"
                 break;
                 
             default:
-                statusName = ""
+                self.workOrder.statusName = ""
                 break;
             }
 
             
             
             
-            let alertController = UIAlertController(title: "Set Work Order to \(statusName)", message: "", preferredStyle: UIAlertController.Style.alert)
+            let alertController = UIAlertController(title: "Set Work Order to \(String(describing: self.workOrder.statusName!))", message: "", preferredStyle: UIAlertController.Style.alert)
             let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                 (result : UIAlertAction) -> Void in
                 
@@ -295,15 +271,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         view.backgroundColor = layoutVars.backgroundColor
         // Do any additional setup after loading the view.
         //custom back button
-        /*
-        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
-        backButton.addTarget(self, action: #selector(WorkOrderViewController.goBack), for: UIControl.Event.touchUpInside)
-        backButton.setTitle("Back", for: UIControl.State.normal)
-        backButton.titleLabel!.font =  layoutVars.buttonFont
-        backButton.sizeToFit()
-        let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
-        navigationItem.leftBarButtonItem  = backButtonItem
-        */
+       
         
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
         navigationItem.leftBarButtonItem = backButton
@@ -330,416 +298,76 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
         
-        /*
-        //cache buster
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
-        */
-      
-        //let id:String
-        //if self.workOrder == nil{
-           // id = self.workOrderID
-        //}else{
-           // id = self.workOrder.ID
-        //}
-        Alamofire.request(API.Router.workOrder(["woID":self.workOrderID as AnyObject])).responseJSON() {
-            
-            response in
-            // ////print(response.request)  // original URL request
-            //////print(response.response) // URL response
-            //////print(response.data)     // server data
-            //////print(response.result)   // result of response serialization
-            
-            if let json = response.result.value {
-                // Close Indicator
-                self.indicator.dismissIndicator()
-                
-                
-                
-                self.json = JSON(json)["woInfo"]
-                
-                print("----------------")
-                print("Work Order  JSON: \(json)")
-                print("----------------")
-                
-                
-                self.parseJSON()
-            }
-        }
- 
-    }
-    
-    
-    func parseJSON(){
-        //(_ID:String?, _statusID: String?, _date:String?, _firstItem:String?, _statusName:String?, _customer:String?, _type:String?, _progress:String?, _totalPrice:String?, _totalCost:String?, _totalPriceRaw:String?, _totalCostRaw:String?, _charge:String?,_title:String?, _customerName:String?)
-        
-        print(" parseJSON()")
-        self.workOrder = WorkOrder(_ID: self.workOrderID, _customerName: self.json["customer"]["sysname"].stringValue)
-        
-        self.workOrder.statusId = self.json["statusID"].stringValue
-        self.workOrder.date = self.json["date"].stringValue
-        
-        self.workOrder.type = self.json["type"].stringValue
-        self.workOrder.progress = self.json["progress"].stringValue
-        self.workOrder.totalPrice = self.json["totalPrice"].stringValue
-        self.workOrder.totalCost = self.json["totalCost"].stringValue
-        
-        self.workOrder.charge = self.json["charge"].stringValue
-        self.workOrder.chargeName = self.json["chargeName"].stringValue
-        self.workOrder.title = self.json["title"].stringValue
         
         
-        self.workOrder.customer = self.json["customerID"].stringValue
-        let mainAddr:String = self.json["customer"]["mainAddr"].stringValue
-         self.locationValue =  mainAddr.components(separatedBy: ",").first
-        
-        
-        if(self.json["deadline"].stringValue != "0000-00-00 00:00:00"){
-            self.deadLineValue = "Deadline: \(self.json["deadline"].stringValue)"
-        }
-        
-    
-        print("date raw = \(self.json["dateRaw"].stringValue)")
-        scheduleKeyWordValue = self.json["date"].stringValue
-        
-        /*
-        chargeValue = ""
-        
-        
-        switch (self.json["charge"].stringValue) {
-        case "1":
-            chargeValue = "NC $0.00"
-            break;
-        case "2":
-            chargeValue = "FL \(self.json["totalPrice"].string!)"
-            break;
-        case "3":
-            chargeValue = "T & M"
-            break;
-            
-        default:
-            chargeValue = ""//online
-            break;
-        }
- */
-        
-
-         //print("400")
-        let crewsOnWoCount = self.json["crews"].count
-        empsOnWo = []
-        if(crewsOnWoCount == 0){
-            self.crewsValue = "No Crew"
-        }else{
-            self.crewsValue = ""
-        }
-        
-        for p in 0 ..< crewsOnWoCount {
-            
-            if self.crewsValue!.isEmpty {
-                self.crewsValue = self.json["crews"][p]["name"].stringValue
-            } else {
-                self.crewsValue! += " | \(self.json["crews"][p]["name"].stringValue)"
-            }
-            
-            let empsInCrewCount = self.json["crews"][p]["emps"].count
-            for m in 0 ..< empsInCrewCount {
-                let empID = self.json["crews"][p]["emps"][m]["ID"].stringValue
-                let empName = self.json["crews"][p]["emps"][m]["name"].stringValue
-                let empLName = self.json["crews"][p]["emps"][m]["lname"].stringValue
-                let empFName = self.json["crews"][p]["emps"][m]["fname"].stringValue
-                let empUserName = self.json["crews"][p]["emps"][m]["username"].stringValue
-                let empPic = self.json["crews"][p]["emps"][m]["pic"].stringValue
-                
-                let empPhone = self.json["crews"][p]["emps"][m]["phone"].stringValue
-                let empDepID = self.json["crews"][p]["emps"][m]["dep"].stringValue
-                let empPayRate = self.json["crews"][p]["emps"][m]["payRate"].stringValue
-                let empAppScore = self.json["crews"][p]["emps"][m]["appScore"].stringValue
-                let level = self.json["crews"][p]["emps"][m]["level"].intValue
-                let levelName = self.json["crews"][p]["emps"][m]["levelName"].stringValue
-                let empObject = Employee(_ID: empID, _name: empName, _lname: empLName, _fname: empFName, _username: empUserName, _pic: empPic, _phone: empPhone, _depID: empDepID, _payRate: empPayRate, _appScore: empAppScore, _userLevel: level, _userLevelName: levelName )
-                
-                empsOnWo.append(empObject)
-            }
-            
-        }
-        
-        self.workOrder.rep = self.json["salesRep"].stringValue
-        self.workOrder.repName = self.json["salesRepName"].stringValue
-        self.workOrder.invoiceType = self.json["invoice"].stringValue
-        self.workOrder.notes = self.json["notes"].stringValue
-        
-        
-        //self.salesRepValue = self.json["salesRep"].string
-        
-        self.priceValue = self.json["totalPrice"].string
-        self.costValue = self.json["totalCost"].string
-        self.priceRawValue = self.json["totalPriceRaw"].string
-        self.costRawValue = self.json["totalCostRaw"].string
-        
-        print("self.priceValue = \(self.priceValue ?? "default")")
-        
-        
-        self.profitValue = self.json["profitAmount"].string
-        self.percentValue = self.json["profit"].string
         
        
         
         
-        var json: JSON = ["columns" : ["created_at" : "DESC", "id" : "DESC"]]
         
-        let jsonDic = json["columns"].dictionary
         
-        var result: [String : String] = [:]
-        if let jsonDic = jsonDic {
-            for (key, value) in jsonDic {
-                result[key] = value.stringValue
+        let woURL = "https://www.atlanticlawnandgarden.com/cp/app/functions/get/workOrder.php?woID=\(self.workOrderID!)"
+        
+       print(woURL)
+        
+        
+            //Performing an Alamofire request to get the data from the URL
+        Alamofire.request(woURL).responseJSON { response in
+                //now here we have the response data that we need to parse
+            
+            do{
+                //created the json decoder
+                
+                let json = response.data
+                
+                
+                //print("json = \(json)")
+                
+                let decoder = JSONDecoder()
+               
+                
+                
+                let parsedData = try decoder.decode(WorkOrder2.self, from: json!)
+                
+                
+                print("parsedData = \(parsedData)")
+                
+                self.workOrder = parsedData
+                
+                self.statusValueToUpdate = self.workOrder.status
+            
+                
+                print("self.workOrder.status = \(self.workOrder.status)")
+                
+                
+                print("crews.count = \(self.workOrder.crews!.count)")
+                
+                
+                self.workOrder.setEmps()
+                
+                print("emps.count = \(self.workOrder.emps!.count)")
+                
+                self.indicator.dismissIndicator()
+                
+                
+                self.layoutViews()
+                
+                
+                
+              
+                
+            }catch let err{
+                print(err)
             }
+            
+          
+            
+                
         }
-        
-        print("result = \(result)")
-        
-        self.statusValue = self.json["status"].stringValue
-        
-        self.statusValueToUpdate = self.statusValue
-        
-        
-        if(self.scheduleDelegate != nil){
-            self.scheduleDelegate.reDrawSchedule(_index: self.scheduleIndex, _status: self.statusValue , _price: priceValue!, _cost: costValue!, _priceRaw: priceRawValue!, _costRaw: costRawValue!)
-        }
-    
-    
-    
-        let jsonCount = self.json["items"].count
-        
-        
-        
-        
-        
-        for i in 0 ..< jsonCount {
-            
-            /*
-            chargeValue = ""
-            
-            
-            switch (self.json["items"][i]["charge"].stringValue) {
-            case "1":
-                chargeValue = "NC $0.00"
-                break;
-            case "2":
-                chargeValue = "FL \(self.json["totalPrice"].string!)"
-                break;
-            case "3":
-                chargeValue = "T & M"
-                break;
-                
-            default:
-                chargeValue = "Null"//online
-                break;
-            }
-            */
-            
-            
-            let woItem = WoItem( _ID: self.json["items"][i]["ID"].stringValue,_type: self.json["items"][i]["type"].stringValue, _sort: self.json["items"][i]["sort"].stringValue, _name: self.json["items"][i]["input"].stringValue, _est: self.json["items"][i]["est"].stringValue, _empDesc: self.json["items"][i]["empDesc"].stringValue, _itemStatus: self.json["items"][i]["itemStatus"].stringValue, _chargeID: self.json["items"][i]["chargeID"].stringValue, _act: self.json["items"][i]["act"].stringValue, _price: self.json["items"][i]["price"].stringValue, _total: self.json["items"][i]["total"].stringValue, _totalCost: self.json["items"][i]["totalCost"].stringValue, _usageQty:self.json["items"][i]["usageQty"].stringValue, _extraUsage:self.json["items"][i]["extraUsage"].stringValue, _unit:self.json["items"][i]["unitName"].stringValue)
-            
-            woItem.tax = self.json["items"][i]["taxType"].stringValue
-            woItem.chargeName = self.json["items"][i]["chargeName"].stringValue
-            
-            if(woItem.ID == refreshWoID){
-                //print("refreshWoID = \(woItem)")
-                currentWoItem = woItem
-                if(self.woItemViewController != nil){
-                    //print("update woItemVC \(self.currentWoItem?.usageQty)")
-                    self.woItemViewController!.woItem = self.currentWoItem
-                    self.woItemViewController?.customerID = self.workOrder.customer
-                    self.woItemViewController?.customerName = self.workOrder.customerName
-                    self.woItemViewController?.saleRepName = self.workOrder.repName
-                    self.woItemViewController?.layoutViews()
-                }
-                
-            }
-            //print("usageQty = \(woItem.usageQty)")
-            
-            //tasks
-            
-            let taskCount = self.json["items"][i]["tasks"].count
-            for n in 0 ..< taskCount {
-                var taskImages:[Image] = []
-                    
-                    let imageCount = Int((self.json["items"][i]["tasks"][n]["images"].count))
-                    print("imageCount: \(imageCount)")
-                
-                    for p in 0 ..< imageCount {
-                        
-                        let fileName:String = (self.json["items"][i]["tasks"][n]["images"][p]["fileName"].stringValue)
-                        
-                        let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
-                        let mediumPath:String = "\(self.layoutVars.mediumBase)\(fileName)"
-                        let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
-                        
-                        //create a item object
-                        print("create an image object \(i)")
-                        
-                        print("rawPath = \(rawPath)")
-                        
-                        let image = Image(_id: self.json["items"][i]["tasks"][n]["images"][p]["ID"].stringValue,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: self.json["items"][i]["tasks"][n]["images"][p]["name"].stringValue,_width: self.json["items"][i]["tasks"][n]["images"][p]["width"].stringValue,_height: self.json["items"][i]["tasks"][n]["images"][p]["height"].stringValue,_description: self.json["items"][i]["tasks"][n]["images"][p]["description"].stringValue,_dateAdded: self.json["items"][i]["tasks"][n]["images"][p]["dateAdded"].stringValue,_createdBy: self.json["items"][i]["tasks"][n]["images"][p]["createdByName"].stringValue,_type: self.json["items"][i]["tasks"][n]["images"][p]["type"].stringValue)
-                        
-                        image.customer = (self.json["items"][i]["tasks"][n]["images"][p]["customer"].stringValue)
-                        image.tags = (self.json["items"][i]["tasks"][n]["images"][p]["tags"].stringValue)
-                        
-                        print("appending image")
-                        taskImages.append(image)
-                        
-                    }
-                
-                let task = Task(_ID: self.json["items"][i]["tasks"][n]["ID"].stringValue, _sort: self.json["items"][i]["tasks"][n]["sort"].stringValue, _status: self.json["items"][i]["tasks"][n]["status"].stringValue, _task: self.json["items"][i]["tasks"][n]["task"].stringValue, _images:taskImages)
-                woItem.tasks.append(task)
-            }
-            
-            let vendorCount = self.json["items"][i]["vendors"].count
-            for n in 0 ..< vendorCount {
-                let vendor = Vendor(_name: self.json["items"][i]["vendors"][n]["companyName"].stringValue, _id: self.json["items"][i]["vendors"][n]["vendorID"].stringValue, _address: self.json["items"][i]["vendors"][n]["address"].stringValue, _phone: self.json["items"][i]["vendors"][n]["phone"].stringValue, _website: self.json["items"][i]["vendors"][n]["website"].stringValue, _balance: self.json["items"][i]["vendors"][n]["balance"].stringValue, _lng: self.json["items"][i]["vendors"][n]["lng"].stringValue, _lat: self.json["items"][i]["vendors"][n]["lat"].stringValue)
-                vendor.itemCost = self.json["items"][i]["vendors"][n]["cost"].stringValue
-                woItem.vendors.append(vendor)
-            }
-            let vendor = Vendor(_name: "Other", _id: "0", _address: "", _phone: "", _website: "", _balance: "", _lng: "", _lat: "")
-            woItem.vendors.append(vendor)
-            
-            let usageCount = self.json["items"][i]["usage"].count
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-            
-            for n in 0 ..< usageCount {
-                let startDate = dateFormatter.date(from: self.json["items"][i]["usage"][n]["start"].string!)!
-                let stopDate:Date?
-            
-                var locked:Bool
-                let usageQty = Double(self.json["items"][i]["usage"][n]["qty"].stringValue)
-                if(usageQty! > 0.0 && self.json["items"][i]["usage"][n]["addedBy"].string != appDelegate.loggedInEmployee?.ID){
-                    locked = true
-                }else{
-                    locked = false
-                }
-                
-                let usage:Usage
-                
-                if(self.json["items"][i]["usage"][n]["stop"].string != "0000-00-00 00:00:00"){
-                    stopDate = dateFormatter.date(from: self.json["items"][i]["usage"][n]["stop"].string!)!
-                    
-                   usage = Usage(_ID: self.json["items"][i]["usage"][n]["ID"].stringValue,
-                                      _empID: self.json["items"][i]["usage"][n]["empID"].stringValue,
-                                      _depID: self.json["items"][i]["usage"][n]["depID"].stringValue,
-                                      _woID: self.json["items"][i]["usage"][n]["woID"].stringValue,
-                                      _start: startDate,
-                                      _stop: stopDate,
-                                      _lunch: self.json["items"][i]["usage"][n]["lunch"].stringValue,
-                                      _qty: self.json["items"][i]["usage"][n]["qty"].stringValue,
-                                      _empName: self.json["items"][i]["usage"][n]["empName"].stringValue,
-                                      _type: self.json["items"][i]["usage"][n]["type"].stringValue,
-                                      _itemID: self.json["items"][i]["usage"][n]["woItemID"].stringValue,
-                                      _unitPrice: self.json["items"][i]["usage"][n]["unitPrice"].stringValue,
-                                      _totalPrice: self.json["items"][i]["usage"][n]["totalPrice"].stringValue,
-                                      _vendor: self.json["items"][i]["usage"][n]["vendor"].stringValue,
-                                      _unitCost: self.json["items"][i]["usage"][n]["unitCost"].stringValue,
-                                      _totalCost: self.json["items"][i]["usage"][n]["totalCost"].stringValue,
-                                      _chargeType: self.json["items"][i]["chargeID"].stringValue,
-                                      _override: self.json["items"][i]["usage"][n]["override"].stringValue,
-                                      _empPic: self.json["items"][i]["usage"][n]["empPic"].stringValue,
-                                      _locked: locked,
-                                      _addedBy: appDelegate.loggedInEmployee?.ID,
-                                      _del: ""
-                    )
-                }else{
-                    usage = Usage(_ID: self.json["items"][i]["usage"][n]["ID"].stringValue,
-                                      _empID: self.json["items"][i]["usage"][n]["empID"].stringValue,
-                                      _depID: self.json["items"][i]["usage"][n]["depID"].stringValue,
-                                      _woID: self.json["items"][i]["usage"][n]["woID"].stringValue,
-                                      _start: startDate,
-                                      _lunch: self.json["items"][i]["usage"][n]["lunch"].stringValue,
-                                      _qty: self.json["items"][i]["usage"][n]["qty"].stringValue,
-                                      _empName: self.json["items"][i]["usage"][n]["empName"].stringValue,
-                                      _type: self.json["items"][i]["usage"][n]["type"].stringValue,
-                                      _itemID: self.json["items"][i]["usage"][n]["woItemID"].stringValue,
-                                      _unitPrice: self.json["items"][i]["usage"][n]["unitPrice"].stringValue,
-                                      _totalPrice: self.json["items"][i]["usage"][n]["totalPrice"].stringValue,
-                                      _vendor: self.json["items"][i]["usage"][n]["vendor"].stringValue,
-                                      _unitCost: self.json["items"][i]["usage"][n]["unitCost"].stringValue,
-                                      _totalCost: self.json["items"][i]["usage"][n]["totalCost"].stringValue,
-                                      _chargeType: self.json["items"][i]["chargeID"].stringValue,
-                                      _override: self.json["items"][i]["usage"][n]["override"].stringValue,
-                                      _empPic: self.json["items"][i]["usage"][n]["empPic"].stringValue,
-                                      _locked: locked,
-                                      _addedBy: appDelegate.loggedInEmployee?.ID,
-                                      _del: ""
-                    )
-                    
-                    
-                }
-                
-                if self.json["items"][i]["usage"][n]["hasReceipt"].stringValue == "1"{
-                    usage.hasReceipt = "1"
-                    usage.receipt = Image(_id: self.json["items"][i]["usage"][n]["receipt"]["ID"].stringValue, _thumbPath:"https://www.atlanticlawnandgarden.com/uploads/general/thumbs/\(self.json["items"][i]["usage"][n]["receipt"]["fileName"].stringValue)", _mediumPath: "https://www.atlanticlawnandgarden.com/uploads/general/medium/\(self.json["items"][i]["usage"][n]["receipt"]["fileName"].stringValue)", _rawPath: "https://www.atlanticlawnandgarden.com/uploads/general/\(self.json["items"][i]["usage"][n]["receipt"]["fileName"].stringValue)", _name: self.json["items"][i]["usage"][n]["receipt"]["name"].stringValue, _width: self.json["items"][i]["usage"][n]["receipt"]["width"].stringValue, _height: self.json["items"][i]["usage"][n]["receipt"]["height"].stringValue, _description: self.json["items"][i]["usage"][n]["description"]["ID"].stringValue, _dateAdded: self.json["items"][i]["usage"][n]["receipt"]["dateAdded"].stringValue, _createdBy: self.json["items"][i]["usage"][n]["receipt"]["createdBy"].stringValue, _type: self.json["items"][i]["usage"][n]["receipt"]["type"].stringValue)
-                }else{
-                    usage.hasReceipt = "0"
-                }
-                
-                
-                woItem.usages.append(usage)
-            }
-            self.woItemsArray.append(woItem)
-        }
-        
-        
-        //Attachments
-        let attachmentCount = self.json["attachments"].count
-        
-        print("attachmentCount: \(attachmentCount)")
-        print("JSON attachments: \(self.json["attachments"])")
-        for n in 0 ..< attachmentCount {
-            
-            var attachmentImages:[Image]  = []
-            
-            let imageCount = self.json["attachments"][n]["images"].count
-            print("imageCount: \(imageCount)")
-            
-            
-            for i in 0 ..< imageCount {
-                
-                let thumbPath:String = "\(self.layoutVars.thumbBase)\(self.json["attachments"][n]["images"][i]["fileName"].stringValue)"
-                let mediumPath:String = "\(self.layoutVars.mediumBase)\(self.json["attachments"][n]["images"][i]["fileName"].stringValue)"
-                let rawPath:String = "\(self.layoutVars.rawBase)\(self.json["attachments"][n]["images"][i]["fileName"].stringValue)"
-                
-                //create a item object
-                print("create an image object \(i)")
-                
-                let image = Image(_id: self.json["attachments"][n]["images"][i]["ID"].stringValue,_thumbPath: thumbPath, _mediumPath: mediumPath,_rawPath: rawPath,_name: self.json["attachments"][n]["images"][i]["name"].stringValue,_width: self.json["attachments"][n]["images"][i]["width"].stringValue,_height: self.json["attachments"][n]["images"][i]["height"].stringValue,_description: self.json["attachments"][n]["images"][i]["description"].stringValue,_dateAdded: self.json["attachments"][n]["images"][i]["dateAdded"].stringValue,_createdBy: self.json["attachments"][n]["images"][i]["createdBy"].stringValue,_type: self.json["attachments"][n]["images"][i]["type"].stringValue)
-                
-                image.customer = self.json["attachments"][n]["images"][i]["customer"].stringValue
-                image.tags = self.json["attachments"][n]["images"][i]["tags"].stringValue
-                
-                attachmentImages.append(image)
-                
-            }
-            
-             
-            
-            
-            let attachment = Attachment(_ID: self.json["attachments"][n]["ID"].stringValue, _note: self.json["attachments"][n]["note"].stringValue, _customerID: self.json["attachments"][n]["customerID"].stringValue, _workOrderID: self.json["attachments"][n]["workOrderID"].stringValue, _createdBy: self.json["attachments"][n]["createdBy"].stringValue, _status: self.json["attachments"][n]["status"].stringValue, _images:attachmentImages)
-            
-            //print("thumb url = \(thumbUrl)")
-            
-            
-            if(Int(self.json["attachments"][n]["images"].count) > 0){
-                self.numberAttachmentPics += Int(self.json["attachments"][n]["images"].count)
-            }
-            
-            
-            self.attachments.append(attachment)
-            
-        }
-        self.layoutViews()
- 
+   
     }
+    
+  
     
     
     func layoutViews(){
@@ -766,15 +394,6 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         
-        if(self.woItemViewController != nil){
-            self.woItemViewController?.woItem = currentWoItem
-            //self.woItemViewController!.woItem = self.currentWoItem
-            self.woItemViewController?.customerID = self.workOrder.customer
-            self.woItemViewController?.customerName = self.workOrder.customerName
-            self.woItemViewController?.saleRepName = self.workOrder.repName
-            self.woItemViewController?.layoutViews()
-        }
-        
         self.workOrderView = UIView()
         self.workOrderView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.workOrderView)
@@ -786,23 +405,44 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         
         
+        
+        switch (self.workOrder.status) {
+        case "1":
+            self.workOrder.statusName = "Un-Started"
+            break;
+        case "2":
+            self.workOrder.statusName = "In Progress"
+            break;
+        case "3":
+            self.workOrder.statusName = "Done"
+            break;
+        case "4":
+            self.workOrder.statusName = "Cancelled"
+            break;
+            
+        default:
+            self.workOrder.statusName = "Un-Started"//online
+            break;
+        }
+        
+        
         //statusIcon = UIImageView()
         statusIcon.translatesAutoresizingMaskIntoConstraints = false
         statusIcon.backgroundColor = UIColor.clear
         statusIcon.contentMode = .scaleAspectFill
         self.workOrderView.addSubview(statusIcon)
-        setStatus(status: self.json["status"].stringValue)
-        
+        //setStatus(status: self.json["status"].stringValue)
+        setStatus(status: self.workOrder.status)
         
         //status picker
         self.statusPicker = Picker()
         //print("statusValue : \(statusValue)")
-        print("set picker position : \(Int(self.statusValue)! - 1)")
+        print("set picker position : \(Int(self.workOrder.status)! - 1)")
         
         self.statusPicker.delegate = self
         self.statusPicker.dataSource = self
         
-        self.statusPicker.selectRow(Int(self.statusValue)! - 1, inComponent: 0, animated: false)
+        self.statusPicker.selectRow(Int(self.workOrder.status)! - 1, inComponent: 0, animated: false)
         
         self.statusTxtField = PaddedTextField(placeholder: "")
         self.statusTxtField.textAlignment = NSTextAlignment.center
@@ -830,7 +470,18 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         statusTxtField.inputAccessoryView = toolBar
 
         
-        self.customerBtn = Button(titleText: self.workOrder.customerName)
+        
+        
+        
+        if self.workOrder.custAddress != nil{
+            self.customerBtn = Button(titleText: "\(self.workOrder.custName!) \(self.workOrder.custAddress!)" )
+        }else{
+            self.customerBtn = Button(titleText: "\(self.workOrder.custName!)" )
+        }
+        
+        
+        
+        
         self.customerBtn.contentHorizontalAlignment = .left
         let custIcon:UIImageView = UIImageView()
         custIcon.backgroundColor = UIColor.clear
@@ -861,7 +512,12 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.infoView.addSubview(scheduleLbl)
         
         self.schedule = GreyLabel()
-        self.schedule.text = self.scheduleKeyWordValue
+        if self.workOrder.date != nil{
+            self.schedule.text = self.workOrder.date!
+        }else{
+            self.schedule.text = "Not Scheduled"
+        }
+        
         self.schedule.font = layoutVars.labelBoldFont
         self.schedule.textAlignment = .left
         self.schedule.translatesAutoresizingMaskIntoConstraints = false
@@ -884,6 +540,25 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         
         //charge
+        
+        
+        switch (self.workOrder.charge!) {
+        case "1":
+            self.workOrder.chargeName = "NC $0.00"
+            break;
+        case "2":
+            self.workOrder.chargeName = "FL \(self.workOrder.totalPrice)"
+            break;
+        case "3":
+            self.workOrder.chargeName = "T & M"
+            break;
+            
+        default:
+            self.workOrder.chargeName = ""//online
+            break;
+        }
+        
+        
         self.chargeLbl = GreyLabel()
         self.chargeLbl.text = "Charge:"
         self.chargeLbl.textAlignment = .left
@@ -891,7 +566,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.infoView.addSubview(chargeLbl)
         
         self.charge = GreyLabel()
-        self.charge.text = self.workOrder.chargeName
+        self.charge.text = self.workOrder.chargeName!
         self.charge.font = layoutVars.labelBoldFont
         self.charge.textAlignment = .left
         self.charge.translatesAutoresizingMaskIntoConstraints = false
@@ -899,13 +574,36 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         //crew
         self.crewLbl = GreyLabel()
-        self.crewLbl.text = "Crew:"
+        self.crewLbl.text = "Crew(s):"
         self.crewLbl.textAlignment = .left
         self.crewLbl.translatesAutoresizingMaskIntoConstraints = false
         self.infoView.addSubview(crewLbl)
         
         self.crew = GreyLabel()
-        self.crew.text = self.crewsValue
+        //self.crew.text = self.crewsValue
+        
+        
+        
+        
+        if self.workOrder.crews!.count > 0{
+            self.crewsValue = ""
+            
+           // self.crewsValue = self.workOrder.crews
+            //print(str)
+            var i = 0
+            for crewName in self.workOrder.crews! {
+                if i == 0{
+                    self.crewsValue = "\(crewName.name) "
+                }else{
+                    self.crewsValue = "\(self.crewsValue!),  \(crewName.name)"
+                }
+                i += 1
+                
+            }
+            self.crew.text = self.crewsValue!
+        }else{
+            self.crew.text = "No Crew"
+        }
         self.crew.font = layoutVars.labelBoldFont
         self.crew.textAlignment = .left
         self.crew.translatesAutoresizingMaskIntoConstraints = false
@@ -920,6 +618,10 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.infoView.addSubview(salesRepLbl)
         
         self.salesRep = GreyLabel()
+        
+        
+        
+        
         self.salesRep.text = self.workOrder.repName
         self.salesRep.font = layoutVars.labelBoldFont
         self.salesRep.textAlignment = .left
@@ -1017,7 +719,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         
         self.price = GreyLabel()
-        self.price.text = self.priceValue
+        self.price.text = self.workOrder.totalPrice
         self.price.font = layoutVars.labelBoldFont
         self.price.translatesAutoresizingMaskIntoConstraints = false
         self.profitView.addSubview(price)
@@ -1028,7 +730,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.profitView.addSubview(costLbl)
         
         self.cost = GreyLabel()
-        self.cost.text = self.costValue
+        self.cost.text = self.workOrder.totalCost
         self.cost.font = layoutVars.labelBoldFont
         self.cost.translatesAutoresizingMaskIntoConstraints = false
         self.profitView.addSubview(cost)
@@ -1039,7 +741,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.profitView.addSubview(profitLbl)
         
         self.profit = GreyLabel()
-        self.profit.text = self.profitValue
+        self.profit.text = self.workOrder.profitValue
         self.profit.font = layoutVars.labelBoldFont
         self.profit.translatesAutoresizingMaskIntoConstraints = false
         self.profitView.addSubview(profit)
@@ -1050,7 +752,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.profitView.addSubview(percentLbl)
         
         self.percent = GreyLabel()
-        self.percent.text = self.percentValue
+        self.percent.text = self.workOrder.percentValue
         self.percent.font = layoutVars.labelBoldFont
         self.percent.translatesAutoresizingMaskIntoConstraints = false
         self.profitView.addSubview(percent)
@@ -1067,8 +769,11 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         //Profit Info
         let profitBarWidth = Float(layoutVars.fullWidth - 20)
         
-        let totalRaw = Float(self.priceRawValue!)
-        let totalCostRaw = Float(self.costRawValue!)
+       
+        let totalRaw = Float(self.workOrder.totalPriceRaw)
+        let totalCostRaw = Float(self.workOrder.totalCostRaw)
+        
+        
         
         var scaleFactor = Float(0.00)
         var costWidth = Float(0.00)
@@ -1127,13 +832,11 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         
         self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[info]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[attachments]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+        
         self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[table]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[th]-15-|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[profitView]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        //self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-79-[customerBtn(40)]-[info(90)]-[attachments(40)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
-        
-        self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(120)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
+         self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[customerBtn(40)]-[info(120)]-[th][table]-[profitView(85)]|", options: [], metrics: metricsDictionary, views: viewsDictionary))
         
         self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusIcon(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
         self.workOrderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[stackController(40)]-[statusTxtField(40)]", options: [], metrics: metricsDictionary, views: viewsDictionary))
@@ -1154,14 +857,19 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[titleLbl]-[title]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[scheduleLbl]-[schedule]-|", options: [], metrics: metricsDictionary, views: infoDictionary))
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[chargeLbl]-[charge]", options: [], metrics: metricsDictionary, views: infoDictionary))
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[crewLbl]-[crew]", options: [], metrics: metricsDictionary, views: infoDictionary))
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[salesRepLbl]-[salesRep]-10-|", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[chargeLbl]-[charge]-[salesRepLbl]-[salesRep]-10-|", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[crewLbl]-[crew]-10-|", options: [], metrics: metricsDictionary, views: infoDictionary))
+       
         
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)]-[scheduleLbl(22)]-[chargeLbl(22)]-[crewLbl(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
         self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[title(22)]-[schedule(22)]-[charge(22)]-[crew(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)]-[scheduleLbl(22)]-[chargeLbl(22)]-[salesRepLbl(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
-        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)]-[scheduleLbl(22)]-[charge(22)]-[salesRep(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
+       
+        
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)]-[scheduleLbl(22)]-[chargeLbl(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)]-[scheduleLbl(22)]-[charge(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
+        
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)]-[scheduleLbl(22)]-[salesRepLbl(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
+        self.infoView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLbl(22)]-[scheduleLbl(22)]-[salesRep(22)]", options: [], metrics: metricsDictionary, views: infoDictionary))
         
         /*
         //auto layout group
@@ -1259,38 +967,23 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @objc func showAttachmentsList(){
-        /*if(scheduleDelegate != nil){
-            scheduleDelegate.cancelSearch()
-        }
-        if(customerDelegate != nil){
-            customerDelegate.cancelSearch()
-        }
-        */
-        
+       
+        /*
         
         let attachmentsListViewControler:AttachmentListViewController = AttachmentListViewController(_workOrderID: self.workOrder.ID,_customerID: self.workOrder.customer, _attachments: self.attachments)
         attachmentsListViewControler.woDelegate = self
         navigationController?.pushViewController(attachmentsListViewControler, animated: false )
-    }
-    
-    /*
-    func enterEditMode(){
-        editMode = true
-        removeViews()
-        
-    }
-    
-    func exitEditMode(){
-        editMode = false
-        removeViews()
-        layoutViews()
-        
-    }
  */
+        
+        
+        
+    }
+    
+   
     
     @objc func showCustInfo() {
         ////print("SHOW CUST INFO")
-        let customerViewController = CustomerViewController(_customerID: self.workOrder.customer,_customerName: self.workOrder.customerName)
+        let customerViewController = CustomerViewController(_customerID: self.workOrder.customer!,_customerName: self.workOrder.custName!)
         navigationController?.pushViewController(customerViewController, animated: false )
     }
     
@@ -1317,13 +1010,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         return 1
     }
     
-    /*
-    // returns the number of 'columns' to display.
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView) -> Int{
-        return 1
-    }
-    */
-    
+   
     
     // returns the # of rows in each component..
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
@@ -1410,11 +1097,11 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
             
             self.layoutVars.playSaveSound()
             
-            self.statusValue = self.statusValueToUpdate
-            self.setStatus(status: self.statusValue)
+            self.workOrder.status = self.statusValueToUpdate
+            self.setStatus(status: self.workOrder.status)
           
         if(self.scheduleDelegate != nil){
-                self.scheduleDelegate.reDrawSchedule(_index: self.scheduleIndex, _status: self.statusValue, _price: self.priceValue!, _cost: self.costValue!, _priceRaw: self.priceRawValue!, _costRaw: self.costRawValue!)
+                self.scheduleDelegate.reDrawSchedule(_index: self.scheduleIndex, _status: self.workOrder.status, _price: self.workOrder.totalPrice, _cost: self.workOrder.totalCost, _priceRaw: self.workOrder.totalPriceRaw, _costRaw: self.workOrder.totalCostRaw)
                 }
             }.responseString() {
                 response in
@@ -1431,27 +1118,31 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         //return self.woItemsArray.count
-        var count:Int!
-        count = self.woItemsArray.count + 1
-        return count
+       // var count:Int!
+       // count = self.woItemsArray.count + 1
+        
+        return self.workOrder.woItems!.count + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell:WoItemTableViewCell = itemsTableView.dequeueReusableCell(withIdentifier: "cell") as! WoItemTableViewCell
         
-        if(indexPath.row == self.woItemsArray.count){
+       // if(indexPath.row == self.woItemsArray.count){
+        if(indexPath.row == self.workOrder.woItems!.count){
             //cell add btn mode
             cell.layoutAddBtn()
         }else{
-            cell.woItem = self.woItemsArray[indexPath.row]
+            
+            print("item count = \(self.workOrder.woItems!.count)")
+            cell.woItem = self.workOrder.woItems![indexPath.row]
             
             cell.layoutViews()
             
             
-            cell.setStatus(status: cell.woItem.itemStatus)
-            cell.nameLbl.text = cell.woItem.name
-            cell.estLbl.text = cell.woItem.est
-            cell.actLbl.text = cell.woItem.usageQty
+            cell.setStatus(status: cell.woItem.status)
+            cell.nameLbl.text = cell.woItem.item
+            cell.estLbl.text = cell.woItem.est!
+            cell.actLbl.text = cell.woItem.usageQty!
         }
         return cell;
     }
@@ -1459,43 +1150,44 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        /*
-        if(scheduleDelegate != nil){
-            scheduleDelegate.cancelSearch()
-        }
-        if(customerDelegate != nil){
-            customerDelegate.cancelSearch()
-        }
- */
+       
         
         
-        
-        if(indexPath.row == self.woItemsArray.count){
+        if(indexPath.row == self.workOrder.woItems!.count){
             self.addItem()
             let indexPath = tableView.indexPathForSelectedRow
             tableView.deselectRow(at: indexPath!, animated: false)
         }else{
             let indexPath = tableView.indexPathForSelectedRow
             let currentCell = tableView.cellForRow(at: indexPath!) as! WoItemTableViewCell;
+            
+            
             if(currentCell.woItem != nil && currentCell.woItem.ID != ""){
-                self.woItemViewController = WoItemViewController(_woID: self.workOrder.ID, _woItem: currentCell.woItem, _empsOnWo: self.empsOnWo, _woStatus: self.statusValue)
-                if self.workOrder.lead != nil{
-                    self.woItemViewController?.lead = self.workOrder.lead
-                }
+                self.woItemViewController = WoItemViewController(_woID: self.workOrder.ID, _woItem: currentCell.woItem, _empsOnWo: self.workOrder.emps!, _woStatus: self.workOrder.status)
+                
+                
                 woItemViewController?.leadDelegate = self
                 
-                //self.woItemViewController!.woItem = self.currentWoItem
-                self.woItemViewController?.customerID = self.workOrder.customer
-                self.woItemViewController?.customerName = self.workOrder.customerName
-                self.woItemViewController?.saleRepName = self.workOrder.repName
+                
+                self.woItemViewController?.customerID = self.workOrder.customer!
+                self.woItemViewController?.customerName = self.workOrder.custName!
+                
+                
+                
+                
+                
+                
+                self.woItemViewController?.saleRepName = self.workOrder.repName!
                 
                 self.woItemViewController!.woDelegate = self
-                print("task count = \(currentCell.woItem.tasks.count)")
+               // print("task count = \(currentCell.woItem.tasks!.count)")
                 // print("task image  count = \(currentCell.woItem.tasks)")
-                self.woItemViewController?.tasks = currentCell.woItem.tasks
+                
                 
                 self.woItemViewController?.leadTasksWaiting = self.leadTasksWaiting
-                self.woItemViewController?.layoutViews()
+                //self.woItemViewController?.layoutViews()
+                
+                self.woItemViewController?.getWoItem(woItemID: currentCell.woItem.ID)
                 
                 navigationController?.pushViewController(self.woItemViewController!, animated: false )
                 tableView.deselectRow(at: indexPath!, animated: false)
@@ -1508,13 +1200,13 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
     func addItem(){
-        print("add item rep: \(self.workOrder.repName)")
+        //print("add item rep: \(self.workOrder.repName)")
         
         
-        if(self.json["charge"].stringValue == "2" && self.appDelegate.loggedInEmployee?.ID != self.workOrder.rep){
+        if(self.workOrder.charge! == "2" && self.appDelegate.loggedInEmployee?.ID != self.workOrder.rep){
             var message:String = ""
-            if(self.workOrder.repName != "No Rep"){
-                message = "Contact sales rep: \(self.workOrder.repName) or the office to add items to this work order."
+            if(self.workOrder.repName != nil){
+                message = "Contact sales rep: \(self.workOrder.repName!) or the office to add items to this work order."
             }else{
                 message = "Contact the office to add items to this work order."
             }
@@ -1537,14 +1229,11 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
         
         
-        let newWoItemViewController:NewWoItemViewController = NewWoItemViewController(_woID: self.workOrder.ID, _charge: self.json["charge"].stringValue)
+        let newWoItemViewController:NewWoItemViewController = NewWoItemViewController(_woID: self.workOrder.ID, _charge: self.workOrder.charge!)
         
         newWoItemViewController.delegate = self
         
-        
-        //print("url = https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php?cb=\(timeStamp)")
-        
-       // print("self.selectedImages.count = \(selectedImages.count)")
+      
         //cache buster
         let now = Date()
         let timeInterval = now.timeIntervalSince1970
@@ -1558,17 +1247,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         self.navigationController?.pushViewController(newWoItemViewController, animated: false )
         
 
-        
-        
-        
-
-        
     }
-    
-    
-    
-    
-    
     
     
     
@@ -1679,10 +1358,10 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         
-       // self.equipmentDelegate.disableSearch()
         let newEditWorkOrderViewController = NewEditWoViewController(_wo:self.workOrder )
         newEditWorkOrderViewController.editDelegate = self
         navigationController?.pushViewController(newEditWorkOrderViewController, animated: false )
+        
     }
     
     
@@ -1693,7 +1372,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
    
-    func newLeadView(_lead:Lead){
+    func newLeadView(_lead:Lead2){
         
         let leadViewController:LeadViewController = LeadViewController(_lead: _lead)
         //leadViewController
@@ -1702,7 +1381,7 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     
-    func newContractView(_contract:Contract){
+    func newContractView(_contract:Contract2){
         
         let contractViewController:ContractViewController = ContractViewController(_contract: _contract)
         contractViewController.editLeadDelegate = self
@@ -1710,17 +1389,11 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
         
     }
     
-    func newWorkOrderView(_workOrder:WorkOrder){
-        
-        //self.navigationController?.pushViewController(_view, animated: false )
-        //let workOrderViewController:WorkOrderViewController = WorkOrderViewController(_workOrder: _workOrder, _customerName: _workOrder.customerName)
-        //workOrderViewController.editLeadDelegate = self
-        //self.navigationController?.pushViewController(workOrderViewController, animated: false )
-        
+    func newWorkOrderView(_workOrder:WorkOrder2){
         
     }
     
-    func newInvoiceView(_invoice:Invoice){
+    func newInvoiceView(_invoice:Invoice2){
         
         
         let invoiceViewController:InvoiceViewController = InvoiceViewController(_invoice: _invoice)
@@ -1750,21 +1423,26 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
     
-    /*
-    func getLead(_lead:Lead){
-        self.workOrder.lead = _lead
-    }
- */
-    
     
     //lead Delegate
-    func updateLead(_lead:Lead,_newStatusValue:String){
+    func updateLead(_lead:Lead2,_newStatusValue:String){
         print("updateLead in work order view")
+        
+        
+        
+        
+        
+        /*
         self.workOrder.lead = _lead
         self.editsMade = true
         if self.editLeadDelegate != nil{
             self.editLeadDelegate.updateLead(_lead: self.workOrder.lead!, _newStatusValue: (self.workOrder.lead?.statusId)!)
         }
+        */
+        
+        
+        
+        
         
         
         
@@ -1780,14 +1458,20 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
     @objc func goBack(){
         if((self.usageDelegate) != nil){
             if(self.tableCellID! >= 0){
-                self.usageDelegate?.reDrawList(_index: self.tableCellID!, _status: self.statusValue)
+                self.usageDelegate?.reDrawList(_index: self.tableCellID!, _status: self.workOrder.status)
             }
         }
         
+        
+        
+        /*
         print("go back editsMade: \(self.editsMade)")
         if editLeadDelegate != nil && self.editsMade == true{
             editLeadDelegate.updateLead(_lead: self.workOrder.lead!, _newStatusValue: (self.workOrder.lead?.statusId!)!)
         }
+        */
+        
+        
         
         
         _ = navigationController?.popViewController(animated: false)

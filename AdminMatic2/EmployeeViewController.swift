@@ -53,7 +53,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     //employee images
     var totalImages:Int!
     //var images: JSON!
-    var imageArray:[Image] = []
+    var imageArray:[Image2] = []
     
     var noImagesLbl:Label = Label()
     
@@ -278,13 +278,19 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                             
                             
                             
-                            let image = Image(_id: images[i]["ID"] as? String,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: images[i]["name"] as? String,_width: images[i]["width"] as? String,_height: images[i]["height"] as? String,_description: images[i]["description"] as? String,_dateAdded: images[i]["dateAdded"] as? String,_createdBy: images[i]["createdByName"] as? String,_type: images[i]["type"] as? String)
+                           // let image = Image(_id: images[i]["ID"] as? String,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: images[i]["name"] as? String,_width: images[i]["width"] as? String,_height: images[i]["height"] as? String,_description: images[i]["description"] as? String,_dateAdded: images[i]["dateAdded"] as? String,_createdBy: images[i]["createdByName"] as? String,_type: images[i]["type"] as? String)
+                            
+                            let image = Image2(_id: images[i]["ID"] as! String, _fileName: "", _name: images[i]["name"] as! String, _width: images[i]["width"] as! String, _height: images[i]["height"] as! String, _description: images[i]["description"] as! String, _dateAdded: images[i]["dateAdded"] as! String, _createdBy: images[i]["createdByName"] as! String, _type: images[i]["type"] as! String)
+                            
+                            image.thumbPath = thumbPath
+                            image.mediumPath = mediumPath
+                            image.rawPath = rawPath
                             
                             image.customer = images[i]["customer"] as! String
-                            image.customerName = images[i]["customerName"] as! String
-                            image.tags = images[i]["tags"] as! String
-                            image.liked =  images[i]["liked"] as! String //images[i]["liked"] as! String
-                            image.likes = images[i]["likes"] as! String
+                            image.custName = images[i]["customerName"] as! String
+                            image.tags = images[i]["tags"] as? String
+                            image.liked =  images[i]["liked"] as? String //images[i]["liked"] as! String
+                            image.likes = images[i]["likes"] as? String
                             image.index = i
                             
                             
@@ -377,7 +383,12 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                 
                 self.employeeImage.image = image
                 
-                let image2 = Image(_path: self.employee.pic)
+                
+                let image2 = Image2(_id: "", _fileName: "", _name: "", _width:"", _height: "", _description: "", _dateAdded: "", _createdBy: "", _type: "")
+                image2.mediumPath = "https://atlanticlawnandgarden.com/uploads/general/medium/"+self.employee.pic!
+                
+                
+                //let image2 = Image(_path: self.employee.pic)
                 //let image2 = Image(_path: "https://atlanticlawnandgarden.com/uploads/general/medium/"+self.employee.pic!)
                 //self.imageFullViewController = ImageFullViewController(_image: image2)
                 self.imageDetailViewController = ImageDetailViewController(_image: image2)
@@ -828,7 +839,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         //print("name = \(self.imageArray)")
         
        // print("name = \(self.imageArray[indexPath.row].name!)")
-        cell.textLabel.text = " \(self.imageArray[indexPath.row].customerName)"
+        cell.textLabel.text = " \(self.imageArray[indexPath.row].custName)"
         cell.image = self.imageArray[indexPath.row]
         cell.activityView.startAnimating()
         
@@ -983,7 +994,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
     }
  */
     
-    func refreshImages(_images:[Image]){
+    func refreshImages(_images:[Image2]){
         print("refreshImages")
         
     }
@@ -1125,9 +1136,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                                
                                 
                                 self.appDelegate.scheduleViewController.personalScheduleArray.removeAll()
-                                self.appDelegate.scheduleViewController.personalHistoryArray.removeAll()
-                                self.appDelegate.scheduleViewController.personalHistoryLoaded = false
-                                self.appDelegate.scheduleViewController.personalScheduleLoaded = false
+                                 self.appDelegate.scheduleViewController.personalScheduleLoaded = false
                                 
                                 self.logInOutBtn.removeTarget(nil, action: nil, for: UIControl.Event.allEvents)
                                 self.logInOutBtn.addTarget(self, action: #selector(self.logOut), for: UIControl.Event.touchUpInside)
@@ -1201,8 +1210,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         
         
         self.appDelegate.scheduleViewController.personalScheduleArray.removeAll()
-        self.appDelegate.scheduleViewController.personalHistoryArray.removeAll()
-        self.appDelegate.scheduleViewController.personalHistoryLoaded = false
+       
         self.appDelegate.scheduleViewController.personalScheduleLoaded = false
         
         
@@ -1243,7 +1251,10 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         //print("show full screen")
         
         if self.employee.pic != nil{
-            let image2 = Image(_path: self.employee.pic)
+            //let image2 = Image(_path: self.employee.pic)
+            
+            let image2 = Image2(_id: "", _fileName: "", _name: "", _width:"", _height: "", _description: "", _dateAdded: "", _createdBy: "", _type: "")
+            image2.mediumPath = "https://atlanticlawnandgarden.com/uploads/general/medium/"+self.employee.pic!
             //let image2 = Image(_path: "https://atlanticlawnandgarden.com/uploads/general/medium/"+self.employee.pic!)
             //self.imageFullViewController = ImageFullViewController(_image: image2)
             self.imageDetailViewController = ImageDetailViewController(_image: image2)

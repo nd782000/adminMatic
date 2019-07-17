@@ -71,25 +71,25 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
     var tableViewMode:String = "SCHEDULE"
     
     
-    var customerLeadArray:[Lead] = []
+    var customerLeadArray:[Lead2] = []
     
     var leadViewController:LeadViewController!
     
     var addLeadBtn:Button!
     
-    var customerContractArray:[Contract] = []
+    var customerContractArray:[Contract2] = []
     
     var contractViewController:LeadViewController!
     
     var addContractBtn:Button!
     
-    var customerScheduleArray:[WorkOrder] = []
+    var customerScheduleArray:[WorkOrder2] = []
     
     
     var addWorkOrderBtn:Button!
     
     
-    var customerInvoiceArray:[Invoice] = []
+    var customerInvoiceArray:[Invoice2] = []
     var addInvoiceBtn:Button!
     
     var noLeadsLabel:Label = Label()
@@ -99,7 +99,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
     var noImagesLbl:Label = Label()
     
     var totalImages:Int!
-    var imageArray:[Image] = []
+    var imageArray:[Image2] = []
     
     let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
     var imageCollectionView: UICollectionView?
@@ -338,13 +338,33 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                             //create an object
                            // print("create a lead object \(i)")
                             
-                            
+                            /*
                             //as! String
                             let lead =  Lead(_ID: leads[i]["ID"] as? String, _statusID: leads[i]["status"] as? String, _scheduleType: leads[i]["timeType"] as? String, _date: leads[i]["date"] as? String, _time: leads[i]["time"] as? String, _statusName: leads[i]["statusName"] as? String, _customer: leads[i]["customer"] as? String, _customerName: leads[i]["custName"] as? String, _urgent: leads[i]["urgent"] as? String, _description: leads[i]["description"] as? String, _rep: leads[i]["salesRep"] as? String, _repName: leads[i]["repName"] as? String, _deadline: leads[i]["deadline"] as? String, _requestedByCust: leads[i]["requestedByCust"] as? String, _createdBy: leads[i]["createdBy"] as? String, _daysAged: leads[i]["daysAged"] as? String)
                             
                             lead.dateNice = leads[i]["dateNice"] as? String
                             
                             lead.custNameAndID = "\(lead.customerName!) #\(lead.ID!)"
+                            */
+                            
+                            let lead =  Lead2(_ID: (leads[i]["ID"] as? String)!, _statusID: (leads[i]["status"] as? String)!, _scheduleType: (leads[i]["timeType"] as? String)!, _createdBy: (leads[i]["createdBy"] as? String)!)
+                            
+                            lead.date = leads[i]["date"] as? String
+                            lead.time = leads[i]["time"] as? String
+                            lead.statusName = leads[i]["statusName"] as? String
+                            //let customer = Customer2(_ID: (leads[i]["customer"] as? String)!, _sysname: (leads[i]["custName"] as? String)!)
+                            lead.customerID = (leads[i]["customer"] as? String)!
+                            lead.customerName = (leads[i]["custName"] as? String)!
+                            lead.urgent = leads[i]["urgent"] as? String
+                            lead.description = leads[i]["description"] as? String
+                            lead.rep = leads[i]["salesRep"] as? String
+                            lead.repName = leads[i]["repName"] as? String
+                            lead.deadline = leads[i]["deadline"] as? String
+                            lead.requestedByCust = leads[i]["requestedByCust"] as? String
+                            lead.daysAged = leads[i]["daysAged"] as? String
+                            
+                            
+                            
                             
                            // print("json zone = \(leads[i]["zone"] as! String)")
                             
@@ -424,8 +444,40 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
             .responseJSON() {
                 response in
                 
+                do{
+                    //created the json decoder
+                    let json = response.data
+                    
+                    //print("json = \(json)")
+                    
+                    let decoder = JSONDecoder()
+                    
+                    let parsedData = try decoder.decode(ContractArray.self, from: json!)
+                    print("parsedData = \(parsedData)")
+                    let contracts = parsedData
+                    
+                    
+                    let contractCount = contracts.contracts.count
+                    print("contract count = \(contractCount)")
+                    
+                    for i in 0 ..< contractCount {
+                        //create an object
+                        print("create a contract object \(i)")
+                        
+                        self.customerContractArray.append(contracts.contracts[i])
+                    }
+                    
+                    self.indicator.dismissIndicator()
+                    self.layoutViews()
+                    
+                }catch let err{
+                    print(err)
+                }
                 
                 
+                
+                
+                /*
                 //native way
                 
                 do {
@@ -447,9 +499,9 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                             
                             
                             //as! String
-                            let contract = Contract(_ID: contracts[i]["ID"] as? String, _title: contracts[i]["title"] as? String, _status: contracts[i]["status"] as? String, _statusName: contracts[i]["statusName"] as? String, _chargeType: contracts[i]["chargeType"] as? String, _customer: contracts[i]["customer"] as? String, _customerName: contracts[i]["custName"] as? String, _notes: contracts[i]["notes"] as? String, _salesRep: contracts[i]["salesRep"] as? String, _repName: contracts[i]["repName"] as? String, _createdBy: contracts[i]["createdBy"] as? String, _createDate: contracts[i]["createDate"] as? String, _subTotal: contracts[i]["subTotal"] as? String, _taxTotal: contracts[i]["taxTotal"] as? String, _total: contracts[i]["total"] as? String, _terms: contracts[i]["termsDescription"] as? String, _daysAged: contracts[i]["daysAged"] as? String)
+                            //let contract = Contract(_ID: contracts[i]["ID"] as? String, _title: contracts[i]["title"] as? String, _status: contracts[i]["status"] as? String, _statusName: contracts[i]["statusName"] as? String, _chargeType: contracts[i]["chargeType"] as? String, _customer: contracts[i]["customer"] as? String, _customerName: contracts[i]["custName"] as? String, _notes: contracts[i]["notes"] as? String, _salesRep: contracts[i]["salesRep"] as? String, _repName: contracts[i]["repName"] as? String, _createdBy: contracts[i]["createdBy"] as? String, _createDate: contracts[i]["createDate"] as? String, _subTotal: contracts[i]["subTotal"] as? String, _taxTotal: contracts[i]["taxTotal"] as? String, _total: contracts[i]["total"] as? String, _terms: contracts[i]["termsDescription"] as? String, _daysAged: contracts[i]["daysAged"] as? String)
                             
-                            
+                           // let contract = Contract2(_ID: contracts[i]["ID"] as String, _title: contracts[i]["title"] as? String, _status: contracts[i]["status"] as? String, _createdBy: contracts[i]["createdBy"] as? String)
                             
                             
                             contract.custNameAndID = "\(contract.customerName!) #\(contract.ID!)"
@@ -478,7 +530,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                 } catch {
                     //print("Error deserializing JSON: \(error)")
                 }
-                
+                */
                 
         }
         
@@ -506,6 +558,37 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
             //print(response.result)   // result of response serialization
             
             
+            
+            do{
+                //created the json decoder
+                let json = response.data
+                //print("json = \(json)")
+                
+                let decoder = JSONDecoder()
+                let parsedData = try decoder.decode(WorkOrderArray.self, from: json!)
+                
+                print("parsedData = \(parsedData)")
+                
+                let workOrders = parsedData
+                
+                let workOrderCount = workOrders.workOrders.count
+                print("workOrder count = \(workOrderCount)")
+                
+                for i in 0 ..< workOrderCount {
+                    //create an object
+                    print("create a workOrder object \(i)")
+                    self.customerScheduleArray.append(workOrders.workOrders[i])
+                }
+                
+                self.getInvoices()
+                
+            }catch let err{
+                print(err)
+            }
+
+            
+            
+            /*
             
             
             //native way
@@ -543,6 +626,8 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
             } catch {
                 //print("Error deserializing JSON: \(error)")
             }
+ */
+            
            
         }
         
@@ -573,7 +658,54 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                 response in
                 
                 
+                do{
+                    //created the json decoder
+                    let json = response.data
+                    let decoder = JSONDecoder()
+                    
+                    let parsedData = try decoder.decode(InvoiceArray.self, from: json!)
+                    
+                    print("parsedData = \(parsedData)")
+                    
+                    let invoices = parsedData
+                    
+                    let invoiceCount = invoices.invoices.count
+                    print("invoice count = \(invoiceCount)")
+                    
+                    
+                    
+                    
+                    for i in 0 ..< invoiceCount {
+                        
+                        
+                        invoices.invoices[i].totalPrice = self.layoutVars.numberAsCurrency(_number: invoices.invoices[i].totalPrice)
+                        //create an object
+                        print("create a invoice object \(i)")
+                        
+                       // self.invoiceArray.invoices.append(invoices.invoices[i])
+                        
+                        self.customerInvoiceArray.append(invoices.invoices[i])
+                        
+                    }
+                    
+                    self.indicator.dismissIndicator()
+                    
+                    if self.displayImages{
+                        self.getImages()
+                    }else{
+                        
+                        self.layoutViews()
+                    }
+                    
+                    
+                    
+                }catch let err{
+                    print(err)
+                }
                 
+                
+                
+                /*
                 //native way
                 
                 do {
@@ -591,7 +723,9 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                             //create an object
                            // print("create a invoice object \(i)")
                             
-                            let invoice = Invoice(_ID: (invoices[i]["ID"] as? String)!, _date: (invoices[i]["invoiceDate"] as? String)!,_customer: (invoices[i]["customer"] as? String)!, _customerName: (invoices[i]["custName"] as? String)!, _totalPrice: self.layoutVars.numberAsCurrency(_number:(invoices[i]["total"] as? String)!), _status: (invoices[i]["invoiceStatus"] as? String)!)
+                            //let invoice = Invoice(_ID: (invoices[i]["ID"] as? String)!, _date: (invoices[i]["invoiceDate"] as? String)!,_customer: (invoices[i]["customer"] as? String)!, _customerName: (invoices[i]["custName"] as? String)!, _totalPrice: self.layoutVars.numberAsCurrency(_number:(invoices[i]["total"] as? String)!), _status: (invoices[i]["invoiceStatus"] as? String)!)
+                            
+                             let invoice = Invoice2(_ID: (invoices[i]["ID"] as? String)!, _date: (invoices[i]["invoiceDate"] as? String)!, _totalPrice: self.layoutVars.numberAsCurrency(_number:(invoices[i]["total"] as? String)!), _status: (invoices[i]["invoiceStatus"] as? String)!,_customerID: (invoices[i]["customer"] as? String)!, _customerName: (invoices[i]["custName"] as? String)!)
                             
                             
                             invoice.title = (invoices[i]["title"] as? String)!
@@ -619,6 +753,10 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                 } catch {
                   //  print("Error deserializing JSON: \(error)")
                 }
+ 
+ */
+                
+                
                 
         }
         
@@ -628,7 +766,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
     func getImages() {
         //remove any added views (needed for table refresh
         
-        //print("get images")
+        print("get images")
        
         if imagesLoadedInitial{
             switchTableView(_displayMode: "IMAGES")
@@ -659,7 +797,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                         let images = json["images"] as? [[String: Any]] {
                         
                         let imageCount = images.count
-                        //print("image count = \(imageCount)")
+                        print("image count = \(imageCount)")
                         
                         let thumbBase:String = json["thumbBase"] as! String
                         let mediumBase:String = json["mediumBase"] as! String
@@ -678,15 +816,21 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                             let rawPath:String = "\(rawBase)\(images[i]["fileName"] as! String)"
                             
                             //create a item object
-                            //print("create an image object \(i)")
+                            print("create an image object \(i)")
                            
-                            let image = Image(_id: images[i]["ID"] as? String,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: images[i]["name"] as? String,_width: images[i]["width"] as? String,_height: images[i]["height"] as? String,_description: images[i]["description"] as? String,_dateAdded: images[i]["dateAdded"] as? String,_createdBy: images[i]["createdByName"] as? String,_type: images[i]["type"] as? String)
+                            //let image = Image(_id: images[i]["ID"] as? String,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: images[i]["name"] as? String,_width: images[i]["width"] as? String,_height: images[i]["height"] as? String,_description: images[i]["description"] as? String,_dateAdded: images[i]["dateAdded"] as? String,_createdBy: images[i]["createdByName"] as? String,_type: images[i]["type"] as? String)
+                            
+                            let image = Image2(_id: images[i]["ID"] as! String, _fileName: "", _name: images[i]["name"] as! String, _width: images[i]["width"] as! String, _height: images[i]["height"] as! String, _description: images[i]["description"] as! String, _dateAdded: images[i]["dateAdded"] as! String, _createdBy: images[i]["createdByName"] as! String, _type: images[i]["type"] as! String)
+                            
+                            image.thumbPath = thumbPath
+                            image.mediumPath = mediumPath
+                            image.rawPath = rawPath
                             
                             image.customer = images[i]["customer"] as! String
-                            image.customerName = images[i]["customerName"] as! String
-                            image.tags = images[i]["tags"] as! String
-                            image.liked =  images[i]["liked"] as! String //images[i]["liked"] as! String
-                            image.likes = images[i]["likes"] as! String
+                            image.custName = images[i]["customerName"] as! String
+                            image.tags = images[i]["tags"] as? String
+                            image.liked =  images[i]["liked"] as? String //images[i]["liked"] as! String
+                            image.likes = images[i]["likes"] as? String
                             image.index = i
                            
                             self.imageArray.append(image)
@@ -1097,9 +1241,24 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     @objc func addWorkOrder(){
+        
+        
+        
+        /*
+        let newWorkOrderViewController = NewEditWoViewController(_customer: <#T##Customer2#>)
+        
+        
+        
         let newWorkOrderViewController = NewEditWoViewController(_customer: self.customerID, _customerName: self.customerName)
         newWorkOrderViewController.delegate = self
         navigationController?.pushViewController(newWorkOrderViewController, animated: false )
+ 
+ 
+ */
+        
+        
+        
+        
         
     }
     
@@ -1171,7 +1330,8 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
         var selectedAssets = [DKAsset]()
         
         
-        var selectedImages:[Image] = [Image]()
+        var selectedImages:[Image2] = [Image2]()
+        var selectedUIImages:[UIImage] = [UIImage]()
         
         multiPicker.showsCancelButton = true
         multiPicker.assetType = .allPhotos
@@ -1194,12 +1354,20 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                     
                     //print("making image 1")
                     
-                    let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
+                    //let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
                     
-                    imageToAdd.image = image
+                    let imageToAdd:Image2 = Image2(_id: "0", _fileName: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId)!, _type: "")
+                    imageToAdd.thumbPath = ""
+                    imageToAdd.mediumPath = ""
+                    imageToAdd.rawPath = ""
+                    
+                    
+                    //imageToAdd.image = image
                     
                     
                     selectedImages.append(imageToAdd)
+                    selectedUIImages.append(image!)
+                    
                     print("selectedimages count = \(selectedImages.count)")
                     
                     if selectedImages.count == assets.count{
@@ -1212,7 +1380,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                         
                         
                         
-                        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Customer", _customerID: self.customerID, _images: selectedImages)
+                        let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Customer", _customerID: self.customerID, _images: selectedImages, _uiImages: selectedUIImages)
                         
                         
                         
@@ -1286,7 +1454,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
         ////print("name = \(self.imageArray)")
         
             //print("name = \(self.imageArray[indexPath.row].name!)")
-            cell.textLabel.text = " \(self.imageArray[indexPath.row].name!)"
+            cell.textLabel.text = " \(self.imageArray[indexPath.row].name)"
             cell.image = self.imageArray[indexPath.row]
             cell.activityView.startAnimating()
             
@@ -1428,7 +1596,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
             
             
             cell.firstItemLbl.text = cell.lead!.description!
-            cell.setStatus(status: cell.lead!.statusId)
+            cell.setStatus(status: cell.lead!.statusID)
             
             
             
@@ -1455,8 +1623,8 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
             }
             
             
-            cell.firstItemLbl.text = "\(String(describing: cell.contract!.title!)) #\(cell.contract!.ID!)"
-            cell.setStatus(status: (cell.contract!.status)!,type:"CONTRACT")
+            cell.firstItemLbl.text = "\(String(describing: cell.contract!.title)) #\(cell.contract!.ID)"
+            cell.setStatus(status: cell.contract!.status,type:"CONTRACT")
             
             
             
@@ -1470,19 +1638,19 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
             cell.workOrder = self.customerScheduleArray[indexPath.row]
             cell.layoutViews(_scheduleMode: "CUSTOMER")
             cell.dateLbl.text = cell.workOrder.date
-            cell.firstItemLbl.text = "\(cell.workOrder.title!) #\(cell.workOrder.ID!)"
-            cell.setStatus(status: cell.workOrder.statusId)
+            cell.firstItemLbl.text = "\(cell.workOrder.title) #\(cell.workOrder.ID)"
+            cell.setStatus(status: cell.workOrder.status)
            
             
             
             
-            cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
+            cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge!) //chargeTypeName
             
           
-            cell.priceLbl.text = cell.workOrder.totalPrice!
+            cell.priceLbl.text = cell.workOrder.totalPrice
              //print("cell.workOrder.totalPrice! = \(cell.workOrder.totalPrice!)")
             
-            cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
+            cell.setProfitBar(_price:cell.workOrder.totalPriceRaw, _cost:cell.workOrder.totalCostRaw)
             
             
             
@@ -1497,14 +1665,14 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
             cell.invoice = self.customerInvoiceArray[indexPath.row]
             
             cell.layoutViews(_scheduleMode: "INVOICE")
-            cell.dateLbl.text = cell.invoice!.date!
+            cell.dateLbl.text = cell.invoice!.date
             cell.titleLbl.text = cell.invoice!.title!
-            cell.IDLbl.text = cell.invoice!.ID!
-            cell.priceLbl.text = cell.invoice!.totalPrice!
+            cell.IDLbl.text = cell.invoice!.ID
+            cell.priceLbl.text = cell.invoice!.totalPrice
 
             
             //print("set invoice cell status = \(cell.invoice!.status!)")
-            cell.setStatus(status: cell.invoice!.status!, type: "INVOICE")
+            cell.setStatus(status: cell.invoice!.status, type: "INVOICE")
             
             
             
@@ -1599,7 +1767,7 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
         
         
                 
-            customerScheduleArray[_index].statusId = _status
+            customerScheduleArray[_index].status = _status
             customerScheduleArray[_index].totalPrice = _price
             customerScheduleArray[_index].totalCost = _cost
             customerScheduleArray[_index].totalPriceRaw = _priceRaw
@@ -1659,8 +1827,13 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     
-    func refreshImages(_images:[Image]){
+    func refreshImages(_images:[Image2]){
         print("refreshImages")
+        
+        self.imageArray = []
+        self.lazyLoad = 1
+        imagesLoadedInitial = false
+        self.getImages()
         
     }
     

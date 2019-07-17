@@ -30,7 +30,9 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     
     var searchController:UISearchController!
     var searchTerm:String = ""
-    var leadsSearchResults:[Lead] = []
+    //var leadsSearchResults:[Lead2] = []
+    
+    
     var shouldShowSearchResults:Bool = false
     
     var refreshControl: UIRefreshControl!
@@ -39,9 +41,12 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     var countLbl:Label = Label()
     var addLeadBtn:Button = Button(titleText: "Add New Lead")
     var leadViewController:LeadViewController!
-    var leadsArray:[Lead] = []
+   // var leadsArray:[Lead2] = []
     
     
+    var leadsArray:LeadArray = LeadArray(_leads: [])
+    var leadsSearchResults:LeadArray = LeadArray(_leads: [])
+
     
     
     //settings
@@ -80,11 +85,13 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     
     
     func getLeads(_openNewLead:Bool){
-        //print("getLeads")
+        print("getLeads")
         
         
         
-        self.leadsArray = []
+        //self.leadsArray = []
+        
+        self.leadsArray.leads = []
         
         //cache buster
         let now = Date()
@@ -95,93 +102,41 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         var parameters:[String:String]
         //parameters = ["cb":"\(timeStamp)"]
          parameters = ["status":self.status,"salesRep":self.salesRep,"zone":self.zoneID,"cb":"\(timeStamp)"]
-        //print("parameters = \(parameters)")
+        print("parameters = \(parameters)")
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leads.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                //print("lead response = \(response)")
+                print("lead response = \(response)")
             }
             .responseJSON() {
                 response in
                 
-                //native way
                 
-                do {
-                    if let data = response.data,
-                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                        let leads = json["leads"] as? [[String: Any]] {
+                
+                
+                do{
+                    //created the json decoder
+                    let json = response.data
+                    let decoder = JSONDecoder()
+                    let parsedData = try decoder.decode(LeadArray.self, from: json!)
+                    print("parsedData = \(parsedData)")
+                    let leads = parsedData
+                    let leadCount = leads.leads.count
+                    print("invoice count = \(leadCount)")
+                    for i in 0 ..< leadCount {
+                        //create an object
+                        print("create a lead object \(i)")
                         
-                        let leadCount = leads.count
-                        //print("lead count = \(leadCount)")
-                        
-                        
-                        for i in 0 ..< leadCount {
-                            
-                           
-                            //create an object
-                            //print("create a lead object \(i)")
-                            
-                            
-                             //as! String
-                            let lead =  Lead(_ID: leads[i]["ID"] as? String, _statusID: leads[i]["status"] as? String, _scheduleType: leads[i]["timeType"] as? String, _date: leads[i]["date"] as? String, _time: leads[i]["time"] as? String, _statusName: leads[i]["statusName"] as? String, _customer: leads[i]["customer"] as? String, _customerName: leads[i]["custName"] as? String, _urgent: leads[i]["urgent"] as? String, _description: leads[i]["description"] as? String, _rep: leads[i]["salesRep"] as? String, _repName: leads[i]["repName"] as? String, _deadline: leads[i]["deadline"] as? String, _requestedByCust: leads[i]["requestedByCust"] as? String, _createdBy: leads[i]["createdBy"] as? String, _daysAged: leads[i]["daysAged"] as? String)
-                            
-                            lead.dateNice = leads[i]["dateNice"] as? String
-                            
-                            lead.custNameAndID = "\(lead.customerName!) #\(lead.ID!)"
-                            
-                            //print("json zone = \(leads[i]["zone"] as! String)")
-                            for var n in 0 ..< self.appDelegate.zones.count{
-                                
-                                if leads[i]["zone"] as! String == self.appDelegate.zones[n].ID!{
-                                    lead.zone = self.appDelegate.zones[n]
-                                    n = self.appDelegate.zones.count
-                                }
-                            }
-                            
-                            if lead.zone == nil{
-                                let zone:Zone = Zone(_ID: "0", _name: "None")
-                                lead.zone = zone
-                            }
-                            
-                            
-                            lead.custNameAndZone = "\(lead.customerName!) \(lead.zone.name!)"
-                            
-                            lead.description = "Zone: \(lead.zone.name!) - \(lead.description!)"
-                            
-                            
-                            self.leadsArray.append(lead)
-                            
-                        }
+                        leads.leads[i].custNameAndID = "\(leads.leads[i].customerName!) #\(leads.leads[i].ID)"
+                        self.leadsArray.leads.append(leads.leads[i])
                     }
-                    
-                    
                     
                     self.indicator.dismissIndicator()
-                    
-                    
                     self.layoutViews()
-                    
-                    
-                    if _openNewLead {
-                        //print("open new lead")
-                        
-                        
-                        self.leadViewController = LeadViewController(_lead: self.leadsArray[0])
-                        self.leadViewController.delegate = self
-                        self.navigationController?.pushViewController(self.leadViewController, animated: false )
-                        
-                        
-                    }
-                    
-                    
-                    
-                } catch {
-                    //print("Error deserializing JSON: \(error)")
+                }catch let err{
+                    print(err)
                 }
- 
-                
-                
                 
         }
         
@@ -325,11 +280,11 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
     func filterSearchResults(){
         
         //print("filterSearchResults")
-        self.leadsSearchResults = []
+        self.leadsSearchResults.leads = []
         
        
         
-        self.leadsSearchResults = self.leadsArray.filter({( aLead: Lead) -> Bool in
+        self.leadsSearchResults.leads = self.leadsArray.leads.filter({( aLead: Lead2) -> Bool in
             
             //return type name or name
             return (aLead.custNameAndID!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil  || aLead.description!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
@@ -380,12 +335,12 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         
         
         if shouldShowSearchResults{
-            self.countLbl.text = "\(self.leadsSearchResults.count) Lead(s) Found"
-            return self.leadsSearchResults.count
+            self.countLbl.text = "\(self.leadsSearchResults.leads.count) Lead(s) Found"
+            return self.leadsSearchResults.leads.count
         } else {
             //print("self.leadsArray.count = \(self.leadsArray.count)")
-            self.countLbl.text = "\(self.leadsArray.count) Active Lead(s) "
-            return self.leadsArray.count
+            self.countLbl.text = "\(self.leadsArray.leads.count) Active Lead(s) "
+            return self.leadsArray.leads.count
         }
         
         
@@ -403,7 +358,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
         
         if shouldShowSearchResults{
             
-            cell.lead = self.leadsSearchResults[indexPath.row]
+            cell.lead = self.leadsSearchResults.leads[indexPath.row]
             
             let searchString = self.searchController.searchBar.text!.lowercased()
             
@@ -412,8 +367,8 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
             
             
             
-            let baseString:NSString = self.leadsSearchResults[indexPath.row].custNameAndID! as NSString
-            let highlightedText = NSMutableAttributedString(string: self.leadsSearchResults[indexPath.row].custNameAndID!)
+            let baseString:NSString = self.leadsSearchResults.leads[indexPath.row].custNameAndID! as NSString
+            let highlightedText = NSMutableAttributedString(string: self.leadsSearchResults.leads[indexPath.row].custNameAndID!)
             
             var error: NSError?
             let regex: NSRegularExpression?
@@ -432,8 +387,8 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
             }
             
             
-            let baseString2:NSString = self.leadsSearchResults[indexPath.row].description!  as NSString
-            let highlightedText2 = NSMutableAttributedString(string: self.leadsSearchResults[indexPath.row].description!)
+            let baseString2:NSString = self.leadsSearchResults.leads[indexPath.row].description!  as NSString
+            let highlightedText2 = NSMutableAttributedString(string: self.leadsSearchResults.leads[indexPath.row].description!)
             
             var error2: NSError?
             let regex2: NSRegularExpression?
@@ -461,7 +416,7 @@ class LeadListViewController: ViewControllerWithMenu, UISearchControllerDelegate
             
             
         } else {
-            cell.lead = self.leadsArray[indexPath.row]
+            cell.lead = self.leadsArray.leads[indexPath.row]
            // cell.name = "\(cell.lead.customerName!) #\(cell.lead.ID!)"
             cell.layoutViews()
         }

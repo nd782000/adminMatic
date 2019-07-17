@@ -11,7 +11,7 @@ import UIKit
 
 class ContractTableViewCell: UITableViewCell {
     var layoutVars:LayoutVars = LayoutVars()
-    var contract:Contract!
+    var contract:Contract2!
     var statusIcon: UIImageView!
     var titleLbl: UILabel!
     var descriptionLbl: UILabel!
@@ -72,7 +72,7 @@ class ContractTableViewCell: UITableViewCell {
         
         titleLbl.text = self.contract.custNameAndID!
         
-        descriptionLbl.text = contract.title!
+        descriptionLbl.text = contract.title
         
         if contract.daysAged! == "0"{
             daysAgedLbl.text = "Today"

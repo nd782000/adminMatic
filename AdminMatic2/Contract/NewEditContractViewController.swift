@@ -24,8 +24,8 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     var json:JSON!
     
     //var lead:Lead!
-    var taskArray:[Task]!
-    var contract:Contract!
+    var taskArray:[Task2]!
+    var contract:Contract2!
     
     let dateFormatter = DateFormatter()
     
@@ -95,7 +95,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     }
     
     //init for edit
-    init(_contract:Contract){
+    init(_contract:Contract2){
         super.init(nibName:nil,bundle:nil)
         //print("lead init \(_leadID)")
         //for an empty lead to start things off
@@ -108,25 +108,44 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     init(_customer:String,_customerName:String){
         super.init(nibName:nil,bundle:nil)
         
-        self.contract = Contract(_ID: "0", _title: "", _status: "0", _statusName: "New", _chargeType: "", _customer: _customer, _customerName: _customerName, _notes: "", _salesRep: "", _repName: "", _createdBy: appDelegate.loggedInEmployee?.ID!, _createDate: "", _subTotal: "0", _taxTotal: "0", _total: "0", _terms: "", _daysAged: "0")
+       // self.contract = Contract(_ID: "0", _title: "", _status: "0", _statusName: "New", _chargeType: "", _customer: _customer, _customerName: _customerName, _notes: "", _salesRep: "", _repName: "", _createdBy: appDelegate.loggedInEmployee?.ID!, _createDate: "", _subTotal: "0", _taxTotal: "0", _total: "0", _terms: "", _daysAged: "0")
         
+        self.contract = Contract2(_ID: "0", _title: "", _status: "0", _createdBy: (appDelegate.loggedInEmployee?.ID!)!)
+        self.contract.statusName = "New"
+        self.contract.chargeType = ""
+        self.contract.customerID = _customer
+        self.contract.customerName = _customerName
+        self.contract.notes = ""
+        self.contract.salesRep = ""
+        self.contract.repName = ""
+        self.contract.createDate = ""
+        self.contract.subTotal = "0"
+        self.contract.taxTotal = "0"
+        self.contract.total = "0"
+        self.contract.terms = ""
+        self.contract.daysAged = "0"
         
        
 
     }
     
     //new from lead
-    init(_lead:Lead,_tasks: [Task]){
+    init(_lead:Lead2,_tasks: [Task2]){
         super.init(nibName:nil,bundle:nil)
         
         //print("new contract from lead init")
         
         //self.lead = _lead
+        
+        
+        /*
         self.taskArray = _tasks
         
-        self.contract = Contract(_ID: "0", _title: "", _status: "0", _statusName: "New", _chargeType: "", _customer: _lead.customer, _customerName: _lead.customerName, _notes: "", _salesRep: _lead.rep, _repName:  _lead.repName, _createdBy: self.appDelegate.loggedInEmployee?.ID, _createDate: "", _subTotal: "0", _taxTotal: "0", _total: "0", _terms: "", _daysAged: "0")
+        self.contract = Contract(_ID: "0", _title: "", _status: "0", _statusName: "New", _chargeType: "", _customer: _lead.customer!.ID, _customerName: _lead.customerName, _notes: "", _salesRep: _lead.rep, _repName:  _lead.repName, _createdBy: self.appDelegate.loggedInEmployee?.ID, _createDate: "", _subTotal: "0", _taxTotal: "0", _total: "0", _terms: "", _daysAged: "0")
         
         self.contract.lead = _lead
+        */
+        
         
     }
     
@@ -218,7 +237,23 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
             title =  "New Contract"
             submitButton = UIBarButtonItem(title: "Submit", style: .plain, target: self, action: #selector(NewEditContractViewController.submit))
             
-            self.contract = Contract(_ID: "0", _title: "", _status: "0", _statusName: "New", _chargeType: "", _customer: "", _customerName: "", _notes: "", _salesRep: "", _repName: "", _createdBy: "0", _createDate: "", _subTotal: "0", _taxTotal: "0", _total: "0", _terms: "", _daysAged: "0")
+            //self.contract = Contract(_ID: "0", _title: "", _status: "0", _statusName: "New", _chargeType: "", _customer: "", _customerName: "", _notes: "", _salesRep: "", _repName: "", _createdBy: "0", _createDate: "", _subTotal: "0", _taxTotal: "0", _total: "0", _terms: "", _daysAged: "0")
+            
+            self.contract = Contract2(_ID: "0", _title: "", _status: "0", _createdBy: "0")
+            self.contract.statusName = "New"
+            self.contract.chargeType = ""
+            self.contract.customerID = ""
+            self.contract.customerName = ""
+            self.contract.notes = ""
+            self.contract.salesRep = ""
+            self.contract.repName = ""
+            self.contract.createDate = ""
+            self.contract.subTotal = "0"
+            self.contract.taxTotal = "0"
+            self.contract.total = "0"
+            self.contract.terms = ""
+            self.contract.daysAged = "0"
+            
             
         }else{
             if(self.contract.ID == "0"){
@@ -333,7 +368,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         
         if(contract.title != ""){
             self.titleTxtField = PaddedTextField()
-            self.titleTxtField.text = contract.title!
+            self.titleTxtField.text = contract.title
         }else{
             
             self.titleTxtField = PaddedTextField(placeholder: "Title...")
@@ -341,6 +376,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         
         self.titleTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.titleTxtField.delegate = self
+        self.titleTxtField.tag = 2
         self.titleTxtField.autocapitalizationType = .words
         safeContainer.addSubview(self.titleTxtField)
         
@@ -359,6 +395,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         self.chargeTypeTxtField = PaddedTextField(placeholder: "Charge Type...")
         self.chargeTypeTxtField.translatesAutoresizingMaskIntoConstraints = false
         self.chargeTypeTxtField.delegate = self
+        self.chargeTypeTxtField.tag = 3
         self.chargeTypeTxtField.inputView = chargeTypePicker
         safeContainer.addSubview(self.chargeTypeTxtField)
         
@@ -376,8 +413,8 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         
         
         if(contract.chargeType != ""){
-            chargeTypeTxtField.text = chargeTypeArray[Int(contract.chargeType)! - 1]
-            self.chargeTypePicker.selectRow(Int(self.contract.chargeType)! - 1, inComponent: 0, animated: false)
+            chargeTypeTxtField.text = chargeTypeArray[Int(contract.chargeType!)! - 1]
+            self.chargeTypePicker.selectRow(Int(self.contract.chargeType!)! - 1, inComponent: 0, animated: false)
             
             
         }
@@ -845,7 +882,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
             //count = self.tasksArray.count + 1
             if (searchText.count == 0) {
                 self.customerResultsTableView.alpha = 0.0
-                contract.customer = ""
+                contract.customerID = ""
                 contract.customerName = ""
             }else{
                 //print("set cust table alpha to 1")
@@ -1074,7 +1111,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
             
         case "CUSTOMER":
             let currentCell = tableView.cellForRow(at: indexPath) as! CustomerTableViewCell
-            contract.customer = currentCell.id
+            contract.customerID = currentCell.id
             contract.customerName = currentCell.name
             
             customerSearchBar.text = currentCell.name
@@ -1095,7 +1132,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
             break
         default:
             let currentCell = tableView.cellForRow(at: indexPath) as! CustomerTableViewCell
-            contract.customer = currentCell.id
+            contract.customerID = currentCell.id
             contract.customerName = currentCell.name
             
             customerSearchBar.text = currentCell.name
@@ -1113,6 +1150,16 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        if textField.tag == 2{
+            titleTxtField.reset()
+        }
+        
+        if textField.tag == 3{
+           chargeTypeTxtField.reset()
+        }
+        
+        
         
     }
     
@@ -1132,8 +1179,9 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
             contract.title = titleTxtField.text!
         }
         //customer check
-        if(contract.customer == ""){
+        if(contract.customerID == ""){
             //print("select a customer")
+            
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Contract", _message: "Select a Customer")
             return false
         }
@@ -1141,6 +1189,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         //title check
         if(contract.title == ""){
             //print("Add a Title")
+            titleTxtField.error()
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Contract", _message: "Provide a Title")
             return false
         }
@@ -1148,6 +1197,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         //charge type check
         if(contract.chargeType == ""){
             //print("select a charge type")
+            chargeTypeTxtField.error()
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Contract", _message: "Select a Charge Type")
             return false
         }
@@ -1216,12 +1266,12 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         
         var parameters:[String:String] = [:]
         if self.contract.lead != nil{
-            parameters = ["contractID": self.contract.ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "customer": self.contract.customer, "salesRep": self.contract.salesRep,  "chargeType": contract.chargeType , "status": self.contract.status, "total":self.contract.total, "notes":self.contract.notes, "repName":self.contract.repName, "customerName":self.contract.customerName, "title":self.contract.title, "companySigned":self.contract.repSignature,"customerSigned":self.contract.customerSignature,"leadID":self.contract.lead?.ID!] as! [String : String]
+            parameters = ["contractID": self.contract.ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "customer": self.contract.customerID!, "salesRep": self.contract.salesRep,  "chargeType": contract.chargeType , "status": self.contract.status, "total":self.contract.total, "notes":self.contract.notes, "repName":self.contract.repName, "customerName":self.contract.customerName, "title":self.contract.title, "companySigned":self.contract.repSignature,"customerSigned":self.contract.customerSignature,"leadID":self.contract.lead?.ID] as! [String : String]
         }else{
-            parameters = ["contractID": self.contract.ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "customer": self.contract.customer, "salesRep": self.contract.salesRep,  "chargeType": contract.chargeType , "status": self.contract.status, "total":self.contract.total, "notes":self.contract.notes, "repName":self.contract.repName, "customerName":self.contract.customerName, "title":self.contract.title, "companySigned":self.contract.repSignature,"customerSigned":self.contract.customerSignature] as! [String : String]
+            parameters = ["contractID": self.contract.ID, "createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), "customer": self.contract.customerID!, "salesRep": self.contract.salesRep,  "chargeType": contract.chargeType , "status": self.contract.status, "total":self.contract.total, "notes":self.contract.notes, "repName":self.contract.repName, "customerName":self.contract.customerName, "title":self.contract.title, "companySigned":self.contract.repSignature,"customerSigned":self.contract.customerSignature] as! [String : String]
         }
         
-        //print("parameters = \(parameters)")
+        print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contract.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
@@ -1265,6 +1315,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
                         
                         
                         if self.delegate != nil{
+                            print("self.delegate.getContracts(_openNewContract: true)")
                             self.delegate.getContracts(_openNewContract: true)
 
                         }
@@ -1281,11 +1332,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
                         self.editDelegate.updateContract(_contract: self.contract)
                     }
                     
-                    /*
-                     if newLead {
-                     simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Add Tasks and Images", _message: "You can now add leat tasks and images to this lead.")
-                     }
-                     */
+                   
                     
                     
                     
@@ -1441,7 +1488,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     
     //edit delegates
     
-    func updateContract(_contract: Contract){
+    func updateContract(_contract: Contract2){
         //print("update Contract")
         editsMade = true
         self.contract = _contract
@@ -1452,18 +1499,18 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         parameters = [
             "contractID":self.contract.ID,
             "createdBy":self.contract.createdBy,
-            "customer":self.contract.customer,
-            "salesRep":self.contract.salesRep,
+            "customer":self.contract.customerID!,
+            "salesRep":self.contract.salesRep!,
             
-            "chargeType":self.contract.chargeType,
+            "chargeType":self.contract.chargeType!,
             "status":self.contract.status,
-            "total":self.contract.total,
-            "notes":self.contract.notes,
-            "repName":self.contract.repName,
-            "customerName":self.contract.customerName,
+            "total":self.contract.total!,
+            "notes":self.contract.notes!,
+            "repName":self.contract.repName!,
+            "customerName":self.contract.customerName!,
             "title":self.contract.title,
-            "companySigned":self.contract.repSignature,
-            "customerSigned":self.contract.customerSignature
+            "companySigned":self.contract.repSignature!,
+            "customerSigned":self.contract.customerSignature!
             
         ]
         
@@ -1490,7 +1537,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     
     
     
-    func updateContract(_contract: Contract, _status:String){
+    func updateContract(_contract: Contract2, _status:String){
         //print("update Contract")
         editsMade = true
         self.contract = _contract
@@ -1501,18 +1548,18 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         parameters = [
             "contractID":self.contract.ID,
             "createdBy":self.contract.createdBy,
-            "customer":self.contract.customer,
-            "salesRep":self.contract.salesRep,
+            "customer":self.contract.customerID!,
+            "salesRep":self.contract.salesRep!,
             
-            "chargeType":self.contract.chargeType,
+            "chargeType":self.contract.chargeType!,
             "status":self.contract.status,
-            "total":self.contract.total,
-            "notes":self.contract.notes,
-            "repName":self.contract.repName,
-            "customerName":self.contract.customerName,
+            "total":self.contract.total!,
+            "notes":self.contract.notes!,
+            "repName":self.contract.repName!,
+            "customerName":self.contract.customerName!,
             "title":self.contract.title,
-            "companySigned":self.contract.repSignature,
-            "customerSigned":self.contract.customerSignature
+            "companySigned":self.contract.repSignature!,
+            "customerSigned":self.contract.customerSignature!
             
         ]
         
@@ -1542,7 +1589,7 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
     }
     
     
-    func updateContract(_contractItem: ContractItem){
+    func updateContract(_contractItem: ContractItem2){
         //print("updateContract Item")
        
     }

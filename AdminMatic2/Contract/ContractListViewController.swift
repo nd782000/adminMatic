@@ -12,7 +12,7 @@
 import Foundation
 import UIKit
 import Alamofire
-import SwiftyJSON
+//import SwiftyJSON
 
 // updates status icons without getting new db data
 protocol ContractListDelegate{
@@ -30,7 +30,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     var indicator: SDevIndicator!
     var layoutVars:LayoutVars = LayoutVars()
     var searchController:UISearchController!
-    var contractsSearchResults:[Contract] = []
+    //var contractsSearchResults:[Contract] = []
     var shouldShowSearchResults:Bool = false
     
     
@@ -50,8 +50,13 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     var salesRepName:String = ""
     
     var contractViewController:ContractViewController!
-    var contracts:JSON!
-    var contractsArray:[Contract] = []
+    //var contracts:JSON!
+    //var contractsArray:[Contract] = []
+    
+    var contractsArray:ContractArray = ContractArray(_contracts: [])
+    var contractsSearchResults:ContractArray = ContractArray(_contracts: [])
+    
+    
     var names = [String]()
     
    
@@ -73,10 +78,10 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     
     
     func getContracts(_openNewContract:Bool){
-        //print("getContracts")
+        print("getContracts _openNewContract = \(_openNewContract)")
         
-        
-        self.contractsArray = []
+        self.contractsArray.contracts = []
+        //self.contractsArray = []
         self.names = []
         
         //cache buster
@@ -98,8 +103,59 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
                 response in
                 
                 
-                //native way
+                do{
+                    //created the json decoder
+                    let json = response.data
+                    
+                    //print("json = \(json)")
+                    
+                    let decoder = JSONDecoder()
+                    
+                    let parsedData = try decoder.decode(ContractArray.self, from: json!)
+                    print("parsedData = \(parsedData)")
+                    let contracts = parsedData
+                   
+                    
+                    let contractCount = contracts.contracts.count
+                    print("contract count = \(contractCount)")
+                    
+                    for i in 0 ..< contractCount {
+                        //create an object
+                        print("create a contract object \(i)")
+                        
+                        contracts.contracts[i].custNameAndID = "\(contracts.contracts[i].customerName!) \(contracts.contracts[i].ID)"
+                        
+                    
+                        self.contractsArray.contracts.append(contracts.contracts[i])
+                    }
+                    
+                    self.indicator.dismissIndicator()
+                    
+                    
+                    
+                    if _openNewContract == true{
+                        // let indexPath = tableView.indexPathForSelectedRow;
+                        //let currentCell = tableView.cellForRow(at: indexPath!) as! ContractTableViewCell;
+                        self.contractViewController = ContractViewController(_contract: self.contractsArray.contracts[0])
+                        self.contractViewController.delegate = self
+                        
+                        self.navigationController?.pushViewController(self.contractViewController, animated: false )
+                    }else{
+                        self.layoutViews()
+                    }
+                    
+                }catch let err{
+                    print(err)
+                }
                 
+
+                
+                
+                
+                
+                
+                //native way
+                /*
                 do {
                     if let data = response.data,
                         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -149,13 +205,20 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
                     
                     self.layoutViews()
                     
-                   
+                    if _openNewContract == true{
+                       // let indexPath = tableView.indexPathForSelectedRow;
+                        //let currentCell = tableView.cellForRow(at: indexPath!) as! ContractTableViewCell;
+                        self.contractViewController = ContractViewController(_contract: self.contractsArray[0])
+                        self.contractViewController.delegate = self
+                        
+                        self.navigationController?.pushViewController(self.contractViewController, animated: false )
+                    }
                     
                     
                 } catch {
                     //print("Error deserializing JSON: \(error)")
                 }
-                
+                */
                 
         }
         
@@ -288,15 +351,15 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     func filterSearchResults(){
         
         //print("filterSearchResults")
-        self.contractsSearchResults = []
+        self.contractsSearchResults.contracts = []
        
         
        
         
-        self.contractsSearchResults = self.contractsArray.filter({( aContract: Contract) -> Bool in
+        self.contractsSearchResults.contracts = self.contractsArray.contracts.filter({( aContract: Contract2) -> Bool in
             
             //return type name or name
-            return (aContract.custNameAndID!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil  || aContract.title!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
+            return (aContract.custNameAndID!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil  || aContract.title.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)
         })
         
         
@@ -330,12 +393,12 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         if shouldShowSearchResults{
-            self.countLbl.text = "\(self.contractsSearchResults.count) Contract(s) Found"
-            return self.contractsSearchResults.count
+            self.countLbl.text = "\(self.contractsSearchResults.contracts.count) Contract(s) Found"
+            return self.contractsSearchResults.contracts.count
         } else {
             //print("self.contractsArray.count = \(self.contractsArray.count)")
-            self.countLbl.text = "\(self.contractsArray.count) Active Contract(s) "
-            return self.contractsArray.count
+            self.countLbl.text = "\(self.contractsArray.contracts.count) Active Contract(s) "
+            return self.contractsArray.contracts.count
         }
     }
     
@@ -350,8 +413,8 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
             
             //text highlighting
             
-            let baseString:NSString = self.contractsSearchResults[indexPath.row].custNameAndID! as NSString
-            let highlightedText = NSMutableAttributedString(string: self.contractsSearchResults[indexPath.row].custNameAndID!)
+            let baseString:NSString = self.contractsSearchResults.contracts[indexPath.row].custNameAndID! as NSString
+            let highlightedText = NSMutableAttributedString(string: self.contractsSearchResults.contracts[indexPath.row].custNameAndID!)
             
             
             var error: NSError?
@@ -370,8 +433,8 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
                 }
             }
             
-            let baseString2:NSString = self.contractsSearchResults[indexPath.row].title!  as NSString
-            let highlightedText2 = NSMutableAttributedString(string: self.contractsSearchResults[indexPath.row].title!)
+            let baseString2:NSString = self.contractsSearchResults.contracts[indexPath.row].title  as NSString
+            let highlightedText2 = NSMutableAttributedString(string: self.contractsSearchResults.contracts[indexPath.row].title)
             
             
             var error2: NSError?
@@ -392,7 +455,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
             }
             
             
-            cell.contract = self.contractsSearchResults[indexPath.row]
+            cell.contract = self.contractsSearchResults.contracts[indexPath.row]
             cell.layoutViews()
             
             cell.titleLbl.attributedText = highlightedText
@@ -400,7 +463,7 @@ class ContractListViewController: ViewControllerWithMenu, UISearchControllerDele
             cell.descriptionLbl.attributedText = highlightedText2
             
         } else {
-            cell.contract = self.contractsArray[indexPath.row]
+            cell.contract = self.contractsArray.contracts[indexPath.row]
             cell.layoutViews()
         }
         

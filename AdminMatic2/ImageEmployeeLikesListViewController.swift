@@ -21,7 +21,8 @@ import SwiftyJSON
 class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewDelegate, UITableViewDataSource{
     var indicator: SDevIndicator!
     
-    var image:Image!
+    var image:Image2!
+    //var uiImage:UIImage!
     
     
     //employee info
@@ -63,10 +64,11 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
     }
     
     
-    init(_image:Image){
+    init(_image:Image2){
         super.init(nibName:nil,bundle:nil)
         //print("init _image.ID = \(_image.ID)")
         self.image = _image
+        //self.uiImage = _uiImage
         
     }
     
@@ -79,16 +81,7 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         title = "Image Likes"
         view.backgroundColor = layoutVars.backgroundColor
         
-        /*
-        //custom back button
-        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
-        backButton.addTarget(self, action: #selector(self.goBack), for: UIControl.Event.touchUpInside)
-        backButton.setTitle("Back", for: UIControl.State.normal)
-        backButton.titleLabel!.font =  layoutVars.buttonFont
-        backButton.sizeToFit()
-        let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
-        navigationItem.leftBarButtonItem  = backButtonItem
-        */
+       
         
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
         navigationItem.leftBarButtonItem = backButton
@@ -245,7 +238,7 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         
         //name
         self.nameLbl = GreyLabel()
-        self.nameLbl.text = self.image.name!
+        self.nameLbl.text = self.image.name
         self.nameLbl.font = layoutVars.labelFont
         safeContainer.addSubview(self.nameLbl)
         
@@ -266,7 +259,7 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         
         //info
         self.infoLbl = Label()
-        self.infoLbl.text = "By \(self.image.createdBy!)"
+        self.infoLbl.text = "By \(self.image.createdBy)"
         self.infoLbl.font = layoutVars.smallFont
         safeContainer.addSubview(self.infoLbl)
         

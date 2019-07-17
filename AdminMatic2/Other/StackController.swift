@@ -14,10 +14,10 @@ import  Alamofire
  
 protocol StackDelegate {
     func displayAlert(_title:String)
-    func newLeadView(_lead:Lead)
-    func newContractView(_contract:Contract)
-    func newWorkOrderView(_workOrder:WorkOrder)
-    func newInvoiceView(_invoice:Invoice)
+    func newLeadView(_lead:Lead2)
+    func newContractView(_contract:Contract2)
+    func newWorkOrderView(_workOrder:WorkOrder2)
+    func newInvoiceView(_invoice:Invoice2)
     func setLeadTasksWaiting(_leadTasksWaiting:String)
     func suggestNewContractFromLead()
     func suggestNewWorkOrderFromLead()
@@ -38,30 +38,30 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
     var stackJson:JSON!
     var type:Int!
     
-    var leads:[Lead] = []
-    var contracts:[Contract] = []
-    var workOrders:[WorkOrder] = []
-    var invoices:[Invoice] = []
+    var leads:[Lead2] = []
+    var contracts:[Contract2] = []
+    var workOrders:[WorkOrder2] = []
+    var invoices:[Invoice2] = []
     
     var leadBtn:Button = Button(titleText: "Lead(0)")
-    var selectedLead: Lead!
+    var selectedLead: Lead2!
     
     var loadingView:UIView = UIView()
     var contractBtn:Button = Button(titleText: "Contract(0)")
     var contractTxtField:PaddedTextField!
     var contractPicker: Picker!
-    var selectedContract: Contract!
+    var selectedContract: Contract2!
     
     
     var workOrderBtn:Button = Button(titleText: "W.O.(0)")
     var workOrderTxtField:PaddedTextField!
     var workOrderPicker: Picker!
-    var selectedWorkOrder: WorkOrder!
+    var selectedWorkOrder: WorkOrder2!
     
     var invoiceBtn:Button = Button(titleText: "Invoice(0)")
     var invoiceTxtField:PaddedTextField!
     var invoicePicker: Picker!
-    var selectedInvoice: Invoice!
+    var selectedInvoice: Invoice2!
     
     var delegate:StackDelegate!
    
@@ -367,11 +367,32 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
         self.leadBtn.setTitle("Lead(\(leadCount))", for: .normal)
         print("leadCount: \(leadCount)")
         for i in 0 ..< leadCount {
-            let lead =  Lead(_ID: self.stackJson["leads"][i]["ID"].stringValue, _statusID: self.stackJson["leads"][i]["status"].stringValue, _scheduleType: self.stackJson["leads"][i]["timeType"].stringValue, _date: self.stackJson["leads"][i]["date"].stringValue, _time: self.stackJson["leads"][i]["time"].stringValue, _statusName: self.stackJson["leads"][i]["statusName"].stringValue, _customer: self.stackJson["leads"][i]["customer"].stringValue, _customerName: self.stackJson["leads"][i]["custName"].stringValue, _urgent: self.stackJson["leads"][i]["urgent"].stringValue, _description: self.stackJson["leads"][i]["description"].stringValue, _rep: self.stackJson["leads"][i]["salesRep"].stringValue, _repName: self.stackJson["leads"][i]["repName"].stringValue, _deadline: self.stackJson["leads"][i]["deadline"].stringValue, _requestedByCust: self.stackJson["leads"][i]["requestedByCust"].stringValue, _createdBy: self.stackJson["leads"][i]["createdBy"].stringValue, _daysAged: self.stackJson["leads"][i]["daysAged"].stringValue)
+            //let lead =  Lead(_ID: self.stackJson["leads"][i]["ID"].stringValue, _statusID: self.stackJson["leads"][i]["status"].stringValue, _scheduleType: self.stackJson["leads"][i]["timeType"].stringValue, _date: self.stackJson["leads"][i]["date"].stringValue, _time: self.stackJson["leads"][i]["time"].stringValue, _statusName: self.stackJson["leads"][i]["statusName"].stringValue, _customer: self.stackJson["leads"][i]["customer"].stringValue, _customerName: self.stackJson["leads"][i]["custName"].stringValue, _urgent: self.stackJson["leads"][i]["urgent"].stringValue, _description: self.stackJson["leads"][i]["description"].stringValue, _rep: self.stackJson["leads"][i]["salesRep"].stringValue, _repName: self.stackJson["leads"][i]["repName"].stringValue, _deadline: self.stackJson["leads"][i]["deadline"].stringValue, _requestedByCust: self.stackJson["leads"][i]["requestedByCust"].stringValue, _createdBy: self.stackJson["leads"][i]["createdBy"].stringValue, _daysAged: self.stackJson["leads"][i]["daysAged"].stringValue)
+            
+            let lead =  Lead2(_ID: self.stackJson["leads"][i]["ID"].stringValue, _statusID: self.stackJson["leads"][i]["status"].stringValue, _scheduleType: self.stackJson["leads"][i]["timeType"].stringValue, _createdBy: self.stackJson["leads"][i]["createdBy"].stringValue)
+            
+            lead.date = self.stackJson["leads"][i]["date"].stringValue
+            lead.time = self.stackJson["leads"][i]["time"].stringValue
+            lead.statusName = self.stackJson["leads"][i]["statusName"].stringValue
+            //let customer = Customer2(_ID: self.stackJson["leads"][i]["customer"].stringValue, _sysname: self.stackJson["leads"][i]["custName"].stringValue)
+            lead.customerID = self.stackJson["leads"][i]["customer"].stringValue
+            lead.customerName = self.stackJson["leads"][i]["custName"].stringValue
+            lead.urgent = self.stackJson["leads"][i]["urgent"].stringValue
+            lead.description = self.stackJson["leads"][i]["description"].stringValue
+            lead.rep = self.stackJson["leads"][i]["salesRep"].stringValue
+            lead.repName = self.stackJson["leads"][i]["repName"].stringValue
+            lead.deadline = self.stackJson["leads"][i]["deadline"].stringValue
+            lead.requestedByCust = self.stackJson["leads"][i]["requestedByCust"].stringValue
+            lead.daysAged = self.stackJson["leads"][i]["daysAged"].stringValue
+            
+            
+           
+            
+            
             
             lead.dateNice = self.stackJson["leads"][i]["dateNice"].stringValue
             
-            lead.custNameAndID = "\(lead.customerName!) #\(lead.ID!)"
+            lead.custNameAndID = "\(lead.customerName!) #\(lead.ID)"
             
             self.leads.append(lead)
         }
@@ -390,12 +411,26 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
        
         
         for i in 0 ..< contractCount {
-            let contract = Contract(_ID: self.stackJson["contracts"][i]["ID"].stringValue, _title: self.stackJson["contracts"][i]["title"].stringValue, _status: self.stackJson["contracts"][i]["status"].stringValue, _statusName: self.stackJson["contracts"][i]["statusName"].stringValue, _chargeType: self.stackJson["contracts"][i]["chargeType"].stringValue, _customer: self.stackJson["contracts"][i]["customer"].stringValue, _customerName: self.stackJson["contracts"][i]["custName"].stringValue, _notes: self.stackJson["contracts"][i]["notes"].stringValue, _salesRep: self.stackJson["contracts"][i]["salesRep"].stringValue, _repName: self.stackJson["contracts"][i]["repName"].stringValue, _createdBy: self.stackJson["contracts"][i]["createdBy"].stringValue, _createDate: self.stackJson["contracts"][i]["createDate"].stringValue, _subTotal: self.stackJson["contracts"][i]["subTotal"].stringValue, _taxTotal: self.stackJson["contracts"][i]["taxTotal"].stringValue, _total: self.stackJson["contracts"][i]["total"].stringValue, _terms: self.stackJson["contracts"][i]["termsDescription"].stringValue, _daysAged: self.stackJson["contracts"][i]["daysAged"].stringValue)
+           // let contract = Contract(_ID: self.stackJson["contracts"][i]["ID"].stringValue, _title: self.stackJson["contracts"][i]["title"].stringValue, _status: self.stackJson["contracts"][i]["status"].stringValue, _statusName: self.stackJson["contracts"][i]["statusName"].stringValue, _chargeType: self.stackJson["contracts"][i]["chargeType"].stringValue, _customer: self.stackJson["contracts"][i]["customer"].stringValue, _customerName: self.stackJson["contracts"][i]["custName"].stringValue, _notes: self.stackJson["contracts"][i]["notes"].stringValue, _salesRep: self.stackJson["contracts"][i]["salesRep"].stringValue, _repName: self.stackJson["contracts"][i]["repName"].stringValue, _createdBy: self.stackJson["contracts"][i]["createdBy"].stringValue, _createDate: self.stackJson["contracts"][i]["createDate"].stringValue, _subTotal: self.stackJson["contracts"][i]["subTotal"].stringValue, _taxTotal: self.stackJson["contracts"][i]["taxTotal"].stringValue, _total: self.stackJson["contracts"][i]["total"].stringValue, _terms: self.stackJson["contracts"][i]["termsDescription"].stringValue, _daysAged: self.stackJson["contracts"][i]["daysAged"].stringValue)
+            
+            let contract = Contract2(_ID: self.stackJson["contracts"][i]["ID"].stringValue, _title: self.stackJson["contracts"][i]["title"].stringValue, _status: self.stackJson["contracts"][i]["status"].stringValue, _createdBy: self.stackJson["contracts"][i]["createdBy"].stringValue)
+            
+            contract.statusName = self.stackJson["contracts"][i]["statusName"].stringValue
+            contract.chargeType = self.stackJson["contracts"][i]["chargeType"].stringValue
+            contract.customerID = self.stackJson["contracts"][i]["customer"].stringValue
+            contract.customerName = self.stackJson["contracts"][i]["custName"].stringValue
+            contract.notes = self.stackJson["contracts"][i]["notes"].stringValue
+            contract.salesRep = self.stackJson["contracts"][i]["salesRep"].stringValue
+            contract.repName = self.stackJson["contracts"][i]["repName"].stringValue
+            contract.createDate = self.stackJson["contracts"][i]["createDate"].stringValue
+            contract.subTotal = self.stackJson["contracts"][i]["subTotal"].stringValue
+            contract.taxTotal = self.stackJson["contracts"][i]["taxTotal"].stringValue
+            contract.total = self.stackJson["contracts"][i]["total"].stringValue
+            contract.terms = self.stackJson["contracts"][i]["termsDescription"].stringValue
+            contract.daysAged = self.stackJson["contracts"][i]["daysAged"].stringValue
             
             
-            
-            
-            contract.custNameAndID = "\(contract.customerName!) #\(contract.ID!)"
+            contract.custNameAndID = "\(contract.customerName!) #\(contract.ID)"
             
             contract.repSignature  = self.stackJson["contracts"][i]["companySigned"].stringValue
             contract.customerSignature  = self.stackJson["contracts"][i]["customerSigned"].stringValue
@@ -417,7 +452,7 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
         //self.fullScheduleArray = []
         for i in 0 ..< workOrderCount {
             
-            let workOrder = WorkOrder(_ID: self.stackJson["workOrders"][i]["ID"].stringValue, _statusID: self.stackJson["workOrders"][i]["statusID"].stringValue, _date: self.stackJson["workOrders"][i]["date"].stringValue, _firstItem: self.stackJson["workOrders"][i]["firstItem"].stringValue, _statusName: self.stackJson["workOrders"][i]["statusName"].stringValue, _customer: self.stackJson["workOrders"][i]["customer"].stringValue, _type: self.stackJson["workOrders"][i]["type"].stringValue, _progress: self.stackJson["workOrders"][i]["progress"].stringValue, _totalPrice: self.stackJson["workOrders"][i]["totalPrice"].stringValue, _totalCost: self.stackJson["workOrders"][i]["totalCost"].stringValue, _totalPriceRaw: self.stackJson["workOrders"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.stackJson["workOrders"][i]["totalCostRaw"].stringValue, _charge: self.stackJson["workOrders"][i]["charge"].stringValue, _title: self.stackJson["workOrders"][i]["title"].stringValue, _customerName: self.stackJson["workOrders"][i]["customerName"].stringValue)
+           // let workOrder = WorkOrder(_ID: self.stackJson["workOrders"][i]["ID"].stringValue, _statusID: self.stackJson["workOrders"][i]["statusID"].stringValue, _date: self.stackJson["workOrders"][i]["date"].stringValue, _firstItem: self.stackJson["workOrders"][i]["firstItem"].stringValue, _statusName: self.stackJson["workOrders"][i]["statusName"].stringValue, _customer: self.stackJson["workOrders"][i]["customer"].stringValue, _type: self.stackJson["workOrders"][i]["type"].stringValue, _progress: self.stackJson["workOrders"][i]["progress"].stringValue, _totalPrice: self.stackJson["workOrders"][i]["totalPrice"].stringValue, _totalCost: self.stackJson["workOrders"][i]["totalCost"].stringValue, _totalPriceRaw: self.stackJson["workOrders"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.stackJson["workOrders"][i]["totalCostRaw"].stringValue, _charge: self.stackJson["workOrders"][i]["charge"].stringValue, _title: self.stackJson["workOrders"][i]["title"].stringValue, _customerName: self.stackJson["workOrders"][i]["customerName"].stringValue)
             
            /* if(plowSort == "1"){
                 workOrder.plowPriority = self.fullScheduleJSON["workOrder"][i]["plowPriority"].stringValue
@@ -425,6 +460,8 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
                 workOrder.plowMonitoring = self.fullScheduleJSON["workOrder"][i]["plowMonitorList"].stringValue
             }
  */
+            let workOrder = WorkOrder2(_ID: self.stackJson["workOrders"][i]["ID"].stringValue, _title: self.stackJson["workOrders"][i]["title"].stringValue, _status: self.stackJson["workOrders"][i]["statusID"].stringValue, _type: self.stackJson["workOrders"][i]["type"].stringValue, _progress: self.stackJson["workOrders"][i]["progress"].stringValue, _totalPrice: self.stackJson["workOrders"][i]["totalPrice"].stringValue, _totalCost: self.stackJson["workOrders"][i]["totalCost"].stringValue, _totalPriceRaw: self.stackJson["workOrders"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.stackJson["workOrders"][i]["totalCostRaw"].stringValue, _profitValue: self.stackJson["workOrders"][i]["profit"].stringValue, _percentValue: self.stackJson["workOrders"][i]["percent"].stringValue)
+            
             
             
             self.workOrders.append(workOrder)
@@ -444,7 +481,10 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
            // let invoice = Invoice(_ID: self.stackJson["invoices"][i]["ID"].stringValue, _date: self.stackJson["invoices"][i]["ID"].stringValue, _customer: self.stackJson["invoices"][i]["ID"].stringValue, _totalPrice: self.stackJson["invoices"][i]["ID"].stringValue, _totalCost: self.stackJson["invoices"][i]["ID"].stringValue, _totalPriceRaw: self.stackJson["invoices"][i]["ID"].stringValue, _totalCostRaw: self.stackJson["invoices"][i]["ID"].stringValue, _charge: self.stackJson["invoices"][i]["ID"].stringValue)
             
             
-            let invoice = Invoice(_ID: self.stackJson["invoices"][i]["ID"].stringValue, _date: self.stackJson["invoices"][i]["invoiceDate"].stringValue,_customer: self.stackJson["invoices"][i]["customer"].stringValue, _customerName: self.stackJson["invoices"][i]["custName"].stringValue, _totalPrice: "$\(self.stackJson["invoices"][i]["total"].stringValue)", _status: self.stackJson["invoices"][i]["invoiceStatus"].stringValue)
+            //let invoice = Invoice(_ID: self.stackJson["invoices"][i]["ID"].stringValue, _date: self.stackJson["invoices"][i]["invoiceDate"].stringValue,_customer: self.stackJson["invoices"][i]["customer"].stringValue, _customerName: self.stackJson["invoices"][i]["custName"].stringValue, _totalPrice: "$\(self.stackJson["invoices"][i]["total"].stringValue)", _status: self.stackJson["invoices"][i]["invoiceStatus"].stringValue)
+            
+            
+            let invoice = Invoice2(_ID: self.stackJson["invoices"][i]["ID"].stringValue, _date: self.stackJson["invoices"][i]["invoiceDate"].stringValue, _totalPrice: "$\(self.stackJson["invoices"][i]["total"].stringValue)", _status: self.stackJson["invoices"][i]["invoiceStatus"].stringValue,_customerID: self.stackJson["invoices"][i]["customer"].stringValue, _customerName: self.stackJson["invoices"][i]["custName"].stringValue)
             
             
             self.invoices.append(invoice)
@@ -627,11 +667,11 @@ class StackController:UIView, UITextFieldDelegate, UIPickerViewDelegate, UIPicke
         
         switch pickerView.tag {
         case 1:
-            return "#\(self.contracts[row].ID!) \(self.contracts[row].title!)"
+            return "#\(self.contracts[row].ID) \(self.contracts[row].title)"
         case 2:
-            return "#\(self.workOrders[row].ID!) \(self.workOrders[row].title!)"
+            return "#\(self.workOrders[row].ID) \(self.workOrders[row].title)"
         case 3:
-            return "#\(self.invoices[row].ID!) \(self.invoices[row].customerName!)"
+            return "#\(self.invoices[row].ID) \(self.invoices[row].customerName)"
             
         default:
             return "default"

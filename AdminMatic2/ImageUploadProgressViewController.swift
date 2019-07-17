@@ -17,7 +17,7 @@ import SwiftyJSON
 
 
 protocol ImageUploadProgressDelegate {
-    func returnImage(_indexPath:IndexPath,_image:Image?,_scoreAdjust:Int)
+    func returnImage(_indexPath:IndexPath,_image:Image2?,_scoreAdjust:Int)
     
 }
 
@@ -34,12 +34,14 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
     var groupImages:Bool!
     var imageType:String! //example: task, fieldnote, custImage, equipmentImage
     var groupDescription:String!
-    var images:[Image] = [Image]()
+    var images:[Image2] = [Image2]()
+    var uiImages:[UIImage] = [UIImage]()
     var imageBatchOffset:Int = 1
-    var imagesBatch:[Image] = [Image]() //temp image array for uploading
+    var imagesBatch:[Image2] = [Image2]() //temp image array for uploading
+    var uiImagesBatch:[UIImage] = [UIImage]()
     var i = 1//index of image being uploaded
     //var saveURLString: String = "https://www.atlanticlawnandgarden.com/cp/app/functions/new/image.php" //php file to save/update
-    var uploadedImages:[Image] = [Image]() //upload successes that will go back to collectionView
+    var uploadedImages:[Image2] = [Image2]() //upload successes that will go back to collectionView
     var scoreAdjust:Int = 0
     var uploadPrepDelegate:ImageUploadPrepDelegate!
     
@@ -53,9 +55,14 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
    // var topImage:Bool!
     
     
-    init(_imageType: String, _images: [Image]){
+    init(_imageType: String, _images: [Image2], _uiImages: [UIImage]){
         self.imageType = _imageType
         self.images = _images
+        self.uiImages = _uiImages
+        
+        print("_images.count \(_images.count)")
+        
+        print("_uiImages.count \(_uiImages.count)")
         //self.topImage = _topImage
         super.init(nibName:nil,bundle:nil)
     }
@@ -204,6 +211,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
     func getBatch(){
         print("get batch")
         imagesBatch = []
+        uiImagesBatch = []
         
         if((self.imageBatchOffset * self.imageBatchQty) < self.images.count){
             self.progressLabel?.text = "loading image \(self.i) - \((self.imageBatchOffset * self.imageBatchQty)) of \(self.images.count)"
@@ -217,6 +225,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
             print("adding index \(index) to batch")
             if((images.count + 1) > index){
                 imagesBatch.append(images[index-1])
+                uiImagesBatch.append(uiImages[index-1])
             }
            
         }
@@ -233,6 +242,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
             let cell = imageTableView.dequeueReusableCell(withIdentifier: "cell") as! ImageUploadProgressTableViewCell
             imageTableView.rowHeight = 60.0
             cell.imageData = self.imagesBatch[indexPath.row]
+            cell.uiImage = self.uiImagesBatch[indexPath.row]
             cell.indexPath = indexPath
             //cell.topImage = self.topImage
             cell.layoutViews()
@@ -243,7 +253,7 @@ class ImageUploadProgressViewController: ViewControllerWithMenu, UITableViewDele
     
     
     
-    func returnImage(_indexPath:IndexPath,_image:Image?, _scoreAdjust:Int){
+    func returnImage(_indexPath:IndexPath,_image:Image2?, _scoreAdjust:Int){
         print("return image i = \(i)")
         if(_image != nil){
             self.uploadedImages.append(_image!)

@@ -55,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
     var window: UIWindow?
     
     var layoutVars:LayoutVars = LayoutVars()
-    var appVersion:String = "1.5.0"
+    var appVersion:String = "1.5.1"
     var navigationController:UINavigationController!
     var homeViewController:HomeViewController!
     var employeeListViewController:EmployeeListViewController!
@@ -77,7 +77,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
 
     
     var fieldsJson:JSON!
-    var zones:[Zone] = []
+    var zones:[Zone2] = []
     
     var departments:[Department] = []
     var crews:[Crew] = []
@@ -167,7 +167,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MenuDelegate{
                 
                 for i in 0 ..< zonesCount {
                     
-                    let zone = Zone(_ID: self.fieldsJson["zones"][i][0].stringValue, _name: self.fieldsJson["zones"][i][1].stringValue)
+                    let zone = Zone2(_ID: self.fieldsJson["zones"][i][0].stringValue, _name: self.fieldsJson["zones"][i][1].stringValue)
                     
                     //print("zone.id = \(zone.ID)")
                     //print("zone.name = \(zone.name)")

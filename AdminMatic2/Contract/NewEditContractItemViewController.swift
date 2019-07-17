@@ -25,7 +25,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     var backButton:UIButton!
     
     
-    var contract:Contract!
+    var contract:Contract2!
     var itemCount:Int!
     //var charge:String!
     
@@ -77,7 +77,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     var taxes = [String]()
     var subcontractors = [String]()
     
-    var contractItem:ContractItem!
+    var contractItem:ContractItem2!
     
     
     var keyboardHeight:CGFloat = 216
@@ -86,10 +86,10 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     
     var editsMade:Bool = false
     
-    init(_contract:Contract,_itemCount:Int){
+    init(_contract:Contract2,_itemCount:Int){
         super.init(nibName:nil,bundle:nil)
         
-        //print("new Item init")
+        print("new Item init")
         
         title = "Add Item"
         
@@ -100,9 +100,9 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     
     //init for edit
    
-    init(_contract:Contract,_contractItem:ContractItem){
+    init(_contract:Contract2,_contractItem:ContractItem2){
         super.init(nibName:nil,bundle:nil)
-        //print("edit Item init")
+        print("edit Item init")
         
         title = "Edit Item"
         self.contract = _contract
@@ -110,7 +110,12 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         
         editMode = true
         
+        print("self.contractItem.ID = \(String(describing: self.contractItem.ID))")
+
+        
     }
+    
+    
     
     
     
@@ -293,8 +298,8 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             
             }
         }else{
-            chargeTypeTxtField.text = chargeTypeArray[Int(contract.chargeType)! - 1]
-            self.chargeTypePicker.selectRow(Int(self.contract.chargeType)! - 1, inComponent: 0, animated: false)
+            chargeTypeTxtField.text = chargeTypeArray[Int(contract.chargeType!)! - 1]
+            self.chargeTypePicker.selectRow(Int(self.contract.chargeType!)! - 1, inComponent: 0, animated: false)
             //self.contractItem.chargeType = contract.chargeType
         }
         
@@ -401,7 +406,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
                 if(self.contractItem.chargeType == "1" || self.contractItem.qty == "0" || self.contractItem.price == "0.00"){
                     self.contractItem.total = "0.00"
                 }else{
-                    self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price)!)
+                    self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price!)!)
                 }
             
             
@@ -440,9 +445,9 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         if self.contractItem == nil{
             self.infoLbl.text = "Hiding qty. presents the item as (1 x Total).  The item total is not including any sales tax."
         }else if self.contractItem.taxCode == "0"{
-            self.infoLbl.text = "Hiding qty. presents the item as (1 x Total).  The item total is not including any sales tax. \(String(describing: self.contractItem.name!)) is non taxable."
+            self.infoLbl.text = "Hiding qty. presents the item as (1 x Total).  The item total is not including any sales tax. \(String(describing: self.contractItem.name)) is non taxable."
         }else{
-            self.infoLbl.text = "Hiding qty. presents the item as (1 x Total).  The item total is not including any sales tax.  \(String(describing: self.contractItem.name!)) is taxable."
+            self.infoLbl.text = "Hiding qty. presents the item as (1 x Total).  The item total is not including any sales tax.  \(String(describing: self.contractItem.name)) is taxable."
         }
     }
     
@@ -521,7 +526,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             self.contractItem.total = "0.00"
             self.totalTxtField.text = self.contractItem.total
         }else{
-            self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price)!)
+            self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price!)!)
             self.totalTxtField.text = self.contractItem.total
         }
             
@@ -563,7 +568,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             self.totalTxtField.text = self.contractItem.total
             
         }else{
-            self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price)!)
+            self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price!)!)
             self.totalTxtField.text = self.contractItem.total
             
         }
@@ -737,7 +742,14 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         
         
         if self.contractItem == nil{
-            self.contractItem = ContractItem(_ID: "0", _chargeType: self.contract.chargeType, _contractID: self.contract.ID, _itemID: currentCell.id, _name: currentCell.name, _price: currentCell.price, _qty: "0.00", _total: "0.00", _type: currentCell.type, _taxCode: currentCell.tax, _subcontractor: currentCell.subcontractor, _hideUnits: "0")
+           // self.contractItem = ContractItem2(_ID: "0", _chargeType: self.contract.chargeType, _contractID: self.contract.ID, _itemID: currentCell.id, _name: currentCell.name, _price: currentCell.price, _qty: "0.00", _total: "0.00", _type: currentCell.type, _taxCode: currentCell.tax, _subcontractor: currentCell.subcontractor, _hideUnits: "0")
+            self.contractItem = ContractItem2(_ID: "0", _chargeType: self.contract.chargeType!, _contractID: self.contract.ID, _itemID: currentCell.id, _name: currentCell.name, _qty: "0.00")
+            self.contractItem.price = currentCell.price
+            self.contractItem.total = "0.00"
+            self.contractItem.type = currentCell.type
+            self.contractItem.taxCode = currentCell.tax
+            self.contractItem.subcontractor = currentCell.subcontractor
+            self.contractItem.hideUnits = "0"
         }else{
             
             self.contractItem.itemID = currentCell.id
@@ -750,7 +762,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             if(self.contractItem.qty == "0" || self.contractItem.qty == "0.00" || self.contractItem.qty == "" || self.contractItem.price == "0" || self.contractItem.price == "0.00" || self.contractItem.price == ""){
                 self.contractItem.total = "0.00"
             }else{
-                self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price)!)
+                self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price!)!)
             }
             self.totalTxtField.text = self.contractItem.total
             
@@ -788,14 +800,14 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         // Filter the data you have. For instance:
-        //print("search edit")
-        ////print("searchText.characters.count = \(searchText.characters.count)")
-        //print("searchText.characters.count = \(searchText.count)")
+        print("search edit")
+        //print("searchText.characters.count = \(searchText.characters.count)")
+        print("searchText.characters.count = \(searchText.count)")
         
         
         if (searchText.count == 0) {
             self.itemResultsTableView.alpha = 0.0
-            if contractItem != nil{
+            if contractItem != nil  && self.editMode == false{
                 self.contractItem.ID = ""
             }
         }else{
@@ -843,7 +855,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         //print("Submit")
         
        // print("self.estQtyLbl.text = \(self.estQtyLbl.text)")
-        if(self.contractItem.name == ""){
+        if self.contractItem == nil{
             let alertController = UIAlertController(title: "Select an Item", message: "", preferredStyle: UIAlertController.Style.alert)
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
@@ -856,6 +868,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         }
         
         if(self.estQtyTxtField.text == ""){
+            self.estQtyTxtField.error()
             let alertController = UIAlertController(title: "Estimate a Quantity", message: "", preferredStyle: UIAlertController.Style.alert)
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
@@ -897,7 +910,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         if(estQtyString == "0" || priceString == "0.00"){
             self.contractItem.total = "0.00"
         }else{
-            self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price)!)
+            self.contractItem.total = String(format: "%.2f", Double(self.contractItem.qty)! * Double(self.contractItem.price!)!)
         }
         
        
@@ -922,7 +935,7 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             //print("subcontractor = \(self.contractItem.subcontractor)")
             //print("hideUnits = \(self.contractItem.hideUnits)")
             
-            parameters = ["contractItemID": "0","contractID":self.contract.ID!,"itemID": self.contractItem.ID, "type":self.contractItem.type, "chargeType": self.contractItem.chargeType!, "qty": self.contractItem.qty, "price": self.contractItem.price, "total":self.contractItem.total, "name":self.contractItem.name,"taxCode":self.contractItem.taxCode,"subcontractor":self.contractItem.subcontractor,"hideUnits":self.contractItem.hideUnits]
+            parameters = ["contractItemID": "0","contractID":self.contract.ID,"itemID": self.contractItem.itemID, "type":self.contractItem.type!, "chargeType": self.contractItem.chargeType, "qty": self.contractItem.qty, "price": self.contractItem.price!, "total":self.contractItem.total!, "name":self.contractItem.name,"taxCode":self.contractItem.taxCode!,"subcontractor":self.contractItem.subcontractor!,"hideUnits":self.contractItem.hideUnits!]
         }else{
             
             //print("contractItemID = \(self.contractItem.ID)")
@@ -939,11 +952,11 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             //print("subcontractor = \(self.contractItem.subcontractor)")
             //print("hideUnits = \(self.contractItem.hideUnits)")
             
-            parameters = ["contractItemID": self.contractItem.ID,"contractID":self.contract.ID!,"itemID": self.contractItem.itemID, "type":self.contractItem.type, "chargeType": self.contractItem.chargeType!, "qty": self.contractItem.qty, "price": self.contractItem.price, "total":self.contractItem.total, "name":self.contractItem.name,"taxCode":self.contractItem.taxCode,"subcontractor":self.contractItem.subcontractor,"hideUnits":self.contractItem.hideUnits]
+            parameters = ["contractItemID": self.contractItem.ID,"contractID":self.contract.ID,"itemID": self.contractItem.itemID, "type":self.contractItem.type!, "chargeType": self.contractItem.chargeType, "qty": self.contractItem.qty, "price": self.contractItem.price!, "total":self.contractItem.total!, "name":self.contractItem.name,"taxCode":self.contractItem.taxCode!,"subcontractor":self.contractItem.subcontractor!,"hideUnits":self.contractItem.hideUnits!]
         }
         
         
-        //print("parameters : \(parameters)")
+        print("parameters : \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contractItem.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
@@ -1020,11 +1033,17 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
         
     }
     
-    /*
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        textField.selectAll(nil)
+        
+        if textField.tag == 10{
+            estQtyTxtField.reset()
+        }
+        
+       
+        
+        
+        
     }
-    */
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         //print("textFieldShouldReturn")

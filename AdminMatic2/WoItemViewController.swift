@@ -16,7 +16,6 @@ import SwiftyJSON
 
 protocol WoItemDelegate{
     func refreshWoItem()
-    //func refreshWo(_refeshWoID:String, _newWoStatus:String)
 }
 
  
@@ -24,14 +23,16 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
+    var indicator: SDevIndicator!
+    
     var layoutVars:LayoutVars = LayoutVars()
     
     var woDelegate:WoDelegate!
     var leadDelegate:EditLeadDelegate!
     
     var woID:String!
-    var woItem:WoItem!
-    var empsOnWo:[Employee]!
+    var woItem:WoItem2!
+    var empsOnWo:[Employee2]!
     
     var itemView:UIView!
     var itemNameView:UIView!
@@ -74,7 +75,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
     //details view
     var detailsView:UIView!
     
-    var itemDetailsTableView:TableView = TableView()
+    var itemDetailsTableView:TableView!
     
     
     var newWoStatus:String!
@@ -83,14 +84,13 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var customerID:String = ""
     var customerName:String = ""
     
-    var tasks: [Task] = []//data array
     
     var saleRepName:String = ""
     
     
     var json:JSON!
     
-    var lead:Lead?
+    var lead:Lead2?
     var leadTasksWaiting:String?
     var leadTasksWaitingBtn:Button = Button(titleText: "Open LeadTasks to Assign...")
     
@@ -99,14 +99,16 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     var editsMade:Bool = false
     
-    init(_woID:String,_woItem:WoItem,_empsOnWo:[Employee],_woStatus:String){
+    var usageEntryViewController:UsageEntryViewController?
+    
+    init(_woID:String,_woItem:WoItem2,_empsOnWo:[Employee2],_woStatus:String){
         super.init(nibName:nil,bundle:nil)
         self.woID = _woID
         self.woItem = _woItem
         self.empsOnWo = _empsOnWo
         self.newWoStatus = _woStatus
         
-        print("woItem view init chargeID = \(self.woItem.chargeID)")
+        print("woItem view init chargeID = \(self.woItem.charge)")
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -114,28 +116,11 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
 
     
     override func viewWillAppear(_ animated: Bool) {
-        ////print("view will appear")
-        //if(self.itemView != nil){
-           // if(self.woDelegate != nil){
-                //woDelegate.refreshWo(_refeshWoID: self.woItem.ID, _newWoStatus: self.newWoStatus)
-            //}
-        //}
         
-        ////print("woItem = \(woItem)")
         // Do any additional setup after loading the view.
         view.backgroundColor = layoutVars.backgroundColor
         title = "W.O. Item #" + self.woItem.ID
         
-        //custom back button
-        /*
-        let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
-        backButton.addTarget(self, action: #selector(WoItemViewController.goBack), for: UIControl.Event.touchUpInside)
-        backButton.setTitle("Back", for: UIControl.State.normal)
-        backButton.titleLabel!.font =  layoutVars.buttonFont
-        backButton.sizeToFit()
-        let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
-        navigationItem.leftBarButtonItem  = backButtonItem
- */
         
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
         navigationItem.leftBarButtonItem = backButton
@@ -149,9 +134,10 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         print("getWoItem \(String(describing: self.woItem.ID))")
         
         
-            //indicator = SDevIndicator.generate(self.view)!
+            indicator = SDevIndicator.generate(self.view)!
             
-            
+            self.woItem.usages = []
+            self.woItem.tasks = []
             
             var parameters:[String:String]
             parameters = [
@@ -171,192 +157,79 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 .responseJSON { response in
                     print("woItem json response = \(response)")
                     
-                    switch response.result {
-                    case .success(let value):
-                        let updatedJSON = JSON(value)["item"]
-                        //self.indicator.dismissIndicator()
+                    
+                    
+                    
+                    do{
+                        //created the json decoder
                         
+                        let json = response.data
+                        let decoder = JSONDecoder()
+                        let parsedData = try decoder.decode(WoItem2.self, from: json!)
+                        print("parsedData = \(parsedData)")
                         
-                        /*
-                        var chargeValue = ""
+                        self.woItem = parsedData
+                        print("woItem.usage = \(String(describing: self.woItem.usages))")
                         
-                        
-                        switch (updatedJSON["ID"].stringValue) {
-                        case "1":
-                            chargeValue = "NC $0.00"
-                            break;
-                        case "2":
-                            chargeValue = "FL \(self.json["totalPrice"].string!)"
-                            break;
-                        case "3":
-                            chargeValue = "T & M"
-                            break;
+                        for task in self.woItem.tasks!{
+                            for image in task.images!{
+                                image.setImagePaths()
+                            }
                             
-                        default:
-                            chargeValue = "Null"//online
-                            break;
                         }
-                        */
                         
                         
                         
-                            self.woItem = WoItem( _ID: updatedJSON["ID"].stringValue,_type: updatedJSON["type"].stringValue, _sort: updatedJSON["sort"].stringValue, _name: updatedJSON["input"].stringValue, _est: updatedJSON["est"].stringValue, _empDesc: updatedJSON["empDesc"].stringValue, _itemStatus: updatedJSON["itemStatus"].stringValue, _chargeID: updatedJSON["charge"].stringValue, _act: updatedJSON["act"].stringValue, _price: updatedJSON["price"].stringValue, _total: updatedJSON["total"].stringValue, _totalCost: updatedJSON["totalCost"].stringValue, _usageQty:updatedJSON["usageQty"].stringValue, _extraUsage:updatedJSON["extraUsage"].stringValue, _unit:updatedJSON["unitName"].stringValue)
+                       
+                        
+                        
+                        
+                        
+                        let usageCount = self.woItem.usages!.count
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                        
+                        for n in 0 ..< usageCount {
                             
-                         self.woItem.tax = updatedJSON["taxType"].stringValue
-                        self.woItem.name = updatedJSON["name"].stringValue
-                        self.woItem.chargeName = updatedJSON["chargeName"].stringValue
-                        print("est = \(String(describing: self.woItem.est))")
-                        print("usageQty = \(String(describing: self.woItem.usageQty))")
+                            print("self.woItem.usages![n].startString = \(String(describing: self.woItem.usages![n].startString))")
+                             print("self.woItem.usages![n].stopString = \(String(describing: self.woItem.usages![n].stopString))")
                             
-                            //tasks
-                        self.woItem.name = updatedJSON["name"].stringValue
-                        
-                            
-                            let taskCount = updatedJSON["tasks"].count
-                            for n in 0 ..< taskCount {
-                                var taskImages:[Image] = []
-                                
-                                let imageCount = Int((updatedJSON["tasks"][n]["images"].count))
-                                print("imageCount: \(imageCount)")
-                                
-                                for p in 0 ..< imageCount {
-                                    
-                                    let fileName:String = (updatedJSON["tasks"][n]["images"][p]["fileName"].stringValue)
-                                    
-                                    let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
-                                    let mediumPath:String = "\(self.layoutVars.mediumBase)\(fileName)"
-                                    let rawPath:String = "\(self.layoutVars.rawBase)\(fileName)"
-                                    
-                                    //create a item object
-                                   // print("create an image object \(i)")
-                                    
-                                    print("rawPath = \(rawPath)")
-                                    
-                                    let image = Image(_id: updatedJSON["tasks"][n]["images"][p]["ID"].stringValue,_thumbPath: thumbPath,_mediumPath: mediumPath,_rawPath: rawPath,_name: updatedJSON["tasks"][n]["images"][p]["name"].stringValue,_width: updatedJSON["tasks"][n]["images"][p]["width"].stringValue,_height: updatedJSON["tasks"][n]["images"][p]["height"].stringValue,_description: updatedJSON["tasks"][n]["images"][p]["description"].stringValue,_dateAdded: updatedJSON["tasks"][n]["images"][p]["dateAdded"].stringValue,_createdBy: updatedJSON["tasks"][n]["images"][p]["createdByName"].stringValue,_type: updatedJSON["tasks"][n]["images"][p]["type"].stringValue)
-                                    
-                                    image.customer = (updatedJSON["tasks"][n]["images"][p]["customer"].stringValue)
-                                    image.tags = (updatedJSON["tasks"][n]["images"][p]["tags"].stringValue)
-                                    
-                                    print("appending image")
-                                    taskImages.append(image)
-                                    
-                                }
-                                
-                                let task = Task(_ID: updatedJSON["tasks"][n]["ID"].stringValue, _sort: updatedJSON["tasks"][n]["sort"].stringValue, _status: updatedJSON["tasks"][n]["status"].stringValue, _task: updatedJSON["tasks"][n]["task"].stringValue, _images:taskImages)
-                                self.woItem.tasks.append(task)
+                            //set Start and Stop Dates
+                            if self.woItem.usages![n].startString != nil &&  self.woItem.usages![n].startString != "0000-00-00 00:00:00"{
+                                self.woItem.usages![n].start = dateFormatter.date(from: self.woItem.usages![n].startString!)!
+                            }
+                            if self.woItem.usages![n].stopString != nil &&  self.woItem.usages![n].stopString != "0000-00-00 00:00:00"{
+                                self.woItem.usages![n].stop = dateFormatter.date(from: self.woItem.usages![n].stopString!)!
                             }
                             
-                            let vendorCount = updatedJSON["vendors"].count
-                            for n in 0 ..< vendorCount {
-                                let vendor = Vendor(_name: updatedJSON["vendors"][n]["companyName"].stringValue, _id: updatedJSON["vendors"][n]["vendorID"].stringValue, _address: updatedJSON["vendors"][n]["address"].stringValue, _phone: updatedJSON["vendors"][n]["phone"].stringValue, _website: updatedJSON["vendors"][n]["website"].stringValue, _balance: updatedJSON["vendors"][n]["balance"].stringValue, _lng: updatedJSON["vendors"][n]["lng"].stringValue, _lat: updatedJSON["vendors"][n]["lat"].stringValue)
-                                vendor.itemCost = updatedJSON["vendors"][n]["cost"].stringValue
-                                self.woItem.vendors.append(vendor)
+                            //set chargeType
+                            self.woItem.usages![n].chargeType = self.woItem.charge
+                           
+                            //set Locked
+                            if(Double(self.woItem.usages![n].qty!)! > 0.0 && self.woItem.usages![n].addedBy != self.appDelegate.loggedInEmployee?.ID){
+                                self.woItem.usages![n].locked = true
+                            }else{
+                                self.woItem.usages![n].locked = false
                             }
-                            let vendor = Vendor(_name: "Other", _id: "0", _address: "", _phone: "", _website: "", _balance: "", _lng: "", _lat: "")
-                            self.woItem.vendors.append(vendor)
-                            
-                            let usageCount = updatedJSON["usage"].count
-                            let dateFormatter = DateFormatter()
-                            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-                            
-                            for n in 0 ..< usageCount {
-                                let startDate = dateFormatter.date(from: updatedJSON["usage"][n]["start"].string!)!
-                                let stopDate:Date?
-                                
-                                var locked:Bool
-                                let usageQty = Double(updatedJSON["usage"][n]["qty"].stringValue)
-                                if(usageQty! > 0.0 && updatedJSON["usage"][n]["addedBy"].string != self.appDelegate.loggedInEmployee?.ID){
-                                    locked = true
-                                }else{
-                                    locked = false
-                                }
-                                
-                                let usage:Usage
-                                
-                                if(updatedJSON["usage"][n]["stop"].string != "0000-00-00 00:00:00"){
-                                    stopDate = dateFormatter.date(from: updatedJSON["usage"][n]["stop"].string!)!
-                                    
-                                    usage = Usage(_ID: updatedJSON["usage"][n]["ID"].stringValue,
-                                                  _empID: updatedJSON["usage"][n]["empID"].stringValue,
-                                                  _depID: updatedJSON["usage"][n]["depID"].stringValue,
-                                                  _woID: updatedJSON["usage"][n]["woID"].stringValue,
-                                                  _start: startDate,
-                                                  _stop: stopDate,
-                                                  _lunch: updatedJSON["usage"][n]["lunch"].stringValue,
-                                                  _qty: updatedJSON["usage"][n]["qty"].stringValue,
-                                                  _empName: updatedJSON["usage"][n]["empName"].stringValue,
-                                                  _type: updatedJSON["usage"][n]["type"].stringValue,
-                                                  _itemID: updatedJSON["usage"][n]["woItemID"].stringValue,
-                                                  _unitPrice: updatedJSON["usage"][n]["unitPrice"].stringValue,
-                                                  _totalPrice: updatedJSON["usage"][n]["totalPrice"].stringValue,
-                                                  _vendor: updatedJSON["usage"][n]["vendor"].stringValue,
-                                                  _unitCost: updatedJSON["usage"][n]["unitCost"].stringValue,
-                                                  _totalCost: updatedJSON["usage"][n]["totalCost"].stringValue,
-                                                  _chargeType: updatedJSON["chargeID"].stringValue,
-                                                  _override: updatedJSON["usage"][n]["override"].stringValue,
-                                                  _empPic: updatedJSON["usage"][n]["empPic"].stringValue,
-                                                  _locked: locked,
-                                                  _addedBy: self.appDelegate.loggedInEmployee?.ID,
-                                                  _del: ""
-                                    )
-                                }else{
-                                    usage = Usage(_ID: updatedJSON["usage"][n]["ID"].stringValue,
-                                                  _empID: updatedJSON["usage"][n]["empID"].stringValue,
-                                                  _depID: updatedJSON["usage"][n]["depID"].stringValue,
-                                                  _woID: updatedJSON["usage"][n]["woID"].stringValue,
-                                                  _start: startDate,
-                                                  _lunch: updatedJSON["usage"][n]["lunch"].stringValue,
-                                                  _qty: updatedJSON["usage"][n]["qty"].stringValue,
-                                                  _empName: updatedJSON["usage"][n]["empName"].stringValue,
-                                                  _type: updatedJSON["usage"][n]["type"].stringValue,
-                                                  _itemID: updatedJSON["usage"][n]["woItemID"].stringValue,
-                                                  _unitPrice: updatedJSON["usage"][n]["unitPrice"].stringValue,
-                                                  _totalPrice: updatedJSON["usage"][n]["totalPrice"].stringValue,
-                                                  _vendor: updatedJSON["usage"][n]["vendor"].stringValue,
-                                                  _unitCost: updatedJSON["usage"][n]["unitCost"].stringValue,
-                                                  _totalCost: updatedJSON["usage"][n]["totalCost"].stringValue,
-                                                  _chargeType: updatedJSON["chargeID"].stringValue,
-                                                  _override: updatedJSON["usage"][n]["override"].stringValue,
-                                                  _empPic: updatedJSON["usage"][n]["empPic"].stringValue,
-                                                  _locked: locked,
-                                                  _addedBy: self.appDelegate.loggedInEmployee?.ID,
-                                                  _del: ""
-                                    )
-                                    
-                                    
-                                }
-                                
-                                if updatedJSON["usage"][n]["hasReceipt"].stringValue == "1"{
-                                    usage.hasReceipt = "1"
-                                    usage.receipt = Image(_id: updatedJSON["usage"][n]["receipt"]["ID"].stringValue, _thumbPath:"https://www.atlanticlawnandgarden.com/uploads/general/thumbs/\(updatedJSON["usage"][n]["receipt"]["fileName"].stringValue)", _mediumPath: "https://www.atlanticlawnandgarden.com/uploads/general/medium/\(updatedJSON["usage"][n]["receipt"]["fileName"].stringValue)", _rawPath: "https://www.atlanticlawnandgarden.com/uploads/general/\(updatedJSON["usage"][n]["receipt"]["fileName"].stringValue)", _name: updatedJSON["usage"][n]["receipt"]["name"].stringValue, _width: updatedJSON["usage"][n]["receipt"]["width"].stringValue, _height: updatedJSON["usage"][n]["receipt"]["height"].stringValue, _description: updatedJSON["usage"][n]["description"]["ID"].stringValue, _dateAdded: updatedJSON["usage"][n]["receipt"]["dateAdded"].stringValue, _createdBy: updatedJSON["usage"][n]["receipt"]["createdBy"].stringValue, _type: updatedJSON["usage"][n]["receipt"]["type"].stringValue)
-                                }else{
-                                    usage.hasReceipt = "0"
-                                }
-                                
-                                
-                                self.woItem.usages.append(usage)
-                            }
-                           // self.woItemsArray.append(woItem)
+                          
+                        }
                         
                         
                         
                         
+                        if self.usageEntryViewController != nil{
+                            self.usageEntryViewController?.woItem = self.woItem
+                            self.usageEntryViewController?.addActiveUsage()
+                        }
                         
-                        
-                        
-                        
-                        
-                        
-
-
-                        self.layoutVars.playSaveSound()
+                        self.indicator.dismissIndicator()
                         self.layoutViews()
                         
                         
-                    case .failure(let error):
-                       
-                        print("Error 4xx / 5xx: \(error)")
+                    }catch let err{
+                        print(err)
                     }
+                    
             }
         
         
@@ -460,7 +333,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.itemView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[itemNameView(40)][chargeTypeView(25)][estimatedView(25)][profitView(25)][usageView(50)]", options: [], metrics: sizeVals, views: containersViewsDictionary))
 
         self.itemLbl = GreyLabel()
-        self.itemLbl.text = self.woItem.name
+        self.itemLbl.text = self.woItem.item
         self.itemLbl.font = layoutVars.labelFont
         self.itemNameView.addSubview(self.itemLbl)
         
@@ -476,26 +349,9 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.chargeTypeLabel.text = "Charge Type:"
         self.chargeTypeView.addSubview(self.chargeTypeLabel)
         
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+       // let appDelegate = UIApplication.shared.delegate as! AppDelegate
         
-        /*
-        var chargeTypeName:String
         
-        switch (self.woItem.chargeID) {
-        case "1":
-            chargeTypeName = appDelegate.fieldsJson["charges"][0][1].stringValue
-            break;
-        case "2":
-            chargeTypeName = appDelegate.fieldsJson["charges"][1][1].stringValue
-            break;
-        case "3":
-            chargeTypeName = appDelegate.fieldsJson["charges"][2][1].stringValue
-            break;
-        default:
-            chargeTypeName = "Null"//online
-            break;
-        }
-        */
         
         self.chargeTypeValueLabel = Label()
         self.chargeTypeValueLabel.text = self.woItem.chargeName
@@ -506,11 +362,10 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.chargeTypeView.addSubview(self.totalLabel)
     
         self.totalValueLabel = Label()
-        self.totalValueLabel.text = "$\(self.woItem.total!)"
+        self.totalValueLabel.text = "$\(self.woItem.total)"
         self.chargeTypeView.addSubview(self.totalValueLabel)
         
         self.taxLabel = Label()
-        //self.taxLabel.text = "Total:"
         if woItem.tax == "1"{
             self.taxLabel.text = "Taxable"
         }else{
@@ -560,7 +415,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.estimatedView.addSubview(self.remainLabel)
         
         
-        var remainingValue = Float(self.woItem.est)! - Float(self.woItem.usageQty)!
+        var remainingValue = Float(self.woItem.est!)! - Float(self.woItem.usageQty!)!
         
         if(remainingValue < 0){
             remainingValue = 0.00
@@ -591,7 +446,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
       
         
-        let income = Float(self.woItem.total!)
+        let income = Float(self.woItem.total)
         let cost = Float(self.woItem.totalCost!)
         
         var scaleFactor = Float(0.00)
@@ -722,7 +577,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.leadTasksWaitingBtn.addTarget(self, action: #selector(ContractItemViewController.assignLeadTasks), for: UIControl.Event.touchUpInside)
         self.detailsView.addSubview(self.leadTasksWaitingBtn)
         
-        
+        self.itemDetailsTableView = TableView()
         self.itemDetailsTableView.delegate  =  self
         self.itemDetailsTableView.dataSource = self
         
@@ -739,39 +594,6 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }else{
             hideLeadTaskBtn()
         }
-        
-        
-        
-        
-        /*
-        //auto layout group
-        let itemDetailsViewsDictionary = [
-            
-            "view1":leadTasksWaitingBtn,
-            "view2":itemDetailsTableView
-        ]  as [String:AnyObject]
-        
-        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view1]|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
-        
-        self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[view2]|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
-        
-       // self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(fullHeight)]", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
-        
-        print("leadTasksWaiting \(leadTasksWaiting)")
-        
-        if self.leadTasksWaiting! == "1" && self.woItem.type == "1"{
-            
-            print("leadTasksWaiting")
-            
-            self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view1(40)][view2]|", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
-            
-            //simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Lead Tasks To Assign", _message: ""
-            //)
-        }else{
-            self.detailsView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[view2(fullHeight)]", options: [], metrics: sizeVals, views: itemDetailsViewsDictionary))
-        }
- */
-        
         
     }
     
@@ -817,15 +639,6 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
     /////////////// TableView Delegate Methods   ///////////////////////
     
     
@@ -846,7 +659,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var count:Int!
-        count = self.tasks.count + 1
+        count = self.woItem.tasks!.count + 1
         return count
     }
     
@@ -856,35 +669,47 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.prepareForReuse()
         
         
-        if(indexPath.row == self.tasks.count){
+        if(indexPath.row == self.woItem.tasks!.count){
             //cell add btn mode
             cell.layoutAddBtn()
         }else{
             
-            cell.task = self.tasks[indexPath.row]
+            cell.task = self.woItem.tasks![indexPath.row]
             cell.layoutViews()
-            cell.taskLbl.text = self.tasks[indexPath.row].task
+            cell.taskLbl.text = self.woItem.tasks![indexPath.row].task
             
-            if(self.tasks[indexPath.row].images.count == 0){
+            
+            
+            
+            if(self.woItem.tasks![indexPath.row].images!.count == 0){
                 cell.imageQtyLbl.text = "No Images"
             }else{
-                if(self.tasks[indexPath.row].images.count == 1){
+                if(self.woItem.tasks![indexPath.row].images!.count == 1){
                     cell.imageQtyLbl.text = "1 Image"
                     
                 }else{
-                    cell.imageQtyLbl.text = "\(self.tasks[indexPath.row].images.count) Images"
+                    cell.imageQtyLbl.text = "\(self.woItem.tasks![indexPath.row].images!.count) Images"
                 }
             }
+ 
             
             
-            cell.setStatus(status: self.tasks[indexPath.row].status)
             
-            print("image count = \(self.tasks[indexPath.row].images.count)")
             
-            if(self.tasks[indexPath.row].images.count > 0){
-                print("image path = \(self.tasks[indexPath.row].images[0].thumbPath!)")
+            cell.setStatus(status: self.woItem.tasks![indexPath.row].status)
+            
+            print("image count = \(self.woItem.tasks![indexPath.row].images!.count)")
+            
+            if(self.woItem.tasks![indexPath.row].images!.count > 0){
+                print("image path = \(String(describing: self.woItem.tasks![indexPath.row].images![0].thumbPath))")
                 cell.activityView.startAnimating()
-                cell.setImageUrl(_url: "\(self.tasks[indexPath.row].images[0].thumbPath!)")
+                
+                self.woItem.tasks![indexPath.row].images![0].setImagePaths()
+                
+                if self.woItem.tasks![indexPath.row].images![0].thumbPath != nil{
+                    cell.setImageUrl(_url: "\(self.woItem.tasks![indexPath.row].images![0].thumbPath!)")
+                }
+                
             }else{
                 print("set blank image")
                 cell.setBlankImage()
@@ -902,21 +727,28 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         tableView.deselectRow(at: indexPath as IndexPath, animated: false)
         
-        if(indexPath.row == self.tasks.count){
+        if(indexPath.row == self.woItem.tasks!.count){
             self.addTask()
         }else{
+            imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _taskID: self.woItem.tasks![indexPath.row].ID, _customerID: self.customerID, _images: self.woItem.tasks![indexPath.row].images!)
             
-            imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _taskID: tasks[indexPath.row].ID, _customerID: self.customerID, _images: self.tasks[indexPath.row].images)
-            imageUploadPrepViewController.images = self.tasks[indexPath.row].images
+            
+           // let ID = self.woItem.tasks![indexPath.row].ID
+            //imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _taskID: ID, _customerID: self.customerID, _images: self.woItem.tasks![indexPath.row].images!)
+            //imageUploadPrepViewController.images = self.woItem.tasks![indexPath.row].images!
             imageUploadPrepViewController.layoutViews()
-            imageUploadPrepViewController.groupDescriptionTxt.text = self.tasks[indexPath.row].task
+            imageUploadPrepViewController.groupDescriptionTxt.text = self.woItem.tasks![indexPath.row].task
             imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
-            imageUploadPrepViewController.taskStatus = self.tasks[indexPath.row].status
+            imageUploadPrepViewController.taskStatus = self.woItem.tasks![indexPath.row].status
             imageUploadPrepViewController.selectedID = self.customerID
             imageUploadPrepViewController.woID = self.woID
             imageUploadPrepViewController.groupImages = true
             imageUploadPrepViewController.attachmentDelegate = self
             self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+ 
+            
+            
+            
         }
     }
     
@@ -932,20 +764,20 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
   
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let ID = self.tasks[indexPath.row].ID
+        let ID = self.woItem.tasks![indexPath.row].ID
         var newItemStatus:String?
         
         //indexPath
         let none = UITableViewRowAction(style: .normal, title: "None") { action, index in
             //print("none button tapped")
-            self.tasks[indexPath.row].status = "1"
+            self.woItem.tasks![indexPath.row].status = "1"
             newItemStatus = self.setTaskStatus(_ID: ID!, _status: "1", _row: indexPath.row)
             
         }
         none.backgroundColor = UIColor.gray
         let progress = UITableViewRowAction(style: .normal, title: "Prog.") { action, index in
             //print("progress button tapped")
-            self.tasks[indexPath.row].status = "2"
+            self.woItem.tasks![indexPath.row].status = "2"
             newItemStatus = self.setTaskStatus(_ID: ID!, _status: "2", _row: indexPath.row)
             self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
         }
@@ -953,7 +785,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         let done = UITableViewRowAction(style: .normal, title: "Done") { action, index in
             //print("done button tapped")
-            self.tasks[indexPath.row].status = "3"
+            self.woItem.tasks![indexPath.row].status = "3"
             newItemStatus = self.setTaskStatus(_ID: ID!, _status: "3", _row: indexPath.row)
             self.showImageActionSheet(_ID: ID!, _row: indexPath.row)
         }
@@ -961,12 +793,15 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         let cancel = UITableViewRowAction(style: .normal, title: "Cancel") { action, index in
             //print("cancel button tapped")
-            self.tasks[indexPath.row].status = "4"
+            self.woItem.tasks![indexPath.row].status = "4"
             newItemStatus = self.setTaskStatus(_ID: ID!, _status: "4", _row: indexPath.row)
         }
         cancel.backgroundColor = UIColor.red
         
-        self.woItem.itemStatus = newItemStatus
+        //print("newItemStatus! = \(newItemStatus!)")
+        
+        
+       //self.woItem.status = newItemStatus!
         return [cancel, done, progress, none]
     }
     
@@ -976,7 +811,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     
     func setTaskStatus(_ID:String,_status:String,_row:Int)->String{
-        self.tasks[_row].status = _status
+        self.woItem.tasks![_row].status = _status
         self.itemDetailsTableView.reloadData()
         editsMade = true
         var newItemStatus:String = "1"
@@ -1021,9 +856,9 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let imageUploadPrepViewController:ImageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _taskID: _ID, _customerID: self.customerID, _images: [])
             imageUploadPrepViewController.customerName = self.customerName
             imageUploadPrepViewController.selectedID = self.customerID
-            imageUploadPrepViewController.taskStatus = self.tasks[_row].status
+            imageUploadPrepViewController.taskStatus = self.woItem.tasks![_row].status
             imageUploadPrepViewController.layoutViews()
-            imageUploadPrepViewController.groupDescriptionTxt.text = self.tasks[_row].task
+            imageUploadPrepViewController.groupDescriptionTxt.text = self.woItem.tasks![_row].task
             imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
             imageUploadPrepViewController.woID = self.woID
             imageUploadPrepViewController.groupImages = true
@@ -1073,7 +908,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         print("add task")
         
         
-        if(self.woItem.chargeID == "2"){
+        if(self.woItem.charge == "2"){
             var message:String = ""
             if(self.saleRepName != "No Rep"){
                 message = "Contact sales rep: \(self.saleRepName) or the office to add tasks to this item."
@@ -1111,10 +946,16 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func updateTable(_points:Int){
         print("updateTable")
-        getTasks()
+        //getTasks()
+        
+        
+        self.getWoItem(woItemID: self.woItem.ID)
     }
 
     
+    
+    
+    /*
     func getTasks(){
         print("get tasks")
         
@@ -1142,6 +983,86 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
             .responseJSON(){
                 response in
                 
+                
+                
+                
+                
+                
+                
+                do{
+                    //created the json decoder
+                    
+                    let json = response.data
+                    let decoder = JSONDecoder()
+                    let parsedData = try decoder.decode(WoItem2.self, from: json!)
+                    print("parsedData = \(parsedData)")
+                    
+                    self.woItem = parsedData
+                    print("woItem.usage = \(String(describing: self.woItem.usages))")
+                    self.indicator.dismissIndicator()
+                    
+                    
+                    
+                    
+                    let usageCount = self.woItem.usages!.count
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                    
+                    for n in 0 ..< usageCount {
+                        //let startDate:Date
+                        
+                        print("self.woItem.usages![n].startString = \(String(describing: self.woItem.usages![n].startString))")
+                        print("self.woItem.usages![n].stopString = \(String(describing: self.woItem.usages![n].stopString))")
+                        
+                        //set Start and Stop Dates
+                        if self.woItem.usages![n].startString != nil &&  self.woItem.usages![n].startString != "0000-00-00 00:00:00"{
+                            self.woItem.usages![n].start = dateFormatter.date(from: self.woItem.usages![n].startString!)!
+                        }
+                        if self.woItem.usages![n].stopString != nil &&  self.woItem.usages![n].stopString != "0000-00-00 00:00:00"{
+                            self.woItem.usages![n].stop = dateFormatter.date(from: self.woItem.usages![n].stopString!)!
+                        }
+                        
+                        //set chargeType
+                        self.woItem.usages![n].chargeType = self.woItem.charge
+                        
+                        //set Locked
+                        if(Double(self.woItem.usages![n].qty!)! > 0.0 && self.woItem.usages![n].addedBy != self.appDelegate.loggedInEmployee?.ID){
+                            self.woItem.usages![n].locked = true
+                        }else{
+                            self.woItem.usages![n].locked = false
+                        }
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    }
+                    
+                    
+                    
+                    self.layoutViews()
+                    
+                    if self.usageEntryViewController != nil{
+                        self.usageEntryViewController?.woItem = self.woItem
+                        self.usageEntryViewController?.addActiveUsage()
+                    }
+                }catch let err{
+                    print(err)
+                }
+
+                
+                
+                
+                
+                
+                
+                /*
+                
                 print(response.request ?? "")  // original URL request
                 print(response.response ?? "") // URL response
                 print(response.data ?? "")     // server data
@@ -1153,7 +1074,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     
                     let ts = self.tasksJson?["tasks"]
                     
-                    self.tasks = []
+                    self.woItem.tasks! = []
                     print("Task Count = \(String(describing: ts?.count))")
                     
                     for n in 0 ..< Int((ts?.count)!) {
@@ -1183,18 +1104,40 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
                             taskImages.append(image)
                             
                         }
-                        let task = Task(_ID: ts?[n]["ID"].stringValue, _sort: ts?[n]["sort"].stringValue, _status: ts?[n]["status"].stringValue, _task: ts?[n]["task"].stringValue, _images: taskImages)
-                        self.tasks.append(task)
+                        
+                        let task = Task2(_ID: (ts?[n]["ID"].stringValue)!, _sort: (ts?[n]["sort"].stringValue)!, _status: (ts?[n]["status"].stringValue)!, _task: (ts?[n]["task"].stringValue)!)
+                        
+                        
+                        
+                        
+                        /*
+                        task.images = taskImages
+                        
+                        */
+                        
+                        
+                        
+                        
+                       // let task = Task(_ID: ts?[n]["ID"].stringValue, _sort: ts?[n]["sort"].stringValue, _status: ts?[n]["status"].stringValue, _task: ts?[n]["task"].stringValue, _images: taskImages)
+                        self.woItem.tasks!.append(task)
                         
                     }
                     
                     self.itemDetailsTableView.reloadData()
-                    let indexPath = IndexPath(row: self.tasks.count, section: 0)
+                    let indexPath = IndexPath(row: self.woItem.tasks!.count, section: 0)
                     self.itemDetailsTableView.scrollToRow(at: indexPath, at: .top, animated: true)
                 }
+                
+                */
+                
+                
         }
         
     }
+ 
+ */
+    
+    
     
     
     @objc func assignLeadTasks(){
@@ -1207,12 +1150,14 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     @objc func enterUsage(){
         
-        editsMade = true
+       // editsMade = true
         
-        let usageEntryViewController = UsageEntryViewController(_workOrderID: woID,_workOrderItem:self.woItem,_empsOnWo:self.empsOnWo)
-        usageEntryViewController.customerID = self.customerID
-        usageEntryViewController.delegate = self
-        navigationController?.pushViewController(usageEntryViewController, animated: false )
+        //let usageEntryViewController = UsageEntryViewController(_workOrderID: woID,_workOrderItem:self.woItem,_empsOnWo:self.empsOnWo)
+        
+        self.usageEntryViewController = UsageEntryViewController(_workOrderID: woID,_workOrderItem:self.woItem,_empsOnWo:self.empsOnWo)
+        usageEntryViewController!.customerID = self.customerID
+        usageEntryViewController!.delegate = self
+        navigationController?.pushViewController(usageEntryViewController!, animated: false )
         
     }
     
@@ -1222,12 +1167,12 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     
     
-    func updateLead(_lead: Lead, _newStatusValue:String){
+    func updateLead(_lead: Lead2, _newStatusValue:String){
         print("update Lead")
         editsMade = true
         self.lead = _lead
         
-        if self.lead?.statusId! == "3"{
+        if self.lead?.statusID == "3"{
             self.hideLeadTaskBtn()
         }
         
@@ -1238,7 +1183,9 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
         //print(" GetLead  Lead Id \(self.lead!.ID)")
         
         
-        self.getTasks()
+        //self.getTasks()
+        
+        self.getWoItem(woItemID: self.woItem.ID)
         
         
         // Show Loading Indicator
@@ -1288,8 +1235,21 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 print("appending image")
                 taskImages.append(image)
             }
-            let task = Task(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue, _images:taskImages)
-            self.lead!.tasksArray.append(task)
+           // let task = Task(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue, _images:taskImages)
+            
+            let task = Task2(_ID: self.json["leadTasks"][n]["ID"].stringValue, _sort: self.json["leadTasks"][n]["sort"].stringValue, _status: self.json["leadTasks"][n]["status"].stringValue, _task: self.json["leadTasks"][n]["taskDescription"].stringValue)
+           
+            
+            
+            
+            
+            //task.images = taskImages
+            
+            
+            
+            
+            
+            self.lead!.tasksArray!.append(task)
         }
         //getStack()
         // self.layoutViews()
@@ -1315,8 +1275,11 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func refreshWoItem(){
+        print("refresh Wo Item")
         editsMade = true
         self.getWoItem(woItemID:self.woItem.ID)
+        //self.usageEntryViewController.
+        
     }
     
     

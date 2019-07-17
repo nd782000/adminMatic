@@ -13,7 +13,8 @@ import SwiftyJSON
  
 class WoItemTableViewCell: UITableViewCell {
     
-    var woItem:WoItem!
+   // var woItem:WoItem!
+    var woItem:WoItem2!
     var typeLbl:DetailLabel! = DetailLabel()
     var priceLbl:DetailLabel! = DetailLabel()
     var woItemJSON:JSON!

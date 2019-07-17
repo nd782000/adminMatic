@@ -21,7 +21,7 @@ import DKImagePickerController
 protocol ImageUploadPrepDelegate {
     func scrollToCell(_indexPath:IndexPath)
     func updateDescription(_index:Int, _description:String)
-    func uploadComplete(_images:[Image],_scoreAdjust:Int)
+    func uploadComplete(_images:[Image2],_scoreAdjust:Int)
 }
 
 protocol ImageDrawingDelegate{
@@ -114,9 +114,10 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     //data items
     var imageType:String! //example: task, fieldnote, custImage, equipmentImage
     
-    var images:[Image] = [Image]()  //full list of images being isplayed
-    var imagesAdded:[Image] = [Image]()  // just newly added images to be uploaded
-    
+    var images:[Image2] = [Image2]()  //full list of images being isplayed
+    //var imagesAdded:[Image2] = [Image2]()  // just newly added images to be uploaded
+   // var uiImages:[UIImage] = [UIImage]()
+    var uiImagesToSave:[UIImage] = [UIImage]()
     var linkType:String! //equipment link
     
     var imageAdded:Bool = false
@@ -131,7 +132,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     
     
    // var tasksJson:JSON?
-    var tasks:[Task] = []
+    var tasks:[Task2] = []
     let taskCount:Int = 0
     
     var currentImageIndex:Int!
@@ -143,7 +144,8 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     
 
     //init for wo attachments
-    init(_imageType:String,_woID:String,_customerID:String,_attachmentID:String,_images:[Image]){
+    //init(_imageType:String,_woID:String,_customerID:String,_attachmentID:String,_images:[Image2],_uiImages:[UIImage]){
+    init(_imageType:String,_woID:String,_customerID:String,_attachmentID:String,_images:[Image2]){
         super.init(nibName:nil,bundle:nil)
         print("ImageUploadPrep init for attachments")
         self.imageType = _imageType
@@ -151,20 +153,43 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.woID = _woID
         self.customerID = _customerID
         self.images = _images
+       // self.uiImages = _uiImages
+        for image in self.images{
+            image.imageData = image.urlStringToData(_urlString: image.mediumPath!)
+        }
     }
     
     //init for tasks
-    init(_imageType:String,_taskID:String,_customerID:String,_images:[Image]){
+    init(_imageType:String,_taskID:String,_customerID:String,_images:[Image2]){
+        
         super.init(nibName:nil,bundle:nil)
         print("ImageUploadPrep init for tasks")
         self.imageType = _imageType
         self.taskID = _taskID
         self.customerID = _customerID
         self.images = _images
+        
+        
+        for image in self.images{
+            print("medium path = \(image.mediumPath!)")
+            //image.imageData = image.urlStringToData(_urlString: image.mediumPath!)
+        }
+        
+        
+       // self.uiImages = _uiImages
+        
+        /*
+        for image in self.images{
+            image.setImagePaths()
+            image.imageData = image.urlStringToData(_urlString: image.mediumPath!)
+        }
+ */
+        
+        
     }
     
     //init for lead tasks
-    init(_imageType:String,_leadID:String,_leadTaskID:String,_customerID:String,_images:[Image]){
+    init(_imageType:String,_leadID:String,_leadTaskID:String,_customerID:String,_images:[Image2]){
         super.init(nibName:nil,bundle:nil)
         print("ImageUploadPrep init for lead tasks")
         self.imageType = _imageType
@@ -173,15 +198,50 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.customerID = _customerID
         self.images = _images
         
-       // print("imageType = \(imageType)")
-        //print("leadID = \(leadID)")
-       // print("leadTaskID = \(leadTaskID)")
-       // print("customerID = \(customerID)")
+        for image in self.images{
+            print("medium path = \(image.mediumPath!)")
+            //image.imageData = image.urlStringToData(_urlString: image.mediumPath!)
+        }
+        
+        /*
+        print("image count = \(self.images.count)")
+        for image in self.images{
+           // let uiImageData = Data(
+            let pictureURL = URL(string: image.thumbPath!)!
+            let session = URLSession(configuration: .default)
+            
+            // Define a download task. The download task will download the contents of the URL as a Data object and then you can do what you wish with that data.
+            _ = session.dataTask(with: pictureURL) { (data, response, error) in
+                // The download has finished.
+                if let e = error {
+                    print("Error downloading cat picture: \(e)")
+                } else {
+                    // No errors found.
+                    // It would be weird if we didn't have a response, so check for that too.
+                    if let res = response as? HTTPURLResponse {
+                        print("Downloaded picture with response code \(res.statusCode)")
+                        if let imageData = data {
+                            // Finally convert that Data into an image and do what you wish with it.
+                            let image = UIImage(data: imageData)
+                            // Do something with your image.
+                            self.uiImages.append(image!)
+                        } else {
+                            print("Couldn't get image: Image is nil")
+                        }
+                    } else {
+                        print("Couldn't get response code for some reason")
+                    }
+                }
+            }
+        }*/
+        
+        
     }
     
     
     //init for contract tasks
-    init(_imageType:String,_contractItemID:String,_contractTaskID:String,_customerID:String,_images:[Image]){
+    //init(_imageType:String,_contractItemID:String,_contractTaskID:String,_customerID:String,_images:[Image2],_uiImages:[UIImage]){
+    init(_imageType:String,_contractItemID:String,_contractTaskID:String,_customerID:String,_images:[Image2]){
         super.init(nibName:nil,bundle:nil)
         print("ImageUploadPrep init for contract tasks")
         self.imageType = _imageType
@@ -190,29 +250,59 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.customerID = _customerID
         self.selectedID = _customerID
         self.images = _images
+        
+        for image in self.images{
+            image.imageData = image.urlStringToData(_urlString: image.mediumPath!)
+        }
+        
+        //self.uiImages = _uiImages
     }
     
     
     
     
     //init for customer
-    init(_imageType:String,_customerID:String,_images:[Image]){
+    //init(_imageType:String,_customerID:String,_images:[Image2],_uiImages:[UIImage]){
+    init(_imageType:String,_customerID:String,_images:[Image2],_uiImages:[UIImage]){
         super.init(nibName:nil,bundle:nil)
         print("ImageUploadPrep init for customers")
         self.imageType = _imageType
         self.customerID = _customerID
         self.images = _images
-        self.imagesAdded = _images
+        self.uiImagesToSave = _uiImages
+        
+        var i = 0
+        for image in self.images{
+            image.toBeSaved = "1"
+            image.imageData = self.uiImagesToSave[i].pngData()
+            i += 1
+            
+        }
+       // self.imagesAdded = _images
+        //self.uiImages = _uiImages
+        //self.uiImagesAdded = _uiImages
     }
     
     //init for gallery
-    init(_imageType:String, _linkType:String = "",_images:[Image]){
+    //init(_imageType:String, _linkType:String = "",_images:[Image2],_uiImages:[UIImage]){
+    init(_imageType:String, _linkType:String = "",_images:[Image2],_uiImages:[UIImage]){
         super.init(nibName:nil,bundle:nil)
         print("ImageUploadPrep init for gallery")
         self.imageType = _imageType
         self.linkType = _linkType
         self.images = _images
-        self.imagesAdded = _images
+        self.uiImagesToSave = _uiImages
+        var i = 0
+        for image in self.images{
+            image.toBeSaved = "1"
+            image.imageData = self.uiImagesToSave[i].pngData()
+            i += 1
+          
+        }
+        
+       // self.imagesAdded = _images
+        //self.uiImages = _uiImages
+        //self.uiImagesAdded = _uiImages
     }
     
     //init for equipment
@@ -221,7 +311,13 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         print("ImageUploadPrep init for equipment")
         self.imageType = _imageType
         self.equipmentID = _equipmentID
-        
+        var i = 0
+        for image in self.images{
+            image.toBeSaved = "1"
+            image.imageData = self.uiImagesToSave[i].pngData()
+            i += 1
+            
+        }
         
     }
     
@@ -232,7 +328,13 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.imageType = _imageType
         self.usageID = _usageID
         self.usageIndex = _usageIndex
-        
+        var i = 0
+        for image in self.images{
+            image.toBeSaved = "1"
+            image.imageData = self.uiImagesToSave[i].pngData()
+            i += 1
+            
+        }
         
     }
     
@@ -676,7 +778,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:"V:|-60-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                 }else{
                     
-                    //safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-navBarHeight-[groupNameView(90)]", options: [], metrics: sizeVals, views: viewsDictionary))
+                    
                     safeContainer.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:"V:|-20-[imageCollection]-[addImageBtn(40)]-[submitBtn(40)]-|", options: [], metrics: sizeVals, views: viewsDictionary))
                     
                 }
@@ -696,16 +798,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             }
         }
         
-        /*
-        if self.groupImages == false{
-            self.groupSwitch.isHidden = true
-            self.groupSwitchLbl.isHidden = true
-            self.groupNameTxt.isHidden = true
-            self.groupSearchBar.isHidden = true
-        }
- */
         
-       
         
     }
     
@@ -741,19 +834,33 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.images.count
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         print("making cells")
         
+        print("images.count = \(self.images.count)")
+       // print("uiImagesAdded.count = \(self.uiImagesAdded.count)")
+       // let diff = self.images.count - self.imagesAdded.count
         
-            
+        //print("diff = \(diff)")
+        print("indexPath.row = \(indexPath.row)")
+       // print("indexPath.row - diff = \(indexPath.row - diff)")
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath as IndexPath) as! ImageUploadPrepCollectionViewCell
         
         cell.backgroundColor = UIColor.lightGray
             cell.imageData = images[indexPath.row]
-            
-            //print("cell image = \(cell.imageData.thumbPath)")
+        
+       // if indexPath.row >= diff{
+           // cell.uiImage = uiImagesAdded[indexPath.row - diff]
+       // }
+        
+       // if  images[indexPath.row].newlyAdded == "1"{
+            //cell.uiImage = uiImagesAdded[indexPath.row]
+       // }
+        
             cell.layoutViews()
             cell.delegate = self
             cell.indexPath = indexPath
@@ -789,15 +896,15 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             switch imageType {
             case "Gallery":
                 //title = "Upload to Gallery"
-                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
+                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData,_uiImage: currentCell.uiImage!)
                 break
             case "Customer":
                 //title = "Upload Customer Image"
-                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
+                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData,_uiImage: currentCell.uiImage!)
                 break
             case "Attachment":
                 //title = "Add/Update Attachment"
-                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
+                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData,_uiImage: currentCell.uiImage!)
                 break
             case "Task":
                 //title = "Add/Update Task"
@@ -816,11 +923,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 break
             case "Equipment":
                 //title = "Add Equipment Image"
-                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
+                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData,_uiImage: currentCell.uiImage!)
                 break
             case "Receipt":
                 //title = "Add Equipment Image"
-                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
+                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData,_uiImage: currentCell.uiImage!)
                 break
                 
                 
@@ -845,17 +952,9 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             actionSheet.addAction(UIAlertAction(title: "View Large Image", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                 
                 
-                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData)
+                self.viewImage(_indexPath:indexPath,_image:currentCell.imageData,_uiImage: currentCell.uiImage!)
                 
-                /*
-                 self.imageDetailViewController = ImageDetailViewController(_image: currentCell.imageData)
-                 self.imageDetailViewController.imageFullViewController.delegate = self
-                 self.imageCollectionView?.deselectItem(at: indexPath, animated: true)
-                 self.navigationController?.pushViewController(self.imageDetailViewController, animated: false )
-                 self.imageDetailViewController.delegate = self
-                 
-                 self.currentImageIndex = indexPath.row
-                */
+               
                 
                 return
                 
@@ -931,7 +1030,8 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             actionSheet.view.layer.cornerRadius = 5;
             
             actionSheet.addAction(UIAlertAction(title: "Drawing", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-               self.draw(_indexPath: indexPath, _image: self.images[indexPath.row].image!)
+                //self.draw(_indexPath: indexPath, _image: self.uiImages[indexPath.row])
+                self.draw(_indexPath: indexPath, _image: UIImage(data: self.images[indexPath.row].imageData! as Data)!)
             }))
             
         
@@ -972,7 +1072,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
 
     }
     
-    func viewImage(_indexPath:IndexPath,_image:Image){
+    func viewImage(_indexPath:IndexPath,_image:Image2,_uiImage:UIImage){
         
         self.imageDetailViewController = ImageDetailViewController(_image: _image)
         //self.imageDetailViewController.imageFullViewController.delegate = self
@@ -1108,136 +1208,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
         }
         
-        /*
-        let allAssets = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: nil)
-        var evenAssetIds = [String]()
-        
-        allAssets.enumerateObjects({ (asset, idx, stop) -> Void in
-            if idx % 2 == 0 {
-                evenAssetIds.append(asset.localIdentifier)
-            }
-        })
-        
-        let evenAssets = PHAsset.fetchAssets(withLocalIdentifiers: evenAssetIds, options: nil)
-        
-        let vc = BSImagePickerViewController()
-        
-        if(imageType == "Equipment" || imageType == "Receipt"){
-            vc.maxNumberOfSelections = 1
-        }
-        
-        vc.defaultSelections = evenAssets
-        
-        bs_presentImagePickerController(vc, animated: true,
-                                        select: { (asset: PHAsset) -> Void in
-                                            print("Selected: \(asset)")
-        }, deselect: { (asset: PHAsset) -> Void in
-            print("Deselected: \(asset)")
-        }, cancel: { (assets: [PHAsset]) -> Void in
-            print("Cancel: \(assets)")
-        }, finish: { (assets: [PHAsset]) -> Void in
-            print("Finish: \(assets)")
-        }, completion: nil)
-        
-        
-        */
-        
-        //disable sesarch to prevent double modal present issue
-        
-        
-        /*
-        let pickerController = ImagePicker
-        pickerController.delegate = self
-        pickerController.allowsEditing = true
-        pickerController.mediaTypes = ["public.image"]
-        pickerController.sourceType = .camera
-        
        
-        pickerController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
-        */
-        
-        
-        /*
-        let vc = BSImagePickerViewController()
-        
-        if(imageType == "Equipment" || imageType == "Receipt"){
-            vc.maxNumberOfSelections = 1
-        }
-        
-        bs_presentImagePickerController(vc, animated: true,
-                                        select: { (asset: PHAsset) -> Void in
-                                            print("didSelectAssets")
-                                            print(assets)
-                                            
-                                            self.imageAdded = true
-                                            
-                                            for i in 0..<assets.count
-                                            {
-                                                print("looping images")
-                                                selectedAssets.append(assets[i])
-                                                //print(self.selectedAssets)
-                                                
-                                                
-                                                //assets[i].fetchOriginalImage(completeBlock: <#T##(UIImage?, [AnyHashable : Any]?) -> Void#>)
-                                                assets[i].fetchOriginalImage(completeBlock: { image, info in
-                                                    
-                                                    
-                                                    print("making image")
-                                                    
-                                                    
-                                                    let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
-                                                    
-                                                    if self.taskID != "" || self.leadTaskID != "" || self.contractTaskID != ""{
-                                                        imageToAdd.description = self.groupDescriptionTxt.text!
-                                                        imageToAdd.customer = self.customerID
-                                                        imageToAdd.customerName = self.customerName
-                                                    }
-                                                    
-                                                    if self.usageID != ""{
-                                                        imageToAdd.usageID = self.usageID
-                                                    }
-                                                    if self.vendorID != ""{
-                                                        imageToAdd.vendorID = self.vendorID
-                                                    }
-                                                    
-                                                    
-                                                    
-                                                    imageToAdd.image = image
-                                                    
-                                                    
-                                                    self.images.append(imageToAdd)
-                                                    self.imagesAdded.append(imageToAdd)
-                                                    
-                                                    if i == assets.count - 1{
-                                                        print("images count = \(self.images.count)")
-                                                        print("imagesAdded = \(self.imagesAdded.count)")
-                                                        
-                                                        self.imageCollectionView.reloadData()
-                                                        
-                                                        
-                                                        let lastItem = self.collectionView(self.imageCollectionView, numberOfItemsInSection: 0) - 1
-                                                        let indexPath: NSIndexPath = NSIndexPath.init(item: lastItem, section: 0)
-                                                        
-                                                        self.imageCollectionView.scrollToItem(at: indexPath as IndexPath, at: .top, animated: true)
-                                                    }
-                                                    
-                                                })
-                                            }
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-        }, deselect: { (asset: PHAsset) -> Void in
-            print("Deselected: \(asset)")
-        }, cancel: { (assets: [PHAsset]) -> Void in
-            print("Cancel: \(assets)")
-        }, finish: { (assets: [PHAsset]) -> Void in
-            print("Finish: \(assets)")
-        }, completion: nil)
-        */
-        
         
         
        let multiPicker = DKImagePickerController()
@@ -1248,7 +1219,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         print("add images 4")
         
         var selectedAssets = [DKAsset]()
-        var selectedImages:[Image] = [Image]()
+       // var selectedImages:[Image] = [Image]()
         
         
         multiPicker.showsCancelButton = true
@@ -1258,14 +1229,17 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             multiPicker.maxSelectableCount = 1
         }
         
-        self.layoutVars.getTopController().present(multiPicker, animated: true) {}
-        
+        //self.layoutVars.getTopController().present(multiPicker, animated: true) {}
+        self.present(multiPicker, animated: true) {}
         
        
         
         multiPicker.didSelectAssets = { (assets: [DKAsset]) in
             print("didSelectAssets")
             print(assets)
+            // Show Indicator
+            self.indicator = SDevIndicator.generate(self.view)!
+            
             
             self.imageAdded = true
             
@@ -1282,13 +1256,31 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     
                     print("making image")
                     
+                    var image = image
+                    image = self.layoutVars.imageOrientation(image!)
                     
-                    let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
+                    
+                    //print("base64 data = \(image!.toBase64()!)")
+                   // let imageData = UIImage.jpegData(image!) //JPEGRepresentation(image!, 0)
+                    
+                    
+                   // let env64string = imageData.d imageData.base64EncodedStringWithOptions(.Encoding64CharacterLineLength)
+                   // let imageData =  UIImage.jpegData(image!)// UIImageJPEGRepresentation(image!, 0)
+                   // let env64string = imageData.base64EncodedStringWithOptions(.Encoding64CharacterLineLength)
+                    
+                    
+                    //let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
+                    
+                    let imageToAdd:Image2 = Image2(_id: "0", _fileName: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId)!, _type: "")
+                    
+                   // imageToAdd.newlyAdded = "1"
+                    
+                   // imageToAdd.setImagePaths()
                     
                     if self.taskID != "" || self.leadTaskID != "" || self.contractTaskID != ""{
                         imageToAdd.description = self.groupDescriptionTxt.text!
                         imageToAdd.customer = self.customerID
-                        imageToAdd.customerName = self.customerName
+                        imageToAdd.custName = self.customerName
                     }
                     
                     if self.usageID != ""{
@@ -1299,16 +1291,26 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     }
                         
                         
-                        
-                    imageToAdd.image = image
+                        //let photoUrl =
+                    //imageToAdd.image = image
+                    //let photoLocalUrl = (info![UIImagePickerController.InfoKey.imageURL] as? URL)!
                     
+                    //print("photo url = \(photoLocalUrl)")
+                    imageToAdd.toBeSaved = "1"
+                    imageToAdd.imageData = image!.pngData()
+                    
+                    
+                    self.uiImagesToSave.append(image!)
                     
                     self.images.append(imageToAdd)
-                    self.imagesAdded.append(imageToAdd)
+                    
+                  //  self.imagesAdded.append(imageToAdd)
+                    //self.uiImages.append(image!)
+                   // self.uiImagesAdded.append(image!)
                     
                     if i == assets.count - 1{
                         print("images count = \(self.images.count)")
-                        print("imagesAdded = \(self.imagesAdded.count)")
+                      //  print("imagesAdded = \(self.imagesAdded.count)")
                         
                         self.imageCollectionView.reloadData()
                         
@@ -1317,9 +1319,14 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                         let indexPath: NSIndexPath = NSIndexPath.init(item: lastItem, section: 0)
                         
                         self.imageCollectionView.scrollToItem(at: indexPath as IndexPath, at: .top, animated: true)
+                        
+                        self.indicator.dismissIndicator()
                     }
                     
                 })
+                
+                
+                
             }
             
             
@@ -1339,7 +1346,9 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         print("change image")
         
         self.images = []
-        self.imagesAdded = []
+       // self.imagesAdded = []
+       // self.uiImages = []
+       // self.uiImagesAdded = []
         
         
         let multiPicker = DKImagePickerController()
@@ -1380,13 +1389,33 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     
                     print("making image")
                     
-                    let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
+                   // let imageToAdd:Image = Image(_id: "0", _thumbPath: "", _mediumPath: "", _rawPath: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId), _type: "")
                     
-                    imageToAdd.image = image
+                   // imageToAdd.image = image
                     
+                    let imageToAdd:Image2 = Image2(_id: "0", _fileName: "", _name: "", _width: "200", _height: "200", _description: "", _dateAdded: "", _createdBy: self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId)!, _type: "")
+                    imageToAdd.thumbPath = ""
+                    imageToAdd.mediumPath = ""
+                    imageToAdd.rawPath = ""
+                    
+                    
+                    imageToAdd.toBeSaved = "1"
+                    imageToAdd.imageData = image!.pngData()
+                    
+                    
+                    
+                   
+                    
+                    
+                    self.uiImagesToSave.append(image!)
                     
                     self.images.append(imageToAdd)
-                    self.imagesAdded.append(imageToAdd)
+                    
+                    
+                    //self.imagesAdded.append(imageToAdd)
+                    
+                   // self.uiImages.append(image!)
+                    //self.uiImagesAdded.append(image!)
                     
                 })
             }
@@ -1428,7 +1457,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
         self.imageCollectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.midY), animated: true)
     }
     
-    func uploadComplete(_images:[Image],_scoreAdjust:Int){
+    func uploadComplete(_images:[Image2],_scoreAdjust:Int){
         print("upload complete")
 
         if(self.imageType == "Gallery" || self.imageType == "Customer"){
@@ -1510,7 +1539,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     }
     
     
-    func refreshImages(_images:[Image]){
+    func refreshImages(_images:[Image2]){
         print("refreshImages")
        
     }
@@ -1680,8 +1709,14 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     
 
     @objc func forceSmallUpload(){
-        for image in self.imagesAdded{
-            image.image = image.image?.resized(withPercentage: 0.5)
+       // var i = 0
+        self.uiImagesToSave = []
+        for image in self.images{
+            if image.toBeSaved == "1"{
+                var uiImage = UIImage(data: image.imageData!)
+                uiImage = uiImage!.resized(withPercentage: 0.5)!
+                self.uiImagesToSave.append(uiImage!)
+            }
         }
         self.saveData()
     }
@@ -1689,12 +1724,27 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     
     @objc func pickImageUploadSize(){
         
-        if(imagesAdded.count == 0){
+        /*if(imagesAdded.count == 0){
             if imageType == "Equipment"{
                 self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "No Images Picked", _message: "")
             }else{
                 self.saveData()
             }
+ */
+        
+        
+        
+        //check if there are any new images to save
+        var imagesToSaveCount = 0
+        
+        for image in images{
+            if image.toBeSaved == "1"{
+                imagesToSaveCount += 1
+            }
+        }
+        
+        if imagesToSaveCount == 0{
+            self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "No Images Picked", _message: "")
             
         }else{
             let actionSheet = UIAlertController(title: "Pick an Image Size", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
@@ -1704,26 +1754,57 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
             actionSheet.addAction(UIAlertAction(title: "Full 100%", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
                   //print("show cam 1")
+                self.uiImagesToSave = []
+                for image in self.images{
+                    if image.toBeSaved == "1"{
+                        var uiImage = UIImage(data: image.imageData!)
+                        self.uiImagesToSave.append(uiImage!)
+                    }
+                }
+                
+                
                 self.saveData()
             }))
             
             actionSheet.addAction(UIAlertAction(title: "Medium 75%", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-               
-                
-                for image in self.imagesAdded{
-                    image.image = image.image?.resized(withPercentage: 0.75)
+               self.uiImagesToSave = []
+                for image in self.images{
+                    if image.toBeSaved == "1"{
+                        var uiImage = UIImage(data: image.imageData!)
+                        uiImage = uiImage!.resized(withPercentage: 0.75)!
+                        self.uiImagesToSave.append(uiImage!)
+                    }
                 }
+                
+                /*
+                for image in self.uiImagesAdded{
+                    var image = image
+                    image = image.resized(withPercentage: 0.75)!
+                }
+                */
                 
                 
                 self.saveData()
             }))
             
             actionSheet.addAction(UIAlertAction(title: "Small 50%", style: UIAlertAction.Style.default, handler: { (alert:UIAlertAction!) -> Void in
-                
-               
-                for image in self.imagesAdded{
-                    image.image = image.image?.resized(withPercentage: 0.5)
+                self.uiImagesToSave = []
+                for image in self.images{
+                    if image.toBeSaved == "1"{
+                        var uiImage = UIImage(data: image.imageData!)
+                        uiImage = uiImage!.resized(withPercentage: 0.5)!
+                        self.uiImagesToSave.append(uiImage!)
+                    }
                 }
+                
+                /*
+               
+                for image in self.uiImagesAdded{
+                    var image = image
+                    image = image.resized(withPercentage: 0.5)!
+                }
+ */
+                
                 self.saveData()
             }))
             actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
@@ -1765,15 +1846,31 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     func saveData(){
         print("Save Data")
         
+        var imagesAdded:[Image2] = []
+        
         if self.imageType != "Equipment"{
-            for image in imagesAdded{
+            for image in images{
                 image.name = "\(self.imageType!) Image"
             }
         }else{
-            for image in imagesAdded{
+            for image in images{
                 image.name = self.imageType!
             }
         }
+        
+        print("looping to check to be saved")
+        var imagesToSaveCount = 0
+        for image in self.images{
+            print("image.toBeSaved = \(String(describing: image.toBeSaved))")
+            if image.toBeSaved == "1"{
+                imagesAdded.append(image)
+                 imagesToSaveCount += 1
+            }
+        }
+        
+        
+        
+       
         
         
         if(self.imageType == "Gallery"){
@@ -1823,12 +1920,13 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                             let albumID = json["newID"] as? String{
                             
                             print("albumID = \(albumID)")
-                            for image in self.imagesAdded{
+                            for image in self.images{
                                 image.albumID = albumID
                                 image.customer = self.selectedID
                             }
                             
-                            let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                           
+                            let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: imagesAdded, _uiImages: self.uiImagesToSave)
                             imageUploadProgressViewController.uploadPrepDelegate = self
                             self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
                             
@@ -1848,27 +1946,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                     
                     
                     
-                    //swifty way
-                    /*
-                    ////print("JSON 1 \(json)")
-                    if let json = response.result.value {
-                        print("Album Json = \(json)")
-                        let albumJson = JSON(json)
-                        
-                        let albumID = albumJson["newID"].stringValue
-                        
-                        print("albumID = \(albumID)")
-                        for image in self.imagesAdded{
-                            image.albumID = albumID
-                            image.customer = self.selectedID
-                        }
-                        
-                        let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
-                        imageUploadProgressViewController.uploadPrepDelegate = self
-                        self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
-                        
-                    }
-                    */
+                   
                     
                     self.indicator.dismissIndicator()
                     
@@ -1888,8 +1966,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             }else{
                 //seperate images, no album
                 print("seperate")
+                
+               
+                
                // print("imagesadded.count = \(imagesAdded.count)")
-                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: imagesAdded, _uiImages: self.uiImagesToSave)
                 imageUploadProgressViewController.uploadPrepDelegate = self
                 self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
                 
@@ -1908,7 +1989,11 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 if(self.groupDescriptionTxt.text == groupDescriptionPlaceHolder){
                     groupDescString = ""
                     
-                    if(imagesAdded.count == 0){
+                    
+                    
+                    
+                    
+                    if(imagesToSaveCount == 0){
                         let alertController = UIAlertController(title: "Add Text or Image", message: "Write a description or add an image to submit.", preferredStyle: UIAlertController.Style.alert)
                        
                         
@@ -1974,7 +2059,9 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                                 
                                 
                                 print("attachmentID = \(String(describing: attachmentID))")
-                                for image in self.imagesAdded{
+                                
+                                
+                                for image in imagesAdded{
                                     image.leadTaskID = attachmentID
                                     image.customer = self.selectedID
                                     image.woID = self.woID
@@ -1998,8 +2085,8 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                             }
                             
                             
-                            if(self.imagesAdded.count > 0){
-                                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                            if(self.uiImagesToSave.count > 0){
+                                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: imagesAdded, _uiImages: self.uiImagesToSave)
                                 imageUploadProgressViewController.uploadPrepDelegate = self
                                 self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
                             }else{
@@ -2073,6 +2160,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 }
             }else if(self.imageType == "Task"){
                 //tasks
+                print("tasks")
                 var parameters = [String : Any]()
                 if(self.taskID == "0"){
                     //new leadTask needs to create leadTask ID first
@@ -2111,7 +2199,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                                 
                                 
                                 print("taskID = \(String(describing: taskID))")
-                                for image in self.imagesAdded{
+                                for image in imagesAdded{
                                     image.taskID = taskID
                                     image.customer = self.customerID
                                     image.woID = self.woID
@@ -2124,8 +2212,8 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                             
                             
                             
-                            if(self.imagesAdded.count > 0){
-                                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                            if(self.uiImagesToSave.count > 0){
+                                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: imagesAdded, _uiImages: self.uiImagesToSave)
                                 imageUploadProgressViewController.uploadPrepDelegate = self
                                 self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
                             }else{
@@ -2148,35 +2236,6 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                         
                         
                         
-                        
-                        //swifty way
-                        /*
-                        ////print("JSON 1 \(json)")
-                        if let json = response.result.value {
-                            print("Task Json = \(json)")
-                            self.tasksJson = JSON(json)
-                            
-                            let taskID = self.tasksJson?["newID"].stringValue
-                            
-                           // print("taskID = \(String(describing: taskID) ?? <#default value#>)")
-                            for image in self.imagesAdded{
-                                image.taskID = taskID!
-                                image.customer = self.customerID
-                                image.woID = self.woID
-                            }
-                            
-                            //add appPoints
-                            self.points = (self.tasksJson?["scoreAdjust"].intValue)!
-                            //print("points = \(points)")
-                            if(self.points > 0){
-                               // self.appDelegate.showMessage(_message: "earned \(points) App Points!")
-                            }else if(self.points < 0){
-                                self.points = self.points * -1
-                                //self.appDelegate.showMessage(_message: "lost \(points) App Points!")
-                            }
-                        }
-                        
-                        */
                         
                         
                         
@@ -2220,7 +2279,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                                     let newLeadTaskID = json["leadTaskID"] as? String{
                                     
                                     // print("taskID = \(String(describing: taskID) ?? default value)")
-                                    for image in self.imagesAdded{
+                                    for image in imagesAdded{
                                         // image.taskID = taskID!
                                         image.leadTaskID = newLeadTaskID
                                         image.customer = self.customerID
@@ -2235,8 +2294,8 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                                 
                                 
                                 
-                                if(self.imagesAdded.count > 0){
-                                    let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                                if(self.uiImagesToSave.count > 0){
+                                    let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: imagesAdded, _uiImages: self.uiImagesToSave)
                                     imageUploadProgressViewController.uploadPrepDelegate = self
                                     self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
                                 }else{
@@ -2260,34 +2319,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                             
                             
                             
-                            //swifty way
-                            /*
-                            ////print("JSON 1 \(json)")
-                            if let json = response.result.value {
-                                print("Task Json = \(json)")
-                                self.tasksJson = JSON(json)
-                                
-                                let newLeadTaskID = self.tasksJson?["leadTaskID"].stringValue
-                                
-                                // print("taskID = \(String(describing: taskID) ?? <#default value#>)")
-                                for image in self.imagesAdded{
-                                    // image.taskID = taskID!
-                                    image.leadTaskID = newLeadTaskID!
-                                    image.customer = self.customerID
-                                    //image.woID = self.woID
-                                }
-                                
-                                //add appPoints
-                                self.points = (self.tasksJson?["scoreAdjust"].intValue)!
-                                //print("points = \(points)")
-                                if(self.points > 0){
-                                    // self.appDelegate.showMessage(_message: "earned \(points) App Points!")
-                                }else if(self.points < 0){
-                                    self.points = self.points * -1
-                                    //self.appDelegate.showMessage(_message: "lost \(points) App Points!")
-                                }
-                            }
-                            */
+                            
                             
                             
                             
@@ -2337,7 +2369,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                                 let newContractTaskID = json["taskID"] as? String{
                                 
                                 // print("taskID = \(String(describing: taskID) ?? default value)")
-                                for image in self.imagesAdded{
+                                for image in imagesAdded{
                                     // image.taskID = taskID!
                                     image.contractTaskID = newContractTaskID
                                     image.customer = self.customerID
@@ -2352,8 +2384,8 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                             
                             
                             
-                            if(self.imagesAdded.count > 0){
-                                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                            if(self.uiImagesToSave.count > 0){
+                                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: imagesAdded, _uiImages: self.uiImagesToSave)
                                 imageUploadProgressViewController.uploadPrepDelegate = self
                                 self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
                             }else{
@@ -2376,37 +2408,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                         
                         
                         
-                        
-                        //swifty way
-                        /*
-                        ////print("JSON 1 \(json)")
-                        if let json = response.result.value {
-                            print("Task Json = \(json)")
-                            self.tasksJson = JSON(json)
-                            
-                            let newContractTaskID = self.tasksJson?["taskID"].stringValue
-                            
-                            // print("taskID = \(String(describing: taskID) ?? <#default value#>)")
-                            for image in self.imagesAdded{
-                                // image.taskID = taskID!
-                                image.contractTaskID = newContractTaskID!
-                                image.customer = self.customerID
-                                //image.woID = self.woID
-                            }
-                            
-                            //add appPoints
-                            self.points = (self.tasksJson?["scoreAdjust"].intValue)!
-                            //print("points = \(points)")
-                            if(self.points > 0){
-                                // self.appDelegate.showMessage(_message: "earned \(points) App Points!")
-                            }else if(self.points < 0){
-                                self.points = self.points * -1
-                                //self.appDelegate.showMessage(_message: "lost \(points) App Points!")
-                            }
-                        }*/
-                        
-                        
-                        
+                      
                         
                 }
                 
@@ -2416,13 +2418,13 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                 
             }else if(self.imageType == "Equipment"){
                 
-                for image in self.imagesAdded{
+                for image in imagesAdded{
                    
                     image.equipmentID = self.equipmentID
                 }
                 
-                if(self.imagesAdded.count > 0){
-                    let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                if(self.uiImagesToSave.count > 0){
+                    let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: imagesAdded, _uiImages: self.uiImagesToSave)
                     imageUploadProgressViewController.uploadPrepDelegate = self
                     self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
                 }else{
@@ -2448,13 +2450,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                         
                     }
                     
-                    /*
-                    //cache buster
-                    let now = Date()
-                    let timeInterval = now.timeIntervalSince1970
-                    let timeStamp = Int(timeInterval)
-                    //, "cb":timeStamp as AnyObject
- */
+                    
                     let parameters:[String:String]
                     parameters = ["name": groupNameString,"description": "","createdBy": self.appDelegate.defaults.string(forKey: loggedInKeys.loggedInId)] as! [String:String]
                     
@@ -2489,12 +2485,12 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                                     
                                     // print("taskID = \(String(describing: taskID) ?? default value)")
                                     print("albumID = \(albumID)")
-                                    for image in self.imagesAdded{
+                                    for image in imagesAdded{
                                         image.albumID = albumID
                                         image.customer = self.customerID
                                     }
                                     
-                                    let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                                    let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: imagesAdded, _uiImages: self.uiImagesToSave)
                                     imageUploadProgressViewController.uploadPrepDelegate = self
                                     self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
                                     
@@ -2503,24 +2499,7 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                                 }
                                 
                                 
-                                /*
-                                if(self.imagesAdded.count > 0){
-                                    let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
-                                    imageUploadProgressViewController.uploadPrepDelegate = self
-                                    self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
-                                }else{
-                                    if((self.attachmentDelegate) != nil){
-                                        self.attachmentDelegate.updateTable(_points: self.points)
-                                    }
-                                    self.imageAdded = false
-                                    self.textEdited = false
-                                    self.goBack()
-                                }
-                                
-                                */
-                                
-                                
-                                
+                               
                                 
                             } catch {
                                 print("Error deserializing JSON: \(error)")
@@ -2529,29 +2508,6 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                             
                             
                             
-                            //swifty way
-                            
-                            /*
-                            ////print("JSON 1 \(json)")
-                            if let json = response.result.value {
-                                print("Album Json = \(json)")
-                                let albumJson = JSON(json)
-                                
-                                let albumID = albumJson["newID"].stringValue
-                                
-                                print("albumID = \(albumID)")
-                                for image in self.imagesAdded{
-                                    image.albumID = albumID
-                                    image.customer = self.customerID
-                                }
-                                
-                                let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
-                                imageUploadProgressViewController.uploadPrepDelegate = self
-                                self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
-                                
-                            }
- */
-                            
                             
                             
                             
@@ -2559,27 +2515,18 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
                             
                     }
                     
-                    /*
-                     print("groupImages = \(groupImages)")
-                     print("ID = \(ID)")
-                     print("groupDescriptionString = \(groupDescriptionString)")
-                     print("selectedID = \(selectedID)")
-                     print("woID = \(woID)")
-                     print("images.count = \(images.count)")
-                     print("saveURLString = \(saveURLString)")
-                     */
-                    
+                   
                     
                 }else{
                     //seperate images, no album
                     print("seperate")
                     
-                    for image in self.imagesAdded{
+                    for image in imagesAdded{
                         image.customer = self.customerID
                     }
                     
                     
-                    let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: self.imagesAdded)
+                    let imageUploadProgressViewController:ImageUploadProgressViewController = ImageUploadProgressViewController(_imageType: self.imageType, _images: imagesAdded, _uiImages: self.uiImagesToSave)
                     imageUploadProgressViewController.uploadPrepDelegate = self
                     self.navigationController?.pushViewController(imageUploadProgressViewController, animated: false )
                     
@@ -2752,12 +2699,15 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
             
         }
         
+        /*
         imagesAdded = []
         for image in self.images{
             if(image.ID == "0" || image.ID == ""){
                 imagesAdded.append(image)
             }
         }
+ */
+        
     }
     
  
@@ -2767,8 +2717,15 @@ class ImageUploadPrepViewController: UIViewController, UITextFieldDelegate, UITe
     
 
     func updateImage(_indexPath:IndexPath, _image: UIImage) {
-        images[_indexPath.row].image = _image
+        //images[_indexPath.row].image = _image
+        
+        /*
+        self.uiImages[_indexPath.row] = _image
         self.imageCollectionView.reloadData()
+ 
+ */
+        
+        
     }
     
     

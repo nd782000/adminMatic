@@ -22,7 +22,7 @@ import Alamofire
 
 class ContractTaskTableViewCell: UITableViewCell {
     
-    var task:ContractTask!
+    var task:ContractTask2!
     var thumbView:UIImageView = UIImageView()
     var activityView:UIActivityIndicatorView!
     var taskLbl: UILabel! = UILabel()

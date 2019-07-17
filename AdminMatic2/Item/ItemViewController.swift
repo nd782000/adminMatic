@@ -29,7 +29,7 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
     var itemVendorArray:[Vendor] = []
     
     
-    var itemWorkOrderArray:[WorkOrder] = []
+    var itemWorkOrderArray:[WorkOrder2] = []
     //extra item properties, item object doesn't have'
    
     //item info
@@ -187,15 +187,43 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
                     
                     
                     
-                    print(" dismissIndicator")
-                    self.indicator.dismissIndicator()
+                   // print(" dismissIndicator")
+                   // self.indicator.dismissIndicator()
                     
                     
-                    print("JSON: \(json)")
-                    self.itemJSON = JSON(json)
-                    self.parseItemJSON()
+                   // print("JSON: \(json)")
+                   // self.itemJSON = JSON(json)
+                   // self.parseItemJSON()
                     
                     
+                    do{
+                        //created the json decoder
+                        let json = response.data
+                        //print("json = \(json)")
+                        
+                        let decoder = JSONDecoder()
+                        let parsedData = try decoder.decode(WorkOrderArray.self, from: json!)
+                        
+                        print("parsedData = \(parsedData)")
+                        
+                        let workOrders = parsedData
+                        
+                        let workOrderCount = workOrders.workOrders.count
+                        print("workOrder count = \(workOrderCount)")
+                        
+                        for i in 0 ..< workOrderCount {
+                            //create an object
+                            print("create a workOrder object \(i)")
+                            self.itemWorkOrderArray.append(workOrders.workOrders[i])
+                        }
+                        
+                        self.indicator.dismissIndicator()
+                        self.layoutViews()
+                        
+                    }catch let err{
+                        print(err)
+                    }
+
                     
                 }
                 
@@ -228,11 +256,14 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         let workOrderCount = Int((self.itemJSON["item"]["workOrders"].count))
         print("workOrderCount: \(workOrderCount)")
+        
+        /*
         for n in 0 ..< workOrderCount {
             let workOrder = WorkOrder(_ID: self.itemJSON["item"]["workOrders"][n]["ID"].stringValue, _statusID: self.itemJSON["item"]["workOrders"][n]["status"].stringValue, _date: "", _firstItem: self.itemJSON["item"]["workOrders"][n]["title"].stringValue, _statusName: "", _customer: self.itemJSON["item"]["workOrders"][n]["custName"].stringValue, _type: "", _progress: "", _totalPrice: "", _totalCost: "", _totalPriceRaw: "", _totalCostRaw: "", _charge: "", _title: self.itemJSON["item"]["workOrders"][n]["title"].stringValue, _customerName: self.itemJSON["item"]["workOrders"][n]["customerName"].stringValue)
            workOrder.itemRemQty = self.itemJSON["item"]["workOrders"][n]["remQty"].stringValue
             itemWorkOrderArray.append(workOrder)
         }
+        */
         
         
         
@@ -733,8 +764,8 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
             
             cell.workOrder = self.itemWorkOrderArray[indexPath.row]
             cell.layoutViews(_scheduleMode: "ITEM")
-            cell.setStatus(status: self.itemWorkOrderArray[indexPath.row].statusId)
-            cell.customerLbl.text = "\(self.itemWorkOrderArray[indexPath.row].title!)  \(self.itemWorkOrderArray[indexPath.row].customer!)"
+            cell.setStatus(status: self.itemWorkOrderArray[indexPath.row].status)
+            cell.customerLbl.text = "\(self.itemWorkOrderArray[indexPath.row].title)  \(self.itemWorkOrderArray[indexPath.row].customer)"
             cell.remainingQtyLbl.text = "Remaining Qty.: \(String(describing: self.itemWorkOrderArray[indexPath.row].itemRemQty!)) \(self.item.units!)"
             
             return cell

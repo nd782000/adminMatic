@@ -57,24 +57,24 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     //var fullScheduleJSON:JSON!
-    var fullScheduleArray:[WorkOrder] = []
+    var fullScheduleArray:[WorkOrder2] = []
     //var personalScheduleJSON:JSON!
-    var personalScheduleArray:[WorkOrder] = []
+    var personalScheduleArray:[WorkOrder2] = []
     
     //var fullHistoryJSON: JSON!
-    var fullHistoryArray:[WorkOrder] = []
+   // var fullHistoryArray:[WorkOrder2] = []
     //var personalHistoryJSON: JSON!
-    var personalHistoryArray:[WorkOrder] = []
+   // var personalHistoryArray:[WorkOrder2] = []
     
-    var workOrdersSearchResults:[WorkOrder] = []
+    var workOrdersSearchResults:[WorkOrder2] = []
     var shouldShowSearchResults:Bool = false
     var personalMode:Bool = true
     
     var layoutViewsCalled:Bool = false
     var fullScheduleLoaded:Bool = false
     var personalScheduleLoaded:Bool = false
-    var fullHistoryLoaded:Bool = false
-    var personalHistoryLoaded:Bool = false
+    //var fullHistoryLoaded:Bool = false
+   // var personalHistoryLoaded:Bool = false
     
     
     var cellClick:Bool = false
@@ -108,7 +108,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     
     override func viewWillAppear(_ animated: Bool) {
-        //print("viewWillAppear")
+        print("viewWillAppear")
         
         //print("self.tableViewMode = \(self.tableViewMode)")
          //print("personalMode = \(self.personalMode)")
@@ -119,40 +119,40 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             scheduleTableView.reloadData()
         }else{
             if(self.personalMode == false){
-              //  print("------FULL-------")
+                print("------FULL-------")
                 
-                if(self.tableViewMode == "SCHEDULE"){
+               // if(self.tableViewMode == "SCHEDULE"){
                     if(fullScheduleLoaded != true){
                         getSchedule(_empID: "")
                     }else{
                         scheduleTableView.reloadData()
                     }
-                }else{
-                    if(fullHistoryLoaded != true){
+               // }else{
+                   // if(fullHistoryLoaded != true){
                         //getHistory(_empID: "")
-                    }else{
+                    //}else{
                         scheduleTableView.reloadData()
-                    }
-                }
+                   // }
+               // }
                 
             }else{
-               // print("------PERSONAL-------")
+                print("------PERSONAL-------")
                 
-                if(self.tableViewMode == "SCHEDULE"){
+               // if(self.tableViewMode == "SCHEDULE"){
                     
                     if(personalScheduleLoaded != true){
                         getSchedule(_empID: (appDelegate.loggedInEmployee?.ID)!)
                     }else{
                         scheduleTableView.reloadData()
                     }
-                }else{
-                    if(personalHistoryLoaded != true){
+               // }else{
+                    //if(personalHistoryLoaded != true){
                        // getHistory(_empID: (appDelegate.loggedInEmployee?.ID)!)
-                    }else{
-                        scheduleTableView.reloadData()
-                    }
+                    //}else{
+                      //  scheduleTableView.reloadData()
+                   // }
                     
-                }
+                //}
             }
             
         }
@@ -192,18 +192,6 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         navigationItem.titleView = searchBarContainer
         
         
-        /*
-        // navigationItem.titleView = searchController.searchBar
-        searchController.searchBar.backgroundColor = UIColor.white
-        if #available(iOS 11.0, *) {
-            navigationItem.searchController = searchController
-        } else {
-            // Fallback on earlier versions
-            navigationItem.titleView = searchController?.searchBar
-        }
-        */
-        
-        //controller.searchBar.barTintColor = UIColor(red: 76/255, green: 203/255, blue: 124/255, alpha: 1)
        
         //set container to safe bounds of view
         let safeContainer:UIView = UIView()
@@ -215,17 +203,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         safeContainer.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
         
         
-        /*
-        let items = ["Active","History"]
-        self.customSC = SegmentedControl(items: items)
-        self.customSC.selectedSegmentIndex = 0
         
-        
-        
-        
-        customSC.addTarget(self, action: #selector(ScheduleViewController.changeSearchOptions(sender:)), for: .valueChanged)
-        //safeContainer.addSubview(customSC)
-        */
         
         print("calling tableView")
         self.scheduleTableView =  TableView()
@@ -344,8 +322,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         refreshFromTable = false
         
         
-        self.fullScheduleArray = []
-        self.personalScheduleArray = []
+        
         
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -368,17 +345,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
         print("call alamofire")
-        /*
-        var parameters:[String:String]
-        parameters = ["employeeID":_empID,"custID":"","startDate":self.startDateDB,"endDate":self.endDateDB,"sort":sort,"plowDepth":self.plowDepth,"active":"1", "cb":"\(timeStamp)"]
-        //print("parameters = \(parameters)")
-        
-        layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/workOrders.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
-            .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
-            .responseString { response in
-                print("equipment response = \(response)")
-        }
- */
+       
             
         
         
@@ -405,489 +372,115 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             //print(response.result)   // result of response serialization
             
             if(_empID == ""){
+                self.fullScheduleArray = []
+                
                 self.fullScheduleLoaded = true
                 
                 
                 
-                //native way
-                
-                do {
-                    if let data = response.data,
-                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                        let workOrders = json["workOrder"] as? [[String: Any]] {
+                do{
+                    //created the json decoder
+                    let json = response.data
+                    //print("json = \(json)")
+                    
+                    let decoder = JSONDecoder()
+                    let parsedData = try decoder.decode(WorkOrderArray.self, from: json!)
+                    
+                    print("parsedData = \(parsedData)")
+                    
+                    let workOrders = parsedData
+                   
+                    let workOrderCount = workOrders.workOrders.count
+                    print("workOrder count = \(workOrderCount)")
+                    
+                    for i in 0 ..< workOrderCount {
+                        //create an object
+                        print("create a workOrder object \(i)")
                         
-                        let workOrderCount = workOrders.count
-                        print("work order count = \(workOrderCount)")
-                        
-                        
-                        for i in 0 ..< workOrderCount {
-                            
-                            
-                            //create an object
-                            print("create a work order object \(i)")
-                            
-                            
-                            
-                            let workOrder = WorkOrder(_ID: workOrders[i]["ID"] as? String, _statusID: workOrders[i]["statusID"] as? String, _date: workOrders[i]["date"] as? String, _firstItem: workOrders[i]["firstItem"] as? String, _statusName: workOrders[i]["statusName"] as? String, _customer: workOrders[i]["customer"] as? String, _type: workOrders[i]["type"] as? String, _progress: workOrders[i]["progress"] as? String, _totalPrice: workOrders[i]["totalPrice"] as? String, _totalCost: workOrders[i]["totalCost"] as? String, _totalPriceRaw: workOrders[i]["totalPriceRaw"] as? String, _totalCostRaw: workOrders[i]["totalCostRaw"] as? String, _charge: workOrders[i]["charge"] as? String, _title: workOrders[i]["title"] as? String, _customerName: workOrders[i]["customerName"] as? String)
-                            
-                            //workOrder.customerName
-                            if(self.plowSort == "1"){
-                                workOrder.plowPriority = workOrders[i]["plowPriority"] as! String
-                                workOrder.plowDepth = workOrders[i]["plowDepth"] as! String
-                                workOrder.plowMonitoring = workOrders[i]["plowMonitorList"] as! String
-                            }
-                            
-                            self.fullScheduleArray.append(workOrder)
-                            
-                            
-                            
-                            
-                            
-                            
-                        }
+                        workOrders.workOrders[i].customerTitleAndID = "\(workOrders.workOrders[i].custName!) \(workOrders.workOrders[i].title) #\(workOrders.workOrders[i].ID)"
+                        self.fullScheduleArray.append(workOrders.workOrders[i])
                     }
                     
-                    
-                    
-                    
-                    
-                    
-                    self.methodFinish = Date()
-                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    print("Execution time: \(executionTime)")
-                    
-                    
-                    //self.indicator.dismissIndicator()
-                    
-                    
-                   // self.layoutViews()
-                    
-                    if(self.layoutViewsCalled == false ){
-                        self.layoutViews()
-                    }else{
-                       // DispatchQueue.main.async {
-                            print("reload data")
-                            self.scheduleTableView.reloadData()
-                       // }
-                    }
-                    // Close Indicator
                     self.indicator.dismissIndicator()
+                    self.layoutViews()
                     
-                    
-                } catch {
-                    print("Error deserializing JSON: \(error)")
+                }catch let err{
+                    print(err)
                 }
- 
- 
+
                 
                 
-                
-                
-              /*
-                
-                // swiftly way
-                if let json = response.result.value {
-                     print("json = \(json)")
-                    self.fullScheduleJSON = JSON(json)
-                    self.parseSchedule(_empID: _empID)
-                }
- */
+           
                 
             }else{
+                self.personalScheduleArray = []
                 self.personalScheduleLoaded = true
                 
                 
-                
-                //native way
-                
-                do {
-                    if let data = response.data,
-                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                        let workOrders = json["workOrder"] as? [[String: Any]] {
+                do{
+                    //created the json decoder
+                    let json = response.data
+                    //print("json = \(json)")
+                    
+                    let decoder = JSONDecoder()
+                    let parsedData = try decoder.decode(WorkOrderArray.self, from: json!)
+                    
+                    print("parsedData = \(parsedData)")
+                    
+                    let workOrders = parsedData
+                    
+                    let workOrderCount = workOrders.workOrders.count
+                    print("workOrder count = \(workOrderCount)")
+                    
+                    for i in 0 ..< workOrderCount {
+                        //create an object
+                        print("create a workOrder object \(i)")
+                        workOrders.workOrders[i].customerTitleAndID = "\(workOrders.workOrders[i].custName!) \(workOrders.workOrders[i].title) #\(workOrders.workOrders[i].ID)"
+                        self.personalScheduleArray.append(workOrders.workOrders[i])
+                    }
+                    
+                    self.indicator.dismissIndicator()
+                    self.layoutViews()
+                    
+                    
+                    //check if personal schedule is empty, switch to full and re get data
+                    
+                    if self.personalScheduleArray.count == 0{
+                        print("personal schedule is empty")
                         
-                        let workOrderCount = workOrders.count
-                        print("work order count = \(workOrderCount)")
+                        let alertController = UIAlertController(title: "No Work Orders", message: "There are no work orders assigned to you.  Would you like to load the full schedule?", preferredStyle: UIAlertController.Style.alert)
                         
-                        
-                        for i in 0 ..< workOrderCount {
-                            
-                            
-                            //create an object
-                            print("create a work order object \(i)")
-                            
-                            
-                            
-                            let workOrder = WorkOrder(_ID: workOrders[i]["ID"] as? String, _statusID: workOrders[i]["statusID"] as? String, _date: workOrders[i]["date"] as? String, _firstItem: workOrders[i]["firstItem"] as? String, _statusName: workOrders[i]["statusName"] as? String, _customer: workOrders[i]["customer"] as? String, _type: workOrders[i]["type"] as? String, _progress: workOrders[i]["progress"] as? String, _totalPrice: workOrders[i]["totalPrice"] as? String, _totalCost: workOrders[i]["totalCost"] as? String, _totalPriceRaw: workOrders[i]["totalPriceRaw"] as? String, _totalCostRaw: workOrders[i]["totalCostRaw"] as? String, _charge: workOrders[i]["charge"] as? String, _title: workOrders[i]["title"] as? String, _customerName: workOrders[i]["customerName"] as? String)
-                            
-                            //workOrder.customerName
-                            if(self.plowSort == "1"){
-                                workOrder.plowPriority = workOrders[i]["plowPriority"] as! String
-                                workOrder.plowDepth = workOrders[i]["plowDepth"] as! String
-                                workOrder.plowMonitoring = workOrders[i]["plowMonitorList"] as! String
-                            }
-                            
-                            //self.fullScheduleArray.append(workOrder)
-                            
-                            self.personalScheduleArray.append(workOrder)
-                            
-                            
-                            
-                            
+                        let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
+                            (result : UIAlertAction) -> Void in
+                            print("YES")
+                            self.filterUsersSchedule()
                         }
                         
+                        let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.cancel) {
+                            (result : UIAlertAction) -> Void in
+                            print("NO")
+                        }
                         
-                        //check if personal schedule is empty, switch to full and re get data
-                        
-                         if self.personalScheduleArray.count == 0{
-                            print("personal schedule is empty")
-                            
-                            let alertController = UIAlertController(title: "No Work Orders", message: "There are no work orders assigned to you.  Would you like to load the full schedule?", preferredStyle: UIAlertController.Style.alert)
-                            
-                            let okAction = UIAlertAction(title: "YES", style: UIAlertAction.Style.default) {
-                                (result : UIAlertAction) -> Void in
-                                print("YES")
-                                self.filterUsersSchedule()
-                            }
-                            
-                            let cancelAction = UIAlertAction(title: "NO", style: UIAlertAction.Style.cancel) {
-                                (result : UIAlertAction) -> Void in
-                                print("NO")
-                            }
-                            
-                            alertController.addAction(cancelAction)
-                            alertController.addAction(okAction)
-                            self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
-                            
-                            
-                            /*
-                            
-                         self.personalMode = false
-                         
-                            if(self.fullScheduleLoaded != true){
-                                self.getSchedule(_empID: "")
-                         }else{
-                                
-                         self.scheduleTableView.reloadData()
-                         }
-                         
-                         
-                         // self.customSC.selectedSegmentIndex = 1
-                         // Close Indicator
-                         self.indicator.dismissIndicator()
-                         return
-                            */
-                         }
-                        
-                        
+                        alertController.addAction(cancelAction)
+                        alertController.addAction(okAction)
+                        self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
                         
                     }
                     
-                    
-                    
-                    
-                    
-                    
-                    self.methodFinish = Date()
-                    let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-                    print("Execution time: \(executionTime)")
-                    
-                    
-                    //self.indicator.dismissIndicator()
-                    
-                    
-                    // self.layoutViews()
-                    
-                    if(self.layoutViewsCalled == false ){
-                        self.layoutViews()
-                    }else{
-                       // DispatchQueue.main.async {
-                            print("reload data")
-                            self.scheduleTableView.reloadData()
-                       // }
-                    }
-                    // Close Indicator
-                    self.indicator.dismissIndicator()
-                    
-                    
-                } catch {
-                    print("Error deserializing JSON: \(error)")
+                }catch let err{
+                    print(err)
                 }
+
                 
                 
-                
-                
-                
-                
-                /*
-                // swiftly way
-                if let json = response.result.value {
-                     print("json = \(json)")
-                    self.personalScheduleJSON = JSON(json)
-                    self.parseSchedule(_empID: _empID)
-                    
-                    
-                }
- */
-            }
-            
-        }
-        
-    }
-    
-/*
-    func parseSchedule(_empID:String){
-        //print("parseSchedule empID:\(_empID)")
-        if(_empID == ""){
-            let workOrderCount:Int = self.fullScheduleJSON["workOrder"].count
-            ////print("workOrderCount: \(workOrderCount)")
-            
-            self.fullScheduleArray = []
-            for i in 0 ..< workOrderCount {
-                
-                let workOrder = WorkOrder(_ID: self.fullScheduleJSON["workOrder"][i]["ID"].stringValue, _statusID: self.fullScheduleJSON["workOrder"][i]["statusID"].stringValue, _date: self.fullScheduleJSON["workOrder"][i]["date"].stringValue, _firstItem: self.fullScheduleJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.fullScheduleJSON["workOrder"][i]["statusName"].stringValue, _customer: self.fullScheduleJSON["workOrder"][i]["customer"].stringValue, _type: self.fullScheduleJSON["workOrder"][i]["type"].stringValue, _progress: self.fullScheduleJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.fullScheduleJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.fullScheduleJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.fullScheduleJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.fullScheduleJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.fullScheduleJSON["workOrder"][i]["charge"].stringValue, _title: self.fullScheduleJSON["workOrder"][i]["title"].stringValue, _customerName: self.fullScheduleJSON["workOrder"][i]["customerName"].stringValue)
-                
-                //workOrder.customerName
-                if(plowSort == "1"){
-                    workOrder.plowPriority = self.fullScheduleJSON["workOrder"][i]["plowPriority"].stringValue
-                    workOrder.plowDepth = self.fullScheduleJSON["workOrder"][i]["plowDepth"].stringValue
-                    workOrder.plowMonitoring = self.fullScheduleJSON["workOrder"][i]["plowMonitorList"].stringValue
-                }
-                
-                self.fullScheduleArray.append(workOrder)
-            }
-        }else{
-            let workOrderCount:Int = self.personalScheduleJSON["workOrder"].count
-            ////print("workOrderCount: \(workOrderCount)")
-            
-            self.personalScheduleArray = []
-            for i in 0 ..< workOrderCount {
-                ////print("ID: " + self.scheduleJSON["workOrder"][i]["ID"].stringValue)
-                
-                let workOrder = WorkOrder(_ID: self.personalScheduleJSON["workOrder"][i]["ID"].stringValue, _statusID: self.personalScheduleJSON["workOrder"][i]["statusID"].stringValue, _date: self.personalScheduleJSON["workOrder"][i]["date"].stringValue, _firstItem: self.personalScheduleJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.personalScheduleJSON["workOrder"][i]["statusName"].stringValue, _customer: self.personalScheduleJSON["workOrder"][i]["customer"].stringValue, _type: self.personalScheduleJSON["workOrder"][i]["type"].stringValue, _progress: self.personalScheduleJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.personalScheduleJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.personalScheduleJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.personalScheduleJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.personalScheduleJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.personalScheduleJSON["workOrder"][i]["charge"].stringValue, _title: self.personalScheduleJSON["workOrder"][i]["title"].stringValue, _customerName: self.personalScheduleJSON["workOrder"][i]["customerName"].stringValue)
-                
-                if(plowSort == "1"){
-                    workOrder.plowPriority = self.personalScheduleJSON["workOrder"][i]["plowPriority"].stringValue
-                    workOrder.plowDepth = self.personalScheduleJSON["workOrder"][i]["plowDepth"].stringValue
-                    workOrder.plowMonitoring = self.personalScheduleJSON["workOrder"][i]["plowMonitorList"].stringValue
-                }
-                
-                self.personalScheduleArray.append(workOrder)
-                
-                
-            }
-            
-            
-            
-            //check if personal schedule is empty, switch to full and re get data
-           /* if self.personalScheduleArray.count == 0{
-                self.personalMode = false
-                
-                if(self.tableViewMode == "SCHEDULE"){
-                    if(fullScheduleLoaded != true){
-                        getSchedule(_empID: "")
-                    }else{
-                        scheduleTableView.reloadData()
-                    }
-                }else{
-                    if(fullHistoryLoaded != true){
-                        getHistory(_empID: "")
-                    }else{
-                        scheduleTableView.reloadData()
-                    }
-                }
-                
-               // self.customSC.selectedSegmentIndex = 1
-                // Close Indicator
-                indicator.dismissIndicator()
-                return
-            }*/
-        }
- 
-            
-        
-    
-        
-            
-        
-        
-        
-        
-        
-        if(layoutViewsCalled == false ){
-            self.layoutViews()
-        }else{
-            DispatchQueue.main.async {
-                self.scheduleTableView.reloadData()
-            }
-        }
-        
-        self.methodFinish = Date()
-        let executionTime = self.methodFinish.timeIntervalSince(self.methodStart)
-        print("Execution time: \(executionTime)")
-        
-        
-        
-        // Close Indicator
-        indicator.dismissIndicator()
-    }
-    */
-    
-    
-    /*
-    
-    func getHistory(_empID:String){
-        print("getHistory empID:\(_empID)")
-        // Show Indicator
-        
-        //limited history message
-        let alertController = UIAlertController(title: "Limited History", message: "This is the current year's history.  Go to customer screen to view full history for a given customer.", preferredStyle: UIAlertController.Style.alert)
-        
-        let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
-            (result : UIAlertAction) -> Void in
-            //print("OK")
-        }
-        alertController.addAction(okAction)
-        self.layoutVars.getTopController().present(alertController, animated: true, completion: nil)
-        
-        
-        
-        indicator = SDevIndicator.generate(self.view)!
-        let dateFormatter:DateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        
-        
-        let date = Date()
-        let calendar = Calendar.current
-        
-        let year = calendar.component(.year, from: date)
-        //print("year = \(year)")
-        let month = calendar.component(.month, from: date)
-        //print("month = \(month)")
-        let day = calendar.component(.day, from: date)
-        //print("day = \(day)")
                
-        
-        let startDate:String = "\(year)-01-01"
-        let endDate:String = "\(year)-\(month)-\(day)"
-        
-        //cache buster
-        let now = Date()
-        let timeInterval = now.timeIntervalSince1970
-        let timeStamp = Int(timeInterval)
-        //, "cb":timeStamp as AnyObject
-        
-        var sort:String = "0"
-        
-        if(mowSort == "1"){
-            sort = "1"
-            plowDepth = "0"
-        }else if(plowSort == "1"){
-            sort = "2"
-        }
-        
-        Alamofire.request(API.Router.workOrderList(["employeeID":self.employeeID as AnyObject,"custID":"" as AnyObject,"active":"0" as AnyObject,"startDate":startDate as AnyObject,"endDate":endDate as AnyObject,"sort":sort as AnyObject, "plowDepth":self.plowDepth as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
-            
-            response in
-            
-            //print(response.request ?? "")  // original URL request
-            
-            if(_empID == ""){
-                
-                if let json = response.result.value {
-                    self.fullHistoryJSON = JSON(json)
-                    self.parseHistoryJSON(_empID: _empID)
-                }
-                
-                self.fullHistoryLoaded = true
-            }else{
-                if let json = response.result.value {
-                    self.personalHistoryJSON = JSON(json)
-                    self.parseHistoryJSON(_empID: _empID)
-                }
-                
-                self.personalHistoryLoaded = true
             }
+            
         }
         
     }
     
 
-    func parseHistoryJSON(_empID:String){
-        if(_empID == ""){
-            
-            //loop through contacts and put them in appropriate places
-            let workOrderCount:Int = self.fullHistoryJSON["workOrder"].count
-            //print("workOrderCount: \(workOrderCount)")
-            fullHistoryArray = []
-            for i in 0 ..< workOrderCount {
-                // //print("ID: " + self.historyJSON["workOrder"][i]["ID"].stringValue)
-                let workOrder = WorkOrder(_ID: self.fullHistoryJSON["workOrder"][i]["ID"].stringValue, _statusID: self.fullHistoryJSON["workOrder"][i]["statusID"].stringValue, _date: self.fullHistoryJSON["workOrder"][i]["date"].stringValue, _firstItem: self.fullHistoryJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.fullHistoryJSON["workOrder"][i]["statusName"].stringValue, _customer: self.fullHistoryJSON["workOrder"][i]["customer"].stringValue, _type: self.fullHistoryJSON["workOrder"][i]["type"].stringValue, _progress: self.fullHistoryJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.fullHistoryJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.fullHistoryJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.fullHistoryJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.fullHistoryJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.fullHistoryJSON["workOrder"][i]["charge"].stringValue, _title: self.fullHistoryJSON["workOrder"][i]["title"].stringValue, _customerName: self.fullHistoryJSON["workOrder"][i]["customerName"].stringValue)
-                
-                if(plowSort == "1"){
-                    workOrder.plowPriority = self.fullHistoryJSON["workOrder"][i]["plowPriority"].stringValue
-                    workOrder.plowDepth = self.fullHistoryJSON["workOrder"][i]["plowDepth"].stringValue
-                    workOrder.plowMonitoring = self.fullHistoryJSON["workOrder"][i]["plowMonitorList"].stringValue
-                }
-                
-                self.fullHistoryArray.append(workOrder)
-            }
-        }else{
-            
-            //loop through contacts and put them in appropriate places
-            let workOrderCount:Int = self.personalHistoryJSON["workOrder"].count
-            //print("workOrderCount: \(workOrderCount)")
-            personalHistoryArray = []
-            for i in 0 ..< workOrderCount {
-                let workOrder = WorkOrder(_ID: self.personalHistoryJSON["workOrder"][i]["ID"].stringValue, _statusID: self.personalHistoryJSON["workOrder"][i]["statusID"].stringValue, _date: self.personalHistoryJSON["workOrder"][i]["date"].stringValue, _firstItem: self.personalHistoryJSON["workOrder"][i]["firstItem"].stringValue, _statusName: self.personalHistoryJSON["workOrder"][i]["statusName"].stringValue, _customer: self.personalHistoryJSON["workOrder"][i]["customer"].stringValue, _type: self.personalHistoryJSON["workOrder"][i]["type"].stringValue, _progress: self.personalHistoryJSON["workOrder"][i]["progress"].stringValue, _totalPrice: self.personalHistoryJSON["workOrder"][i]["totalPrice"].stringValue, _totalCost: self.personalHistoryJSON["workOrder"][i]["totalCost"].stringValue, _totalPriceRaw: self.personalHistoryJSON["workOrder"][i]["totalPriceRaw"].stringValue, _totalCostRaw: self.personalHistoryJSON["workOrder"][i]["totalCostRaw"].stringValue, _charge: self.personalHistoryJSON["workOrder"][i]["charge"].stringValue, _title: self.personalHistoryJSON["workOrder"][i]["title"].stringValue, _customerName: self.personalHistoryJSON["workOrder"][i]["customerName"].stringValue)
-                
-                if(plowSort == "1"){
-                    workOrder.plowPriority = self.personalHistoryJSON["workOrder"][i]["plowPriority"].stringValue
-                    workOrder.plowDepth = self.personalHistoryJSON["workOrder"][i]["plowDepth"].stringValue
-                    workOrder.plowMonitoring = self.personalHistoryJSON["workOrder"][i]["plowMonitorList"].stringValue
-                }
-                
-                self.personalHistoryArray.append(workOrder)
-            }
-            
-            
-            
-            //check if personal schedule is empty, switch to full and re get data
-           /* if self.personalHistoryArray.count == 0{
-                self.personalMode = false
-                
-                if(self.tableViewMode == "SCHEDULE"){
-                    if(fullScheduleLoaded != true){
-                        getSchedule(_empID: "")
-                    }else{
-                        scheduleTableView.reloadData()
-                    }
-                }else{
-                    if(fullHistoryLoaded != true){
-                        getHistory(_empID: "")
-                    }else{
-                        scheduleTableView.reloadData()
-                    }
-                }
-                
-               // self.customSC.selectedSegmentIndex = 1
-                return
-            }*/
-        }
-        
-            
-            
-            
-            
-        DispatchQueue.main.async {
-            self.scheduleTableView.reloadData()
-        }
-        
-        // Close Indicator
-        indicator.dismissIndicator()
-    }
-    
-    */
-    
     
     @objc func addWorkOrder(){
         print("Add Work Order")
@@ -944,8 +537,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             
         } else {
             
-            switch self.tableViewMode{
-            case "SCHEDULE":
+            
                 if(personalMode == false){
                     print("------FULL-------")
                     count = self.fullScheduleArray.count
@@ -955,24 +547,10 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     print("personal schedule count = \(String(describing: count))")
                 }
                 self.countLbl.text = "\(count!) Scheduled Work Order(s)"
-                break
-            case "HISTORY":
-                if(personalMode == false){
-                    count = self.fullHistoryArray.count
-                    //print("full history count = \(count)")
-                }else{
-                    count = self.personalHistoryArray.count
-                    //print("personal history count = \(count)")
-                }
+            
+           
                 
-                self.countLbl.text = "\(count!) Completed/Cancelled Work Order(s)"
-                
-                break
-                
-            default:
-                
-                break
-            }
+           
             
             
             return count
@@ -983,8 +561,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         let cell:ScheduleTableViewCell = scheduleTableView.dequeueReusableCell(withIdentifier: "cell") as! ScheduleTableViewCell
         
-        switch self.tableViewMode{
-        case "SCHEDULE":
+        
             
             if (shouldShowSearchResults == true){
                 //print("make cell for schedule search mode row: \(indexPath.row)")
@@ -996,8 +573,8 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     cell.layoutViews(_scheduleMode: "SCHEDULE")
                 }
                 
-                cell.setStatus(status: cell.workOrder.statusId)
-                cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
+                cell.setStatus(status: cell.workOrder.status)
+                cell.setProfitBar(_price:cell.workOrder.totalPriceRaw, _cost:cell.workOrder.totalCostRaw)
                 
                 let searchString = self.searchController.searchBar.text!.lowercased()
                 
@@ -1023,18 +600,18 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 cell.customerLbl.attributedText = highlightedText
                 
                 
-                cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
-                cell.priceLbl.text = cell.workOrder.totalPrice!
+                cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge!) //chargeTypeName
+                cell.priceLbl.text = cell.workOrder.totalPrice
                 
                 
-                cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
+                cell.setProfitBar(_price:cell.workOrder.totalPriceRaw, _cost:cell.workOrder.totalCostRaw)
                 
                 
                 
                 
             } else {
                 
-                print("cell 2")
+                print("cell non search")
                 
                 
                 //print("make cell for schedule reg mode row: \(indexPath.row)")
@@ -1051,13 +628,13 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                     cell.layoutViews(_scheduleMode: "PLOWING")
                 }else{
                     cell.layoutViews(_scheduleMode: "SCHEDULE")
-                    cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
+                    cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge!) //chargeTypeName
                     
-                    cell.priceLbl.text = cell.workOrder.totalPrice!
+                    cell.priceLbl.text = cell.workOrder.totalPrice
                 }
                 cell.customerLbl.text = cell.workOrder.customerTitleAndID
-                cell.setStatus(status: cell.workOrder.statusId)
-                cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
+                cell.setStatus(status: cell.workOrder.status)
+                cell.setProfitBar(_price:cell.workOrder.totalPriceRaw, _cost:cell.workOrder.totalCostRaw)
                 
                 
                 
@@ -1066,97 +643,12 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             }
             
             
-            break
-        case "HISTORY":
             
-            if (shouldShowSearchResults == true){
-                //print("make cell for history search mode row: \(indexPath.row)")
-                
-                cell.workOrder = self.workOrdersSearchResults[indexPath.row]
-                if(plowSort == "1"){
-                    cell.layoutViews(_scheduleMode: "PLOWING")
-                }else{
-                    cell.layoutViews(_scheduleMode: "SCHEDULE")
-                }
-                cell.setStatus(status: cell.workOrder.statusId)
-                
-                let searchString = self.searchController.searchBar.text!.lowercased()
-                //text highlighting
-                let baseString:NSString = cell.workOrder.customerTitleAndID as NSString
-                let highlightedText = NSMutableAttributedString(string: cell.workOrder.customerTitleAndID)
-                var error: NSError?
-                let regex: NSRegularExpression?
-                do {
-                    regex = try NSRegularExpression(pattern: searchString, options: .caseInsensitive)
-                } catch let error1 as NSError {
-                    error = error1
-                    regex = nil
-                }
-                if let regexError = error {
-                    print("Oh no! \(regexError)")
-                } else {
-                    
-                    for match in (regex?.matches(in: baseString as String, options: NSRegularExpression.MatchingOptions(), range: NSRange(location: 0, length: baseString.length)))! as [NSTextCheckingResult] {
-                        highlightedText.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.yellow, range: match.range)
-                    }
-                    
-                }
-                cell.customerLbl.attributedText = highlightedText
-              
-                
-                cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
-                
-                cell.priceLbl.text = cell.workOrder.totalPrice!
-                
-                
-                cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
-                
-                
-                
-                
-                
-                
-            } else {
-                
-                //print("make cell for history reg mode row: \(indexPath.row)")
-                if(personalMode == false){
-                    ////print("------FULL-------")
-                    cell.workOrder = self.fullHistoryArray[indexPath.row]
-                }else{
-                    
-                    cell.workOrder = self.personalHistoryArray[indexPath.row]
-                }
-                if(plowSort == "1"){
-                    cell.layoutViews(_scheduleMode: "PLOWING")
-                }else{
-                    cell.layoutViews(_scheduleMode: "SCHEDULE")
-                }
-                cell.customerLbl.text = cell.workOrder.customerTitleAndID
-                cell.setStatus(status: cell.workOrder.statusId)
-                
-                
-                cell.chargeLbl.text = getChargeName(_charge:cell.workOrder.charge) //chargeTypeName
-                
-                cell.priceLbl.text = cell.workOrder.totalPrice!
-                
-                cell.setProfitBar(_price:cell.workOrder.totalPriceRaw!, _cost:cell.workOrder.totalCostRaw!)
-                
-                
-                
-
-            }
-            
-            break
-            
-        default:
-            
-            break
-        }
         
         print("cell 3")
         if(plowSort == "1"){
-            cell.depthLbl.text = "\(cell.workOrder.plowDepth)\""
-            cell.priorityLbl.text = "Priority: \(cell.workOrder.plowPriority)"
+            cell.depthLbl.text = "\(String(describing: cell.workOrder.plowDepth))\""
+            cell.priorityLbl.text = "Priority: \(String(describing: cell.workOrder.plowPriority))"
             if(cell.workOrder.plowMonitoring == "1"){
                 cell.monitoringLbl.text = "Monitor: Y"
             }else{
@@ -1218,29 +710,17 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 //print("------FULL-------")
                 
                 
-                self.workOrdersSearchResults = self.fullScheduleArray.filter({( aWorkOrder: WorkOrder) -> Bool in
+                self.workOrdersSearchResults = self.fullScheduleArray.filter({( aWorkOrder: WorkOrder2) -> Bool in
                     return aWorkOrder.customerTitleAndID.lowercased().range(of:self.searchController.searchBar.text!.lowercased(), options:.regularExpression) != nil
                 })
                 
             }else{
-                self.workOrdersSearchResults = self.personalScheduleArray.filter({( aWorkOrder: WorkOrder) -> Bool in
+                self.workOrdersSearchResults = self.personalScheduleArray.filter({( aWorkOrder: WorkOrder2) -> Bool in
                     return aWorkOrder.customerTitleAndID.lowercased().range(of:self.searchController.searchBar.text!.lowercased(), options:.regularExpression) != nil
                 })
                 
             }
-        case "HISTORY":
-            //print("history filterSearchResults")
-            if(self.personalMode == false){
-                //print("------FULL-------")
-                self.workOrdersSearchResults = self.fullHistoryArray.filter({( aWorkOrder: WorkOrder) -> Bool in
-                    return aWorkOrder.customerTitleAndID.lowercased().range(of:self.searchController.searchBar.text!.lowercased(), options:.regularExpression) != nil
-                })
-            }else{
-                self.workOrdersSearchResults = self.personalHistoryArray.filter({( aWorkOrder: WorkOrder) -> Bool in
-                    return aWorkOrder.customerTitleAndID.lowercased().range(of:self.searchController.searchBar.text!.lowercased(), options:.regularExpression) != nil
-                })
-                
-            }
+        
         default:
             
             break
@@ -1284,6 +764,11 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     func togglePersonalMode(){
         
+        
+        //self.searchController.searchBar.text = ""
+        //shouldShowSearchResults = false
+        
+        
         if(self.personalMode == false){
             self.personalMode = true
         }else{
@@ -1303,17 +788,11 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         
         
             if(personalMode == true){
-                if(self.tableViewMode == "SCHEDULE"){
-                    self.personalScheduleBtn.setTitle("Full Schedule", for: UIControl.State.normal)
-                }else{
-                    self.personalScheduleBtn.setTitle("Full History", for: UIControl.State.normal)
-                }
+                self.personalScheduleBtn.setTitle("Full Schedule", for: UIControl.State.normal)
+                
             }else{
-                if(self.tableViewMode == "SCHEDULE"){
-                    self.personalScheduleBtn.setTitle("\(appDelegate.loggedInEmployee!.fname!)'s Schedule", for: UIControl.State.normal)
-                }else{
-                    self.personalScheduleBtn.setTitle("\(appDelegate.loggedInEmployee!.fname!)'s History", for: UIControl.State.normal)
-                }
+            self.personalScheduleBtn.setTitle("\(appDelegate.loggedInEmployee!.fname!)'s Schedule", for: UIControl.State.normal)
+               
             }
             self.personalScheduleBtn.addTarget(self, action: #selector(ScheduleViewController.filterUsersSchedule), for: UIControl.Event.touchUpInside)
     }
@@ -1342,17 +821,16 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         //print("fullScheduleLoaded \(fullScheduleLoaded)")
         //print("fullHistoryLoaded \(fullHistoryLoaded)")
         
+        
+        //self.searchController.searchBar.text = ""
+        //shouldShowSearchResults = false
+
+        //cancelSearch()
+        
         ///// PERSONAL  ///////////////
         if(personalMode == false){
             //show personal schedule
-            
-            
-            
-            shouldShowSearchResults = false
-            
-            
-            if(self.tableViewMode == "SCHEDULE"){
-              
+            print("personal Mode")
                     if(personalScheduleLoaded != true){
                         getSchedule(_empID: (appDelegate.loggedInEmployee?.ID)!)
                        // getSchedule()
@@ -1363,29 +841,15 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                         }
                     }
                     
-            }else{//HISTORY MODE
-                
-              
-                    if(self.personalHistoryLoaded != true){
-                       // getHistory(_empID: (appDelegate.loggedInEmployee?.ID)!)
-                    
-                    }else{
-                        //print("reload Data history")
-                        DispatchQueue.main.async{
-                            self.scheduleTableView.reloadData()
-                        }
-                        
-                    }
-            }
+
             
             
             ///// FULL  ///////////////
         }else{
             //show full schedule
-            //print("full Mode")
+            print("full Mode")
             
-            if(self.tableViewMode == "SCHEDULE"){
-              
+            
                     if(fullScheduleLoaded != true){
                         getSchedule(_empID: "")
                     }else{
@@ -1397,18 +861,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                         }
                     }
                     
-            }else{//HISTORY MODE
-              
-                    if(self.fullHistoryLoaded != true){
-                        //getHistory(_empID: "")
-                    }else{
-                        //print("reload Data history")
-                        DispatchQueue.main.async{
-                            
-                            self.scheduleTableView.reloadData()
-                        }
-                    }
-            }
+
             
            
         }
@@ -1417,110 +870,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     }
     
     
-    @objc func changeSearchOptions(sender: UISegmentedControl) {
-        //print("personalMode = \(personalMode)")
-        //print("personalScheduleLoaded = \(personalScheduleLoaded)")
-        //print("fullScheduleLoaded = \(fullScheduleLoaded)")
-        //print("personalHistoryLoaded = \(personalHistoryLoaded)")
-        //print("fullHistoryLoaded = \(fullHistoryLoaded)")
-        //print("shouldShowSearchResults = \(shouldShowSearchResults)")
-        
-        
-        switch sender.selectedSegmentIndex {
-        case 0:
-            
-            
-            //print("changeSearchOptions 0")
-            self.tableViewMode = "SCHEDULE"
-            ///// PERSONAL  ///////////////
-            if(personalMode == true){
-                if shouldShowSearchResults{
-                    self.updateSearchResults(for:self.searchController)
-                } else {
-                    if(personalScheduleLoaded != true){
-                        getSchedule(_empID: (appDelegate.loggedInEmployee?.ID)!)
-                        
-                    }else{
-                        
-                        //print("reload Data personal schedule ")
-                        DispatchQueue.main.async{
-                            self.scheduleTableView.reloadData()
-                        }
-                    }
-                    
-                }
-            }else{
-                ///// FULL  ///////////////
-                if shouldShowSearchResults{
-                    self.updateSearchResults(for:self.searchController)
-                } else {
-                    if(fullScheduleLoaded != true){
-                        getSchedule(_empID: "")
-                        
-                    }else{
-                        //print("reload Data full schedule ")
-                        DispatchQueue.main.async{
-                            self.scheduleTableView.reloadData()
-                        }
-                    }
-                    
-                }
-                
-            }
-            
-        case 1:
-            self.tableViewMode = "HISTORY"
-            //print("changeSearchOptions 1")
-            
-            
-            
-            ///// PERSONAL  ///////////////
-            if(personalMode == true){
-                if shouldShowSearchResults{
-                    self.updateSearchResults(for:self.searchController)
-                } else {
-                    if(personalHistoryLoaded  != true){
-                       // getHistory(_empID: (appDelegate.loggedInEmployee?.ID)!)
-                        
-                    }else{
-                        
-                        //print("reload Data personal history")
-                        DispatchQueue.main.async{
-                            self.scheduleTableView.reloadData()
-                        }
-                    }
-                    
-                }
-            }else{
-                ///// FULL  ///////////////
-                if shouldShowSearchResults{
-                    self.updateSearchResults(for:self.searchController)
-                } else {
-                    if(fullHistoryLoaded != true){
-                       // getHistory(_empID: "")
-                        
-                    }else{
-                        
-                        //print("reload Data full history")
-                        DispatchQueue.main.async{
-                            self.scheduleTableView.reloadData()
-                        }
-                    }
-                    
-                }
-                
-            }
-            
-        default:
-            //print("changeSearchOptions default")
-            DispatchQueue.main.async{
-                self.scheduleTableView.reloadData()
-            }
-        }
-        
-        setScheduleButton()
-        
-    }
+    
 
      func displayEmployeeList(){
         appDelegate.menuChange(3)
@@ -1535,41 +885,26 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     func reDrawSchedule(_index:Int, _status:String, _price: String, _cost: String, _priceRaw: String, _costRaw: String){
         //print("reDraw Schedule")
         if(shouldShowSearchResults == true){
-            workOrdersSearchResults[_index].statusId = _status
+            workOrdersSearchResults[_index].status = _status
             workOrdersSearchResults[_index].totalPrice = _price
             workOrdersSearchResults[_index].totalCost = _cost
             workOrdersSearchResults[_index].totalPriceRaw = _priceRaw
             workOrdersSearchResults[_index].totalCostRaw = _costRaw
         }else{
-            if(self.tableViewMode == "SCHEDULE"){
                 if(self.personalMode == true){
-                    personalScheduleArray[_index].statusId = _status
+                    personalScheduleArray[_index].status = _status
                     personalScheduleArray[_index].totalPrice = _price
                     personalScheduleArray[_index].totalCost = _cost
                     personalScheduleArray[_index].totalPriceRaw = _priceRaw
                     personalScheduleArray[_index].totalCostRaw = _costRaw
                 }else{
-                    fullScheduleArray[_index].statusId = _status
+                    fullScheduleArray[_index].status = _status
                     fullScheduleArray[_index].totalPrice = _price
                     fullScheduleArray[_index].totalCost = _cost
                     fullScheduleArray[_index].totalPriceRaw = _priceRaw
                     fullScheduleArray[_index].totalCostRaw = _costRaw
                 }
-            }else{//HISTORY
-                if(self.personalMode == true){
-                    personalHistoryArray[_index].statusId = _status
-                    personalHistoryArray[_index].totalPrice = _price
-                    personalHistoryArray[_index].totalCost = _cost
-                    personalHistoryArray[_index].totalPriceRaw = _priceRaw
-                    personalHistoryArray[_index].totalCostRaw = _costRaw
-                }else{
-                    fullHistoryArray[_index].statusId = _status
-                    fullHistoryArray[_index].totalPrice = _price
-                    fullHistoryArray[_index].totalCost = _cost
-                    fullHistoryArray[_index].totalPriceRaw = _priceRaw
-                    fullHistoryArray[_index].totalCostRaw = _costRaw
-                }
-            }
+
         }
         self.scheduleTableView.reloadData()
         
@@ -1607,8 +942,7 @@ class ScheduleViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
         shouldShowSearchResults = false
          fullScheduleLoaded = false
          personalScheduleLoaded = false
-         fullHistoryLoaded = false
-         personalHistoryLoaded = false
+        
         
         
         //decideWhichScheduleToPresent()

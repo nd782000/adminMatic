@@ -615,8 +615,8 @@ class LeadSettingsViewController: UIViewController, UITextFieldDelegate, UIPicke
         editsMade = true
         
         //resetVals()
-        zoneID = self.appDelegate.zones[row].ID!
-        zoneName = self.appDelegate.zones[row].name!
+        zoneID = self.appDelegate.zones[row].ID
+        zoneName = self.appDelegate.zones[row].name
         
         
         self.zoneTxtField.text = self.appDelegate.zones[row].name
