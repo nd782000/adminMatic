@@ -24,6 +24,7 @@ class ContractTask2:Codable,Mappable {
         case sort
         case createDate
         case taskDescription
+        case images
        
         
     }

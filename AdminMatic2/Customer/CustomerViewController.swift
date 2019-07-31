@@ -467,8 +467,10 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
                         self.customerContractArray.append(contracts.contracts[i])
                     }
                     
-                    self.indicator.dismissIndicator()
-                    self.layoutViews()
+                    
+                    self.getCustomerSchedule(_id: self.customerID)
+                    
+                    
                     
                 }catch let err{
                     print(err)
@@ -547,8 +549,8 @@ class CustomerViewController: UIViewController, UITableViewDelegate, UITableView
         let timeInterval = now.timeIntervalSince1970
         let timeStamp = Int(timeInterval)
         
-
-        
+        print("getCustomerSchedule")
+        print("custID = \(_id)")
         Alamofire.request(API.Router.workOrderList(["empID":"" as AnyObject,"custID":_id as AnyObject,"active":"1" as AnyObject, "cb":timeStamp as AnyObject])).responseJSON() {
             
             response in

@@ -1166,6 +1166,21 @@ class WorkOrderViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.woItemViewController = WoItemViewController(_woID: self.workOrder.ID, _woItem: currentCell.woItem, _empsOnWo: self.workOrder.emps!, _woStatus: self.workOrder.status)
                 
                 
+                
+                
+                
+                
+                
+                
+               
+                if stackController.leads.count > 0{
+                    woItemViewController?.lead = stackController.leads[0]
+                }
+ 
+                
+                
+                
+                
                 woItemViewController?.leadDelegate = self
                 
                 

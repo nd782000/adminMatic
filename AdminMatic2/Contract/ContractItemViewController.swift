@@ -420,7 +420,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             
             
             if self.contract.status == "1" || self.contract.status == "2" || self.contract.status == "3" || self.contract.status == "4"{
-                let alertController = UIAlertController(title: "Srt Tasks?", message: "The customer may have already seen this contract. Are you sure you want to sort these tasks?", preferredStyle: UIAlertController.Style.alert)
+                let alertController = UIAlertController(title: "Sort Tasks?", message: "The customer may have already seen this contract. Are you sure you want to sort these tasks?", preferredStyle: UIAlertController.Style.alert)
                 let cancelAction = UIAlertAction(title: "No", style: UIAlertAction.Style.destructive) {
                     (result : UIAlertAction) -> Void in
                     //print("Cancel")
@@ -636,12 +636,20 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
                 cell.activityView.startAnimating()
                // cell.setImageUrl(_url: "\(self.contractItem.tasks[indexPath.row].images[0].thumbPath!)")
                 
-               cell.setImageUrl(_url: "\(self.contractItem.tasks[0])")
+              // cell.setImageUrl(_url: "\(self.contractItem.tasks[0])")
+                for image in self.contractItem.tasks[indexPath.row].images!{
+                    image.setImagePaths()
+                }
+                //self.contractItem.tasks[indexPath.row].images![0].setImagePaths()
+                
+                if self.contractItem.tasks[indexPath.row].images![0].thumbPath != nil{
+                    cell.setImageUrl(_url: "\(self.contractItem.tasks[indexPath.row].images![0].thumbPath!)")
+                }
                 
                 //cell.setImageUrl(_url: "\(self.contractItem.tasks)")
                 
             }else{
-                //print("set blank image")
+                print("set blank image")
                 cell.setBlankImage()
             }
             
@@ -659,6 +667,45 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
             self.addTask()
         }else{
             tableView.deselectRow(at: indexPath as IndexPath, animated: true)
+            
+            
+            
+            //imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Contract Task", _taskID: self.woItem.tasks![indexPath.row].ID, _customerID: self.customerID, _images: self.woItem.tasks![indexPath.row].images!)
+            
+            
+            /*
+            imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Contract Task", _contractItemID: self.contractItem.ID, _contractTaskID: self.contractItem.tasks[indexPath.row].ID, _customerID: self.contract.customerID!, _images: self.contractItem.tasks[indexPath.row].images!)
+            
+            
+            imageUploadPrepViewController.layoutViews()
+            imageUploadPrepViewController.groupDescriptionTxt.text = self.contractItem.tasks[indexPath.row].taskDescription
+            imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
+            imageUploadPrepViewController.selectedID = self.contract.customerID!
+            imageUploadPrepViewController.contractID = self.contract.ID
+            imageUploadPrepViewController.groupImages = true
+            imageUploadPrepViewController.attachmentDelegate = self
+            self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+            */
+            
+            
+            imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Contract Task", _contractItemID: self.contractItem.ID, _contractTaskID: self.contractItem.tasks[indexPath.row].ID, _customerID: self.contract.customerID!, _images: self.contractItem.tasks[indexPath.row].images!)
+            
+            imageUploadPrepViewController.layoutViews()
+            imageUploadPrepViewController.groupDescriptionTxt.text = self.contractItem.tasks[indexPath.row].taskDescription
+            imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black
+            //imageUploadPrepViewController.taskStatus = self.contractItem.tasks[indexPath.row].stat
+            imageUploadPrepViewController.selectedID = self.contract.customerID!
+            //imageUploadPrepViewController.woID = self.woID
+            imageUploadPrepViewController.groupImages = true
+            imageUploadPrepViewController.attachmentDelegate = self
+            self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
+            
+            
+            
+            
+            
+            
+            
             
             
             /*imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Contract Task", _contractItemID: self.contractItem.ID, _contractTaskID: self.contractItem.tasks[indexPath.row].ID, _customerID: self.contract.customerID!, _images: self.contractItem.tasks[indexPath.row].images!)
@@ -837,6 +884,7 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
         
        self.contractItem.tasks = []
         
+        
         let parameters:[String:String]
         parameters = ["contractItemID": self.contractItem.ID]
         
@@ -889,13 +937,23 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
                     //self.indicator.dismissIndicator()
                     
                     
-                    let contractCount = contractTasks.contractTasks.count
-                    print("contract count = \(contractCount)")
+                    //let contractCount = contractTasks.tasks.count
+                   // print("contract count = \(contractCount)")
                     
                     
+                    for task in contractTasks.tasks{
+                        for image in task.images!{
+                            image.setImagePaths()
+                        }
+                        
+                        self.contractItem.tasks.append(task)
+                        
+                    }
                     
+                    /*
                     
                     for i in 0 ..< contractCount {
+                        
                         // invoices.invoices[i].customer = Customer2(_ID: invoices.invoices[i].customerID, _sysname: invoices.invoices[i].customerName)
                         
                         // leads.leads[i].totalPrice = self.layoutVars.numberAsCurrency(_number: invoices.invoices[i].totalPrice)
@@ -918,9 +976,10 @@ class ContractItemViewController: UIViewController, UITableViewDelegate, UITable
                         
                         //self.contractsArray.contracts.append(contracts.contracts[i])
                         
-                        self.contractItem.tasks.append(contractTasks.contractTasks[i])
+                        self.contractItem.tasks.append(contractTasks.tasks[i])
                         
                     }
+                    */
                     
                     
                     

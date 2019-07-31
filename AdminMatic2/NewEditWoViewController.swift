@@ -164,6 +164,8 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         super.init(nibName:nil,bundle:nil)
         
         print("new work order from lead init")
+        print("rep = \(_lead.rep)")
+        
         
         
         
@@ -208,7 +210,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         print("new work order from contract init")
         self.contract = _contract
         //print("wo title \(_wo.title)")
-        if _wo.customer != nil{
+        if _wo.custName != nil{
             print("wo custName \(_wo.custName!)")
 
         }
@@ -1537,7 +1539,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         
         
         //rep check
-        if wo.rep == nil{
+        if self.repSearchBar.text == ""{
             print("select a sales rep")
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Work Order", _message: "Select a Sales Rep.")
             return false
@@ -1545,7 +1547,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
         
         
         //title check
-        if wo.title == nil{
+        if self.titleTxtField.text == ""{
             print("Add a Title")
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Incomplete Work Order", _message: "Provide a Title")
             return false
@@ -1769,7 +1771,7 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
                             
                             
                             if self.leadTaskDelegate != nil{
-                                //self.leadTaskDelegate.updateItems()
+                                self.leadTaskDelegate.handleNewWorkOrder(_workOrder: self.wo)
                                 
                                 
                                 //print("new wo.ID: \(self.wo.ID)")
@@ -1886,8 +1888,10 @@ class NewEditWoViewController: UIViewController, UIPickerViewDelegate,UIPickerVi
                         self.editsMade = false // avoids the back without saving check
                         
                         
+                       
+                        
                         if self.editContractDelegate != nil{
-                            //self.leadTaskDelegate.updateItems()
+                           
                             
                             
                             print("editContractDelegate")

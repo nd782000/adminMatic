@@ -731,11 +731,7 @@ class WoItemViewController: UIViewController, UITableViewDelegate, UITableViewDa
             self.addTask()
         }else{
             imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _taskID: self.woItem.tasks![indexPath.row].ID, _customerID: self.customerID, _images: self.woItem.tasks![indexPath.row].images!)
-            
-            
-           // let ID = self.woItem.tasks![indexPath.row].ID
-            //imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Task", _taskID: ID, _customerID: self.customerID, _images: self.woItem.tasks![indexPath.row].images!)
-            //imageUploadPrepViewController.images = self.woItem.tasks![indexPath.row].images!
+           
             imageUploadPrepViewController.layoutViews()
             imageUploadPrepViewController.groupDescriptionTxt.text = self.woItem.tasks![indexPath.row].task
             imageUploadPrepViewController.groupDescriptionTxt.textColor = UIColor.black

@@ -28,7 +28,7 @@ class ContractItem2:Codable {
         case tasks
         case total
         case type
-        case taxCode
+        case taxCode = "taxType"
         case subcontractor
         case hideUnits
         case contractTitle

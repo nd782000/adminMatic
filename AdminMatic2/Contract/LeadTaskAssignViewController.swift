@@ -152,7 +152,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
     
     //sends request for lead tasks
     func getLead() {
-        //print(" GetLead  Lead Id \(self.lead.ID)")
+        print(" GetLead  Lead Id \(self.lead.ID)")
         
         // Show Loading Indicator
         indicator = SDevIndicator.generate(self.view)!
@@ -160,7 +160,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         self.tasksArray = []
         let parameters:[String:String]
         parameters = ["leadID": self.lead.ID]
-        //print("parameters = \(parameters)")
+        print("parameters = \(parameters)")
         
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/leadTasks.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
@@ -187,7 +187,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
             var taskImages:[Image] = []
             
             let imageCount = Int((self.json["leadTasks"][n]["images"].count))
-            //print("imageCount: \(imageCount)")
+            print("imageCount: \(imageCount)")
             for p in 0 ..< imageCount {
                 let fileName:String = (self.json["leadTasks"][n]["images"][p]["fileName"].stringValue)
                 let thumbPath:String = "\(self.layoutVars.thumbBase)\(fileName)"
@@ -250,7 +250,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
             .responseJSON(){
                 response in
                 if let woItemsJson = response.result.value {
-                    //print("woItemsJson: \(woItemsJson)")
+                    print("woItemsJson: \(woItemsJson)")
                     self.woItemsJson = JSON(woItemsJson)
                     self.parseWoItemsJSON()
                 }
@@ -268,7 +268,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
            // let item = WoItem(_ID: self.woItemsJson["items"][n]["itemID"].stringValue, _name: self.woItemsJson["items"][n]["itemName"].stringValue, _woID: self.woItemsJson["items"][n]["woID"].stringValue, _woTitle: self.woItemsJson["items"][n]["woTitle"].stringValue)
             let item = WoItem2(_ID: self.woItemsJson["items"][n]["itemID"].stringValue, _name: self.woItemsJson["items"][n]["itemName"].stringValue, _type: self.woItemsJson["items"][n]["type"].stringValue, _sort: self.woItemsJson["items"][n]["sort"].stringValue, _status: self.woItemsJson["items"][n]["status"].stringValue, _charge: self.woItemsJson["items"][n]["charge"].stringValue, _total: self.woItemsJson["items"][n]["total"].stringValue)
             item.woID = self.woItemsJson["items"][n]["woID"].stringValue
-            
+            item.woTitle = self.woItemsJson["items"][n]["woTitle"].stringValue
             self.woItemsArray.append(item)
         }
         self.getContractItems()
@@ -297,7 +297,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
             .responseJSON(){
                 response in
                 if let contractItemsJson = response.result.value {
-                    //print("contractItemsJson: \(contractItemsJson)")
+                    print("contractItemsJson: \(contractItemsJson)")
                     self.contractItemsJson = JSON(contractItemsJson)
                     self.parseContractItemsJSON()
                 }
@@ -317,6 +317,7 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
             
             let item = ContractItem2(_ID: self.contractItemsJson["items"][n]["itemID"].stringValue, _chargeType: self.contractItemsJson["items"][n]["chargeType"].stringValue, _contractID: self.contractItemsJson["items"][n]["contractID"].stringValue, _itemID: self.contractItemsJson["items"][n]["item"].stringValue, _name: self.contractItemsJson["items"][n]["itemName"].stringValue, _qty: self.contractItemsJson["items"][n]["qty"].stringValue)
             
+            item.contractTitle = self.contractItemsJson["items"][n]["contractTitle"].stringValue
             
             self.contractItemsArray.append(item)
         }
@@ -1333,15 +1334,19 @@ class LeadTaskAssignViewController: UIViewController,UIPickerViewDataSource, UIP
         self.leadTaskDelegate.handleNewContract(_contract:_contract)
         
         
+        
+        
     }
     
     func handleNewWorkOrder(_workOrder: WorkOrder2) {
-       // print("handle new work order in assign view workOrder.ID: \(_workOrder.ID)")
+        print("handle new work order in assign view workOrder.ID: \(_workOrder.ID)")
         
     
         _ = self.navigationController?.popViewController(animated: false)
         
         self.leadTaskDelegate.handleNewWorkOrder(_workOrder: _workOrder)
+        
+        
     }
  
     

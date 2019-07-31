@@ -786,7 +786,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
             self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "Save Equipment First", _message: "You must save the new equipment before adding an image.")
         }else{
             
-            //if equipment.pic == ""{
+            //New Image
             if equipment.image.ID == "0"{
                 print("no pic")
                 imageUploadPrepViewController = ImageUploadPrepViewController(_imageType: "Equipment", _equipmentID: equipment.ID)
@@ -795,10 +795,8 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
                 self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
                 imageUploadPrepViewController.addImages()
             }else{
+            //Change Image
                 print("already has a pic")
-                
-                
-                
                 let actionSheet = UIAlertController(title: "Replace existing equipment image? ", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
                 actionSheet.view.backgroundColor = UIColor.white
                 actionSheet.view.layer.cornerRadius = 5;
@@ -808,7 +806,7 @@ class NewEditEquipmentViewController: UIViewController, UIPickerViewDataSource, 
                     self.imageUploadPrepViewController.layoutViews()
                     self.imageUploadPrepViewController.equipmentImageDelegate = self
                     self.navigationController?.pushViewController(self.imageUploadPrepViewController, animated: false )
-                    self.imageUploadPrepViewController.addImages()
+                    self.imageUploadPrepViewController.changeImage()
                     
                 }))
                 

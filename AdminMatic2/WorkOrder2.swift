@@ -38,6 +38,8 @@ class WorkOrder2: Codable {
         case woItems = "items"
         case crews
         
+        case itemRemQty = "remQty"
+        
     }
     
     var ID: String

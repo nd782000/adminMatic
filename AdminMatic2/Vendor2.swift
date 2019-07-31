@@ -15,27 +15,37 @@ class Vendor2:Codable {
     enum CodingKeys : String, CodingKey {
         case ID
         case name
+        
+        /*
         case address = "mainAddr"
         case lng
         case lat
         case phone = "mainPhone"
         case website
+ */
+        case contacts
+        
         case balance
         case itemCost = "cost"
         case itemPrice = "price"
         case itemPreffered = "preffered"
+        
+        
     }
     
     
     var ID: String
     var name: String
     
-    
+    /*
     var address: String?
     var lng: String?
     var lat: String?
     var phone: String?
     var website: String?
+ */
+    
+    var contacts: [Contact2]?
     var balance: String?
     var itemCost: String?
     var itemPrice: String?

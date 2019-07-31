@@ -235,9 +235,9 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         //print("get images")
         
         let parameters:[String:String]
-        parameters = ["loginID": "\(String(describing: self.appDelegate.loggedInEmployee?.ID))","limit": "\(self.limit)","offset": "\(self.offset)", "order":self.order,"uploadedBy": self.employee.ID] as! [String : String]
+        parameters = ["loginID": "\(String(describing: self.appDelegate.loggedInEmployee?.ID!))","limit": "\(self.limit)","offset": "\(self.offset)", "order":self.order,"uploadedBy": self.employee.ID] as! [String : String]
         
-       // print("parameters = \(parameters)")
+        print("parameters = \(parameters)")
         
         self.layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/get/images.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
@@ -250,6 +250,50 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                 
                 
                 
+                
+                do{
+                    //created the json decoder
+                    let json = response.data
+                    let decoder = JSONDecoder()
+                    let parsedData = try decoder.decode(ImageArray.self, from: json!)
+                    print("parsedData = \(parsedData)")
+                    let images = parsedData
+                    let imageCount = images.images.count
+                    print("image count = \(imageCount)")
+                    for i in 0 ..< imageCount {
+                        //create an object
+                        print("create a image object \(i)")
+                        
+                        // images.images[i].custNameAndID = "\(leads.leads[i].customerName!) #\(leads.leads[i].ID)"
+                        images.images[i].index = i
+                        images.images[i].setImagePaths()
+                        self.imageArray.append(images.images[i])
+                        
+                    }
+                    
+                    if(self.lazyLoad == 0){
+                        self.layoutViews()
+                    }else{
+                        self.lazyLoad = 0
+                        self.imageCollectionView?.reloadData()
+                    }
+                    
+                    if self.imageArray.count == 0{
+                        self.noImagesLbl.isHidden = false
+                    }else{
+                        self.noImagesLbl.isHidden = true
+                    }
+                    
+                    
+                    
+                    self.indicator.dismissIndicator()
+                    //self.layoutViews()
+                }catch let err{
+                    print(err)
+                }
+                
+                
+                /*
                 //native way
                 
                 do {
@@ -321,7 +365,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
                     //print("Error deserializing JSON: \(error)")
                 }
                 
-                
+                */
                 
         }
     }
@@ -839,7 +883,7 @@ class EmployeeViewController: UIViewController, UITextFieldDelegate, UIScrollVie
         //print("name = \(self.imageArray)")
         
        // print("name = \(self.imageArray[indexPath.row].name!)")
-        cell.textLabel.text = " \(self.imageArray[indexPath.row].custName)"
+        cell.textLabel.text = " \(self.imageArray[indexPath.row].custName!)"
         cell.image = self.imageArray[indexPath.row]
         cell.activityView.startAnimating()
         

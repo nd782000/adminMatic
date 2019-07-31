@@ -341,7 +341,7 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
                     }
                     
                     self.indicator.dismissIndicator()
-                    self.layoutViews()
+                    //self.layoutViews()
                 }catch let err{
                     print(err)
                 }
@@ -939,6 +939,8 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
             print("didSelectAssets")
             print(assets)
             
+            self.indicator = SDevIndicator.generate(self.view)!
+            
             for i in 0..<assets.count
             {
                 print("looping images")
@@ -1006,6 +1008,8 @@ class ImageCollectionViewController: ViewControllerWithMenu, UICollectionViewDel
         
         self.navigationController?.pushViewController(imageUploadPrepViewController, animated: false )
         
+        
+        self.indicator.dismissIndicator()
         
         
     }

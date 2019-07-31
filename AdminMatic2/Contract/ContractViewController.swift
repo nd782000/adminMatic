@@ -168,8 +168,39 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                     print("parsedData = \(parsedData)")
                     
                     self.contract = parsedData
+                    self.itemIDArray = []
+                    for item in self.contract.items!{
+                        
+                        //let ID = item.ID
+                        self.itemIDArray.append(item.ID)
+                        
+                        for task in item.tasks{
+                            print("image count = \(task.images!.count)")
+                            for image in task.images!{
+                                image.setImagePaths()
+                                
+                                print("image medium path = \(image.mediumPath!)")
+                            }
+                            
+                        }
+                    }
+                    
+                    
+                    
+                   
+                    
+                    //signatures
+                    
+                    
+                    if self.contract.customerSignature == "1"{
+                        self.customerSignature = Signature(_contractID: self.contract.ID, _type: "1", _path: self.json["contract"]["customerSignaturePath"].stringValue)
+                        //print("customer signature = \(self.json["contract"]["customerSignaturePath"].stringValue)")
+                    }
+                    
                     
                     self.indicator.dismissIndicator()
+                    
+                    
                     
                     self.layoutViews()
                     
@@ -185,7 +216,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                    // self.parseJSON()
                // }
                 //print(" dismissIndicator")
-                self.indicator.dismissIndicator()
+               // self.indicator.dismissIndicator()
         }
     }
     
@@ -1524,6 +1555,7 @@ class ContractViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             
           //  let customer = Customer2(_ID: self.contract.customerID!, _sysname: self.contract.customerName!)
             workOrder.customer = self.contract.customerID!
+            workOrder.custName = self.contract.customerName!
             workOrder.charge = self.contract.chargeType
             workOrder.rep = self.contract.salesRep
             workOrder.repName = self.contract.repName

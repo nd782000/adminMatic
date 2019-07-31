@@ -12,16 +12,16 @@ class ContractTaskArray: Codable {
     
     enum CodingKeys : String, CodingKey {
         
-        case contractTasks
+        case tasks
         
     }
     
-    var contractTasks: [ContractTask2]
+    var tasks: [ContractTask2]
     
     
     
-    init(_contractTasks:[ContractTask2]) {
-        self.contractTasks = _contractTasks
+    init(_tasks:[ContractTask2]) {
+        self.tasks = _tasks
     }
     
 }

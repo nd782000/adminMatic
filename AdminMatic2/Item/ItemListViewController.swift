@@ -11,7 +11,6 @@
 import Foundation
 import UIKit
 import Alamofire
-//import SwiftyJSON
 
  
 
@@ -20,8 +19,6 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     var totalItems:Int!
     
     var searchController:UISearchController!
-    
-    //var currentSearchMode = SearchMode.name
     
     var itemTableView:TableView = TableView()
     
@@ -32,8 +29,8 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
     
     var sections : [(index: Int, length :Int, title: String)] = Array()
     //var items: JSON!
-    var itemsArray:[Item] = []
-    var itemsSearchResults:[Item] = []
+    var itemsArray:[Item2] = []
+    var itemsSearchResults:[Item2] = []
     var shouldShowSearchResults:Bool = false
     
     
@@ -69,14 +66,78 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             //print(response.data ?? "")     // server data
             //print(response.result)   // result of response serialization
             
-            //if let json = response.result.value {
-                //print("JSON: \(json)")
-               // self.items = JSON(json)
-                //self.parseJSON()
+            do{
+                //created the json decoder
+                let json = response.data
+                //print("json = \(json)")
                 
+                let decoder = JSONDecoder()
+                let parsedData = try decoder.decode(ItemArray.self, from: json!)
+                
+                print("parsedData = \(parsedData)")
+                
+                let items = parsedData
+                
+                let itemCount = items.items.count
+                print("item count = \(itemCount)")
+                
+                for i in 0 ..< itemCount {
+                    //create an object
+                    print("create a item object \(i)")
+                    
+                    
+                    self.itemsArray.append(items.items[i])
+                }
+                
+                // build sections based on first letter(json is already sorted alphabetically)
+                
+                var index = 0;
+                var firstCharacterArray:[String] = [" "]
+                
+                for i in 0 ..< self.itemsArray.count {
+                    let stringToTest = self.itemsArray[i].name.uppercased()
+                    let firstCharacter = String(stringToTest[stringToTest.startIndex])
+                    if(i == 0){
+                        firstCharacterArray.append(firstCharacter)
+                    }
+                    
+                    
+                    
+                    
+                    if !firstCharacterArray.contains(firstCharacter) {
+                        
+                        //print("new")
+                        let title = firstCharacterArray[firstCharacterArray.count - 1]
+                        firstCharacterArray.append(firstCharacter)
+                        
+                        let newSection = (index: index, length: i - index, title: title)
+                        self.sections.append(newSection)
+                        index = i;
+                    }
+                    
+                    if(i == self.itemsArray.count - 1){
+                        let title = firstCharacterArray[firstCharacterArray.count - 1]
+                        let newSection = (index: index, length: i - index + 1, title: title)
+                        self.sections.append(newSection)
+                    }
+                    
+                    
+                }
+                
+                self.indicator.dismissIndicator()
+                
+                
+                self.layoutViews()
+                
+            }catch let err{
+                print(err)
+            }
+
+            
+            
                 
                 //native way
-                
+                /*
                 do {
                     if let data = response.data,
                         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -151,6 +212,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
                 } catch {
                     print("Error deserializing JSON: \(error)")
                 }
+            */
                 
                 
                 
@@ -264,7 +326,7 @@ class ItemListViewController: ViewControllerWithMenu, UITableViewDelegate, UITab
             self.itemTableView.reloadData()
  */
         
-        self.itemsSearchResults = self.itemsArray.filter({( aItem: Item) -> Bool in
+        self.itemsSearchResults = self.itemsArray.filter({( aItem: Item2) -> Bool in
             
             //return type name or name
             return (aItem.name!.lowercased().range(of: self.searchController.searchBar.text!.lowercased()) != nil)

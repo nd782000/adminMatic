@@ -48,7 +48,7 @@ class ContractTaskTableViewCell: UITableViewCell {
     func layoutViews(){
         
         self.contentView.subviews.forEach({ $0.removeFromSuperview() }) // this gets things done
-        
+        self.thumbView.image = nil
         self.selectionStyle = .none
         
         self.thumbView.clipsToBounds = true

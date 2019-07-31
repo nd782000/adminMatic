@@ -239,6 +239,7 @@ class Image2:Codable {
     }
     
     func urlStringToData(_urlString:String)->Data{
+        print("url = \(_urlString)")
         let url = URL(fileURLWithPath: _urlString)
         let data = (try? Data(contentsOf: url))! //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
        // imageView.image = UIImage(data: data!)

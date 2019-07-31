@@ -24,12 +24,12 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     
     
-    var item:Item!
-    var itemJSON: JSON!
-    var itemVendorArray:[Vendor] = []
+    var item:Item2!
+   // var itemJSON: JSON!
+   // var itemVendorArray:[Vendor] = []
     
     
-    var itemWorkOrderArray:[WorkOrder2] = []
+   // var itemWorkOrderArray:[WorkOrder2] = []
     //extra item properties, item object doesn't have'
    
     //item info
@@ -65,7 +65,7 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     
     
-    init(_item:Item){
+    init(_item:Item2){
         super.init(nibName:nil,bundle:nil)
         self.item = _item
         print("itemID = \(String(describing: self.item.ID))")
@@ -82,7 +82,7 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
         view.backgroundColor = layoutVars.backgroundColor
         title = "Item"
         
-        
+        /*
         //custom back button
         let backButton:UIButton = UIButton(type: UIButton.ButtonType.custom)
         backButton.addTarget(self, action: #selector(ItemViewController.goBack), for: UIControl.Event.touchUpInside)
@@ -91,6 +91,11 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
         backButton.sizeToFit()
         let backButtonItem:UIBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem  = backButtonItem
+        */
+        
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(self.goBack))
+        navigationItem.leftBarButtonItem = backButton
+        
         
         
         print("get Item")
@@ -138,7 +143,7 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
                             
                             self.item.description = item[0]["description"] as? String
                             self.item.taxable = item[0]["tax"] as? String
-                            self.item.typeID = item[0]["type"] as? String
+                            self.item.type = item[0]["type"] as? String
                             self.item.totalRemainingQty = item[0]["remQty"] as? String
                             
                             let vendorCount = Int((item[0]["vendors"].count))
@@ -202,19 +207,26 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
                         //print("json = \(json)")
                         
                         let decoder = JSONDecoder()
-                        let parsedData = try decoder.decode(WorkOrderArray.self, from: json!)
+                        let parsedData = try decoder.decode(Item2.self, from: json!)
                         
                         print("parsedData = \(parsedData)")
                         
-                        let workOrders = parsedData
+                        self.item = parsedData
                         
-                        let workOrderCount = workOrders.workOrders.count
-                        print("workOrder count = \(workOrderCount)")
-                        
-                        for i in 0 ..< workOrderCount {
-                            //create an object
-                            print("create a workOrder object \(i)")
-                            self.itemWorkOrderArray.append(workOrders.workOrders[i])
+                        if self.item.type != nil{
+                            switch self.item.type {
+                            case "1":
+                                self.item.typeName = "Labor Type"
+                                break
+                            case "2":
+                                self.item.typeName = "Material Type"
+                                break
+                            default:
+                                self.item.typeName = "Other Type"
+                                
+                                
+                            }
+                            
                         }
                         
                         self.indicator.dismissIndicator()
@@ -233,7 +245,7 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
        
     }
     
-    
+    /*
     
     func parseItemJSON(){
         
@@ -242,7 +254,7 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
         print("parse item json")
         item.description = self.itemJSON["item"]["description"].stringValue
         item.taxable = self.itemJSON["item"]["tax"].stringValue
-        item.typeID = self.itemJSON["item"]["type"].stringValue
+        item.type = self.itemJSON["item"]["type"].stringValue
         item.totalRemainingQty = self.itemJSON["item"]["remQty"].stringValue
         
         let vendorCount = Int((self.itemJSON["item"]["vendors"].count))
@@ -273,6 +285,8 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
         layoutViews()
     }
     
+    */
+    
     
     
     
@@ -297,8 +311,7 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         
         self.itemView = UIView()
-        //self.itemView.layer.borderColor = layoutVars.borderColor
-        //self.itemView.layer.borderWidth = 1.0
+        
         self.itemView.translatesAutoresizingMaskIntoConstraints = false
         safeContainer.addSubview(self.itemView)
         
@@ -360,11 +373,12 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         //type
         self.typeLbl = GreyLabel()
-        //if(item.typeID == "1"){
-            self.typeLbl.text = item.type
-        //}else{
-            //self.typeLbl.text = "Material Type"
-        //}
+        
+        if item.typeName != nil{
+            self.typeLbl.text = item.typeName!
+
+        }
+        
         self.typeLbl.font = layoutVars.smallFont
         self.typeLbl.translatesAutoresizingMaskIntoConstraints = false
         self.itemView.addSubview(self.typeLbl)
@@ -417,37 +431,40 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
             
             //showMapLocations()
             
-            if(item.typeID != "1" && itemVendorArray.count != 0){
+            if(item.type != "1" && self.item.vendors!.count != 0){
                 
-                for vendor in itemVendorArray {
-                    if(vendor.lat != ""){
-                    
-                    
-                    
-                        locateView.setCenter(CLLocationCoordinate2D(latitude: Double(vendor.lat)!,longitude:
-                            Double(vendor.lng)!), animated: true)
-                    
-                    
-                    
-                        let location = CLLocationCoordinate2D(
-                            latitude: Double(vendor.lat)!,
-                            longitude: Double(vendor.lng)!
-                        )
-                    
-                        let span = MKCoordinateSpan.init(latitudeDelta: 0.5, longitudeDelta: 0.5)
-                        let region = MKCoordinateRegion(center: location, span: span)
-                    
-                        locateView.setRegion(region, animated: true)
-                    
-                        let annotation = MKPointAnnotation()
-                        annotation.coordinate = location
-                        annotation.title = "$\(String(describing: vendor.itemCost!))/\(self.item.units!)"
-                        annotation.subtitle = vendor.name
-                    
-                        locateView.addAnnotation(annotation)
-                        
-                    
-                    }
+                for vendor in self.item.vendors! {
+                    for contact in vendor.contacts! {
+                        if contact.type == "4"{
+                            if(contact.lat != ""){
+                            
+                            
+                            
+                                locateView.setCenter(CLLocationCoordinate2D(latitude: Double(contact.lat!)!,longitude:
+                                    Double(contact.lng!)!), animated: true)
+                            
+                            
+                            
+                                let location = CLLocationCoordinate2D(
+                                    latitude: Double(contact.lat!)!,
+                                    longitude: Double(contact.lng!)!
+                                )
+                            
+                                let span = MKCoordinateSpan.init(latitudeDelta: 0.5, longitudeDelta: 0.5)
+                                let region = MKCoordinateRegion(center: location, span: span)
+                            
+                                locateView.setRegion(region, animated: true)
+                            
+                                let annotation = MKPointAnnotation()
+                                annotation.coordinate = location
+                                annotation.title = "$\(String(describing: vendor.itemCost!))/\(self.item.units!)"
+                                annotation.subtitle = vendor.name
+                            
+                                locateView.addAnnotation(annotation)
+                                
+                            
+                            }
+                        }
                 }
                 
                 locateView.showsUserLocation = true
@@ -482,6 +499,7 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
                     print("location not available")
                     
                     locateView.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsets.init(top: 50, left: 50, bottom: 50, right: 50), animated: true)
+                    }
                 }
         }
         
@@ -557,8 +575,8 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
         
             //labor type
         
-       // print("item.typeID = \(item.typeID)")
-        if(item.typeID == "1"){
+       // print("item.type = \(item.type)")
+        if(item.type == "1"){
             segmentedControl.isEnabled = false
             segmentedControl.selectedSegmentIndex = 2
             locateView.alpha = 0.0
@@ -566,7 +584,7 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
             workOrderTableView.alpha = 1.0
             countView.alpha = 1.0
         }else{
-            if(itemVendorArray.count == 0){
+            if(item.vendors!.count == 0){
                 print("no vendors")
                 self.layoutVars.simpleAlert(_vc: self.layoutVars.getTopController(), _title: "No Vendors", _message: "We do not have any registered vendors in our system.")
                 segmentedControl.isEnabled = false
@@ -668,12 +686,12 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func countLblText(_type:String){
         if(_type == "WORKORDER"){
-            if(self.itemWorkOrderArray.count == 0){
+            if(self.item.workOrders!.count == 0){
                 self.countLbl.text = "No workorders found with \(item.name!)"
             }else{
                 var workOrderString:String
                 var remainingQty:String
-                if(self.itemWorkOrderArray.count > 1){
+                if(self.item.workOrders!.count > 1){
                     workOrderString = "Work Orders"
                 }else{
                     workOrderString = "Work Order"
@@ -687,22 +705,22 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
                 }
                 
                 
-                self.countLbl.text = "\(self.itemWorkOrderArray.count) \(workOrderString) with  \(remainingQty) Remaining"
+                self.countLbl.text = "\(self.item.workOrders!.count) \(workOrderString) with  \(remainingQty) Remaining"
             }
         }else{
             
-            if(self.itemVendorArray.count == 0){
+            if(self.item.vendors!.count == 0){
                 self.countLbl.text = "No Vendors Found with \(item.name!)"
             }else{
                 var vendorString:String
                 
-                if(self.itemVendorArray.count > 1){
+                if(self.item.vendors!.count > 1){
                     vendorString = "Vendors"
                 }else{
                     vendorString = "Vendor"
                 }
                 
-                self.countLbl.text = "\(self.itemVendorArray.count) \(vendorString) Found with \(item.name!)"
+                self.countLbl.text = "\(self.item.vendors!.count) \(vendorString) Found with \(item.name!)"
             }
             
         }
@@ -727,13 +745,13 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
         var count:Int!
         switch self.tableViewMode{
         case "VENDOR":
-            count = self.itemVendorArray.count
+            count = self.item.vendors!.count
             break
         case "WORKORDER":
-            count = self.itemWorkOrderArray.count
+            count = self.item.workOrders!.count
             break
         default:
-            count = self.itemVendorArray.count
+            count = self.item.vendors!.count
             
         }
         
@@ -748,12 +766,12 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
         switch self.tableViewMode{
         case "VENDOR":
             let cell = vendorTableView.dequeueReusableCell(withIdentifier: "vendorCell") as! VendorTableViewCell
-            cell.id = itemVendorArray[indexPath.row].ID
+            cell.id = self.item.vendors![indexPath.row].ID
            // print("vendor name = \(itemVendorArray[indexPath.row].name)")
-            cell.name = itemVendorArray[indexPath.row].name
-            cell.nameLbl.text = itemVendorArray[indexPath.row].name
-            cell.itemCostLbl.text = "$\(itemVendorArray[indexPath.row].itemCost!)/\(self.item.units!)"
-            if(itemVendorArray[indexPath.row].itemPreffered == "1"){
+            cell.name = self.item.vendors![indexPath.row].name
+            cell.nameLbl.text = self.item.vendors![indexPath.row].name
+            cell.itemCostLbl.text = "$\(self.item.vendors![indexPath.row].itemCost!)/\(self.item.units!)"
+            if(self.item.vendors![indexPath.row].itemPreffered == "1"){
                 cell.setPreffered()
             }
             
@@ -762,11 +780,11 @@ class ItemViewController: UIViewController, UITableViewDelegate, UITableViewData
         case "WORKORDER":
             let cell = workOrderTableView.dequeueReusableCell(withIdentifier: "workOrderCell") as! ScheduleTableViewCell
             
-            cell.workOrder = self.itemWorkOrderArray[indexPath.row]
+            cell.workOrder = self.item.workOrders![indexPath.row]
             cell.layoutViews(_scheduleMode: "ITEM")
-            cell.setStatus(status: self.itemWorkOrderArray[indexPath.row].status)
-            cell.customerLbl.text = "\(self.itemWorkOrderArray[indexPath.row].title)  \(self.itemWorkOrderArray[indexPath.row].customer)"
-            cell.remainingQtyLbl.text = "Remaining Qty.: \(String(describing: self.itemWorkOrderArray[indexPath.row].itemRemQty!)) \(self.item.units!)"
+            cell.setStatus(status: self.item.workOrders![indexPath.row].status)
+            cell.customerLbl.text = "\(self.item.workOrders![indexPath.row].title)  \(String(describing: self.item.workOrders![indexPath.row].custName!))"
+            cell.remainingQtyLbl.text = "Remaining Qty.: \(String(describing: self.item.workOrders![indexPath.row].itemRemQty!)) \(self.item.units!)"
             
             return cell
             

@@ -11,7 +11,7 @@ import UIKit
  
 class ItemTableViewCell: UITableViewCell {
     
-    var item:Item!
+    var item:Item2!
     var nameLbl: Label! = Label()
     var typeLbl:DetailLabel! = DetailLabel()
     var priceLbl:DetailLabel! = DetailLabel()

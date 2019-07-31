@@ -938,19 +938,19 @@ class NewEditContractItemViewController: UIViewController, UITextFieldDelegate, 
             parameters = ["contractItemID": "0","contractID":self.contract.ID,"itemID": self.contractItem.itemID, "type":self.contractItem.type!, "chargeType": self.contractItem.chargeType, "qty": self.contractItem.qty, "price": self.contractItem.price!, "total":self.contractItem.total!, "name":self.contractItem.name,"taxCode":self.contractItem.taxCode!,"subcontractor":self.contractItem.subcontractor!,"hideUnits":self.contractItem.hideUnits!]
         }else{
             
-            //print("contractItemID = \(self.contractItem.ID)")
-            //print("contractID = \(contract.ID!)")
-            //print("itemID = \(self.contractItem.itemID)")
-            ////print("sort = \(self.sort)")
-            //print("type = \(self.contractItem.type)")
-            //print("chargeType = \(self.contractItem.chargeType!)")
-            //print("qty = \(self.contractItem.qty)")
-            //print("price = \(self.contractItem.price)")
-            //print("total = \(self.contractItem.total)")
-            //print("name = \(self.contractItem.name)")
-            //print("tax = \(self.contractItem.taxCode)")
-            //print("subcontractor = \(self.contractItem.subcontractor)")
-            //print("hideUnits = \(self.contractItem.hideUnits)")
+            print("contractItemID = \(self.contractItem.ID)")
+            print("contractID = \(contract.ID)")
+            print("itemID = \(self.contractItem.itemID)")
+           // print("sort = \(self.sort)")
+            print("type = \(self.contractItem.type!)")
+            print("chargeType = \(self.contractItem.chargeType)")
+            print("qty = \(self.contractItem.qty)")
+            print("price = \(self.contractItem.price!)")
+            print("total = \(self.contractItem.total!)")
+            print("name = \(self.contractItem.name)")
+            print("tax = \(self.contractItem.taxCode!)")
+            print("subcontractor = \(self.contractItem.subcontractor!)")
+            print("hideUnits = \(self.contractItem.hideUnits!)")
             
             parameters = ["contractItemID": self.contractItem.ID,"contractID":self.contract.ID,"itemID": self.contractItem.itemID, "type":self.contractItem.type!, "chargeType": self.contractItem.chargeType, "qty": self.contractItem.qty, "price": self.contractItem.price!, "total":self.contractItem.total!, "name":self.contractItem.name,"taxCode":self.contractItem.taxCode!,"subcontractor":self.contractItem.subcontractor!,"hideUnits":self.contractItem.hideUnits!]
         }

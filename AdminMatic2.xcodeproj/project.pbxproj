@@ -23,6 +23,7 @@
 		012DBA3322D76E4100898351 /* Image2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012DBA3222D76E4100898351 /* Image2.swift */; };
 		012DBA4422D8BD5E00898351 /* ImageArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012DBA4322D8BD5E00898351 /* ImageArray.swift */; };
 		0137DA562080300400A29F4E /* NewEditContractViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0137DA552080300100A29F4E /* NewEditContractViewController.swift */; };
+		01483B2422DFE65700577ECE /* Item2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01483B2322DFE65600577ECE /* Item2.swift */; };
 		014B02951E21577D002A41DE /* CustomerListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B02941E21577D002A41DE /* CustomerListViewController.swift */; };
 		014B029C1E21585A002A41DE /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B029B1E21585A002A41DE /* Customer.swift */; };
 		014B029E1E215DB5002A41DE /* CustomerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B029D1E215DB5002A41DE /* CustomerTableViewCell.swift */; };
@@ -88,6 +89,8 @@
 		0173DEE522C11DB600F81412 /* Invoice2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0173DEE422C11DB600F81412 /* Invoice2.swift */; };
 		0173DEE722C12D6D00F81412 /* InvoiceArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0173DEE622C12D6D00F81412 /* InvoiceArray.swift */; };
 		0173DEE922C19CCC00F81412 /* InvoiceItem2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0173DEE822C19CCC00F81412 /* InvoiceItem2.swift */; };
+		0175FA3522E8C1C70069B31A /* ItemArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0175FA3422E8C1C70069B31A /* ItemArray.swift */; };
+		0175FA4422EA061A0069B31A /* Contact2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0175FA4322EA061A0069B31A /* Contact2.swift */; };
 		017F083621FE65D800CC751D /* InvoiceListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083521FE65D800CC751D /* InvoiceListViewController.swift */; };
 		017F083821FE65EF00CC751D /* InvoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083721FE65EF00CC751D /* InvoiceViewController.swift */; };
 		017F083A21FE6FDE00CC751D /* InvoiceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017F083921FE6FDE00CC751D /* InvoiceTableViewCell.swift */; };
@@ -363,6 +366,7 @@
 		012DBA3222D76E4100898351 /* Image2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Image2.swift; sourceTree = "<group>"; };
 		012DBA4322D8BD5E00898351 /* ImageArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageArray.swift; sourceTree = "<group>"; };
 		0137DA552080300100A29F4E /* NewEditContractViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEditContractViewController.swift; sourceTree = "<group>"; };
+		01483B2322DFE65600577ECE /* Item2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item2.swift; sourceTree = "<group>"; };
 		014B02941E21577D002A41DE /* CustomerListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomerListViewController.swift; sourceTree = "<group>"; };
 		014B029B1E21585A002A41DE /* Customer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
 		014B029D1E215DB5002A41DE /* CustomerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomerTableViewCell.swift; sourceTree = "<group>"; };
@@ -428,6 +432,8 @@
 		0173DEE422C11DB600F81412 /* Invoice2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Invoice2.swift; sourceTree = "<group>"; };
 		0173DEE622C12D6D00F81412 /* InvoiceArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceArray.swift; sourceTree = "<group>"; };
 		0173DEE822C19CCC00F81412 /* InvoiceItem2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceItem2.swift; sourceTree = "<group>"; };
+		0175FA3422E8C1C70069B31A /* ItemArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemArray.swift; sourceTree = "<group>"; };
+		0175FA4322EA061A0069B31A /* Contact2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact2.swift; sourceTree = "<group>"; };
 		017F083521FE65D800CC751D /* InvoiceListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceListViewController.swift; sourceTree = "<group>"; };
 		017F083721FE65EF00CC751D /* InvoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceViewController.swift; sourceTree = "<group>"; };
 		017F083921FE6FDE00CC751D /* InvoiceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceTableViewCell.swift; sourceTree = "<group>"; };
@@ -775,8 +781,8 @@
 				015EB55D1FF9611B000CA2A7 /* EquipmentDetailsViewController.swift */,
 				015EB55F2002E31F000CA2A7 /* EquipmentServiceViewController.swift */,
 				01A23AC721F7DD7900C872FC /* EquipmentInspectionViewController.swift */,
-				01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */,
 				01A9DDE61FE9868F0075AC72 /* NewEditEquipmentViewController.swift */,
+				01C43C562027AC890068A5E0 /* NewEditEquipmentServiceViewController.swift */,
 			);
 			path = Equipment;
 			sourceTree = "<group>";
@@ -876,7 +882,10 @@
 				014B02AD1E216950002A41DE /* Vendor.swift */,
 				014C130822A944FC00EBB3DA /* Vendor2.swift */,
 				0166341B1E33F510002F7763 /* Contact.swift */,
+				0175FA4322EA061A0069B31A /* Contact2.swift */,
 				016634211E340F6D002F7763 /* Item.swift */,
+				01483B2322DFE65600577ECE /* Item2.swift */,
+				0175FA3422E8C1C70069B31A /* ItemArray.swift */,
 				014CC8DB1E539C9A00D48A26 /* Image.swift */,
 				012DBA3222D76E4100898351 /* Image2.swift */,
 				012DBA4322D8BD5E00898351 /* ImageArray.swift */,
@@ -1310,6 +1319,7 @@
 				0116A7FB1E1DD4B7002C5051 /* ScheduleTableViewCell.swift in Sources */,
 				0166341C1E33F510002F7763 /* Contact.swift in Sources */,
 				01EC4E6C1E1DDA90009CE261 /* WorkOrder.swift in Sources */,
+				0175FA4422EA061A0069B31A /* Contact2.swift in Sources */,
 				015EB55C1FF6E639000CA2A7 /* NewEditEquipmentFieldViewController.swift in Sources */,
 				01D86714212B1853005379E1 /* ContractTaskTableViewCell.swift in Sources */,
 				01C0F19D21654BF80018300E /* EmailViewController.swift in Sources */,
@@ -1328,6 +1338,7 @@
 				017F083621FE65D800CC751D /* InvoiceListViewController.swift in Sources */,
 				015EB5602002E31F000CA2A7 /* EquipmentServiceViewController.swift in Sources */,
 				01D8670C21221901005379E1 /* Signature.swift in Sources */,
+				0175FA3522E8C1C70069B31A /* ItemArray.swift in Sources */,
 				014B029E1E215DB5002A41DE /* CustomerTableViewCell.swift in Sources */,
 				0125B6D91E26B10E00BAC949 /* ImageDrawingViewController.swift in Sources */,
 				01266EA222AE9FE700643F55 /* Department2.swift in Sources */,
@@ -1381,6 +1392,7 @@
 				01634B562084F52500D22832 /* ContractViewController.swift in Sources */,
 				01A9DDD41FE0B59C0075AC72 /* EquipmentListViewController.swift in Sources */,
 				01634B5C2088E04F00D22832 /* TagTableViewCell.swift in Sources */,
+				01483B2422DFE65700577ECE /* Item2.swift in Sources */,
 				01D8FFB422C59E74004FDE8D /* LeadArray.swift in Sources */,
 				01E01C1A1E7DB54D00385B86 /* ImageUploadPrepViewController.swift in Sources */,
 				014B02A41E2168C6002A41DE /* Employee.swift in Sources */,

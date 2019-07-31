@@ -1276,12 +1276,12 @@ class NewEditContractViewController: UIViewController, UIPickerViewDelegate, UIP
         layoutVars.manager.request("https://www.atlanticlawnandgarden.com/cp/app/functions/update/contract.php",method: .post, parameters: parameters, encoding: URLEncoding.default, headers: nil)
             .validate()    // or, if you just want to check status codes, validate(statusCode: 200..<300)
             .responseString { response in
-                //print("contract response = \(response)")
+                print("contract response = \(response)")
             }
             .responseJSON(){
                 response in
                 if let json = response.result.value {
-                    //print("JSON: \(json)")
+                    print("JSON: \(json)")
                     self.json = JSON(json)
                     let newContractID = self.json["contractID"].stringValue
                     self.contract.ID = newContractID

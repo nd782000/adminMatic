@@ -39,6 +39,22 @@ extension UIImage {
 */
 
 
+//Way to time functions
+/*
+ 
+ //before function
+ var methodStart:Date!
+ var methodFinish:Date!
+ methodStart = Date()
+ 
+ //after execution of function
+ methodFinish = Date()
+ let executionTime = methodFinish.timeIntervalSince(methodStart)
+ print("Execution time: \(executionTime)")
+ */
+
+ 
+
 extension UIColor {
     
     convenience init(hex: Int, op: CGFloat) {

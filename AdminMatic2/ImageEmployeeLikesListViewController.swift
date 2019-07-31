@@ -259,7 +259,7 @@ class ImageEmployeeLikesListViewController: ViewControllerWithMenu, UITableViewD
         
         //info
         self.infoLbl = Label()
-        self.infoLbl.text = "By \(self.image.createdBy)"
+        self.infoLbl.text = "By \(self.image.createdBy!)"
         self.infoLbl.font = layoutVars.smallFont
         safeContainer.addSubview(self.infoLbl)
         
